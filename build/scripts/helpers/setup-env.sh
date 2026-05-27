@@ -8,6 +8,8 @@
 set -e
 export DEBIAN_FRONTEND=noninteractive
 
+echo "Checking .env files..."
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENV="prod"
 DOMAIN=""
@@ -51,33 +53,35 @@ GLOBAL_SALT=$(openssl rand -hex 32)
 POSTGRES_PASSWORD=$(openssl rand -hex 24)
 REDIS_PASSWORD=$(openssl rand -hex 24)
 
-echo "Generating .env files..."
-
 generate() {
   local dest="$1"
   local src="$2"
   local args="${@:3}"
+  local name
+  name=$(basename "$dest")
 
   if [[ -f "$dest" ]]; then
-    echo "  Skipping $dest (already exists)."
+    echo "  Skipping $name (already exists)."
     return
   fi
 
   sed $args "$src" > "$dest"
-  echo "  Generated $dest"
+  echo "  The $name file has been successfully generated."
 }
 
 copy() {
   local dest="$1"
   local src="$2"
+  local name
+  name=$(basename "$dest")
 
   if [[ -f "$dest" ]]; then
-    echo "  Skipping $dest (already exists)."
+    echo "  Skipping $name (already exists)."
     return
   fi
 
   cp "$src" "$dest"
-  echo "  Generated $dest"
+  echo "  The $name file has been successfully generated."
 }
 
 generate "$TARGET/backend/.env" "$TARGET/backend/.env.example" \
@@ -94,5 +98,3 @@ generate "$TARGET/redis/.env" "$TARGET/redis/.env.example" \
 
 copy "$TARGET/frontend/.env" "$TARGET/frontend/.env.example"
 copy "$TARGET/nginx/.env"    "$TARGET/nginx/.env.example"
-
-echo "The .env files have been successfully generated."

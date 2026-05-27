@@ -8,6 +8,8 @@
 set -e
 export DEBIAN_FRONTEND=noninteractive
 
+echo "Checking self-signed SSL certificates..."
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENV="prod"
 DOMAIN=""
@@ -51,11 +53,9 @@ mkdir -p "$SSL_DIR"
 chmod 755 "$SSL_DIR"
 
 if [[ -f "$SSL_DIR/server.crt" && -f "$SSL_DIR/server.key" ]]; then
-  echo "SSL certificates already exist, skipping."
+  echo "  Skipping SSL certificates (already exist)."
   exit 0
 fi
-
-echo "Generating self-signed SSL certificates..."
 
 openssl req -x509 -nodes -newkey rsa:4096 \
   -keyout "$SSL_DIR/server.key" \
@@ -64,4 +64,4 @@ openssl req -x509 -nodes -newkey rsa:4096 \
   -subj "/CN=$DOMAIN" \
   -addext "subjectAltName=IP:$DOMAIN"
 
-echo "SSL certificates have been successfully generated."
+echo "  SSL certificates have been successfully generated."

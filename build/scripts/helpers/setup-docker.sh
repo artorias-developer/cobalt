@@ -8,24 +8,22 @@
 set -e
 export DEBIAN_FRONTEND=noninteractive
 
+echo "Checking Docker and Docker Compose..."
+
 if command -v docker &>/dev/null; then
-  echo "Docker is already installed."
+  echo "  Skipping Docker (already installed)."
 
   if docker compose version &>/dev/null; then
-    echo "Docker Compose is already installed."
+    echo "  Skipping Docker Compose (already installed)."
     exit 0
   fi
-
-  echo "Installing Docker Compose..."
 
   sudo apt update
   sudo apt install -y docker-compose-plugin
 
-  echo "Docker Compose has been successfully installed."
+  echo "  Docker Compose has been successfully installed."
   exit 0
 fi
-
-echo "Installing Docker..."
 
 sudo apt update
 sudo apt install -y ca-certificates curl
@@ -46,4 +44,4 @@ EOF
 sudo apt update
 sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
-echo "Docker has been successfully installed."
+echo "  Docker and Docker Compose has been successfully installed."
