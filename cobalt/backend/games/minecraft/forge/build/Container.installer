@@ -1,0 +1,41 @@
+FROM debian:bookworm-slim AS downloader
+
+ARG JAVA_VERSION
+ARG FORGE_LINK
+ARG SERVER_ROOT
+
+RUN apt-get update && \
+    apt-get install -y \
+        bash \
+        wget \
+        apt-transport-https \
+        gnupg && \
+    wget -qO - https://packages.adoptium.net/artifactory/api/gpg/key/public | gpg --dearmor -o /usr/share/keyrings/adoptium.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/adoptium.gpg] https://packages.adoptium.net/artifactory/deb bookworm main" > /etc/apt/sources.list.d/adoptium.list && \
+    apt-get update && \
+    apt-get install -y temurin-${JAVA_VERSION}-jdk && \
+    rm -rf /var/lib/apt/lists/* && \
+    mkdir -p ${SERVER_ROOT}
+
+WORKDIR ${SERVER_ROOT}
+
+RUN wget ${FORGE_LINK} -O forge-installer.jar && \
+    java -jar forge-installer.jar --installServer && \
+    rm -rf forge-installer.jar forge-installer.jar.log
+
+COPY scripts/entrypoint.sh entrypoint.sh
+RUN chmod +x entrypoint.sh
+
+FROM debian:bookworm-slim
+
+ARG SERVER_ROOT
+
+RUN apt-get update && \
+    apt-get install -y \
+        rsync && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY --from=downloader ${SERVER_ROOT} /installer_src
+COPY data /installer_src/
+
+CMD mkdir -p ${SERVER_ROOT} && rsync -a /installer_src/. ${SERVER_ROOT}/

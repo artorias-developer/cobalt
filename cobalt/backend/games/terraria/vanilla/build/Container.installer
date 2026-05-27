@@ -1,0 +1,31 @@
+FROM alpine:latest AS downloader
+
+ARG TERRARIA_LINK
+ARG SERVER_ROOT
+
+RUN apk add --no-cache \
+        wget \
+        unzip && \
+    mkdir -p ${SERVER_ROOT}
+
+WORKDIR ${SERVER_ROOT}
+
+RUN wget ${TERRARIA_LINK} -O server.zip && \
+    unzip server.zip -d /tmp/terraria && \
+    cp -r /tmp/terraria/*/Linux/. . && \
+    chmod +x TerrariaServer.bin.x86_64 && \
+    rm -rf /tmp/terraria server.zip
+
+COPY scripts/entrypoint.sh entrypoint.sh
+RUN chmod +x entrypoint.sh
+
+FROM alpine:latest
+
+ARG SERVER_ROOT
+
+RUN apk add --no-cache rsync
+
+COPY --from=downloader ${SERVER_ROOT} /installer_src
+COPY data /installer_src/
+
+CMD mkdir -p ${SERVER_ROOT} && rsync -a /installer_src/. ${SERVER_ROOT}/

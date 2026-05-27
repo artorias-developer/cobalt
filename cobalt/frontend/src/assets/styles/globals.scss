@@ -1,0 +1,88 @@
+@use "@/assets/styles/variables/colors" as *;
+@use "@/assets/styles/variables/spacing" as *;
+@use "@/assets/styles/variables/fonts" as *;
+@use "@/assets/styles/mixins" as *;
+
+
+body, html {
+  margin: 0;
+  padding: 0;
+  background-color: $color-background;
+  font-family: "Montserrat", sans-serif;
+}
+
+body {
+  @include background-image(
+    $image: "@/assets/images/background.jpg"
+  );
+}
+
+h1, h2, h3, h4, h5, h6, p, span {
+  margin: 0;
+  padding: 0;
+  font-family: "Montserrat", sans-serif;
+  line-height: 1;
+}
+
+ul, li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+#app {
+  height: 100vh;
+  display: flex;
+  box-sizing: border-box;
+}
+
+.vue-notification-group {
+  .vue-notification {
+    display: flex;
+    align-items: center;
+    gap: $space-lg;
+    border-radius: 6px;
+    padding: $space-lg;
+    margin: $space-md $space-md 0 0;
+    border-left: none;
+
+    &.success {
+      background-color: $color-notification-success-background;
+      color: $color-title;
+    }
+
+    &.error {
+      background-color: $color-notification-error-background;
+      color: $color-title;
+    }
+
+    &.warn {
+      background-color: $color-notification-warning-background;
+      color: $color-title;
+    }
+
+    .icon {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+
+      svg {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+    }
+
+    p {
+      font-size: $font-sm;
+      font-weight: 600;
+      font-family: "Montserrat", sans-serif;
+      line-height: unset;
+      word-break: break-all;
+    }
+  }
+}

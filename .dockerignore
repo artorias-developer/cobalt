@@ -1,0 +1,7 @@
+# Folders
+**/__pycache__
+
+# Files
+**/*.pyc
+**/*.pyo
+**/*.pyd

@@ -1,0 +1,38 @@
+/*!
+ * Copyright (C) 2026 ArtoriasCode
+ * Author: ArtoriasCode
+ * Repository: https://github.com/ArtoriasCode/cobalt
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
+$font-xxxl: 30px;
+$font-xxl: 24px;
+$font-xl: 20px;
+$font-lg: 18px;
+$font-md: 16px;
+$font-sm: 14px;
+$font-xs: 13px;
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("@/assets/fonts/montserrat/Montserrat-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("@/assets/fonts/montserrat/Montserrat-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("@/assets/fonts/jetbrains-mono/JetBrainsMono-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}

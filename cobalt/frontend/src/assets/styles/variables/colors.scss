@@ -1,0 +1,65 @@
+/*!
+ * Copyright (C) 2026 ArtoriasCode
+ * Author: ArtoriasCode
+ * Repository: https://github.com/ArtoriasCode/cobalt
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
+$color-primary: #3384FF;
+$color-blue: #5498FF;
+$color-blue-background: rgba($color-blue, 0.16);
+$color-green: #59c595;
+$color-green-background: rgba($color-green, 0.16);
+$color-yellow: #ddc965;
+$color-yellow-background: rgba($color-yellow, 0.16);
+$color-red: #DA6B6B;
+$color-red-background: rgba($color-red, 0.16);
+$color-gray: #8089af;
+$color-gray-background: rgba($color-gray, 0.16);
+
+$color-background: #1F2333;
+$color-block: #2E3244;
+$color-block-alt: #34384c;
+$color-block-background: #282C3D;
+
+$color-tag-background: rgba(#809AC3, 0.16);
+
+$color-title: #f2f5f8;
+$color-text: #9FA6C1;
+$color-description: #64687D;
+
+$color-border: #44485D;
+$color-border-alt: rgba($color-border, 0.55);
+
+$color-notification-success-background: #4aa87e;
+$color-notification-warning-background: #c1b063;
+$color-notification-error-background: #c36161;
+
+$shadow-easy: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+:root {
+  --color-primary: #{$color-primary};
+  --color-blue: #{$color-blue};
+  --color-blue-background: #{$color-blue-background};
+  --color-green: #{$color-green};
+  --color-green-background: #{$color-green-background};
+  --color-yellow: #{$color-yellow};
+  --color-yellow-background: #{$color-yellow-background};
+  --color-red: #{$color-red};
+  --color-red-background: #{$color-red-background};
+  --color-gray: #{$color-gray};
+  --color-gray-background: #{$color-gray-background};
+  --color-background: #{$color-background};
+  --color-block: #{$color-block};
+  --color-block-alt: #{$color-block-alt};
+  --color-block-background: #{$color-block-background};
+  --color-tag-background: #{$color-tag-background};
+  --color-title: #{$color-title};
+  --color-text: #{$color-text};
+  --color-description: #{$color-description};
+  --color-border: #{$color-border};
+  --color-border-alt: #{$color-border-alt};
+  --color-notification-success-background: #{$color-notification-success-background};
+  --color-notification-warning-background: #{$color-notification-warning-background};
+  --color-notification-error-background: #{$color-notification-error-background};
+}

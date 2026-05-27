@@ -1,0 +1,247 @@
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM nginx:1.29.6-alpine-slim
+        LABEL managed_by=cobalt
+    container_name: cobalt-nginx
+    restart: unless-stopped
+    env_file:
+      - ./nginx/.env
+    entrypoint: ["sh", "/usr/local/bin/nginx-entrypoint.sh"]
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - cobalt
+    volumes:
+      - ../dev/nginx/configs/main.conf:/etc/nginx/nginx.conf.template:ro
+      - ../dev/nginx/scripts/entrypoint.sh:/usr/local/bin/nginx-entrypoint.sh:ro
+      - ../dev/nginx/ssl:/etc/nginx/ssl:ro
+    labels:
+      - managed_by=cobalt
+    depends_on:
+      - backend
+      - frontend
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+
+  frontend:
+    build:
+      context: ../../
+      dockerfile: build/dev/frontend/Dockerfile
+      labels:
+        - managed_by=cobalt
+    container_name: cobalt-frontend
+    restart: unless-stopped
+    env_file:
+      - ./frontend/.env
+    entrypoint: [ "sh", "/app/entrypoint.sh" ]
+    ports:
+      - "8011:8011"
+    networks:
+      - cobalt
+    volumes:
+      - ./frontend/scripts/entrypoint.sh:/app/entrypoint.sh:ro
+      - ../../cobalt/frontend:/app/cobalt/frontend
+    labels:
+      - managed_by=cobalt
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+
+  backend:
+    build:
+      context: ../../
+      dockerfile: build/dev/backend/Dockerfile
+      labels:
+        - managed_by=cobalt
+    container_name: cobalt-backend
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    entrypoint: ["sh", "/app/entrypoint.sh"]
+    ports:
+      - "8010:8010"
+    networks:
+      - cobalt
+    environment:
+      - HOST_CONTAINERS_ROOT=${PWD}/cobalt/backend/generated/containers
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ../shared/backend/scripts/entrypoint.sh:/app/entrypoint.sh:ro
+      - ../../Makefile:/app/Makefile:ro
+      - ../../cobalt/backend:/app/cobalt/backend
+    labels:
+      - managed_by=cobalt
+    depends_on:
+      - postgres
+      - redis
+      - prometheus
+    logging:
+      driver: "json-file"
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+
+  postgres:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM postgres:18.3-alpine
+        LABEL managed_by=cobalt
+    container_name: cobalt-postgres
+    restart: unless-stopped
+    env_file:
+      - ./postgres/.env
+    ports:
+      - "5432:5432"
+    networks:
+      - cobalt
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    labels:
+      - managed_by=cobalt
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+
+  redis:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM redis:8.6.1-alpine
+        LABEL managed_by=cobalt
+    container_name: cobalt-redis
+    restart: unless-stopped
+    env_file:
+      - ./redis/.env
+    entrypoint: ["sh", "/usr/local/bin/redis-entrypoint.sh"]
+    ports:
+      - "6379:6379"
+    networks:
+      - cobalt
+    volumes:
+      - ../shared/redis/scripts/entrypoint.sh:/usr/local/bin/redis-entrypoint.sh:ro
+    labels:
+      - managed_by=cobalt
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+
+  prometheus:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM prom/prometheus:v3.10.0
+        LABEL managed_by=cobalt
+    container_name: cobalt-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    networks:
+      - cobalt
+    volumes:
+      - ../shared/prometheus/configs/main.yaml:/etc/prometheus/prometheus.yaml:ro
+      - prometheus_data:/prometheus
+    labels:
+      - managed_by=cobalt
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yaml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=16m"
+      - "--storage.tsdb.min-block-duration=4m"
+      - "--storage.tsdb.max-block-duration=8m"
+      - "--web.console.libraries=/etc/prometheus/console_libraries"
+      - "--web.console.templates=/etc/prometheus/consoles"
+    depends_on:
+      - node-exporter
+      - cadvisor
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+
+  node-exporter:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM prom/node-exporter:v1.10.2
+        LABEL managed_by=cobalt
+    container_name: cobalt-node-exporter
+    restart: unless-stopped
+    ports:
+      - "9100:9100"
+    networks:
+      - cobalt
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+    labels:
+      - managed_by=cobalt
+    command:
+      - "--path.procfs=/host/proc"
+      - "--path.sysfs=/host/sys"
+      - "--collector.disable-defaults"
+      - "--collector.cpu"
+      - "--collector.meminfo"
+      - "--web.max-requests=6"
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+
+  cadvisor:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM ghcr.io/google/cadvisor:0.56.2
+        LABEL managed_by=cobalt
+    container_name: cobalt-cadvisor
+    restart: unless-stopped
+    privileged: true
+    ports:
+      - "8080:8080"
+    networks:
+      - cobalt
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    labels:
+      - managed_by=cobalt
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    command:
+      - "--docker_only=true"
+      - "--housekeeping_interval=3s"
+      - "--max_housekeeping_interval=6s"
+      - "--enable_metrics=cpu,memory"
+      - "--store_container_labels=false"
+      - "--whitelisted_container_labels=container_label_cobalt_server,cobalt_server,name"
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+
+networks:
+  cobalt:
+    name: cobalt_network
+    driver: bridge
+
+volumes:
+  postgres_data:
+    labels:
+      - managed_by=cobalt
+  prometheus_data:
+    labels:
+      - managed_by=cobalt

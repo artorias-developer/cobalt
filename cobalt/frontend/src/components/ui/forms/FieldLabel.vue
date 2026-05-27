@@ -1,0 +1,67 @@
+<!--
+  - Copyright (C) 2026 ArtoriasCode
+  - Author: ArtoriasCode
+  - Repository: https://github.com/ArtoriasCode/cobalt
+  - SPDX-License-Identifier: AGPL-3.0-or-later
+  -->
+
+<template>
+  <div class="label">
+    <span class="text" :class="{ titled: description }">
+      {{ text }}
+      <span v-if="required" class="required">*</span>
+    </span>
+    <span v-if="description" class="description">{{ description }}</span>
+  </div>
+</template>
+
+<script setup lang="ts">
+defineProps<{
+  text: string
+  description?: string
+  required?: boolean
+}>()
+</script>
+
+<style scoped lang="scss">
+.label {
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+
+  .text {
+    font-size: $font-md;
+    font-weight: 600;
+    color: $color-text;
+    transition: color 0.3s ease;
+
+    &.titled {
+      color: $color-title;
+    }
+
+    .required {
+      color: $color-red;
+    }
+  }
+
+  .description {
+    font-size: $font-md;
+    font-weight: 600;
+    color: $color-text;
+    line-height: unset;
+    transition: color 0.3s ease;
+  }
+}
+
+@media (max-width: 768px) {
+  .label {
+    .text {
+      font-size: $font-sm;
+    }
+
+    .description {
+      font-size: $font-sm;
+    }
+  }
+}
+</style>

@@ -1,0 +1,34 @@
+FROM alpine:latest AS downloader
+
+ARG FACTORIO_LINK
+ARG SERVER_ROOT
+
+RUN apk add --no-cache \
+        wget \
+        xz && \
+    mkdir -p ${SERVER_ROOT}
+
+WORKDIR ${SERVER_ROOT}
+
+RUN wget ${FACTORIO_LINK} -O server.tar.xz && \
+    tar -xf server.tar.xz --strip-components=1 && \
+    rm -f server.tar.xz && \
+    mkdir -p saves mods && \
+    [ -f data/map-gen-settings.example.json ] && mv data/map-gen-settings.example.json data/map-gen-settings.json || true && \
+    [ -f data/map-settings.example.json ] && mv data/map-settings.example.json data/map-settings.json || true && \
+    [ -f data/server-settings.example.json ] && mv data/server-settings.example.json data/server-settings.json || true && \
+    [ -f data/server-whitelist.example.json ] && mv data/server-whitelist.example.json data/server-whitelist.json || true
+
+COPY scripts/entrypoint.sh entrypoint.sh
+RUN chmod +x entrypoint.sh
+
+FROM alpine:latest
+
+ARG SERVER_ROOT
+
+RUN apk add --no-cache rsync
+
+COPY --from=downloader ${SERVER_ROOT} /installer_src
+COPY data /installer_src/data/
+
+CMD rsync -a /installer_src/. ${SERVER_ROOT}/

@@ -1,0 +1,76 @@
+@use "@/assets/styles/variables/colors" as *;
+
+@mixin scrollbar(
+  $width: 6px,
+  $height: 4px,
+  $border-radius: 10px,
+  $foreground-color: $color-gray-background,
+  $background-color: transparent,
+  $border-width: 0,
+  $context-hover-background-color: lighten($foreground-color, 5%),
+  $hover-background-color: lighten($foreground-color, 10%),
+) {
+  &::-webkit-scrollbar {
+    width: $width;
+    height: $height;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $background-color;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $foreground-color;
+    border-radius: $border-radius;
+    @if $border-width != 0 {
+      border: $border-width solid $background-color;
+    }
+  }
+
+  &::-webkit-scrollbar-button {
+    display: none;
+  }
+
+  &::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  &:hover::-webkit-scrollbar-thumb {
+    background: $context-hover-background-color;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: $hover-background-color;
+  }
+
+  @-moz-document url-prefix() {
+    & {
+      scrollbar-width: inherit;
+      scrollbar-color: $foreground-color $background-color;
+    }
+  }
+}
+
+@mixin scrollbar-hidden {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@mixin background-image(
+  $opacity: 0.93,
+  $image
+) {
+  height: 100vh;
+  background-image: linear-gradient(
+      to bottom,
+      rgba(31, 35, 51, $opacity) 0%,
+      rgba(31, 35, 51, 1) 40%
+  ),
+  url($image);
+  background-size: cover;
+  background-position: center, top;
+  background-repeat: no-repeat;
+}

@@ -1,0 +1,13 @@
+FROM debian:bookworm-slim
+
+ARG SERVER_ROOT
+
+RUN apt-get update && \
+    apt-get install -y \
+        bash \
+        ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR ${SERVER_ROOT}
+
+ENTRYPOINT ["/bin/bash", "-c", "exec ./entrypoint.sh"]
