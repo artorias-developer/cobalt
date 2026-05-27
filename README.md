@@ -16,6 +16,20 @@ Cobalt is a web dashboard for running game servers on your own VPS. Set up a ser
 
 No subscriptions. No third-party control. Just your server, your rules.
 
+Dashboard screenshots:
+<details>
+<summary>Click me</summary>
+
+<img src="docs/website/website-1.png" width="100%">
+<img src="docs/website/website-2.png" width="100%">
+<img src="docs/website/website-3.png" width="100%">
+<img src="docs/website/website-4.png" width="100%">
+<img src="docs/website/website-5.png" width="100%">
+<img src="docs/website/website-6.png" width="100%">
+<img src="docs/website/website-7.png" width="100%">
+
+</details>
+
 ## 🎮 Supported Games
 
 > [!NOTE]
@@ -48,7 +62,7 @@ ssh root@<server_ip>
 ```
 
 > [!TIP]
-> If this is your first attempt, you will be prompted to enter “yes”
+> If this is your first attempt, you will be prompted to enter "yes"
 
 3) Enter the server password.
 
