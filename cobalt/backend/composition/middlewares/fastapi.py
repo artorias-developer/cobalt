@@ -42,8 +42,7 @@ def setup_fastapi_trusted_host_middleware(
         allowed_hosts.extend([
             "localhost",
             "127.0.0.1",
-            "[::1]",
-            "*.ngrok-free.app"
+            "[::1]"
         ])
 
     app.add_middleware(
@@ -75,8 +74,7 @@ def setup_fastapi_cors_middleware(
     if config.server.environment == EnvironmentEnum.DEVELOPMENT:
         allowed_origins.extend([
             "http://localhost",
-            "http://127.0.0.1",
-            "https://*.ngrok-free.app"
+            "http://127.0.0.1"
         ])
 
     app.add_middleware(
