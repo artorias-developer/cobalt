@@ -28,6 +28,7 @@
           validationName="Login"
           label="Login"
           placeholder="Enter your login"
+          name="login"
           :required="true"
         />
         <Input
@@ -35,6 +36,7 @@
           validationName="Password"
           label="Password"
           placeholder="Enter your password"
+          name="password"
           :required="true"
         />
       </Form>
@@ -43,6 +45,7 @@
           type="button"
           text="Sign in"
           color="blue"
+          name="sign-in"
           @click="loginForm?.validate() && handleLogin()"
         />
       </div>

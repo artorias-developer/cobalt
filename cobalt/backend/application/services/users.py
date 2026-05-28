@@ -7,7 +7,10 @@ from typing import List, Tuple
 
 from orjson import loads
 
-from domain.exceptions import NotFoundError
+from domain.exceptions import (
+    NotFoundError,
+    AuthenticationError
+)
 from domain.repositories import AbstractUsersRepository
 from application.contracts.clients import AbstractCachesClient
 from application.contracts.services import (
@@ -214,7 +217,7 @@ class UsersService(AbstractUsersService):
         )
 
         if not received_entity:
-            raise NotFoundError("Invalid login or password")
+            raise AuthenticationError("Invalid login or password")
 
         key = self.caches_client.format_pattern(
             pattern=CacheConstants.USERS_ITEM_KEY,

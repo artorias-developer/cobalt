@@ -23,7 +23,7 @@
       <span class="crumb current">{{ currentRoute }}</span>
     </nav>
     <div class="buttons">
-      <template v-for="button in buttons" :key="button.name">
+      <template v-for="button in buttons" :key="button.text">
         <GhostButton
           type="router-link"
           v-if="button.isVisible"
@@ -74,7 +74,7 @@ const route = useRoute()
 const buttons = computed((): Array<MenuButton> => [
   {
     type: "router-link",
-    name: "Profile",
+    text: "Profile",
     url: "/settings?tab=security",
     icon: usersIcon,
     baseColor: "gray",
@@ -83,7 +83,7 @@ const buttons = computed((): Array<MenuButton> => [
   },
   {
     type: "router-link",
-    name: "Settings",
+    text: "Settings",
     url: "/settings?tab=system",
     icon: settingsIcon,
     baseColor: "gray",

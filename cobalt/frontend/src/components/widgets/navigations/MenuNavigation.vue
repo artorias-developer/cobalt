@@ -21,12 +21,12 @@
     <div class="group general-menu">
       <h3>General</h3>
       <ul class="items">
-        <template v-for="button in generalButtons" :key="button.name">
+        <template v-for="button in generalButtons" :key="button.text">
           <li class="item" v-if="button.isVisible">
             <GhostButton
               :type="button.type"
               :icon="button.icon"
-              :text="button.name"
+              :text="button.text"
               :base-color="button.baseColor"
               :hover-color="button.hoverColor"
               :to="button.url"
@@ -43,15 +43,16 @@
     <div class="group other-menu">
       <h3>Other</h3>
       <ul class="items">
-        <li class="item" v-for="button in otherButtons" :key="button.name">
+        <li class="item" v-for="button in otherButtons" :key="button.text">
           <GhostButton
             :type="button.type"
             :icon="button.icon"
-            :text="button.name"
+            :text="button.text"
             :base-color="button.baseColor"
             :hover-color="button.hoverColor"
             :href="button.external ? button.url : undefined"
             :target="button.external ? '_blank' : undefined"
+            :name="button.name"
             @click="button.action"
           />
         </li>
@@ -100,47 +101,52 @@ const router = useRouter()
 const generalButtons = computed((): Array<MenuButton> => [
   {
     type: "router-link",
-    name: "Dashboard",
+    text: "Dashboard",
     url: '/',
     icon: dashboardIcon,
     baseColor: "gray",
     hoverColor: "blue",
+    name: "dashboard",
     isVisible: hasDashboardViewAccess.value
   },
   {
     type: "router-link",
-    name: "Servers",
+    text: "Servers",
     url: "/servers",
     icon: serversIcon,
     baseColor: "gray",
     hoverColor: "blue",
+    name: "servers",
     isVisible: hasServersViewAccess.value
   },
   {
     type: "router-link",
-    name: "Users",
+    text: "Users",
     url: "/users",
     icon: usersIcon,
     baseColor: "gray",
     hoverColor: "blue",
+    name: "users",
     isVisible: hasUsersViewAccess.value
   },
   {
     type: "router-link",
-    name: "Roles",
+    text: "Roles",
     url: "/roles",
     icon: rolesIcon,
     baseColor: "gray",
     hoverColor: "blue",
+    name: "roles",
     isVisible: hasRolesViewAccess.value
   },
   {
     type: "router-link",
-    name: "Settings",
+    text: "Settings",
     url: "/settings",
     icon: settingsIcon,
     baseColor: "gray",
     hoverColor: "blue",
+    name: "settings",
     isVisible: userStore.user !== null
   }
 ])
@@ -148,19 +154,21 @@ const generalButtons = computed((): Array<MenuButton> => [
 const otherButtons: Array<MenuButton> = [
   {
     type: "a",
-    name: "Help",
+    text: "Help",
     url: "https://github.com/ArtoriasCode/cobalt/issues",
     icon: helpIcon,
     baseColor: "gray",
     hoverColor: "blue",
-    external: true
+    external: true,
+    name: "help"
   },
   {
     type: "button",
-    name: "Logout",
+    text: "Logout",
     icon: logoutIcon,
     baseColor: "gray",
     hoverColor: "red",
+    name: "logout",
     action: handleLogout
   }
 ]

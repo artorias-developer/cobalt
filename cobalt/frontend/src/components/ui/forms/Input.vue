@@ -20,6 +20,7 @@
       :placeholder="placeholder"
       :disabled="disabled"
       :readonly="readonly"
+      :name="name"
       @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"
     />
   </div>
@@ -38,6 +39,7 @@ defineOptions({
 })
 
 const props = defineProps<{
+  name?: string
   validationName?: string
   modelValue?: string
   type?: string

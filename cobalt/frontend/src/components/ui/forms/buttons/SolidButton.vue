@@ -11,6 +11,7 @@
     class="button"
     :class="[color]"
     :to="to!"
+    :aria-label="name"
     tabindex="0"
   >
     <span>{{ text }}</span>
@@ -22,6 +23,7 @@
     :href="href"
     :target="target"
     :rel="target === '_blank' ? 'noopener noreferrer' : undefined"
+    :aria-label="name"
     tabindex="0"
   >
     <span>{{ text }}</span>
@@ -30,6 +32,7 @@
     v-else
     class="button"
     :class="[color]"
+    :name="name"
     tabindex="0"
   >
     <span>{{ text }}</span>
@@ -45,6 +48,7 @@ defineProps<{
   type: ButtonType
   text: string
   color: "blue" | "gray"
+  name?: string
   href?: string
   to?: RouteLocationRaw
   target?: ButtonTarget
