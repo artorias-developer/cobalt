@@ -16,7 +16,7 @@ Cobalt is a web dashboard for running game servers on your own VPS. Set up a ser
 
 No subscriptions. No third-party control. Just your server, your rules.
 
-Dashboard screenshots:
+🖼️ Dashboard screenshots:
 <details>
 <summary>Click me</summary>
 
