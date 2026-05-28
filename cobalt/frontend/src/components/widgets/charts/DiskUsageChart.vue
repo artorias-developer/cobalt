@@ -25,6 +25,7 @@
           :filled="true"
           align="center"
           :disabled="isRefreshing"
+          name="reload"
           @click="refreshDiskMetrics"
         />
       </div>

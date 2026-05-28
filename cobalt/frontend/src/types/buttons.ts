@@ -27,10 +27,11 @@ export type WalletButton = {
 
 export type MenuButton = {
   type: ButtonType
-  name: string
+  text: string
   icon: string
   baseColor: Color
   hoverColor: Color
+  name?: string
   isVisible?: boolean
   external?: boolean
   url?: string
