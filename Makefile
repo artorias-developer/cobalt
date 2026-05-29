@@ -10,7 +10,8 @@ export PYTHONPATH := $(shell pwd)/cobalt/backend
     alembic-init a\:i \
     alembic-revision a\:r \
     alembic-upgrade a\:u \
-    alembic-downgrade a\:d
+    alembic-downgrade a\:d \
+    delete-local-branches d\:l\:b
 
 docker-build-dev:
 	docker compose -f build/dev/docker-compose.yaml up -d
@@ -51,3 +52,7 @@ a\:u: alembic-upgrade
 alembic-downgrade:
 	alembic -c cobalt/backend/alembic.ini downgrade -1
 a\:d: alembic-downgrade
+
+delete-local-branches:
+	git branch | grep -v "dev\|main" | xargs git branch -D
+d\:l\:b: delete-local-branches
