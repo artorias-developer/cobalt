@@ -10,13 +10,14 @@
 
 ---
 
-## 🔥 What is Cobalt?
+## What is Cobalt?
 
 Cobalt is a web dashboard for running game servers on your own VPS. Set up a server in just a few clicks. It's a fraction of the cost compared to specialized hosting platforms. You stay in full control of your data, your configs, and your uptime.
 
 No subscriptions. No third-party control. Just your server, your rules.
 
-🖼️ Dashboard screenshots:
+<u>Dashboard screenshots:</u>
+
 <details>
 <summary>Click me</summary>
 
@@ -30,7 +31,7 @@ No subscriptions. No third-party control. Just your server, your rules.
 
 </details>
 
-## 🎮 Supported Games
+## Supported Games
 
 > [!NOTE]
 > This list will be expanded in the future
@@ -42,7 +43,7 @@ No subscriptions. No third-party control. Just your server, your rules.
 | <img src="cobalt/frontend/src/assets/images/games/dont-starve-together/icon.png" height="30"> | Don't Starve Together | Vanilla |
 |       <img src="cobalt/frontend/src/assets/images/games/factorio/icon.png" height="30">       | Factorio | Vanilla |
 
-## ⚙️ Features
+## Features
 
 - Start, stop and restart servers in one click
 - Run commands via built-in console
@@ -51,7 +52,7 @@ No subscriptions. No third-party control. Just your server, your rules.
 - Create users with roles and control what each one can access
 - Manage multiple servers from one place
 
-## 🚀 Getting Started
+## Getting Started
 
 1) Open CMD / Terminal.
 
@@ -100,7 +101,7 @@ However, since the certificates are self-signed, you'll see a warning the first 
 > [!TIP]
 > Your dashboard will be accessible at `https://<server_ip>`
 
-## 🧪 Testing
+## Testing
 
 1. Navigate to the tests directory:
 
@@ -129,7 +130,7 @@ npm run test:e2e
 > [!IMPORTANT]
 > Make sure the dashboard and all required containers are running before executing tests
 
-## ❓ FAQ
+## FAQ
 
 <details>
 <summary>How can I suggest an idea or a game?</summary>
