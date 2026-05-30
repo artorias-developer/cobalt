@@ -33,6 +33,16 @@ export default defineConfig({
         storageState: ".auth/session.json",
       },
       dependencies: ["setup"],
+      testIgnore: "**/logout.spec.ts",
     },
+    {
+      name: "logout",
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: ".auth/session.json",
+      },
+      dependencies: ["chromium"],
+      testMatch: "**/logout.spec.ts",
+    }
   ]
 })
