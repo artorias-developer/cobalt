@@ -3,7 +3,10 @@
 #  Repository: https://github.com/ArtoriasCode/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-from domain.exceptions import NotFoundError
+from domain.exceptions import (
+    NotFoundError,
+    AuthenticationError
+)
 from domain.enums import PermissionsEnum
 from application.dtos import (
     RoleDto,
@@ -162,7 +165,7 @@ async def _ensure_admin_user(
         existing_user = await users_service.get_one_by_login(
             login=login
         )
-    except NotFoundError:
+    except AuthenticationError:
         existing_user = None
 
     if existing_user:
