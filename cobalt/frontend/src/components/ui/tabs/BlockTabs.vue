@@ -16,6 +16,7 @@
         v-for="tab in tabs"
         :key="tab.value"
         :text="tab.label"
+        :name="tab.value"
         @click="select(tab.value)"
       />
     </div>

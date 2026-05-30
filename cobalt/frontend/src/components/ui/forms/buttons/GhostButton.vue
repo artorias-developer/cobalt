@@ -11,6 +11,7 @@
     class="button"
     :class="buttonClasses"
     :to="to!"
+    :aria-label="name"
     tabindex="0"
   >
     <Icon
@@ -29,6 +30,7 @@
     :href="href"
     :target="target"
     :rel="target === '_blank' ? 'noopener noreferrer' : undefined"
+    :aria-label="name"
     tabindex="0"
   >
     <Icon
@@ -45,6 +47,7 @@
     type="button"
     class="button"
     :class="buttonClasses"
+    :name="name"
     tabindex="0"
   >
     <Icon
@@ -77,6 +80,7 @@ const props = defineProps<{
   text?: string
   baseColor: Color
   hoverColor?: Color
+  name?: string
   align?: ButtonAlign
   filled?: boolean
   href?: string
