@@ -72,6 +72,7 @@
             <Input
               v-model="securitySettings.login"
               placeholder="Your login"
+              name="login"
             />
           </div>
           <div class="field">
@@ -84,11 +85,13 @@
                 v-model="securitySettings.old_password"
                 type="password"
                 placeholder="Old password"
+                name="old-password"
               />
               <Input
                 v-model="securitySettings.new_password"
                 type="password"
                 placeholder="New password"
+                name="new-password"
               />
             </div>
           </div>
@@ -135,6 +138,7 @@
         type="button"
         text="Save"
         color="blue"
+        name="settings-save-general"
         @click="generalSettingsForm?.validate() && handleSave()"
       />
       <SolidButton
@@ -142,6 +146,7 @@
         type="button"
         text="Save"
         color="blue"
+        name="settings-save-security"
         @click="securitySettingsForm?.validate() && handleChangeCredentials()"
       />
     </div>

@@ -30,6 +30,7 @@
               :base-color="button.baseColor"
               :hover-color="button.hoverColor"
               :to="button.url"
+              :name="button.name"
               @click="emit('close')"
             />
           </li>

@@ -32,6 +32,7 @@
           :hover-color="button.hoverColor"
           :filled="true"
           :to="button.url"
+          :name="button.name"
           align="center"
         />
       </template>
@@ -79,6 +80,7 @@ const buttons = computed((): Array<MenuButton> => [
     icon: usersIcon,
     baseColor: "gray",
     hoverColor: "gray",
+    name: "settings-security",
     isVisible: userStore.user !== null
   },
   {
@@ -88,6 +90,7 @@ const buttons = computed((): Array<MenuButton> => [
     icon: settingsIcon,
     baseColor: "gray",
     hoverColor: "gray",
+    name: "settings-system",
     isVisible: hasSettingsSystemAccess.value
   }
 ])
