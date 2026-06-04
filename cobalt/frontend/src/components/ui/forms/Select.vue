@@ -19,6 +19,7 @@
         open: isOpen,
         disabled
       }"
+      :aria-label="name"
     >
       <div
         class="trigger"
@@ -83,6 +84,7 @@ const props = defineProps<{
   validationName?: string
   modelValue?: string | number
   options: SelectOption[]
+  name?: string
   placeholder?: string
   disabled?: boolean
   label?: string
