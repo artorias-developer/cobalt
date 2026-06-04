@@ -12,7 +12,7 @@ const TEST_USER = {
   password: process.env.TEST_PASSWORD ?? "admin",
 }
 
-setup("authenticate", async ({ page }) => {
+setup("Authenticate", async ({ page }) => {
   await page.goto("/login")
 
   await page.locator('input[name="login"]').fill(TEST_USER.login)

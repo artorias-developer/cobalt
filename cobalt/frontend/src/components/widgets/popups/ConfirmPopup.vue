@@ -37,6 +37,7 @@
           type="button"
           :text="confirmText"
           color="blue"
+          name="confirm"
           @click="handleConfirm(close)"
         />
       </div>
