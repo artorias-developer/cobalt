@@ -91,7 +91,7 @@ chmod +x build/scripts/install.sh
 7) Run the installer:
 
 ```bash
-./build/scripts/install.sh --prod --vps <server_ip>
+./build/scripts/install.sh --prod --server <server_ip>
 ```
 
 The installer will automatically install Docker and Docker Compose if not present, generate SSL certificates and all `.env` files, build and start the containers.
