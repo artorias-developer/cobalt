@@ -26,16 +26,16 @@ while [[ $# -gt 0 ]]; do
         DOMAIN="127.0.0.1"
       fi
       ;;
-    --vps)
+    --server)
       shift
       if [[ -z "$1" ]]; then
-        echo "Usage: $0 --vps <ip>"
+        echo "Usage: $0 --server <ip>"
         exit 1
       fi
       DOMAIN="$1"
       ;;
     *)
-      echo "Usage: $0 [--prod|--dev] [--local [domain]|--vps <ip>]"
+      echo "Usage: $0 [--prod|--dev] [--local [domain]|--server <ip>]"
       exit 1
       ;;
   esac
@@ -43,7 +43,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ -z "$DOMAIN" ]]; then
-  echo "Error: specify --local [domain] or --vps <ip>"
+  echo "Error: specify --local [domain] or --server <ip>"
   exit 1
 fi
 
