@@ -38,6 +38,7 @@
           hover-color="gray"
           :filled="true"
           align="center"
+          name="user-edit-popup"
           @click="openEditUser(row.id)"
         />
         <GhostButton
@@ -48,6 +49,7 @@
           hover-color="red"
           :filled="true"
           align="center"
+          name="user-delete-popup"
           @click="handleDeleteUser(row.id)"
         />
       </template>
@@ -57,6 +59,7 @@
           type="button"
           text="Create"
           color="blue"
+          name="user-create-popup"
           @click="openCreateUser"
         />
         <SolidButton
@@ -102,6 +105,7 @@
           validationName="Login"
           label="Login"
           placeholder="Enter user login"
+          name="user-login"
           :required="true"
         />
         <Input
@@ -109,6 +113,7 @@
           validationName="Password"
           label="Password"
           placeholder="Enter user password"
+          name="user-password"
           :required="true"
         />
         <Select
@@ -117,6 +122,7 @@
           validationName="Role"
           label="Role"
           placeholder="Select role..."
+          name="role-select"
           :required="true"
         />
       </Form>
@@ -131,6 +137,7 @@
           type="button"
           text="Create"
           color="blue"
+          name="user-create"
           @click="createUserForm?.validate() && handleCreateUser(close)"
         />
       </div>
@@ -156,6 +163,7 @@
           validationName="Login"
           label="Login"
           placeholder="Enter user login"
+          name="user-login"
           :required="false"
         />
         <Input
@@ -163,6 +171,7 @@
           validationName="Password"
           label="Password"
           placeholder="Enter new password"
+          name="user-password"
           :required="false"
         />
         <Select
@@ -171,6 +180,7 @@
           validationName="Role"
           label="Role"
           placeholder="Select role..."
+          name="role-select"
           :required="false"
         />
       </Form>
@@ -185,6 +195,7 @@
           type="button"
           text="Save"
           color="blue"
+          name="user-update"
           @click="editUserForm?.validate() && handleEditUser(close)"
         />
       </div>
