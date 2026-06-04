@@ -12,7 +12,7 @@
 
 ## What is Cobalt?
 
-Cobalt is a web dashboard for running game servers on your own VPS. Set up a server in just a few clicks. It's a fraction of the cost compared to specialized hosting platforms. You stay in full control of your data, your configs, and your uptime.
+Cobalt is a web dashboard for running game servers on your own VPS / VDS. Set up a server in just a few clicks. It's a fraction of the cost compared to specialized hosting platforms. You stay in full control of your data, your configs, and your uptime.
 
 No subscriptions. No third-party control. Just your server, your rules.
 
@@ -140,9 +140,9 @@ You can create an [issue](https://github.com/ArtoriasCode/cobalt/issues/new/choo
 </details>
 
 <details>
-<summary>Where can I get a VPS?</summary>
+<summary>Where can I get a VPS / VDS?</summary>
 
-Any VPS provider works. Just make sure it runs Ubuntu 22+.
+Any VPS / VDS provider works. Just make sure it runs Ubuntu 22+.
 
 </details>
 
