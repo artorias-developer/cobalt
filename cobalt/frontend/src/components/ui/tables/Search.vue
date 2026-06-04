@@ -15,10 +15,12 @@
       hover-color="gray"
       :filled="true"
       align="center"
+      name="search-reset"
       @click="handleReset"
     />
     <Input
       placeholder="Search"
+      name="search-input"
       :model-value="localValue"
       @update:model-value="localValue = $event"
       @keydown.enter="handleSubmit"
@@ -30,6 +32,7 @@
       hover-color="gray"
       :filled="true"
       align="center"
+      name="search-submit"
       @click="handleSubmit"
     />
   </div>

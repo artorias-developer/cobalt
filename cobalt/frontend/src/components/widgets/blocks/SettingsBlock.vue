@@ -108,6 +108,7 @@
               type="button"
               text="Clear"
               color="gray"
+              name="clear-cache"
               @click="handleClearCache"
             />
           </div>
@@ -120,6 +121,7 @@
               type="button"
               text="Clear"
               color="gray"
+              name="clear-containers"
               @click="handleClearContainers"
             />
           </div>
