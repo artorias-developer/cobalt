@@ -38,6 +38,7 @@
           hover-color="gray"
           :filled="true"
           align="center"
+          name="role-edit-popup"
           @click="openEditRole(row.id)"
         />
         <GhostButton
@@ -48,6 +49,7 @@
           hover-color="red"
           :filled="true"
           align="center"
+          name="role-delete-popup"
           @click="handleDeleteRole(row.id)"
         />
       </template>
@@ -57,6 +59,7 @@
           type="button"
           text="Create"
           color="blue"
+          name="role-create-popup"
           @click="openCreateRole"
         />
         <SolidButton
@@ -102,6 +105,7 @@
           validationName="Name"
           label="Name"
           placeholder="Enter role name"
+          name="role-name"
           :required="true"
         />
         <div class="permissions">
@@ -132,6 +136,7 @@
           type="button"
           text="Create"
           color="blue"
+          name="role-create"
           @click="createRoleForm?.validate() && handleCreateRole(close)"
         />
       </div>
@@ -157,6 +162,7 @@
           validationName="Name"
           label="Name"
           placeholder="Enter role name"
+          name="role-name"
           :required="false"
         />
         <div class="permissions">
@@ -187,6 +193,7 @@
           type="button"
           text="Save"
           color="blue"
+          name="role-update"
           @click="editRoleForm?.validate() && handleEditRole(close)"
         />
       </div>

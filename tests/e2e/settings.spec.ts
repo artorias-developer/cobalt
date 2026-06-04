@@ -12,7 +12,7 @@ test.describe("Settings page", () => {
     await page.goto("/settings")
   })
 
-  test("Should save general settings successfully", async ({ page }) => {
+  test("Should return 200 on general settings save", async ({ page }) => {
     const [response] = await Promise.all([
       page.waitForResponse((resp) =>
         resp.url().includes("settings") && resp.request().method() === "PATCH"
@@ -52,7 +52,7 @@ test.describe("Settings page", () => {
     expect(response.status()).toBe(400)
   })
 
-  test("Should update credentials successfully", async ({ page }) => {
+  test("Should return 204 on credentials update", async ({ page }) => {
     await page.locator('.tabs .nav button[name="security"]').click()
 
     const [response] = await Promise.all([
@@ -60,6 +60,19 @@ test.describe("Settings page", () => {
         resp.url().includes("credentials") && resp.request().method() === "PATCH"
       ),
       page.locator('button[name="settings-save-security"]').click(),
+    ])
+
+    expect(response.status()).toBe(204)
+  })
+
+  test("Should return 204 on unused containers data clear", async ({ page }) => {
+    await page.locator('.tabs .nav button[name="system"]').click()
+
+    const [response] = await Promise.all([
+      page.waitForResponse((resp) =>
+        resp.url().includes("containers") && resp.request().method() === "DELETE"
+      ),
+      page.locator('button[name="clear-containers"]').click(),
     ])
 
     expect(response.status()).toBe(204)
