@@ -47,9 +47,8 @@ if [[ -z "$DOMAIN_ARG" ]]; then
 fi
 
 bash "$SCRIPT_DIR/helpers/setup-docker.sh"
+bash "$SCRIPT_DIR/helpers/setup-configs.sh" "--$ENV" $DOMAIN_ARG
 bash "$SCRIPT_DIR/helpers/setup-ssl.sh" "--$ENV" $DOMAIN_ARG
-bash "$SCRIPT_DIR/helpers/setup-env.sh" "--$ENV" $DOMAIN_ARG
-bash "$SCRIPT_DIR/helpers/setup-alembic.sh" "--$ENV"
 
 echo "Starting containers..."
 docker compose -f "$ROOT/$ENV/docker-compose.yaml" up -d --build
