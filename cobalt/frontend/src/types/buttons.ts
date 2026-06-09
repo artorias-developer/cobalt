@@ -41,6 +41,7 @@ export type MenuButton = {
 export type ActionsMenuButton = {
   label: string
   icon: string
+  name?: string
   danger?: boolean
   action: () => void
 }

@@ -29,14 +29,14 @@ test.describe("Login page", () => {
     await expect(page.locator(".vue-notification.warn")).toBeVisible()
   })
 
-  test("Should show validation warning with empty login", async ({ page }) => {
+  test("Should show validation warning on empty login", async ({ page }) => {
     await page.locator('input[name="password"]').fill(TEST_USER.password)
     await page.locator('button[name="sign-in"]').click()
 
     await expect(page.locator(".vue-notification.warn")).toBeVisible()
   })
 
-  test("Should show validation warning with empty password", async ({ page }) => {
+  test("Should show validation warning on empty password", async ({ page }) => {
     await page.locator('input[name="login"]').fill(TEST_USER.login)
     await page.locator('button[name="sign-in"]').click()
 

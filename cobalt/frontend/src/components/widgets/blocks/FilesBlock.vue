@@ -50,6 +50,7 @@
                 type="button"
                 text="Download"
                 color="gray"
+                name="files-download"
                 @click="handleDownloadSelected"
               />
               <SolidButton
@@ -57,6 +58,7 @@
                 type="button"
                 text="Duplicate"
                 color="gray"
+                name="files-duplicate"
                 @click="handleDuplicateSelected"
               />
               <SolidButton
@@ -64,6 +66,7 @@
                 type="button"
                 text="Move"
                 color="gray"
+                name="files-move-popup"
                 @click="openMovePopup(selectedPaths)"
               />
               <SolidButton
@@ -71,6 +74,7 @@
                 type="button"
                 text="Delete"
                 color="gray"
+                name="files-delete-popup"
                 @click="handleDeleteSelected"
               />
             </template>
@@ -80,6 +84,7 @@
                 type="button"
                 text="Create"
                 color="gray"
+                name="file-create-popup"
                 @click="openCreatePopup"
               />
               <SolidButton
@@ -87,6 +92,7 @@
                 type="button"
                 text="Upload"
                 color="gray"
+                name="file-upload-popup"
                 @click="openUploadPopup"
               />
               <SolidButton
@@ -94,6 +100,7 @@
                 type="button"
                 text="Reload"
                 color="gray"
+                name="file-reload-popup"
                 @click="handleReload"
               />
             </template>
@@ -121,12 +128,14 @@
             v-if="hasServerFilesUpdateAccess"
             text="Save"
             color="gray"
+            name="file-save"
             @click="handleSaveContent"
           />
           <SolidButton
             type="button"
             text="Close"
             color="gray"
+            name="file-close"
             @click="closeEditor"
           />
         </div>
@@ -153,6 +162,7 @@
           validationName="Name"
           label="Name"
           placeholder="Enter file or directory name"
+          name="file-name"
           :required="true"
         />
         <Select
@@ -161,6 +171,7 @@
           validationName="Type"
           label="Type"
           placeholder="Select type..."
+          name="file-type"
           :required="true"
         />
       </Form>
@@ -175,6 +186,7 @@
           type="button"
           text="Create"
           color="blue"
+          name="file-create"
           @click="createForm?.validate() && handleCreate(close)"
         />
       </div>
@@ -200,6 +212,7 @@
           validationName="Name"
           label="New name"
           placeholder="Enter new name"
+          name="file-name"
           :required="true"
         />
       </Form>
@@ -214,6 +227,7 @@
           type="button"
           text="Rename"
           color="blue"
+          name="file-rename"
           @click="renameForm?.validate() && handleRename(close)"
         />
       </div>
@@ -239,6 +253,7 @@
           validationName="Destination"
           label="Destination path"
           placeholder="Enter destination path"
+          name="file-move-destination"
           :required="true"
         />
       </Form>
@@ -253,6 +268,7 @@
           type="button"
           text="Move"
           color="blue"
+          name="file-move"
           @click="moveForm?.validate() && handleMove(close)"
         />
       </div>
@@ -559,42 +575,49 @@ function actionsMenuItems(row: Record<string, any>): Array<ActionsMenuButton> {
   return [
     {
       label: "Open",
+      name: "file-open",
       icon: openIcon,
       show: hasServerFilesViewAccess,
       action: () => handleOpen(row),
     },
     {
       label: "Rename",
+      name: "file-rename-popup",
       icon: editIcon,
       show: hasServerFilesUpdateAccess,
       action: () => openRenamePopup(row),
     },
     {
       label: "Download",
+      name: "file-download",
       icon: downloadIcon,
       show: hasServerFilesDownloadAccess,
       action: () => handleDownloadOne(row),
     },
     {
       label: "Duplicate",
+      name: "file-duplicate",
       icon: duplicateIcon,
       show: hasServerFilesUpdateAccess,
       action: () => handleDuplicateOne(row),
     },
     {
       label: "Move",
+      name: "file-move-popup",
       icon: moveIcon,
       show: hasServerFilesUpdateAccess,
       action: () => openMovePopup([row.path]),
     },
     {
       label: "Extract",
+      name: "file-extract",
       icon: filesIcon,
       show: hasServerFilesUpdateAccess.value && row.format === "zip",
       action: () => handleExtract(row.path),
     },
     {
       label: "Delete",
+      name: "file-delete-popup",
       icon: trashIcon,
       danger: true,
       show: hasServerFilesUpdateAccess,

@@ -54,6 +54,7 @@
         class="console-input"
         v-model="command"
         placeholder="Enter a command..."
+        name="server-console"
         @keydown.enter="handleExecute"
       />
     </template>

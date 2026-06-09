@@ -11,7 +11,7 @@ async function createUser(page: Page, login: string, password: string): Promise<
   await page.locator('button[name="user-create-popup"]').click()
   await page.locator('input[name="user-login"]').fill(login)
   await page.locator('input[name="user-password"]').fill(password)
-  await page.locator('[aria-label="role-select"]').click()
+  await page.locator('div[aria-label="user-role"]').click()
   const options = page.locator(".select-dropdown .option")
   const count = await options.count()
   for (let i = 0; i < count; i++) {
