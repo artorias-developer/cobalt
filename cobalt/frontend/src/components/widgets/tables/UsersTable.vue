@@ -122,7 +122,7 @@
           validationName="Role"
           label="Role"
           placeholder="Select role..."
-          name="role-select"
+          name="user-role"
           :required="true"
         />
       </Form>
@@ -180,7 +180,7 @@
           validationName="Role"
           label="Role"
           placeholder="Select role..."
-          name="role-select"
+          name="user-role"
           :required="false"
         />
       </Form>
