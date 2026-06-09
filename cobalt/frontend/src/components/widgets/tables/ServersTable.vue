@@ -48,6 +48,7 @@
           hover-color="gray"
           :filled="true"
           align="center"
+          name="server-settings"
           :to="`/servers/${row.gameName}/${row.id}`"
         />
         <GhostButton
@@ -58,6 +59,7 @@
           hover-color="red"
           :filled="true"
           align="center"
+          name="server-delete-popup"
           @click="handleDeleteServer(row.id)"
         />
       </template>
@@ -67,6 +69,7 @@
           type="button"
           text="Create"
           color="blue"
+          name="server-create-popup"
           @click="openCreateServer"
         />
         <SolidButton
@@ -114,6 +117,7 @@
             :searchable="true"
             :required="true"
             validationName="Game"
+            name="server-game"
           />
         </Form>
         <div class="actions">
@@ -127,6 +131,7 @@
             type="button"
             text="Next"
             color="blue"
+            name="server-next-step"
             @click="step1Form?.validate() && (createServerStep = 2)"
           />
         </div>
@@ -161,6 +166,7 @@
             validationName="Name"
             label="Name"
             placeholder="Enter server name"
+            name="server-name"
             :required="true"
           />
           <Select
@@ -170,6 +176,7 @@
             label="Loader"
             placeholder="Select loader..."
             :required="true"
+            name="server-loader"
             @update:model-value="selectedVersion = undefined"
           />
           <Select
@@ -180,6 +187,7 @@
             placeholder="Select version..."
             :required="true"
             :disabled="!selectedLoader"
+            name="server-version"
           />
         </Form>
         <div class="actions">
@@ -202,6 +210,7 @@
               type="button"
               text="Create"
               color="blue"
+              name="server-create"
               @click="step2Form?.validate() && handleCreateServer(close)"
             />
           </div>

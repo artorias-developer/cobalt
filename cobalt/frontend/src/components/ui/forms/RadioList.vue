@@ -37,6 +37,7 @@
         class="option"
         :class="{ selected: modelValue === option.value }"
         :data-label="option.title"
+        :aria-label="name"
         @click="emit('update:modelValue', option.value)"
       >
         <div class="icon" v-if="option.icon">
@@ -67,6 +68,7 @@ import resetIcon from "@/assets/images/svg/reset.svg?raw"
 const props = defineProps<{
   validationName?: string
   options: RadioOption[]
+  name?: string
   modelValue?: string | number
   searchable?: boolean
   required?: boolean

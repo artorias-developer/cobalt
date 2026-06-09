@@ -42,6 +42,7 @@
         :filled="true"
         align="center"
         :disabled="actionLoading"
+        name="server-start"
         @click="handleStart"
       />
       <GhostButton
@@ -54,6 +55,7 @@
         :filled="true"
         align="center"
         :disabled="actionLoading"
+        name="server-stop"
         @click="handleStop"
       />
       <GhostButton
@@ -66,6 +68,7 @@
         :filled="true"
         align="center"
         :disabled="actionLoading"
+        name="server-restart"
         @click="handleRestart"
       />
     </div>

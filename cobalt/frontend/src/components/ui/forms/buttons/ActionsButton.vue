@@ -24,6 +24,7 @@
             :key="item.label"
             class="item"
             :class="{ danger: item.danger }"
+            :name="item.name"
             @click="item.action(); close()"
           >
             <span class="icon" v-html="item.icon" />
