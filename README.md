@@ -59,16 +59,14 @@ The main features of Cobalt:
 
 ## Getting started
 
-You can find all the necessary information on installation, testing, and other topics on the [Wiki](https://github.com/ArtoriasCode/cobalt/wiki/Installation).
+Whether you're setting up Cobalt for the first time or looking to contribute, the links below cover everything you need - from installation guides to community discussions where you can share ideas and vote on new game support.
+
+- [Wiki](https://github.com/ArtoriasCode/cobalt/wiki/Installation) - installation, configuration, and other documentation.
+- [Issues](https://github.com/ArtoriasCode/cobalt/issues) - report bugs and problems.
+- [Ideas](https://github.com/ArtoriasCode/cobalt/discussions/43) - suggest and discuss new features.
+- [Game requests](https://github.com/ArtoriasCode/cobalt/discussions/42) - request support for new games.
 
 ## FAQ
-
-<details>
-<summary>How can I suggest an idea or a game?</summary>
-
-You can create an [issue](https://github.com/ArtoriasCode/cobalt/issues/new/choose) using a special template and submit your idea or a new game there.
-
-</details>
 
 <details>
 <summary>Where can I get a VPS / VDS?</summary>
