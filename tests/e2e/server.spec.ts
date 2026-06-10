@@ -90,6 +90,16 @@ test.describe("Server files", () => {
     expect(response3.status()).toBe(204)
   })
 
+  test("Should return 409 on file create with existing name", async ({ page }) => {
+    const [response] = await Promise.all([
+      page.waitForResponse((resp) =>
+        resp.url().includes("files") && resp.request().method() === "POST"
+      ),
+      createFile(page, "e2e_test_file.txt"),
+    ])
+    expect(response.status()).toBe(409)
+  })
+
   test("Should return 200 on reload", async ({ page }) => {
     const [response] = await Promise.all([
       page.waitForResponse((resp) =>
@@ -125,6 +135,20 @@ test.describe("Server files", () => {
       page.locator('button[name="file-rename"]').click(),
     ])
     expect(response.status()).toBe(204)
+  })
+
+  test("Should return 409 on file rename to existing name", async ({ page }) => {
+    await openFileActions(page, "e2e_test_file_renamed.txt")
+    await page.locator('button[name="file-rename-popup"]').click()
+    await page.locator('input[name="file-name"]').fill("e2e_test_file2.txt")
+
+    const [response] = await Promise.all([
+      page.waitForResponse((resp) =>
+        resp.url().includes("files") && resp.request().method() === "POST"
+      ),
+      page.locator('button[name="file-rename"]').click(),
+    ])
+    expect(response.status()).toBe(409)
   })
 
   test("Should return 200 on file download via actions menu", async ({ page }) => {
@@ -220,6 +244,34 @@ test.describe("Server files", () => {
       page.locator('button[name="file-move"]').click(),
     ])
     expect(response.status()).toBe(204)
+  })
+
+  test("Should return 404 on file move to non-existing directory via actions menu", async ({ page }) => {
+    await openFileActions(page, "e2e_test_file_renamed.txt")
+    await page.locator('button[name="file-move-popup"]').click()
+    await page.locator('input[name="file-move-destination"]').fill("/fictional_dir")
+
+    const [response] = await Promise.all([
+      page.waitForResponse((resp) =>
+        resp.url().includes("files") && resp.request().method() === "POST"
+      ),
+      page.locator('button[name="file-move"]').click(),
+    ])
+    expect(response.status()).toBe(404)
+  })
+
+  test("Should return 404 on file move to non-existing directory via footer", async ({ page }) => {
+    await selectFile(page, "e2e_test_file_renamed.txt")
+    await page.locator('button[name="files-move-popup"]').click()
+    await page.locator('input[name="file-move-destination"]').fill("/fictional_dir")
+
+    const [response] = await Promise.all([
+      page.waitForResponse((resp) =>
+        resp.url().includes("files") && resp.request().method() === "POST"
+      ),
+      page.locator('button[name="file-move"]').click(),
+    ])
+    expect(response.status()).toBe(404)
   })
 
   test("Should show one row on file search", async ({ page }) => {
