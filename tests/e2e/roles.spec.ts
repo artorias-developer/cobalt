@@ -42,7 +42,7 @@ test.describe("Roles page", () => {
     expect(response.status()).toBe(200)
   })
 
-  test("Should return 409 on role create", async ({ page }) => {
+  test("Should return 409 on role create with existing name", async ({ page }) => {
     const response = await createRole(page, "e2e_test_role")
     expect(response.status()).toBe(409)
   })

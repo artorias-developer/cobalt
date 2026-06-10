@@ -56,7 +56,7 @@ test.describe("Users page", () => {
     expect(response.status()).toBe(200)
   })
 
-  test("Should return 409 on user create", async ({ page }) => {
+  test("Should return 409 on user create with existing login", async ({ page }) => {
     const response = await createUser(page, "e2e_test_user", "password")
     expect(response.status()).toBe(409)
   })
