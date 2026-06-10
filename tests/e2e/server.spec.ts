@@ -15,6 +15,8 @@ async function createFile(
   await page.locator('button[name="file-create-popup"]').click()
   await page.locator('input[name="file-name"]').fill(name)
   await page.locator('div[aria-label="file-type"]').click()
+  await page.locator(".select-dropdown .option").first().waitFor()
+  await page.waitForTimeout(500)
   await page.locator(".select-dropdown .option").filter({ hasText: type }).click()
 
   const [response] = await Promise.all([
@@ -53,6 +55,13 @@ test.describe("Server files", () => {
     })
     await row.locator('a[aria-label="server-settings"]').click()
     await page.locator('.tabs .nav button[name="files"]').click()
+  })
+
+  test("Should show warning on empty name at file create", async ({ page }) => {
+    await page.locator('button[name="file-create-popup"]').click()
+    await page.locator('button[name="file-create"]').click()
+
+    await expect(page.locator(".vue-notification.warn")).toBeVisible()
   })
 
   test("Should return 204 on files and directory create", async ({ page }) => {
@@ -166,6 +175,22 @@ test.describe("Server files", () => {
     expect(response.status()).toBe(204)
   })
 
+  test("Should show warning on empty destination at file move via actions menu", async ({ page }) => {
+    await openFileActions(page, "e2e_test_file_renamed.txt")
+    await page.locator('button[name="file-move-popup"]').click()
+    await page.locator('button[name="file-move"]').click()
+
+    await expect(page.locator(".vue-notification.warn")).toBeVisible()
+  })
+
+  test("Should show warning on empty destination at file move via footer", async ({ page }) => {
+    await selectFile(page, "e2e_test_file_renamed.txt")
+    await page.locator('button[name="files-move-popup"]').click()
+    await page.locator('button[name="file-move"]').click()
+
+    await expect(page.locator(".vue-notification.warn")).toBeVisible()
+  })
+
   test("Should return 204 on file move via actions menu", async ({ page }) => {
     await openFileActions(page, "e2e_test_file_renamed.txt")
     await page.locator('button[name="file-move-popup"]').click()
@@ -195,6 +220,23 @@ test.describe("Server files", () => {
       page.locator('button[name="file-move"]').click(),
     ])
     expect(response.status()).toBe(204)
+  })
+
+  test("Should show one row on file search", async ({ page }) => {
+    await page.locator('input[name="search-input"]').fill("e2e_test_file_renamed.txt")
+    await page.locator('button[name="search-submit"]').click()
+
+    const rows = page.locator("tbody tr")
+    await expect(rows).toHaveCount(1)
+    await expect(rows.first().locator("td", { hasText: "e2e_test_file_renamed.txt" })).toBeVisible()
+  })
+
+  test("Should show empty table on fictional file search", async ({ page }) => {
+    await page.locator('input[name="search-input"]').fill("fictional_file")
+    await page.locator('button[name="search-submit"]').click()
+
+    const rows = page.locator("tbody tr")
+    await expect(rows).toHaveCount(0)
   })
 
   test("Should return 204 on file delete via actions menu", async ({ page }) => {
