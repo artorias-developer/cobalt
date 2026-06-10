@@ -48,7 +48,7 @@ test.describe.configure({ mode: "serial" })
 
 test.describe("Users page", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/users")
+    await page.goto("/users", { waitUntil: "domcontentloaded" })
   })
 
   test("Should return 200 on user create", async ({ page }) => {

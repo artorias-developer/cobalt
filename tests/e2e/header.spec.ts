@@ -9,7 +9,7 @@ import { test, expect } from "@playwright/test"
 
 test.describe("Header", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/')
+    await page.goto('/', { waitUntil: "domcontentloaded" })
   })
 
   test("Should open Settings security tab on header item click", async ({ page }) => {

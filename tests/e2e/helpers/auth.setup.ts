@@ -13,7 +13,7 @@ const TEST_USER = {
 }
 
 setup("Authenticate", async ({ page }) => {
-  await page.goto("/login")
+  await page.goto("/login", { waitUntil: "domcontentloaded" })
 
   await page.locator('input[name="login"]').fill(TEST_USER.login)
   await page.locator('input[name="password"]').fill(TEST_USER.password)

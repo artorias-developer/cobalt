@@ -75,7 +75,7 @@ test.describe.configure({ mode: "serial" })
 
 test.describe("Servers page", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/servers")
+    await page.goto("/servers", { waitUntil: "domcontentloaded" })
   })
 
   test("Should show validation warning on unselected game", async ({ page }) => {

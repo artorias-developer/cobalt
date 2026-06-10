@@ -9,7 +9,7 @@ import { test, expect } from "@playwright/test"
 
 test.describe("Dashboard page", () => {
   test("Should return 200 on disk metrics reload", async ({ page }) => {
-    await page.goto('/')
+    await page.goto('/', { waitUntil: "domcontentloaded" })
 
     const [response] = await Promise.all([
       page.waitForResponse((resp) =>

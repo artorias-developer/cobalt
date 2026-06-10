@@ -16,7 +16,7 @@ const TEST_USER = {
 
 test.describe("Login page", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/login")
+    await page.goto("/login", { waitUntil: "domcontentloaded" })
   })
 
   test("Should load login page", async ({ page }) => {

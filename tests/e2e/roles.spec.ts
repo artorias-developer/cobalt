@@ -34,7 +34,7 @@ test.describe.configure({ mode: "serial" })
 
 test.describe("Roles page", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/roles")
+    await page.goto("/roles", { waitUntil: "domcontentloaded" })
   })
 
   test("Should return 200 on role create", async ({ page }) => {

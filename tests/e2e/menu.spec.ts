@@ -9,7 +9,7 @@ import { test, expect } from "@playwright/test"
 
 test.describe("Menu", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/')
+    await page.goto('/', { waitUntil: "domcontentloaded" })
   })
 
   test("Should open Dashboard page on menu item click", async ({ page }) => {
