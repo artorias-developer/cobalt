@@ -12,6 +12,8 @@ async function createUser(page: Page, login: string, password: string): Promise<
   await page.locator('input[name="user-login"]').fill(login)
   await page.locator('input[name="user-password"]').fill(password)
   await page.locator('div[aria-label="user-role"]').click()
+  await page.locator(".select-dropdown .option").first().waitFor()
+  await page.waitForTimeout(500)
   const options = page.locator(".select-dropdown .option")
   const count = await options.count()
   for (let i = 0; i < count; i++) {
@@ -46,7 +48,7 @@ test.describe.configure({ mode: "serial" })
 
 test.describe("Users page", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/users")
+    await page.goto("/users", { waitUntil: "domcontentloaded" })
   })
 
   test("Should return 200 on user create", async ({ page }) => {
@@ -54,12 +56,12 @@ test.describe("Users page", () => {
     expect(response.status()).toBe(200)
   })
 
-  test("Should return 409 on user create", async ({ page }) => {
+  test("Should return 409 on user create with existing login", async ({ page }) => {
     const response = await createUser(page, "e2e_test_user", "password")
     expect(response.status()).toBe(409)
   })
 
-  test("Should return 200 on search", async ({ page }) => {
+  test("Should return 200 on user search", async ({ page }) => {
     const response = await searchUser(page, "e2e_test_user")
     expect(response.status()).toBe(200)
   })

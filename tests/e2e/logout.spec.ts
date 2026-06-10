@@ -13,7 +13,7 @@ test.describe("Logout", () => {
       storageState: ".auth/session.json",
     })
     const page = await context.newPage()
-    await page.goto('/')
+    await page.goto('/', { waitUntil: "domcontentloaded" })
 
     await page.locator('.menu button[name="logout"]').click()
 

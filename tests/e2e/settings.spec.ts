@@ -9,7 +9,7 @@ import { test, expect } from "@playwright/test"
 
 test.describe("Settings page", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/settings")
+    await page.goto("/settings", { waitUntil: "domcontentloaded" })
   })
 
   test("Should return 200 on general settings save", async ({ page }) => {

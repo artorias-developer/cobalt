@@ -37,6 +37,8 @@ async function createServer(
   }
 
   await page.locator('div[aria-label="server-loader"]').click()
+  await page.locator(".select-dropdown .option").first().waitFor()
+  await page.waitForTimeout(500)
   await page.locator(".select-dropdown .option").first().click()
 
   if (!selectVersion) {
@@ -45,6 +47,8 @@ async function createServer(
   }
 
   await page.locator('div[aria-label="server-version"]').click()
+  await page.locator(".select-dropdown .option").first().waitFor()
+  await page.waitForTimeout(500)
   await page.locator(".select-dropdown .option").first().click()
 
   const [response] = await Promise.all([
@@ -71,7 +75,7 @@ test.describe.configure({ mode: "serial" })
 
 test.describe("Servers page", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/servers")
+    await page.goto("/servers", { waitUntil: "domcontentloaded" })
   })
 
   test("Should show validation warning on unselected game", async ({ page }) => {
@@ -126,7 +130,7 @@ test.describe("Servers page", () => {
     }).toPass({ intervals: [5000], timeout: 180000 })
   })
 
-  test("Should return 200 on search", async ({ page }) => {
+  test("Should return 200 on server search", async ({ page }) => {
     const response = await searchServer(page, "e2e_test_server")
     expect(response.status()).toBe(200)
   })
