@@ -12,6 +12,8 @@ async function createUser(page: Page, login: string, password: string): Promise<
   await page.locator('input[name="user-login"]').fill(login)
   await page.locator('input[name="user-password"]').fill(password)
   await page.locator('div[aria-label="user-role"]').click()
+  await page.locator(".select-dropdown .option").first().waitFor()
+  await page.waitForTimeout(500)
   const options = page.locator(".select-dropdown .option")
   const count = await options.count()
   for (let i = 0; i < count; i++) {
@@ -59,7 +61,7 @@ test.describe("Users page", () => {
     expect(response.status()).toBe(409)
   })
 
-  test("Should return 200 on search", async ({ page }) => {
+  test("Should return 200 on user search", async ({ page }) => {
     const response = await searchUser(page, "e2e_test_user")
     expect(response.status()).toBe(200)
   })

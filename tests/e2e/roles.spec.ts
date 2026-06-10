@@ -47,7 +47,7 @@ test.describe("Roles page", () => {
     expect(response.status()).toBe(409)
   })
 
-  test("Should return 200 on search", async ({ page }) => {
+  test("Should return 200 on role search", async ({ page }) => {
     const response = await searchRole(page, "e2e_test_role")
     expect(response.status()).toBe(200)
   })
