@@ -3,9 +3,10 @@
 
   <h3>Self-hosted game servers dashboard for friend groups</h3>
 
-  ![License](https://img.shields.io/badge/license-AGPL--3.0-blue)
+  ![License](https://img.shields.io/badge/License-AGPL--3.0-blue)
   ![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
   ![Vue](https://img.shields.io/badge/Vue-4FC08D?logo=vuedotjs&logoColor=white)
+  [![Wiki](https://img.shields.io/badge/Wiki-grey?logo=gitbook&logoColor=white)](https://github.com/ArtoriasCode/cobalt/wiki/Installation)
 </div>
 
 ---
@@ -16,7 +17,7 @@ Cobalt is a web dashboard for running game servers on your own VPS / VDS. Set up
 
 No subscriptions. No third-party control. Just your server, your rules.
 
-<u>Dashboard screenshots:</u>
+<ins>Dashboard screenshots:</ins>
 
 <details>
 <summary>Click me</summary>
@@ -31,10 +32,9 @@ No subscriptions. No third-party control. Just your server, your rules.
 
 </details>
 
-## Supported Games
+## Supported games
 
-> [!NOTE]
-> This list will be expanded in the future
+At this time, you can create a server for one of the following games:
 
 |                                             Icon                                              | Game | Loaders |
 |:---------------------------------------------------------------------------------------------:|------|---------|
@@ -43,92 +43,23 @@ No subscriptions. No third-party control. Just your server, your rules.
 | <img src="cobalt/frontend/src/assets/images/games/dont-starve-together/icon.png" height="30"> | Don't Starve Together | Vanilla |
 |       <img src="cobalt/frontend/src/assets/images/games/factorio/icon.png" height="30">       | Factorio | Vanilla |
 
+> [!NOTE]
+> This list will be expanded in the future.
+
 ## Features
 
-- Start, stop and restart servers in one click
-- Run commands via built-in console
-- Manage configs and upload files right from the browser
-- Monitor CPU and RAM usage in real time
-- Create users with roles and control what each one can access
-- Manage multiple servers from one place
+The main features of Cobalt:
+- Easy server management and sending game commands.
+- Real-time / last 15 minutes monitoring of CPU and RAM usage for your VPS / VDS and each game server.
+- Creating multiple users and roles with the ability to control access to virtually every section of the dashboard.
+- A convenient file manager and editor for managing files and editing configuration files.
 
-## Getting Started
+> [!NOTE]
+> Cobalt will become even more feature-rich and even easier to use in the future.
 
-1) Open CMD / Terminal.
+## Getting started
 
-2) Connect to the server via SSH:
-
-```bash
-ssh root@<server_ip>
-```
-
-> [!TIP]
-> If this is your first attempt, you will be prompted to enter "yes"
-
-3) Enter the server password.
-
-> [!TIP]
-> The letters won't appear as you type, but that's normal
-
-4) Clone the repository:
-
-```bash
-git clone https://github.com/ArtoriasCode/cobalt
-```
-
-5) Navigate to the project directory:
-
-```bash
-cd cobalt
-```
-
-6) Make the installer executable:
-
-```bash
-chmod +x build/scripts/install.sh
-```
-
-7) Run the installer:
-
-```bash
-./build/scripts/install.sh --prod --server <server_ip>
-```
-
-The installer will automatically install Docker and Docker Compose if not present, generate SSL certificates and all `.env` files, build and start the containers.
-
-However, since the certificates are self-signed, you'll see a warning the first time you open the dashboard. You'll need to click the `Advanced` button, and at the bottom you'll see a button labeled `Proceed to <server_ip> (unsafe)`.
-
-> [!TIP]
-> You can access the dashboard at `https://<server_ip>`, using the default login and password `admin`
-
-## Testing
-
-1. Navigate to the tests directory:
-
-```bash
-cd tests
-```
-
-2. Install dependencies:
-
-```bash
-npm install
-```
-
-3. Create your `.env` file from the example:
-
-```bash
-cp .env.example .env
-```
-
-4. Run all E2E tests:
-
-```bash
-npm run test:e2e
-```
-
-> [!IMPORTANT]
-> Make sure the dashboard and all required containers are running before executing tests
+You can find all the necessary information on installation, testing, and other topics on the [Wiki](https://github.com/ArtoriasCode/cobalt/wiki/Installation).
 
 ## FAQ
 
