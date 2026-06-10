@@ -34,7 +34,7 @@ test.describe.configure({ mode: "serial" })
 
 test.describe("Roles page", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/roles")
+    await page.goto("/roles", { waitUntil: "domcontentloaded" })
   })
 
   test("Should return 200 on role create", async ({ page }) => {
@@ -42,12 +42,12 @@ test.describe("Roles page", () => {
     expect(response.status()).toBe(200)
   })
 
-  test("Should return 409 on role create", async ({ page }) => {
+  test("Should return 409 on role create with existing name", async ({ page }) => {
     const response = await createRole(page, "e2e_test_role")
     expect(response.status()).toBe(409)
   })
 
-  test("Should return 200 on search", async ({ page }) => {
+  test("Should return 200 on role search", async ({ page }) => {
     const response = await searchRole(page, "e2e_test_role")
     expect(response.status()).toBe(200)
   })
