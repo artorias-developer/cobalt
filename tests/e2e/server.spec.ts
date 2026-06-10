@@ -48,7 +48,7 @@ test.describe.configure({ mode: "serial" })
 
 test.describe("Server files", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/servers")
+    await page.goto("/servers", { waitUntil: "domcontentloaded" })
 
     const row = page.locator("tr").filter({
       has: page.locator("td", { hasText: "e2e_test_server" }),
@@ -326,6 +326,71 @@ test.describe("Server files", () => {
         resp.url().includes("files") && resp.request().method() === "DELETE"
       ),
       page.locator('button[name="confirm"]').click(),
+    ])
+    expect(response.status()).toBe(204)
+  })
+})
+
+test.describe("Server overview", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/servers", { waitUntil: "domcontentloaded" })
+
+    const row = page.locator("tr").filter({
+      has: page.locator("td", { hasText: "e2e_test_server" }),
+    })
+    await row.locator('a[aria-label="server-settings"]').click()
+  })
+
+  test("Should return 204 on console command", async ({ page }) => {
+    await page.locator('input[name="server-console"]').fill("/help")
+
+    const [response] = await Promise.all([
+      page.waitForResponse((resp) =>
+        resp.url().includes("servers") && resp.request().method() === "POST"
+      ),
+      page.locator('input[name="server-console"]').press("Enter"),
+    ])
+    expect(response.status()).toBe(204)
+  })
+
+  test("Should return 204 on server stop", async ({ page }) => {
+    const [response] = await Promise.all([
+      page.waitForResponse((resp) =>
+        resp.url().includes("servers") && resp.request().method() === "POST"
+      ),
+      page.locator('button[name="server-stop"]').click(),
+    ])
+    expect(response.status()).toBe(204)
+  })
+
+  test("Should return 500 on console command when server is stopped", async ({ page }) => {
+    await page.locator('input[name="server-console"]').fill("/help")
+
+    const [response] = await Promise.all([
+      page.waitForResponse((resp) =>
+        resp.url().includes("servers") && resp.request().method() === "POST"
+      ),
+      page.locator('input[name="server-console"]').press("Enter"),
+    ])
+    expect(response.status()).toBe(500)
+  })
+
+  test("Should return 204 on server start", async ({ page }) => {
+    const [response] = await Promise.all([
+      page.waitForResponse((resp) =>
+        resp.url().includes("servers") && resp.request().method() === "POST"
+      ),
+      page.locator('button[name="server-start"]').click(),
+    ])
+    expect(response.status()).toBe(204)
+  })
+
+  test("Should return 204 on server restart", async ({ page }) => {
+    const [response] = await Promise.all([
+      page.waitForResponse((resp) =>
+        resp.url().includes("servers") && resp.request().method() === "POST"
+      ),
+      page.locator('button[name="server-restart"]').click(),
     ])
     expect(response.status()).toBe(204)
   })
