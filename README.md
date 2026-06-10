@@ -15,8 +15,6 @@
 
 Cobalt is a web dashboard for running game servers on your own VPS / VDS. Set up a server in just a few clicks. It's a fraction of the cost compared to specialized hosting platforms. You stay in full control of your data, your configs, and your uptime.
 
-No subscriptions. No third-party control. Just your server, your rules.
-
 <ins>Dashboard screenshots:</ins>
 
 <details>
@@ -34,7 +32,7 @@ No subscriptions. No third-party control. Just your server, your rules.
 
 ## Supported games
 
-At this time, you can create a server for one of the following games:
+Currently, you can create a server for one of the following games:
 
 |                                             Icon                                              | Game | Loaders |
 |:---------------------------------------------------------------------------------------------:|------|---------|
@@ -42,9 +40,6 @@ At this time, you can create a server for one of the following games:
 |       <img src="cobalt/frontend/src/assets/images/games/terraria/icon.png" height="30">       | Terraria | Vanilla, tModLoader |
 | <img src="cobalt/frontend/src/assets/images/games/dont-starve-together/icon.png" height="30"> | Don't Starve Together | Vanilla |
 |       <img src="cobalt/frontend/src/assets/images/games/factorio/icon.png" height="30">       | Factorio | Vanilla |
-
-> [!NOTE]
-> This list will be expanded in the future.
 
 ## Features
 
@@ -55,7 +50,7 @@ The main features of Cobalt:
 - A convenient file manager and editor for managing files and editing configuration files.
 
 > [!NOTE]
-> Cobalt will become even more feature-rich and even easier to use in the future.
+> It will become even more feature-rich and even easier to use in the future.
 
 ## Getting started
 
