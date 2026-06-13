@@ -7,9 +7,16 @@
 
 import { test, expect, type Page, type Response } from "@playwright/test"
 
-async function createRole(page: Page, name: string): Promise<Response> {
+async function createRole(page: Page, name: string): Promise<Response | undefined> {
   await page.locator('button[name="role-create-popup"]').click()
+
+  if (!name) {
+    await page.locator('button[name="role-create"]').click()
+    return
+  }
+
   await page.locator('input[name="role-name"]').fill(name)
+
   const [response] = await Promise.all([
     page.waitForResponse((resp) =>
       resp.url().includes("roles") && resp.request().method() === "POST"
@@ -37,14 +44,19 @@ test.describe("Roles page", () => {
     await page.goto("/roles", { waitUntil: "domcontentloaded" })
   })
 
+  test("Should show validation warning on empty role name", async ({ page }) => {
+    await createRole(page, "")
+    await expect(page.locator(".vue-notification.warn")).toBeVisible()
+  })
+
   test("Should return 200 on role create", async ({ page }) => {
     const response = await createRole(page, "e2e_test_role")
-    expect(response.status()).toBe(200)
+    expect(response!.status()).toBe(200)
   })
 
   test("Should return 409 on role create with existing name", async ({ page }) => {
     const response = await createRole(page, "e2e_test_role")
-    expect(response.status()).toBe(409)
+    expect(response!.status()).toBe(409)
   })
 
   test("Should return 200 on role search", async ({ page }) => {
