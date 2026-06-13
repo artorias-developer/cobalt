@@ -395,3 +395,24 @@ test.describe("Server overview", () => {
     expect(response.status()).toBe(204)
   })
 })
+
+test.describe("Servers page", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/servers", { waitUntil: "domcontentloaded" })
+  })
+
+  test("Should return 204 on server delete", async ({ page }) => {
+    const row = page.locator("tr").filter({
+      has: page.locator("td", { hasText: "e2e_test_server" }),
+    })
+    await row.locator('button[name="server-delete-popup"]').click()
+
+    const [response] = await Promise.all([
+      page.waitForResponse((resp) =>
+        resp.url().includes("servers") && resp.request().method() === "DELETE"
+      ),
+      page.locator('button[name="confirm"]').click(),
+    ])
+    expect(response.status()).toBe(204)
+  })
+})

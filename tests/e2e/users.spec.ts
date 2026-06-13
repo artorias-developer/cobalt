@@ -7,10 +7,33 @@
 
 import { test, expect, type Page, type Response } from "@playwright/test"
 
-async function createUser(page: Page, login: string, password: string): Promise<Response> {
+async function createUser(
+  page: Page,
+  login: string,
+  password: string,
+  selectRole: boolean = true,
+): Promise<Response | undefined> {
   await page.locator('button[name="user-create-popup"]').click()
+
+  if (!login) {
+    await page.locator('button[name="user-create"]').click()
+    return
+  }
+
   await page.locator('input[name="user-login"]').fill(login)
+
+  if (!password) {
+    await page.locator('button[name="user-create"]').click()
+    return
+  }
+
   await page.locator('input[name="user-password"]').fill(password)
+
+  if (!selectRole) {
+    await page.locator('button[name="user-create"]').click()
+    return
+  }
+
   await page.locator('div[aria-label="user-role"]').click()
   await page.locator(".select-dropdown .option").first().waitFor()
   await page.waitForTimeout(500)
@@ -51,14 +74,29 @@ test.describe("Users page", () => {
     await page.goto("/users", { waitUntil: "domcontentloaded" })
   })
 
+  test("Should show validation warning on empty login at user create", async ({ page }) => {
+    await createUser(page, "", "password")
+    await expect(page.locator(".vue-notification.warn")).toBeVisible()
+  })
+
+  test("Should show validation warning on empty password at user create", async ({ page }) => {
+    await createUser(page, "e2e_test_user_invalid", "")
+    await expect(page.locator(".vue-notification.warn")).toBeVisible()
+  })
+
+  test("Should show validation warning on unselected role at user create", async ({ page }) => {
+    await createUser(page, "e2e_test_user_invalid", "password", false)
+    await expect(page.locator(".vue-notification.warn")).toBeVisible()
+  })
+
   test("Should return 200 on user create", async ({ page }) => {
     const response = await createUser(page, "e2e_test_user", "password")
-    expect(response.status()).toBe(200)
+    expect(response!.status()).toBe(200)
   })
 
   test("Should return 409 on user create with existing login", async ({ page }) => {
     const response = await createUser(page, "e2e_test_user", "password")
-    expect(response.status()).toBe(409)
+    expect(response!.status()).toBe(409)
   })
 
   test("Should return 200 on user search", async ({ page }) => {
