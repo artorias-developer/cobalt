@@ -22,6 +22,7 @@ import { highlightSelectionMatches } from "@codemirror/search"
 import { oneDark } from "@codemirror/theme-one-dark"
 import { json } from "@codemirror/lang-json"
 import { xml } from "@codemirror/lang-xml"
+import { yaml } from "@codemirror/lang-yaml"
 import { lua } from "@codemirror/legacy-modes/mode/lua"
 import { shell } from "@codemirror/legacy-modes/mode/shell"
 import { properties } from "@codemirror/legacy-modes/mode/properties"
@@ -76,6 +77,8 @@ function resolveLanguage(language: string): Extension {
       return json()
     case "xml":
       return xml()
+    case "yaml":
+      return yaml()
     case "lua":
       return luaLang
     case "shell":
