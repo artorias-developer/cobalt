@@ -32,6 +32,7 @@ export default defineConfig({
             "@codemirror/commands",
             "@codemirror/lang-json",
             "@codemirror/lang-xml",
+            "@codemirror/lang-yaml",
             "@codemirror/theme-one-dark",
             "@lezer/highlight"
           ],

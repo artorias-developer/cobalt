@@ -362,6 +362,7 @@ import iconFolder from "@/assets/images/svg/files/folder.svg"
 import iconDefault from "@/assets/images/svg/files/document.svg"
 import iconJson from "@/assets/images/svg/files/json.svg"
 import iconXml from "@/assets/images/svg/files/xml.svg"
+import iconYaml from "@/assets/images/svg/files/yaml.svg"
 import iconBash from "@/assets/images/svg/files/powershell.svg"
 import iconLog from "@/assets/images/svg/files/log.svg"
 import iconSettings from "@/assets/images/svg/files/settings.svg"
@@ -499,6 +500,14 @@ const FILE_TYPE_MAP: Record<string, FileTypeEntry> = {
   "xml": {
     icon: iconXml,
     language: "xml"
+  },
+  "yml": {
+    icon: iconYaml,
+    language: "yaml"
+  },
+  "yaml": {
+    icon: iconYaml,
+    language: "yaml"
   },
   "sh": {
     icon: iconBash,

@@ -23,6 +23,9 @@ export const GameModules: GameModulesMap = {
       },
       forge: {
         displayName: "Forge"
+      },
+      paper: {
+        displayName: "Paper"
       }
     },
     sort_number: 1
