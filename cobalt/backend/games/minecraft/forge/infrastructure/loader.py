@@ -81,6 +81,7 @@ class ForgeLoader(AbstractLoader, HttpClientMixin):
         - List: List of unsupported versions.
         """
         return [
+            "1.7.10_pre4",
             "1.5.2",
             "1.5.1",
             "1.5",
@@ -164,7 +165,6 @@ class ForgeLoader(AbstractLoader, HttpClientMixin):
             "1.8.8",
             "1.8",
             "1.7.10",
-            "1.7.10_pre4",
             "1.7.2",
             "1.6.4",
             "1.6.3",
