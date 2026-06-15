@@ -5,10 +5,12 @@
 
 from .enums import (
     LogsEventsEnum,
-    MetricsEventsEnum
+    MetricsEventsEnum,
+    ServersEventsEnum
 )
 
 __all__ = [
     "LogsEventsEnum",
-    "MetricsEventsEnum"
+    "MetricsEventsEnum",
+    "ServersEventsEnum"
 ]

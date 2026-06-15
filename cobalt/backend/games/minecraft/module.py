@@ -58,6 +58,7 @@ class MinecraftGameModule(AbstractGameModule):
             host_containers_dir=self.host_containers_dir,
             core_servers_service=self.dependencies.services.servers,
             containers_client=self.dependencies.clients.containers,
+            connections_manager=self.dependencies.managers.connections,
             logger=self.dependencies.logger
         )
 
@@ -67,6 +68,7 @@ class MinecraftGameModule(AbstractGameModule):
             host_containers_dir=self.host_containers_dir,
             core_servers_service=self.dependencies.services.servers,
             containers_client=self.dependencies.clients.containers,
+            connections_manager=self.dependencies.managers.connections,
             logger=self.dependencies.logger
         )
 
@@ -76,6 +78,7 @@ class MinecraftGameModule(AbstractGameModule):
             host_containers_dir=self.host_containers_dir,
             core_servers_service=self.dependencies.services.servers,
             containers_client=self.dependencies.clients.containers,
+            connections_manager=self.dependencies.managers.connections,
             logger=self.dependencies.logger
         )
 

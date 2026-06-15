@@ -28,3 +28,9 @@ export enum MetricsEventsEnum {
   HOST_RAM_METRIC = "host_ram_metric",
   SERVER_RAM_METRIC = "server_ram_metric"
 }
+
+export enum ServersEventsEnum {
+  SUBSCRIBE_STATUSES = "servers_subscribe_statuses",
+  UNSUBSCRIBE_STATUSES = "servers_unsubscribe_statuses",
+  SERVER_STATUS = "server_status"
+}

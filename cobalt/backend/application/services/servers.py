@@ -17,6 +17,7 @@ from domain.repositories import AbstractServersRepository
 from application.contracts.loggers import AbstractLogger
 from application.contracts.queues import AbstractQueue
 from application.contracts.clients import AbstractCachesClient
+from application.contracts.managers import AbstractConnectionsManager
 from application.contracts.services import AbstractServersService
 from application.contracts.mappers import AbstractServersServiceMapper
 from application.contracts.games import (
@@ -25,6 +26,7 @@ from application.contracts.games import (
 )
 from application.clients.caches.shared import CacheConstants
 from application.clients.containers.shared import ContainersConstants
+from application.managers.connections.shared import RoomsConstants
 from application.dtos import (
     ServerDto,
     ServersGetPageDto,
@@ -41,6 +43,7 @@ class ServersService(AbstractServersService):
     Servers service.
     """
     caches_client: AbstractCachesClient
+    connections_manager: AbstractConnectionsManager
     servers_repository: AbstractServersRepository
     servers_mapper: AbstractServersServiceMapper
     queue: AbstractQueue
@@ -50,6 +53,7 @@ class ServersService(AbstractServersService):
     def __init__(
         self,
         caches_client: AbstractCachesClient,
+        connections_manager: AbstractConnectionsManager,
         servers_repository: AbstractServersRepository,
         servers_mapper: AbstractServersServiceMapper,
         queue: AbstractQueue,
@@ -57,6 +61,7 @@ class ServersService(AbstractServersService):
         game_modules: Dict[str, AbstractGameModule]
     ):
         self.caches_client = caches_client
+        self.connections_manager = connections_manager
         self.servers_repository = servers_repository
         self.servers_mapper = servers_mapper
         self.queue = queue
@@ -583,4 +588,40 @@ class ServersService(AbstractServersService):
 
         return self.servers_mapper.status_dataclass_to_dto(
             dataclass=status
+        )
+
+    async def subscribe_statuses(
+        self,
+        connection_id: int
+    ) -> None:
+        """
+        Subscribes to servers statuses.
+
+        Parameters:
+        - connection_id: Connection ID.
+
+        Returns:
+        - None.
+        """
+        await self.connections_manager.join_room(
+            connection_id=connection_id,
+            room_name=RoomsConstants.SERVERS_STATUSES_KEY
+        )
+
+    async def unsubscribe_statuses(
+        self,
+        connection_id: int
+    ) -> None:
+        """
+        Unsubscribes from servers statuses.
+
+        Parameters:
+        - connection_id: Connection ID.
+
+        Returns:
+        - None.
+        """
+        await self.connections_manager.leave_room(
+            connection_id=connection_id,
+            room_name=RoomsConstants.SERVERS_STATUSES_KEY
         )

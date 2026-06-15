@@ -29,7 +29,8 @@ import {
   createHttpSettingsApiService,
   createHttpFilesApiService,
   createWsLogsApiService,
-  createWsMetricsApiService
+  createWsMetricsApiService,
+  createWsServersApiService
 } from "@/factories"
 import {
   WS_CLIENT_KEY,
@@ -45,7 +46,8 @@ import {
   HTTP_SETTINGS_API_SERVICE_KEY,
   HTTP_FILES_API_SERVICE_KEY,
   WS_METRICS_API_SERVICE_KEY,
-  WS_LOGS_API_SERVICE_KEY
+  WS_LOGS_API_SERVICE_KEY,
+  WS_SERVERS_API_SERVICE_KEY
 } from "@/utils"
 import { RoutesEnum } from "@/types"
 
@@ -78,6 +80,7 @@ function setupProviders(app: App) {
 
   const wsLogsApiService = createWsLogsApiService(wsClient)
   const wsMetricsApiService = createWsMetricsApiService(wsClient)
+  const wsServersApiService = createWsServersApiService(wsClient)
 
   app.provide(WS_CLIENT_KEY, wsClient)
 
@@ -96,6 +99,7 @@ function setupProviders(app: App) {
 
   app.provide(WS_METRICS_API_SERVICE_KEY, wsMetricsApiService)
   app.provide(WS_LOGS_API_SERVICE_KEY, wsLogsApiService)
+  app.provide(WS_SERVERS_API_SERVICE_KEY, wsServersApiService)
 
   wsClient.connect(`wss://${window.location.hostname}/api/v1/ws`)
 
