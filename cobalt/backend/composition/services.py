@@ -307,6 +307,7 @@ def create_metrics_service(
 
 def create_servers_service(
     caches_client: AbstractCachesClient,
+    connections_manager: AbstractConnectionsManager,
     servers_repository: AbstractServersRepository,
     servers_mapper: AbstractServersServiceMapper,
     queue: AbstractQueue,
@@ -318,6 +319,7 @@ def create_servers_service(
 
     Parameters:
     - caches_client: AbstractCachesClient object.
+    - connections_manager: AbstractConnectionsManager object.
     - servers_repository: AbstractServersRepository object.
     - servers_mapper: AbstractServersServiceMapper object.
     - queue: AbstractQueue object.
@@ -329,6 +331,7 @@ def create_servers_service(
     """
     return ServersService(
         caches_client=caches_client,
+        connections_manager=connections_manager,
         servers_repository=servers_repository,
         servers_mapper=servers_mapper,
         queue=queue,
@@ -416,6 +419,7 @@ def create_services_container(
 
     servers_service = create_servers_service(
         caches_client=clients.caches,
+        connections_manager=managers.connections,
         servers_repository=database.repositories.servers,
         servers_mapper=mappers.services.servers,
         queue=queue,

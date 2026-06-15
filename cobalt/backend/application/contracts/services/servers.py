@@ -201,3 +201,35 @@ class AbstractServersService(ABC):
         - ServerStatusDto: ServerStatusDto object.
         """
         ...
+
+    @abstractmethod
+    async def subscribe_statuses(
+        self,
+        connection_id: int
+    ) -> None:
+        """
+        Subscribes to servers statuses.
+
+        Parameters:
+        - connection_id: Connection ID.
+
+        Returns:
+        - None.
+        """
+        ...
+
+    @abstractmethod
+    async def unsubscribe_statuses(
+        self,
+        connection_id: int
+    ) -> None:
+        """
+        Unsubscribes from servers statuses.
+
+        Parameters:
+        - connection_id: Connection ID.
+
+        Returns:
+        - None.
+        """
+        ...

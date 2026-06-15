@@ -47,7 +47,8 @@ from presentation.ws.fastapi.v1.routers import (
 )
 from presentation.ws.fastapi.v1.events import (
     WsMetricsEvents,
-    WsLogsEvents
+    WsLogsEvents,
+    WsServersEvents
 )
 from composition.dataclasses import (
     ManagersContainer,
@@ -296,6 +297,33 @@ def setup_fastapi_http_games_router(
 
     http_games_router.register()
 
+def setup_fastapi_http_files_router(
+    router: APIRouter,
+    files_service: AbstractFilesService,
+    files_mapper: AbstractFilesRouterMapper,
+    auth_service: AbstractAuthService
+) -> None:
+    """
+    Setups the HTTP files router.
+
+    Parameters:
+    - router: APIRouter object.
+    - files_service: AbstractFilesService object.
+    - files_mapper: AbstractFilesRouterMapper object.
+    - auth_service: AbstractAuthService object.
+
+    Returns:
+    - None.
+    """
+    http_files_router = HttpFilesRouter(
+        router=router,
+        files_service=files_service,
+        files_mapper=files_mapper,
+        auth_service=auth_service
+    )
+
+    http_files_router.register()
+
 def setup_fastapi_ws_events_router(
     router: APIRouter,
     events_manager: AbstractEventsManager,
@@ -374,32 +402,32 @@ def setup_fastapi_ws_metrics_router(
 
     ws_metrics_router.register()
 
-def setup_fastapi_http_files_router(
+def setup_fastapi_ws_servers_router(
     router: APIRouter,
-    files_service: AbstractFilesService,
-    files_mapper: AbstractFilesRouterMapper,
+    events_manager: AbstractEventsManager,
+    servers_service: AbstractServersService,
     auth_service: AbstractAuthService
 ) -> None:
     """
-    Setups the HTTP files router.
+    Setups the WebSocket logs router.
 
     Parameters:
     - router: APIRouter object.
-    - files_service: AbstractFilesService object.
-    - files_mapper: AbstractFilesRouterMapper object.
+    - events_manager: AbstractEventsManager object.
+    - servers_service: AbstractServersService object.
     - auth_service: AbstractAuthService object.
 
     Returns:
     - None.
     """
-    http_files_router = HttpFilesRouter(
+    ws_servers_router = WsServersEvents(
         router=router,
-        files_service=files_service,
-        files_mapper=files_mapper,
+        events_manager=events_manager,
+        servers_service=servers_service,
         auth_service=auth_service
     )
 
-    http_files_router.register()
+    ws_servers_router.register()
 
 def setup_fastapi_routers(
     router: APIRouter,
@@ -505,6 +533,13 @@ def setup_fastapi_routers(
         router=router,
         events_manager=managers.events,
         metrics_service=services.metrics,
+        auth_service=services.auth
+    )
+
+    setup_fastapi_ws_servers_router(
+        router=router,
+        events_manager=managers.events,
+        servers_service=services.servers,
         auth_service=services.auth
     )
 

@@ -20,7 +20,8 @@ import type {
   IHttpSettingsApiService,
   IHttpFilesApiService,
   IWsMetricsApiService,
-  IWsLogsApiService
+  IWsLogsApiService,
+  IWsServersApiService
 } from "@/contracts"
 
 export const WS_CLIENT_KEY: InjectionKey<IWsClient> = Symbol("wsClient")
@@ -37,4 +38,5 @@ export const HTTP_SETTINGS_API_SERVICE_KEY: InjectionKey<IHttpSettingsApiService
 export const HTTP_FILES_API_SERVICE_KEY: InjectionKey<IHttpFilesApiService> = Symbol("httpFilesApiService")
 export const WS_METRICS_API_SERVICE_KEY: InjectionKey<IWsMetricsApiService> = Symbol("wsMetricsApiService")
 export const WS_LOGS_API_SERVICE_KEY: InjectionKey<IWsLogsApiService> = Symbol("wsLogsApiService")
+export const WS_SERVERS_API_SERVICE_KEY: InjectionKey<IWsServersApiService> = Symbol("wsServersApiService")
 export const FORM_KEY = Symbol("form")

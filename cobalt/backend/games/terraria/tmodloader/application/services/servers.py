@@ -7,11 +7,12 @@ from os import path, makedirs
 from pathlib import Path
 
 from domain.enums import ServerStatusEnum
-from application.clients.containers.shared import ContainersConstants
+from application.contracts.managers import AbstractConnectionsManager
 from application.contracts.clients import AbstractContainersClient
 from application.contracts.loggers import AbstractLogger
 from application.contracts.services import AbstractServersService as CoreServersService
 from application.contracts.games import AbstractServersService
+from application.clients.containers.shared import ContainersConstants
 
 
 class TModLoaderServersService(AbstractServersService):
@@ -29,6 +30,7 @@ class TModLoaderServersService(AbstractServersService):
         host_containers_dir: Path,
         core_servers_service: CoreServersService,
         containers_client: AbstractContainersClient,
+        connections_manager: AbstractConnectionsManager,
         logger: AbstractLogger
     ):
         super().__init__(
@@ -36,6 +38,7 @@ class TModLoaderServersService(AbstractServersService):
             app_containers_dir=app_containers_dir,
             core_servers_service=core_servers_service,
             containers_client=containers_client,
+            connections_manager=connections_manager,
             logger=logger
         )
 

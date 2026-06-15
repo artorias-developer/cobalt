@@ -225,7 +225,13 @@
 import { ref, computed, inject, onMounted, onUnmounted } from "vue"
 import { useNotification } from "@kyvg/vue3-notification"
 
-import { LOCALE_HELPER_KEY, HTTP_SERVERS_API_SERVICE_KEY, HTTP_GAMES_API_SERVICE_KEY, GameModules } from "@/utils"
+import {
+  LOCALE_HELPER_KEY,
+  HTTP_SERVERS_API_SERVICE_KEY,
+  HTTP_GAMES_API_SERVICE_KEY,
+  WS_SERVERS_API_SERVICE_KEY,
+  GameModules
+} from "@/utils"
 import { useTableStore, useUserStore } from "@/stores"
 import { PermissionsEnum, ServerStatusEnum } from "@/types"
 import type {
@@ -279,6 +285,7 @@ withDefaults(defineProps<{
 const localeHelper = inject(LOCALE_HELPER_KEY)!
 const httpServersApiService = inject(HTTP_SERVERS_API_SERVICE_KEY)!
 const httpGamesApiService = inject(HTTP_GAMES_API_SERVICE_KEY)!
+const wsServersApiService = inject(WS_SERVERS_API_SERVICE_KEY)!
 const tableStore = useTableStore()
 const userStore = useUserStore()
 
@@ -646,6 +653,25 @@ function openCreateServer(): void {
 }
 
 /**
+ * Handles server status updates received from WebSocket.
+ *
+ * Parameters:
+ * - status: Updated server status.
+ *
+ * Returns:
+ * - void.
+ */
+function handleStatusUpdate(status: any): void {
+  if (!pageData.value) return
+
+  const server = pageData.value.servers.find(server => server.id === status.data.server_id)
+
+  if (server) {
+    server.status = status.data.status
+  }
+}
+
+/**
  * Maps servers response to flat row objects for the table.
  * Display name and icon are resolved from GameModules by game name,
  * loader display name is resolved from the corresponding game module's loaders map.
@@ -841,6 +867,7 @@ const hasServerViewAccess = computed((): boolean =>
 onMounted(() => {
   if (hasServersViewAccess.value) {
     fetchServers()
+    wsServersApiService.subscribeStatuses(handleStatusUpdate)
   }
 
   if (hasServersCreateAccess.value) {
@@ -850,6 +877,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   tableStore.clear(tableStoreId)
+  wsServersApiService.unsubscribeStatuses(handleStatusUpdate)
 })
 </script>
 
