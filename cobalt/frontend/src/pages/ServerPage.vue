@@ -52,12 +52,14 @@ import DontStarveTogether from "@/pages/games/dont-starve-together/ServerPage.vu
 import FactorioServerPage from "@/pages/games/factorio/ServerPage.vue"
 import MinecraftServerPage from "@/pages/games/minecraft/ServerPage.vue"
 import TerrariaServerPage from "@/pages/games/terraria/ServerPage.vue"
+import RimWorldServerPage from "@/pages/games/rim-world/ServerPage.vue"
 
 const gameComponents: Record<string, Component> = {
   dont_starve_together: DontStarveTogether,
   factorio: FactorioServerPage,
   minecraft: MinecraftServerPage,
-  terraria: TerrariaServerPage
+  terraria: TerrariaServerPage,
+  rim_world: RimWorldServerPage
 }
 
 const httpServersApiService = inject(HTTP_SERVERS_API_SERVICE_KEY)!
