@@ -43,12 +43,13 @@ Whether you're setting up Cobalt for the first time or looking to contribute, th
 
 Currently, you can create a server for one of the following games:
 
-|                                             Icon                                              | Game | Loaders |
-|:---------------------------------------------------------------------------------------------:|------|---------|
-|      <img src="cobalt/frontend/src/assets/images/games/minecraft/icon.png" height="30">       | Minecraft | Forge, Fabric |
-|       <img src="cobalt/frontend/src/assets/images/games/terraria/icon.png" height="30">       | Terraria | Vanilla, tModLoader |
-| <img src="cobalt/frontend/src/assets/images/games/dont-starve-together/icon.png" height="30"> | Don't Starve Together | Vanilla |
-|       <img src="cobalt/frontend/src/assets/images/games/factorio/icon.png" height="30">       | Factorio | Vanilla |
+|                                             Icon                                              | Game                  | Loaders              |
+|:---------------------------------------------------------------------------------------------:|-----------------------|----------------------|
+|      <img src="cobalt/frontend/src/assets/images/games/minecraft/icon.png" height="30">       | Minecraft             | Paper, Forge, Fabric |
+|       <img src="cobalt/frontend/src/assets/images/games/terraria/icon.png" height="30">       | Terraria              | Vanilla, tModLoader  |
+| <img src="cobalt/frontend/src/assets/images/games/dont-starve-together/icon.png" height="30"> | Don't Starve Together | Vanilla              |
+|       <img src="cobalt/frontend/src/assets/images/games/factorio/icon.png" height="30">       | Factorio              | Vanilla              |
+|      <img src="cobalt/frontend/src/assets/images/games/rim-world/icon.png" height="30">       | RimWorld              | Together             |
 
 ## Features
 
