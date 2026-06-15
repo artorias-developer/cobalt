@@ -10,8 +10,10 @@ from application.contracts.games import AbstractGameModule
 from composition import ApplicationContainer
 from games.minecraft.fabric.application.services import FabricServersService
 from games.minecraft.forge.application.services import ForgeServersService
+from games.minecraft.paper.application.services import PaperServersService
 from games.minecraft.fabric.infrastructure import FabricLoader
 from games.minecraft.forge.infrastructure import ForgeLoader
+from games.minecraft.paper.infrastructure import PaperLoader
 
 
 class MinecraftGameModule(AbstractGameModule):
@@ -48,6 +50,7 @@ class MinecraftGameModule(AbstractGameModule):
         """
         fabric_build_dir = self.game_module_root_dir / "fabric" / "build"
         forge_build_dir = self.game_module_root_dir / "forge" / "build"
+        paper_build_dir = self.game_module_root_dir / "paper" / "build"
 
         fabric_servers_service = FabricServersService(
             build_dir=fabric_build_dir,
@@ -67,6 +70,15 @@ class MinecraftGameModule(AbstractGameModule):
             logger=self.dependencies.logger
         )
 
+        paper_servers_service = PaperServersService(
+            build_dir=paper_build_dir,
+            app_containers_dir=self.app_containers_dir,
+            host_containers_dir=self.host_containers_dir,
+            core_servers_service=self.dependencies.services.servers,
+            containers_client=self.dependencies.clients.containers,
+            logger=self.dependencies.logger
+        )
+
         return [
             FabricLoader(
                 game_id=self.game_id,
@@ -78,6 +90,12 @@ class MinecraftGameModule(AbstractGameModule):
                 game_id=self.game_id,
                 name="forge",
                 servers_service=forge_servers_service,
+                logger=self.dependencies.logger
+            ),
+            PaperLoader(
+                game_id=self.game_id,
+                name="paper",
+                servers_service=paper_servers_service,
                 logger=self.dependencies.logger
             )
         ]

@@ -1,0 +1,26 @@
+FROM alpine:latest AS downloader
+
+ARG PAPER_LINK
+ARG SERVER_ROOT
+
+RUN apk add --no-cache \
+        wget && \
+    mkdir -p ${SERVER_ROOT}
+
+WORKDIR ${SERVER_ROOT}
+
+RUN wget ${PAPER_LINK} -O paper-server.jar
+
+COPY scripts/entrypoint.sh entrypoint.sh
+RUN chmod +x entrypoint.sh
+
+FROM alpine:latest
+
+ARG SERVER_ROOT
+
+RUN apk add --no-cache rsync
+
+COPY --from=downloader ${SERVER_ROOT} /installer_src
+COPY data /installer_src/
+
+CMD mkdir -p ${SERVER_ROOT} && rsync -a /installer_src/. ${SERVER_ROOT}/
