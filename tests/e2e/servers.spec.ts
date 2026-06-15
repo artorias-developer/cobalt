@@ -10,7 +10,7 @@ import { test, expect, type Page, type Response } from "@playwright/test"
 async function createServer(
   page: Page,
   name: string,
-  gameIndex: number | null = 3,
+  gameIndex: number | null = 4,
   selectLoader: boolean = true,
   selectVersion: boolean = true,
 ): Promise<Response | undefined> {
@@ -92,7 +92,7 @@ test.describe("Servers page", () => {
     await createServer(
       page,
       "e2e_test_server",
-      3,
+      4,
       false,
     )
     await expect(page.locator(".vue-notification.warn")).toBeVisible()
@@ -102,7 +102,7 @@ test.describe("Servers page", () => {
     await createServer(
       page,
       "e2e_test_server",
-      3,
+      4,
       true,
       false,
     )
@@ -114,20 +114,16 @@ test.describe("Servers page", () => {
     const response = await createServer(page, "e2e_test_server")
     expect(response!.status()).toBe(200)
 
-    await expect(async () => {
-      await page.reload()
+    const row = page.locator("tr").filter({
+      has: page.locator("td", { hasText: "e2e_test_server" }),
+    })
 
-      const row = page.locator("tr").filter({
-        has: page.locator("td", { hasText: "e2e_test_server" }),
-      })
+    await expect(
+      row.locator('a[aria-label="server-settings"], .status-icon .icon.red')
+    ).toBeVisible({ timeout: 180000 })
 
-      const failed = row.locator(".status-icon .icon.red")
-      if (await failed.isVisible()) {
-        throw new Error("Server creation failed")
-      }
-
-      await expect(row.locator('a[aria-label="server-settings"]')).toBeVisible()
-    }).toPass({ intervals: [5000], timeout: 180000 })
+    await expect(row.locator(".status-icon .icon.red")).not.toBeVisible()
+    await expect(row.locator('a[aria-label="server-settings"]')).toBeVisible()
   })
 
   test("Should return 200 on server search", async ({ page }) => {
