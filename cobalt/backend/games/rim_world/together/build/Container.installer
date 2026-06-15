@@ -1,0 +1,29 @@
+FROM alpine:latest AS downloader
+
+ARG TOGETHER_LINK
+ARG SERVER_ROOT
+
+RUN apk add --no-cache \
+        wget \
+        unzip && \
+    mkdir -p ${SERVER_ROOT}
+
+WORKDIR ${SERVER_ROOT}
+
+RUN wget ${TOGETHER_LINK} -O server.zip && \
+    unzip server.zip && \
+    rm -f server.zip && \
+    chmod +x GameServer
+
+COPY scripts/entrypoint.sh entrypoint.sh
+RUN chmod +x entrypoint.sh
+
+FROM alpine:latest
+
+ARG SERVER_ROOT
+
+RUN apk add --no-cache rsync
+
+COPY --from=downloader ${SERVER_ROOT} /installer_src
+
+CMD mkdir -p ${SERVER_ROOT} && rsync -a /installer_src/. ${SERVER_ROOT}/

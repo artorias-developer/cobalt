@@ -11,6 +11,7 @@ import dontStarveTogetherIcon from "@/assets/images/games/dont-starve-together/i
 import factorioIcon from "@/assets/images/games/factorio/icon.png"
 import minecraftIcon from "@/assets/images/games/minecraft/icon.png"
 import terrariaIcon from "@/assets/images/games/terraria/icon.png"
+import rimWorldIcon from "@/assets/images/games/rim-world/icon.png"
 
 export const GameModules: GameModulesMap = {
   minecraft: {
@@ -65,5 +66,16 @@ export const GameModules: GameModulesMap = {
       }
     },
     sort_number: 4
+  },
+  rim_world: {
+    displayName: "RimWorld",
+    description: "Manage a colony of survivors stranded on a distant planet.",
+    icon: rimWorldIcon,
+    loaders: {
+      together: {
+        displayName: "Together"
+      }
+    },
+    sort_number: 5
   }
 }
