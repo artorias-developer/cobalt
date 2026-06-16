@@ -7,13 +7,13 @@
 
 <template>
   <span class="counter">
-    {{ folders }} {{ folders === 1 ? 'folder' : 'folders' }},
-    {{ files }} {{ files === 1 ? 'file' : 'files' }}
+    {{ $t('servers.server.files.counter.folders', { n: props.folders }) }},
+    {{ $t('servers.server.files.counter.files', { n: props.files }) }}
   </span>
 </template>
 
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
   folders: number
   files: number
 }>()

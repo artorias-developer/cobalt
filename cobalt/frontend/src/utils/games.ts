@@ -16,7 +16,6 @@ import rimWorldIcon from "@/assets/images/games/rim-world/icon.png"
 export const GameModules: GameModulesMap = {
   minecraft: {
     displayName: "Minecraft",
-    description: "Mine resources, craft tools and survive in an infinite world.",
     icon: minecraftIcon,
     loaders: {
       fabric: {
@@ -33,7 +32,6 @@ export const GameModules: GameModulesMap = {
   },
   terraria: {
     displayName: "Terraria",
-    description: "Explore caves, fight bosses, and build in 2D world.",
     icon: terrariaIcon,
     loaders: {
       vanilla: {
@@ -47,7 +45,6 @@ export const GameModules: GameModulesMap = {
   },
   dont_starve_together: {
     displayName: "Don't Starve Together",
-    description: "Survive the wilderness together in a dark world.",
     icon: dontStarveTogetherIcon,
     loaders: {
       vanilla: {
@@ -58,7 +55,6 @@ export const GameModules: GameModulesMap = {
   },
   factorio: {
     displayName: "Factorio",
-    description: "Build and automate factories while surviving alien attacks.",
     icon: factorioIcon,
     loaders: {
       vanilla: {
@@ -69,7 +65,6 @@ export const GameModules: GameModulesMap = {
   },
   rim_world: {
     displayName: "RimWorld",
-    description: "Manage a colony of survivors stranded on a distant planet.",
     icon: rimWorldIcon,
     loaders: {
       together: {

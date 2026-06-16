@@ -11,8 +11,8 @@
       <Header
         :icon="icon"
         :icon-color="iconColor"
-        :title="title"
-        :description="description"
+        :title="title ?? $t('users.list.title')"
+        :description="description ?? $t('users.list.description')"
         :size="size"
         :icon-filled="filled"
       />
@@ -57,7 +57,7 @@
         <SolidButton
           v-if="hasUsersCreateAccess"
           type="button"
-          text="Create"
+          :text="$t('common.create')"
           color="blue"
           name="user-create-popup"
           @click="openCreateUser"
@@ -65,7 +65,7 @@
         <SolidButton
           v-if="hasSelected && hasUsersDeleteAccess"
           type="button"
-          text="Delete"
+          :text="$t('common.delete')"
           color="gray"
           @click="handleDeleteSelected"
         />
@@ -90,8 +90,8 @@
       <Header
         :icon="usersIcon"
         icon-color="blue"
-        title="User"
-        description="New user creation"
+        :title="$t('users.list.popup.create.title')"
+        :description="$t('users.list.popup.create.description')"
         size="large"
         :icon-filled="true"
       />
@@ -102,26 +102,26 @@
       >
         <Input
           v-model="userLogin"
-          validationName="Login"
-          label="Login"
-          placeholder="Enter user login"
+          :validationName="$t('users.list.popup.login.label')"
+          :label="$t('users.list.popup.login.label')"
+          :placeholder="$t('users.list.popup.login.placeholder')"
           name="user-login"
           :required="true"
         />
         <Input
           v-model="userPassword"
-          validationName="Password"
-          label="Password"
-          placeholder="Enter user password"
+          :validationName="$t('users.list.popup.password.label')"
+          :label="$t('users.list.popup.password.label')"
+          :placeholder="$t('users.list.popup.password.placeholder')"
           name="user-password"
           :required="true"
         />
         <Select
           v-model="selectedRole"
           :options="roleOptions"
-          validationName="Role"
-          label="Role"
-          placeholder="Select role..."
+          :validationName="$t('users.list.popup.role.label')"
+          :label="$t('users.list.popup.role.label')"
+          :placeholder="$t('users.list.popup.role.placeholder')"
           name="user-role"
           :required="true"
         />
@@ -129,13 +129,13 @@
       <div class="actions">
         <SolidButton
           type="button"
-          text="Close"
+          :text="$t('common.close')"
           color="gray"
           @click="close"
         />
         <SolidButton
           type="button"
-          text="Create"
+          :text="$t('common.create')"
           color="blue"
           name="user-create"
           @click="createUserForm?.validate() && handleCreateUser(close)"
@@ -148,8 +148,8 @@
       <Header
         :icon="usersIcon"
         icon-color="blue"
-        title="User"
-        description="Edit user"
+        :title="$t('users.list.popup.edit.title')"
+        :description="$t('users.list.popup.edit.description')"
         size="large"
         :icon-filled="true"
       />
@@ -160,26 +160,26 @@
       >
         <Input
           v-model="editUserLogin"
-          validationName="Login"
-          label="Login"
-          placeholder="Enter user login"
+          :validationName="$t('users.list.popup.login.label')"
+          :label="$t('users.list.popup.login.label')"
+          :placeholder="$t('users.list.popup.login.placeholder')"
           name="user-login"
           :required="false"
         />
         <Input
           v-model="editUserPassword"
-          validationName="Password"
-          label="Password"
-          placeholder="Enter new password"
+          :validationName="$t('users.list.popup.password.label')"
+          :label="$t('users.list.popup.password.label')"
+          :placeholder="$t('users.list.popup.password.newPlaceholder')"
           name="user-password"
           :required="false"
         />
         <Select
           v-model="editSelectedRole"
           :options="roleOptions"
-          validationName="Role"
-          label="Role"
-          placeholder="Select role..."
+          :validationName="$t('users.list.popup.role.label')"
+          :label="$t('users.list.popup.role.label')"
+          :placeholder="$t('users.list.popup.role.placeholder')"
           name="user-role"
           :required="false"
         />
@@ -187,13 +187,13 @@
       <div class="actions">
         <SolidButton
           type="button"
-          text="Close"
+          :text="$t('common.close')"
           color="gray"
           @click="close"
         />
         <SolidButton
           type="button"
-          text="Save"
+          :text="$t('common.save')"
           color="blue"
           name="user-update"
           @click="editUserForm?.validate() && handleEditUser(close)"
@@ -205,6 +205,7 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from "vue-i18n"
 import { ref, computed, inject, onMounted, onUnmounted } from "vue"
 import { useNotification } from "@kyvg/vue3-notification"
 
@@ -248,8 +249,6 @@ withDefaults(defineProps<{
 }>(), {
   icon: usersIcon,
   iconColor: "blue",
-  title: "Users",
-  description: "Admin panel users",
   size: "large",
   filled: true
 })
@@ -259,8 +258,8 @@ const httpUsersApiService = inject(HTTP_USERS_API_SERVICE_KEY)!
 const httpRolesApiService = inject(HTTP_ROLES_API_SERVICE_KEY)!
 const tableStore = useTableStore()
 const userStore = useUserStore()
-
 const { notify } = useNotification()
+const { t } = useI18n()
 
 const pageData = ref<UsersPageEntity | null>(null)
 const roles = ref<RoleEntity[]>([])
@@ -287,7 +286,7 @@ const columns: TableColumn[] = [
     type: "text",
     params: {
       label: {
-        value: "Login",
+        value: t("users.list.columns.login"),
         highlighted: true
       },
       sorting: {
@@ -302,7 +301,7 @@ const columns: TableColumn[] = [
     type: "tag",
     params: {
       label: {
-        value: "Role"
+        value: t("users.list.columns.role")
       },
       sorting: {
         sortable: true,
@@ -317,7 +316,7 @@ const columns: TableColumn[] = [
     type: "text",
     params: {
       label: {
-        value: "Created at",
+        value: t("users.list.columns.createdAt"),
         highlighted: false
       },
       sorting: {
@@ -353,7 +352,7 @@ async function fetchUsers(): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to fetch users"
+      text: error?.response?.data?.message ?? t("users.list.fetch.error")
     })
     pageData.value = null
   }
@@ -389,7 +388,7 @@ async function fetchRoles(): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to fetch roles"
+      text: error?.response?.data?.message ?? t("users.list.fetchRoles.error")
     })
   }
 }
@@ -464,13 +463,13 @@ async function deleteUser(userId: number): Promise<void> {
     await httpUsersApiService.deleteOne(userId)
     notify({
       type: "success",
-      text: "User deleted successfully"
+      text: t("users.list.delete.success")
     })
     fetchUsers()
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to delete user"
+      text: error?.response?.data?.message ?? t("users.list.delete.error")
     })
   }
 }
@@ -504,14 +503,14 @@ async function deleteSelected(): Promise<void> {
     await httpUsersApiService.deleteMany(selected)
     notify({
       type: "success",
-      text: "Users deleted successfully"
+      text: t("users.list.deleteSelected.success")
     })
     tableStore.clearSelected(tableStoreId)
     fetchUsers()
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to delete selected users"
+      text: error?.response?.data?.message ?? t("users.list.deleteSelected.error")
     })
   }
 }
@@ -566,7 +565,7 @@ async function handleCreateUser(close: () => void): Promise<void> {
     })
     notify({
       type: "success",
-      text: "User created successfully"
+      text: t("users.list.create.success")
     })
     close()
     resetCreateUserForm()
@@ -574,7 +573,7 @@ async function handleCreateUser(close: () => void): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to create user"
+      text: error?.response?.data?.message ?? t("users.list.create.error")
     })
   }
 }
@@ -600,7 +599,7 @@ async function handleEditUser(close: () => void): Promise<void> {
     })
     notify({
       type: "success",
-      text: "User updated successfully"
+      text: t("users.list.update.success")
     })
 
     if (userStore.user?.id === editUserId.value) {
@@ -613,7 +612,7 @@ async function handleEditUser(close: () => void): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to update user"
+      text: error?.response?.data?.message ?? t("users.list.update.error")
     })
   }
 }
@@ -653,7 +652,7 @@ async function openEditUser(userId: number): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to fetch user"
+      text: error?.response?.data?.message ?? t("users.list.fetchUser.error")
     })
   }
 }

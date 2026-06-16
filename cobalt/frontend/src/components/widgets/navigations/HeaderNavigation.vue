@@ -52,6 +52,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue"
+import { useI18n } from "vue-i18n"
 import { useRoute } from "vue-router"
 
 import { useUserStore } from "@/stores"
@@ -70,12 +71,12 @@ const emit = defineEmits<{
 }>()
 
 const userStore = useUserStore()
+const { t } = useI18n()
 const route = useRoute()
 
 const buttons = computed((): Array<MenuButton> => [
   {
     type: "router-link",
-    text: "Profile",
     url: "/settings?tab=security",
     icon: usersIcon,
     baseColor: "gray",
@@ -85,7 +86,6 @@ const buttons = computed((): Array<MenuButton> => [
   },
   {
     type: "router-link",
-    text: "Settings",
     url: "/settings?tab=system",
     icon: settingsIcon,
     baseColor: "gray",
@@ -105,7 +105,9 @@ const buttons = computed((): Array<MenuButton> => [
  * - string: The current route name or the last segment of the path, or "" if unavailable.
  */
 const currentRoute = computed((): string => {
-  return route.name?.toString() ?? route.path.split("/").filter(Boolean).pop() ?? ""
+  const name = route.name?.toString()
+  if (name) return t(`nav.routes.${name.toLowerCase()}`, name)
+  return route.path.split("/").filter(Boolean).pop() ?? ""
 })
 
 /**

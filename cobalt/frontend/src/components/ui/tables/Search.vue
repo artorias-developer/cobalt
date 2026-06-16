@@ -19,7 +19,7 @@
       @click="handleReset"
     />
     <Input
-      placeholder="Search"
+      :placeholder="$t('common.search')"
       name="search-input"
       :model-value="localValue"
       @update:model-value="localValue = $event"

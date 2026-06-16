@@ -31,8 +31,8 @@
         :key="serverId ?? 'none'"
         :mode="serverId ? 'server' : 'empty'"
         :server-id="serverId"
-        title="Console"
-        description="Server console"
+        :title="$t('servers.server.overview.console.title')"
+        :description="$t('servers.server.overview.console.description')"
         :max-logs="maxLogs"
         :logs-regex="logsRegex"
       />

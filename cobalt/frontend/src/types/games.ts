@@ -11,7 +11,6 @@ export type GameLoaderModule = {
 
 export type GameModule = {
   displayName: string
-  description: string
   icon: string
   loaders: Record<string, GameLoaderModule>
   sort_number: number

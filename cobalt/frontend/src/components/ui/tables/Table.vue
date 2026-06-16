@@ -35,7 +35,7 @@
           >
             <span>{{ column.params.label.value }}</span>
           </th>
-          <th v-if="withActions && $slots.tableRowActions">Actions</th>
+          <th v-if="withActions && $slots.tableRowActions">{{ $t('common.actions') }}</th>
         </tr>
         </thead>
         <tbody>
@@ -104,13 +104,13 @@
       <div v-else-if="accessDenied" class="empty-state">
         <Message
           :icon="padlockIcon"
-          text="Access denied"
+          :text="$t('common.accessDenied')"
         />
       </div>
       <div v-else class="empty-state">
         <Message
           :icon="listIcon"
-          text="No data available"
+          :text="$t('common.noData')"
         />
       </div>
     </div>

@@ -1,18 +1,14 @@
-/*
- * Copyright (C) 2026 ArtoriasCode
- * Author: ArtoriasCode
- * Repository: https://github.com/ArtoriasCode/cobalt
- * SPDX-License-Identifier: AGPL-3.0-or-later
- */
-
 import { watch } from "vue"
-import type { App } from "vue"
+import { createI18n } from "vue-i18n"
 import { createPinia } from "pinia"
 import Notifications from "@kyvg/vue3-notification"
 import { useNotification } from "@kyvg/vue3-notification"
+import type { App } from "vue"
+import type { Composer, I18n } from "vue-i18n"
 
 import router from "@/router"
 import { useUserStore } from "@/stores"
+import { LanguageEnum } from "@/types"
 
 import {
   createHttpAxiosClient,
@@ -50,6 +46,86 @@ import {
   WS_SERVERS_API_SERVICE_KEY
 } from "@/utils"
 import { RoutesEnum } from "@/types"
+
+import en from "@/locales/en.json"
+import uk from "@/locales/uk.json"
+import ru from "@/locales/ru.json"
+
+type MessageSchema = typeof en
+
+/**
+ * Creates and configures the vue-i18n instance with support for
+ * English and Ukrainian locales, including Ukrainian plural rules.
+ *
+ * Returns:
+ * - I18n: Configured i18n instance ready to be used with app.use().
+ */
+function setupI18n() {
+  return createI18n<[MessageSchema], LanguageEnum>({
+    legacy: false,
+    locale: LanguageEnum.EN,
+    fallbackLocale: LanguageEnum.EN,
+    pluralRules: {
+      [LanguageEnum.UK]: (n: number): number => {
+        if (n === 0) return 0
+        if (n % 10 === 1 && n % 100 !== 11) return 1
+        if (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) return 2
+        return 3
+      },
+      [LanguageEnum.RU]: (n: number): number => {
+        if (n === 0) return 0
+        if (n % 10 === 1 && n % 100 !== 11) return 1
+        if (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) return 2
+        return 3
+      },
+    },
+    messages: { en, uk, ru },
+  })
+}
+
+/**
+ * Watches for changes in user language settings and syncs
+ * the active locale on the given i18n instance.
+ *
+ * Parameters:
+ * - i18n: The vue-i18n instance to sync locale on.
+ *
+ * Returns:
+ * - void.
+ */
+function setupLanguageWatch(i18n: ReturnType<typeof setupI18n>): void {
+  const userStore = useUserStore()
+
+  watch(
+    () => userStore.user?.settings?.language,
+    (language) => {
+      if (language) (i18n.global as unknown as Composer).locale.value = language as LanguageEnum
+    },
+    { immediate: true }
+  )
+}
+
+/**
+ * Watches for changes in user timezone settings and syncs
+ * the active timezone on the given locale helper instance.
+ *
+ * Parameters:
+ * - localeHelper: LocaleHelper instance.
+ *
+ * Returns:
+ * - void.
+ */
+function setupTimezoneWatch(localeHelper: ReturnType<typeof createLocaleHelper>): void {
+  const userStore = useUserStore()
+
+  watch(
+    () => userStore.user?.settings?.timezone,
+    (timezone) => {
+      if (timezone) localeHelper.setTimezone(timezone)
+    },
+    { immediate: true }
+  )
+}
 
 /**
  * Sets up all dependency providers for the Vue application.
@@ -138,27 +214,6 @@ function setupRouter(httpUsersApiService: ReturnType<typeof createHttpUsersApiSe
 }
 
 /**
- * Sets up a watcher that syncs the user's timezone setting
- * with the LocaleHelper whenever it changes.
- *
- * Parameters:
- * - localeHelper: LocaleHelper instance.
- *
- * Returns:
- * - void.
- */
-function setupLocaleSync(localeHelper: ReturnType<typeof createLocaleHelper>): void {
-  const userStore = useUserStore()
-
-  watch(
-    () => userStore.user?.settings?.timezone,
-    (timezone) => {
-      if (timezone) localeHelper.setTimezone(timezone)
-    }
-  )
-}
-
-/**
  * Bootstraps the Vue application.
  *
  * Parameters:
@@ -168,10 +223,14 @@ function setupLocaleSync(localeHelper: ReturnType<typeof createLocaleHelper>): v
  * - void.
  */
 export function bootstrap(app: App): void {
+  const i18n = setupI18n()
+
   const { httpUsersApiService, localeHelper } = setupProviders(app)
   app.use(createPinia())
   app.use(Notifications)
+  app.use(i18n)
   setupRouter(httpUsersApiService)
   app.use(router)
-  setupLocaleSync(localeHelper)
+  setupLanguageWatch(i18n)
+  setupTimezoneWatch(localeHelper)
 }

@@ -31,16 +31,16 @@
           <Select
             v-model="selectedWalletName"
             :options="walletOptions"
-            label="Coin"
+            :label="$t('nav.walletPopup.coin')"
           />
           <Select
             v-model="selectedNetworkName"
             :options="networkOptions"
-            label="Network"
+            :label="$t('nav.walletPopup.network')"
           />
           <SolidButton
             type="button"
-            text="Close"
+            :text="$t('common.close')"
             color="gray"
             @click="close"
           />
@@ -51,6 +51,7 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from "vue-i18n"
 import { ref, computed, watch } from "vue"
 import { useNotification } from "@kyvg/vue3-notification"
 
@@ -70,6 +71,7 @@ defineExpose({
 })
 
 const { notify } = useNotification()
+const { t } = useI18n()
 
 const popupRef = ref<InstanceType<typeof Popup> | null>(null)
 
@@ -105,12 +107,12 @@ async function copyAddress(address: string): Promise<void> {
     await navigator.clipboard.writeText(address)
     notify({
       type: "success",
-      text: "Address copied to clipboard"
+      text: t("nav.walletPopup.copy.success")
     })
   } catch {
     notify({
       type: "error",
-      text: "Failed to copy address"
+      text: t("nav.walletPopup.copy.error")
     })
   }
 }
