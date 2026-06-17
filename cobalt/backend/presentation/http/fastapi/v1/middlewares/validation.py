@@ -176,7 +176,7 @@ class HttpValidationMiddleware:
         message = self.get_validation_message(exc=exc)
 
         return JSONResponse(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             content={
                 "message": message
             }
