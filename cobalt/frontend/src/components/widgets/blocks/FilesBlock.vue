@@ -11,8 +11,8 @@
       <Header
         :icon="icon"
         :icon-color="iconColor"
-        :title="title"
-        :description="description"
+        :title="title ?? $t('servers.server.files.title')"
+        :description="description ?? $t('servers.server.files.description')"
         :size="size"
         :icon-filled="filled"
       />
@@ -25,7 +25,7 @@
     <Message
       v-if="mode === 'empty'"
       :icon="listIcon"
-      text="No data available"
+      :text="$t('common.noData')"
     />
     <template v-else>
       <template v-if="!isEditing">
@@ -48,7 +48,7 @@
               <SolidButton
                 v-if="hasServerFilesDownloadAccess"
                 type="button"
-                text="Download"
+                :text="$t('common.download')"
                 color="gray"
                 name="files-download"
                 @click="handleDownloadSelected"
@@ -56,7 +56,7 @@
               <SolidButton
                 v-if="hasServerFilesUpdateAccess"
                 type="button"
-                text="Duplicate"
+                :text="$t('common.duplicate')"
                 color="gray"
                 name="files-duplicate"
                 @click="handleDuplicateSelected"
@@ -64,7 +64,7 @@
               <SolidButton
                 v-if="hasServerFilesUpdateAccess"
                 type="button"
-                text="Move"
+                :text="$t('common.move')"
                 color="gray"
                 name="files-move-popup"
                 @click="openMovePopup(selectedPaths)"
@@ -72,7 +72,7 @@
               <SolidButton
                 v-if="hasServerFilesUpdateAccess"
                 type="button"
-                text="Delete"
+                :text="$t('common.delete')"
                 color="gray"
                 name="files-delete-popup"
                 @click="handleDeleteSelected"
@@ -82,7 +82,7 @@
               <SolidButton
                 v-if="hasServerFilesUpdateAccess"
                 type="button"
-                text="Create"
+                :text="$t('common.create')"
                 color="gray"
                 name="file-create-popup"
                 @click="openCreatePopup"
@@ -90,7 +90,7 @@
               <SolidButton
                 v-if="hasServerFilesUpdateAccess"
                 type="button"
-                text="Upload"
+                :text="$t('common.upload')"
                 color="gray"
                 name="file-upload-popup"
                 @click="openUploadPopup"
@@ -98,7 +98,7 @@
               <SolidButton
                 v-if="hasServerFilesViewAccess"
                 type="button"
-                text="Reload"
+                :text="$t('common.reload')"
                 color="gray"
                 name="file-reload-popup"
                 @click="handleReload"
@@ -126,14 +126,14 @@
           <SolidButton
             type="button"
             v-if="hasServerFilesUpdateAccess"
-            text="Save"
+            :text="$t('common.save')"
             color="gray"
             name="file-save"
             @click="handleSaveContent"
           />
           <SolidButton
             type="button"
-            text="Close"
+            :text="$t('common.close')"
             color="gray"
             name="file-close"
             @click="closeEditor"
@@ -147,8 +147,8 @@
       <Header
         :icon="filesIcon"
         icon-color="blue"
-        title="Create"
-        description="Create new file or directory"
+        :title="$t('servers.server.files.popup.create.title')"
+        :description="$t('servers.server.files.popup.create.description')"
         size="large"
         :icon-filled="true"
       />
@@ -159,18 +159,18 @@
       >
         <Input
           v-model="createName"
-          validationName="Name"
-          label="Name"
-          placeholder="Enter file or directory name"
+          :validationName="$t('servers.server.files.popup.name.label')"
+          :label="$t('servers.server.files.popup.name.label')"
+          :placeholder="$t('servers.server.files.popup.create.name.placeholder')"
           name="file-name"
           :required="true"
         />
         <Select
           v-model="createType"
           :options="createTypeOptions"
-          validationName="Type"
-          label="Type"
-          placeholder="Select type..."
+          :validationName="$t('servers.server.files.popup.type.label')"
+          :label="$t('servers.server.files.popup.type.label')"
+          :placeholder="$t('servers.server.files.popup.type.placeholder')"
           name="file-type"
           :required="true"
         />
@@ -178,13 +178,13 @@
       <div class="actions">
         <SolidButton
           type="button"
-          text="Close"
+          :text="$t('common.close')"
           color="gray"
           @click="close"
         />
         <SolidButton
           type="button"
-          text="Create"
+          :text="$t('common.create')"
           color="blue"
           name="file-create"
           @click="createForm?.validate() && handleCreate(close)"
@@ -197,8 +197,8 @@
       <Header
         :icon="editIcon"
         icon-color="blue"
-        title="Rename"
-        description="Rename file or directory"
+        :title="$t('servers.server.files.popup.rename.title')"
+        :description="$t('servers.server.files.popup.rename.description')"
         size="large"
         :icon-filled="true"
       />
@@ -209,9 +209,9 @@
       >
         <Input
           v-model="renameName"
-          validationName="Name"
-          label="New name"
-          placeholder="Enter new name"
+          :validationName="$t('servers.server.files.popup.rename.name.label')"
+          :label="$t('servers.server.files.popup.rename.name.label')"
+          :placeholder="$t('servers.server.files.popup.rename.name.placeholder')"
           name="file-name"
           :required="true"
         />
@@ -219,13 +219,13 @@
       <div class="actions">
         <SolidButton
           type="button"
-          text="Close"
+          :text="$t('common.close')"
           color="gray"
           @click="close"
         />
         <SolidButton
           type="button"
-          text="Rename"
+          :text="$t('servers.server.files.popup.rename.submit')"
           color="blue"
           name="file-rename"
           @click="renameForm?.validate() && handleRename(close)"
@@ -238,8 +238,8 @@
       <Header
         :icon="moveIcon"
         icon-color="blue"
-        title="Move"
-        description="Move selected files"
+        :title="$t('servers.server.files.popup.move.title')"
+        :description="$t('servers.server.files.popup.move.description')"
         size="large"
         :icon-filled="true"
       />
@@ -250,9 +250,9 @@
       >
         <Input
           v-model="moveDestination"
-          validationName="Destination"
-          label="Destination path"
-          placeholder="Enter destination path"
+          :validationName="$t('servers.server.files.popup.move.destination.label')"
+          :label="$t('servers.server.files.popup.move.destination.label')"
+          :placeholder="$t('servers.server.files.popup.move.destination.placeholder')"
           name="file-move-destination"
           :required="true"
         />
@@ -260,13 +260,13 @@
       <div class="actions">
         <SolidButton
           type="button"
-          text="Close"
+          :text="$t('common.close')"
           color="gray"
           @click="close"
         />
         <SolidButton
           type="button"
-          text="Move"
+          :text="$t('common.move')"
           color="blue"
           name="file-move"
           @click="moveForm?.validate() && handleMove(close)"
@@ -279,8 +279,8 @@
       <Header
         :icon="filesIcon"
         icon-color="blue"
-        title="Upload"
-        description="Upload files"
+        :title="$t('servers.server.files.popup.upload.title')"
+        :description="$t('servers.server.files.popup.upload.description')"
         size="large"
         :icon-filled="true"
       />
@@ -291,20 +291,20 @@
       >
         <FileUpload
           v-model="uploadFiles"
-          validationName="Files"
+          :validationName="$t('servers.server.files.popup.upload.label')"
           :required="true"
         />
       </Form>
       <div class="actions">
         <SolidButton
           type="button"
-          text="Close"
+          :text="$t('common.close')"
           color="gray"
           @click="close"
         />
         <SolidButton
           type="button"
-          text="Upload"
+          :text="$t('common.upload')"
           color="blue"
           @click="uploadForm?.validate() && handleUpload(close)"
         />
@@ -315,6 +315,7 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from "vue-i18n"
 import { computed, inject, onMounted, onUnmounted, ref } from "vue"
 import { useNotification } from "@kyvg/vue3-notification"
 
@@ -386,8 +387,6 @@ const props = withDefaults(defineProps<{
   serverId: undefined,
   icon: filesIcon,
   iconColor: "blue",
-  title: "Files",
-  description: "Game server files",
   size: "large",
   filled: true,
 })
@@ -397,6 +396,7 @@ const httpFilesApiService = inject(HTTP_FILES_API_SERVICE_KEY)!
 const tableStore = useTableStore()
 const userStore = useUserStore()
 const { notify } = useNotification()
+const { t } = useI18n()
 
 const tableStoreId = "files"
 const listData = ref<FilesListEntity | null>(null)
@@ -434,7 +434,7 @@ const columns = computed((): TableColumn[] => [
     type: "icon-text",
     params: {
       label: {
-        value: "Name",
+        value: t("servers.server.files.columns.name"),
         highlighted: true
       },
       iconField: "icon",
@@ -447,7 +447,7 @@ const columns = computed((): TableColumn[] => [
     type: "text",
     params: {
       label: {
-        value: "Type",
+        value: t("servers.server.files.columns.type"),
         highlighted: false
       }
     }
@@ -457,7 +457,7 @@ const columns = computed((): TableColumn[] => [
     type: "text",
     params: {
       label: {
-        value: "Size",
+        value: t("servers.server.files.columns.size"),
         highlighted: false
       }
     }
@@ -467,108 +467,46 @@ const columns = computed((): TableColumn[] => [
     type: "text",
     params: {
       label: {
-        value: "Last modified",
+        value: t("servers.server.files.columns.modifiedAt"),
         highlighted: false
       }
     }
   }
 ])
 
-const createTypeOptions: SelectOption[] = [
+const createTypeOptions = computed((): SelectOption[] => [
   {
     value: "file",
-    label: "File"
+    label: t("servers.server.files.types.file")
   },
   {
     value: "directory",
-    label: "Directory"
+    label: t("servers.server.files.types.directory")
   }
-]
+])
 
 const FILE_TYPE_MAP: Record<string, FileTypeEntry> = {
-  "__directory__": {
-    icon: iconFolder
-  },
-  "__default__": {
-    icon: iconDefault,
-    language: "plaintext"
-  },
-  "json": {
-    icon: iconJson,
-    language: "json"
-  },
-  "xml": {
-    icon: iconXml,
-    language: "xml"
-  },
-  "yml": {
-    icon: iconYaml,
-    language: "yaml"
-  },
-  "yaml": {
-    icon: iconYaml,
-    language: "yaml"
-  },
-  "sh": {
-    icon: iconBash,
-    language: "shell"
-  },
-  "bat": {
-    icon: iconBash,
-    language: "shell"
-  },
-  "log": {
-    icon: iconLog,
-    language: "plaintext"
-  },
-  "cfg": {
-    icon: iconSettings,
-    language: "properties"
-  },
-  "ini": {
-    icon: iconSettings,
-    language: "properties"
-  },
-  "properties": {
-    icon: iconSettings,
-    language: "properties"
-  },
-  "zip": {
-    icon: iconZip,
-    language: "plaintext"
-  },
-  "dll": {
-    icon: iconDll,
-    language: "plaintext"
-  },
-  "exe": {
-    icon: iconExe,
-    language: "plaintext"
-  },
-  "png": {
-    icon: iconImage,
-    language: "plaintext"
-  },
-  "jpg": {
-    icon: iconImage,
-    language: "plaintext"
-  },
-  "jpeg": {
-    icon: iconImage,
-    language: "plaintext"
-  },
-  "ico": {
-    icon: iconImage,
-    language: "plaintext"
-  },
-  "lua": {
-    icon: iconLua,
-    language: "lua"
-  },
-  "jar": {
-    icon: iconJar,
-    language: "lua"
-  }
+  "__directory__": { icon: iconFolder },
+  "__default__": { icon: iconDefault, language: "plaintext" },
+  "json": { icon: iconJson, language: "json" },
+  "xml": { icon: iconXml, language: "xml" },
+  "yml": { icon: iconYaml, language: "yaml" },
+  "yaml": { icon: iconYaml, language: "yaml" },
+  "sh": { icon: iconBash, language: "shell" },
+  "bat": { icon: iconBash, language: "shell" },
+  "log": { icon: iconLog, language: "plaintext" },
+  "cfg": { icon: iconSettings, language: "properties" },
+  "ini": { icon: iconSettings, language: "properties" },
+  "properties": { icon: iconSettings, language: "properties" },
+  "zip": { icon: iconZip, language: "plaintext" },
+  "dll": { icon: iconDll, language: "plaintext" },
+  "exe": { icon: iconExe, language: "plaintext" },
+  "png": { icon: iconImage, language: "plaintext" },
+  "jpg": { icon: iconImage, language: "plaintext" },
+  "jpeg": { icon: iconImage, language: "plaintext" },
+  "ico": { icon: iconImage, language: "plaintext" },
+  "lua": { icon: iconLua, language: "lua" },
+  "jar": { icon: iconJar, language: "lua" }
 }
 
 /**
@@ -583,49 +521,49 @@ const FILE_TYPE_MAP: Record<string, FileTypeEntry> = {
 function actionsMenuItems(row: Record<string, any>): Array<ActionsMenuButton> {
   return [
     {
-      label: "Open",
+      label: t("servers.server.files.actions.open"),
       name: "file-open",
       icon: openIcon,
       show: hasServerFilesViewAccess,
       action: () => handleOpen(row),
     },
     {
-      label: "Rename",
+      label: t("servers.server.files.actions.rename"),
       name: "file-rename-popup",
       icon: editIcon,
       show: hasServerFilesUpdateAccess,
       action: () => openRenamePopup(row),
     },
     {
-      label: "Download",
+      label: t("servers.server.files.actions.download"),
       name: "file-download",
       icon: downloadIcon,
       show: hasServerFilesDownloadAccess,
       action: () => handleDownloadOne(row),
     },
     {
-      label: "Duplicate",
+      label: t("servers.server.files.actions.duplicate"),
       name: "file-duplicate",
       icon: duplicateIcon,
       show: hasServerFilesUpdateAccess,
       action: () => handleDuplicateOne(row),
     },
     {
-      label: "Move",
+      label: t("servers.server.files.actions.move"),
       name: "file-move-popup",
       icon: moveIcon,
       show: hasServerFilesUpdateAccess,
       action: () => openMovePopup([row.path]),
     },
     {
-      label: "Extract",
+      label: t("servers.server.files.actions.extract"),
       name: "file-extract",
       icon: filesIcon,
       show: hasServerFilesUpdateAccess.value && row.format === "zip",
       action: () => handleExtract(row.path),
     },
     {
-      label: "Delete",
+      label: t("servers.server.files.actions.delete"),
       name: "file-delete-popup",
       icon: trashIcon,
       danger: true,
@@ -647,14 +585,10 @@ function actionsMenuItems(row: Record<string, any>): Array<ActionsMenuButton> {
  */
 function resolveFileType(name: string, type: FileType): FileTypeEntry {
   if (type === "directory") return FILE_TYPE_MAP["__directory__"] as FileTypeEntry
-
   const lower = name.toLowerCase()
-
   if (FILE_TYPE_MAP[lower]) return FILE_TYPE_MAP[lower]
-
   const ext = lower.includes(".") ? lower.split(".").pop()! : ""
   if (ext && FILE_TYPE_MAP[ext]) return FILE_TYPE_MAP[ext]
-
   return FILE_TYPE_MAP["__default__"] as FileTypeEntry
 }
 
@@ -715,7 +649,7 @@ async function fetchFiles(): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to fetch files",
+      text: error?.response?.data?.message ?? t("servers.server.files.fetch.error"),
     })
     listData.value = null
   }
@@ -795,7 +729,7 @@ async function openFile(row: Record<string, any>): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to open file",
+      text: error?.response?.data?.message ?? t("servers.server.files.open.error"),
     })
   }
 }
@@ -820,13 +754,13 @@ async function handleSaveContent(): Promise<void> {
     })
     notify({
       type: "success",
-      text: "File saved successfully"
+      text: t("servers.server.files.save.success")
     })
     closeEditor()
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to save file",
+      text: error?.response?.data?.message ?? t("servers.server.files.save.error"),
     })
   }
 }
@@ -883,9 +817,7 @@ async function handleDownloadSelected(): Promise<void> {
  */
 async function downloadPaths(paths: string[]): Promise<void> {
   try {
-    const blob = await httpFilesApiService.download(props.serverId!, {
-      paths: paths
-    })
+    const blob = await httpFilesApiService.download(props.serverId!, { paths })
     const url = URL.createObjectURL(blob)
     const element = document.createElement("a")
     element.href = url
@@ -895,7 +827,7 @@ async function downloadPaths(paths: string[]): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to download files",
+      text: error?.response?.data?.message ?? t("servers.server.files.download.error"),
     })
   }
 }
@@ -937,18 +869,16 @@ async function handleDuplicateSelected(): Promise<void> {
  */
 async function duplicatePaths(paths: string[]): Promise<void> {
   try {
-    await httpFilesApiService.duplicate(props.serverId!, {
-      paths: paths
-    })
+    await httpFilesApiService.duplicate(props.serverId!, { paths })
     notify({
       type: "success",
-      text: "Files duplicated successfully"
+      text: t("servers.server.files.duplicate.success")
     })
     fetchFiles()
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to duplicate files",
+      text: error?.response?.data?.message ?? t("servers.server.files.duplicate.error"),
     })
   }
 }
@@ -993,18 +923,16 @@ function handleDeleteSelected(): void {
  */
 async function deletePaths(paths: string[]): Promise<void> {
   try {
-    await httpFilesApiService.delete(props.serverId!, {
-      paths: paths
-    })
+    await httpFilesApiService.delete(props.serverId!, { paths })
     notify({
       type: "success",
-      text: "Files deleted successfully"
+      text: t("servers.server.files.deleteSuccess")
     })
     fetchFiles()
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to delete files",
+      text: error?.response?.data?.message ?? t("servers.server.files.deleteError"),
     })
   }
 }
@@ -1038,20 +966,17 @@ async function handleCreate(close: () => void): Promise<void> {
   const path = currentPath.value.replace(/\/$/, "") + "/" + createName.value
 
   try {
-    await httpFilesApiService.create(props.serverId!, {
-      path: path,
-      type: createType.value
-    })
+    await httpFilesApiService.create(props.serverId!, { path, type: createType.value })
     notify({
       type: "success",
-      text: "File created successfully"
+      text: t("servers.server.files.create.success")
     })
     close()
     fetchFiles()
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to create file",
+      text: error?.response?.data?.message ?? t("servers.server.files.create.error"),
     })
   }
 }
@@ -1071,7 +996,7 @@ async function handleReload(): Promise<void> {
   if (listData.value) {
     notify({
       type: "success",
-      text: "Files reloaded successfully"
+      text: t("servers.server.files.reload.success")
     })
   }
 }
@@ -1110,14 +1035,14 @@ async function handleRename(close: () => void): Promise<void> {
     })
     notify({
       type: "success",
-      text: "File renamed successfully"
+      text: t("servers.server.files.rename.success")
     })
     close()
     fetchFiles()
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to rename file",
+      text: error?.response?.data?.message ?? t("servers.server.files.rename.error"),
     })
   }
 }
@@ -1156,7 +1081,7 @@ async function handleMove(close: () => void): Promise<void> {
     })
     notify({
       type: "success",
-      text: "Files moved successfully"
+      text: t("servers.server.files.move.success")
     })
     tableStore.clearSelected(tableStoreId)
     close()
@@ -1164,7 +1089,7 @@ async function handleMove(close: () => void): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to move files",
+      text: error?.response?.data?.message ?? t("servers.server.files.move.error"),
     })
   }
 }
@@ -1183,13 +1108,13 @@ async function handleExtract(path: string): Promise<void> {
     await httpFilesApiService.extract(props.serverId!, { path })
     notify({
       type: "success",
-      text: "Archive extracted successfully"
+      text: t("servers.server.files.extract.success")
     })
     fetchFiles()
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to extract archive",
+      text: error?.response?.data?.message ?? t("servers.server.files.extract.error"),
     })
   }
 }
@@ -1228,14 +1153,14 @@ async function handleUpload(close: () => void): Promise<void> {
     })
     notify({
       type: "success",
-      text: "Files uploaded successfully"
+      text: t("servers.server.files.upload.success")
     })
     close()
     fetchFiles()
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to upload files",
+      text: error?.response?.data?.message ?? t("servers.server.files.upload.error"),
     })
   }
 }
@@ -1299,7 +1224,11 @@ const rows = computed((): Array<Record<string, any>> => {
     name: file.name,
     path: file.path,
     type: file.type,
-    type_label: file.type === "directory" ? "Directory" : file.format ? file.format.toUpperCase() : "File",
+    type_label: file.type === "directory"
+      ? t("servers.server.files.types.directory")
+      : file.format
+        ? file.format.toUpperCase()
+        : t("servers.server.files.types.file"),
     format: file.format,
     icon: getFileIcon(file.name, file.type),
     size_label: formatSize(file.size),

@@ -14,26 +14,31 @@ from presentation.http.fastapi.v1.schemas.loaders import LoaderSchema
 class GameSchema(BaseModel):
     id: int = Field(
         ...,
+        title="Game id",
         description="Game ID"
     )
 
     name: str = Field(
         ...,
+        title="Game name",
         description="Game name"
     )
 
     loaders: List[LoaderSchema] = Field(
         ...,
+        title="Loaders",
         description="List of available loaders for this game"
     )
 
     created_at: datetime = Field(
         ...,
+        title="Created at",
         description="Creation timestamp"
     )
 
     updated_at: datetime = Field(
         ...,
+        title="Updated at",
         description="Last update timestamp"
     )
 
@@ -62,21 +67,25 @@ class GameSchema(BaseModel):
 class GameShortSchema(BaseModel):
     id: int = Field(
         ...,
+        title="Game id",
         description="Game ID"
     )
 
     name: str = Field(
         ...,
+        title="Game name",
         description="Game name"
     )
 
     created_at: datetime = Field(
         ...,
+        title="Created at",
         description="Creation timestamp"
     )
 
     updated_at: datetime = Field(
         ...,
+        title="Updated at",
         description="Last update timestamp"
     )
 
@@ -95,22 +104,26 @@ class GameShortSchema(BaseModel):
 class GamesPageSchema(BaseModel):
     games: List[GameSchema] = Field(
         ...,
+        title="Games",
         description="List of games"
     )
 
     total: int = Field(
         ...,
+        title="Total",
         description="Total number of games"
     )
 
     page: int = Field(
         ...,
+        title="Page",
         description="Current page"
     )
 
     pages: int = Field(
         ...,
-        description="Total number of pages"
+        description="Total number of pages",
+        title="Pages"
     )
 
     model_config = ConfigDict(
@@ -146,22 +159,26 @@ class GamesGetPageSchema(BaseModel):
     page: int = Field(
         1,
         gt=0,
+        title="Page",
         description="Page number"
     )
 
     search: Optional[str] = Field(
         None,
         max_length=100,
+        title="Search",
         description="Search query"
     )
 
     sort_field: Literal["id", "name", "loader_id", "created_at", "updated_at"] = Field(
         "id",
+        title="Sort field",
         description="Field to sort by"
     )
 
     sort_direction: Literal["asc", "desc"] = Field(
         "desc",
+        title="Sort direction",
         description="Sort direction"
     )
 
@@ -169,6 +186,7 @@ class GamesGetPageSchema(BaseModel):
         10,
         gt=0,
         le=100,
+        title="Limit",
         description="Number of items per page"
     )
 

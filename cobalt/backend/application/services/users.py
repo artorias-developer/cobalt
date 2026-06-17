@@ -3,7 +3,7 @@
 #  Repository: https://github.com/ArtoriasCode/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-from typing import List, Tuple
+from typing import List, Tuple, Callable
 
 from orjson import loads
 
@@ -12,6 +12,7 @@ from domain.exceptions import (
     AuthenticationError
 )
 from domain.repositories import AbstractUsersRepository
+from application.contracts.managers import AbstractI18nManager
 from application.contracts.clients import AbstractCachesClient
 from application.contracts.services import (
     AbstractPasswordsService,
@@ -40,6 +41,9 @@ class UsersService(AbstractUsersService):
     passwords_service: AbstractPasswordsService
     roles_service: AbstractRolesService
     settings_service: AbstractSettingsService
+    i18n_manager: AbstractI18nManager
+
+    _: Callable
 
     def __init__(
         self,
@@ -48,7 +52,8 @@ class UsersService(AbstractUsersService):
         users_mapper: AbstractUsersServiceMapper,
         passwords_service: AbstractPasswordsService,
         roles_service: AbstractRolesService,
-        settings_service: AbstractSettingsService
+        settings_service: AbstractSettingsService,
+        i18n_manager: AbstractI18nManager
     ):
         self.caches_client = caches_client
         self.users_repository = users_repository
@@ -56,6 +61,9 @@ class UsersService(AbstractUsersService):
         self.passwords_service = passwords_service
         self.roles_service = roles_service
         self.settings_service = settings_service
+        self.i18n_manager = i18n_manager
+
+        self._ = i18n_manager.gettext
 
     def _hash_password(
         self,
@@ -120,7 +128,7 @@ class UsersService(AbstractUsersService):
         )
 
         if not received_entity.users:
-            raise NotFoundError("Users not found")
+            raise NotFoundError(self._("Users not found"))
 
         mapped_dto = self.users_mapper.page_entity_to_dto(
             entity=received_entity
@@ -165,7 +173,7 @@ class UsersService(AbstractUsersService):
         )
 
         if not received_entity:
-            raise NotFoundError(f"User {user_id} not found")
+            raise NotFoundError(self._("User {user_id} not found").format(user_id=user_id))
 
         key = self.caches_client.format_pattern(
             pattern=CacheConstants.USERS_ITEM_KEY,
@@ -217,7 +225,7 @@ class UsersService(AbstractUsersService):
         )
 
         if not received_entity:
-            raise AuthenticationError("Invalid login or password")
+            raise AuthenticationError(self._("Invalid login or password"))
 
         key = self.caches_client.format_pattern(
             pattern=CacheConstants.USERS_ITEM_KEY,
@@ -310,7 +318,7 @@ class UsersService(AbstractUsersService):
         )
 
         if not updated_entity:
-            raise NotFoundError(f"User {user_id} not found")
+            raise NotFoundError(self._("User {user_id} not found").format(user_id=user_id))
 
         await self.caches_client.delete(
             patterns=[
@@ -346,7 +354,7 @@ class UsersService(AbstractUsersService):
         )
 
         if not deleted_entity:
-            raise NotFoundError(f"User {user_id} not found")
+            raise NotFoundError(self._("User {user_id} not found").format(user_id=user_id))
 
         await self.caches_client.delete(
             patterns=[
@@ -378,7 +386,7 @@ class UsersService(AbstractUsersService):
         )
 
         if not deleted_entities:
-            raise NotFoundError("Users not found")
+            raise NotFoundError(self._("Users not found"))
 
         patterns_to_delete = [
             self.caches_client.format_pattern(

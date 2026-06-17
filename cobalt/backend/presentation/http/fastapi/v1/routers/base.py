@@ -12,9 +12,9 @@ from domain.exceptions import (
     PermissionsError
 )
 from domain.enums import PermissionsEnum
+from application.contracts.managers import AbstractI18nManager
 from application.contracts.services import AbstractAuthService
 from application.dtos import UserDto
-from presentation.shared import CookieConstants
 
 
 class HttpBaseRouter:
@@ -22,12 +22,19 @@ class HttpBaseRouter:
     Base router.
     """
     auth_service: AbstractAuthService
+    i18n_manager: AbstractI18nManager
+
+    _: Callable
 
     def __init__(
         self,
-        auth_service: AbstractAuthService
+        auth_service: AbstractAuthService,
+        i18n_manager: AbstractI18nManager
     ):
         self.auth_service = auth_service
+        self.i18n_manager = i18n_manager
+
+        self._ = i18n_manager.gettext
 
     async def http_session_required(
         self,
@@ -41,23 +48,14 @@ class HttpBaseRouter:
 
         Returns:
         - UserDto: UserDto object.
+
+        Raises:
+        - AuthenticationError: If user is not authenticated.
         """
-        if hasattr(request.state, "user"):
-            return request.state.user
-
-        session_id = request.cookies.get(CookieConstants.SESSION_KEY)
-
-        if not session_id:
-            raise AuthenticationError("Not authenticated")
-
-        user = await self.auth_service.get_session_user(
-            session_id=session_id
-        )
+        user = getattr(request.state, "user", None)
 
         if not user:
-            raise AuthenticationError("Invalid session")
-
-        request.state.user = user
+            raise AuthenticationError(self._("Invalid session"))
 
         return user
 
@@ -73,15 +71,19 @@ class HttpBaseRouter:
 
         Returns:
         - Callable: Dependency function.
+
+        Raises:
+        - AuthenticationError: If user is not authenticated.
+        - PermissionsError: If user does not have required permissions.
         """
         async def dependency(request: Request) -> UserDto:
-            if not hasattr(request.state, "user"):
-                raise AuthenticationError("Not authenticated")
+            user = getattr(request.state, "user", None)
 
-            user = request.state.user
+            if not user:
+                raise AuthenticationError(self._("Invalid session"))
 
             if not any(permission in user.role.permissions for permission in permissions):
-                raise PermissionsError("Not enough permissions")
+                raise PermissionsError(self._("Not enough permissions"))
 
             return user
 

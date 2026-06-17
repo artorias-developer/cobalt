@@ -19,7 +19,7 @@
       </li>
     </ul>
     <div class="group general-menu">
-      <h3>General</h3>
+      <h3>{{ $t('nav.menu.general') }}</h3>
       <ul class="items">
         <template v-for="button in generalButtons" :key="button.text">
           <li class="item" v-if="button.isVisible">
@@ -42,7 +42,7 @@
       <SupportBanner/>
     </div>
     <div class="group other-menu">
-      <h3>Other</h3>
+      <h3>{{ $t('nav.menu.other') }}</h3>
       <ul class="items">
         <li class="item" v-for="button in otherButtons" :key="button.text">
           <GhostButton
@@ -64,6 +64,7 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from "vue-i18n"
 import { computed, inject } from "vue"
 import { useRouter } from "vue-router"
 import { useNotification } from "@kyvg/vue3-notification"
@@ -96,13 +97,13 @@ const httpAuthApiService = inject(HTTP_AUTH_API_SERVICE_KEY)!
 const wsClient = inject(WS_CLIENT_KEY)!
 const userStore = useUserStore()
 const { notify } = useNotification()
-
+const { t } = useI18n()
 const router = useRouter()
 
 const generalButtons = computed((): Array<MenuButton> => [
   {
     type: "router-link",
-    text: "Dashboard",
+    text: t("nav.menu.dashboard"),
     url: '/',
     icon: dashboardIcon,
     baseColor: "gray",
@@ -112,7 +113,7 @@ const generalButtons = computed((): Array<MenuButton> => [
   },
   {
     type: "router-link",
-    text: "Servers",
+    text: t("nav.menu.servers"),
     url: "/servers",
     icon: serversIcon,
     baseColor: "gray",
@@ -122,7 +123,7 @@ const generalButtons = computed((): Array<MenuButton> => [
   },
   {
     type: "router-link",
-    text: "Users",
+    text: t("nav.menu.users"),
     url: "/users",
     icon: usersIcon,
     baseColor: "gray",
@@ -132,7 +133,7 @@ const generalButtons = computed((): Array<MenuButton> => [
   },
   {
     type: "router-link",
-    text: "Roles",
+    text: t("nav.menu.roles"),
     url: "/roles",
     icon: rolesIcon,
     baseColor: "gray",
@@ -142,7 +143,7 @@ const generalButtons = computed((): Array<MenuButton> => [
   },
   {
     type: "router-link",
-    text: "Settings",
+    text: t("nav.menu.settings"),
     url: "/settings",
     icon: settingsIcon,
     baseColor: "gray",
@@ -152,10 +153,10 @@ const generalButtons = computed((): Array<MenuButton> => [
   }
 ])
 
-const otherButtons: Array<MenuButton> = [
+const otherButtons = computed((): Array<MenuButton> => [
   {
     type: "a",
-    text: "Help",
+    text: t("nav.menu.help"),
     url: "https://github.com/ArtoriasCode/cobalt/issues",
     icon: helpIcon,
     baseColor: "gray",
@@ -165,14 +166,14 @@ const otherButtons: Array<MenuButton> = [
   },
   {
     type: "button",
-    text: "Logout",
+    text: t("nav.menu.logout.label"),
     icon: logoutIcon,
     baseColor: "gray",
     hoverColor: "red",
     name: "logout",
     action: handleLogout
   }
-]
+])
 
 /**
  * Handles the user logout action.
@@ -196,7 +197,7 @@ async function handleLogout(): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to logout"
+      text: error?.response?.data?.message ?? t("nav.menu.logout.error")
     })
   }
 }

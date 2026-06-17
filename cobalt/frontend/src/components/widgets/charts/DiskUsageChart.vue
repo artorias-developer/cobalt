@@ -11,8 +11,8 @@
       <Header
         :icon="icon"
         :icon-color="iconColor"
-        :title="title"
-        :description="description"
+        :title="title ?? $t('metrics.disk.title')"
+        :description="description ?? $t('metrics.disk.description')"
         :size="size"
         :icon-filled="filled"
       />
@@ -33,34 +33,34 @@
     <Message
       v-if="!hasViewAccess"
       :icon="padlockIcon"
-      text="Access denied"
+      :text="$t('common.accessDenied')"
     />
     <div v-else class="content">
       <div class="total">
         <div class="circle" :class="color">
           <p>{{ percentage }}%</p>
-          <span>used</span>
+          <span>{{ $t('metrics.disk.used') }}</span>
         </div>
         <div class="details">
           <div class="used">
-            <p>{{ usedGB }} GB</p>
-            <span>used</span>
+            <p>{{ usedGB }} {{ $t('common.gb') }}</p>
+            <span>{{ $t('metrics.disk.used') }}</span>
           </div>
           <div class="free">
-            <p>{{ freeGB }} GB free out of {{ totalGB }} GB</p>
+            <p>{{ freeGB }} {{ $t('common.gb') }} {{ $t('metrics.disk.free') }} {{ totalGB }} {{ $t('common.gb') }}</p>
           </div>
         </div>
       </div>
       <div class="groups">
         <div class="group-item">
           <div class="dot" :class="color"></div>
-          <span class="label">Last check</span>
+          <span class="label">{{ $t('metrics.disk.lastCheck') }}</span>
           <span class="separator">·</span>
           <span class="size">{{ lastCheck }}</span>
         </div>
         <div class="group-item">
           <div class="dot" :class="color"></div>
-          <span class="label">Next check</span>
+          <span class="label">{{ $t('metrics.disk.nextCheck') }}</span>
           <span class="separator">·</span>
           <span class="size">{{ nextCheck }}</span>
         </div>
@@ -70,6 +70,7 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from "vue-i18n"
 import { ref, computed, onMounted, inject } from "vue"
 import { useNotification } from "@kyvg/vue3-notification"
 
@@ -98,8 +99,6 @@ withDefaults(defineProps<{
   color: "yellow",
   icon: diskIcon,
   iconColor: "yellow",
-  title: "Disk",
-  description: "Space usage",
   size: "large",
   filled: true
 })
@@ -108,6 +107,7 @@ const localeHelper = inject(LOCALE_HELPER_KEY)!
 const httpMetricsApiService = inject(HTTP_METRICS_API_SERVICE_KEY)!
 const userStore = useUserStore()
 const { notify } = useNotification()
+const { t } = useI18n()
 
 const free = ref<number>(0)
 const total = ref<number>(0)
@@ -148,7 +148,7 @@ async function fetchDiskMetrics(forceFresh: boolean = false): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to fetch disk metrics"
+      text: error?.response?.data?.message ?? t("metrics.disk.fetch.error")
     })
   }
 }
@@ -170,7 +170,7 @@ async function refreshDiskMetrics(): Promise<void> {
 
     notify({
       type: "success",
-      text: "Disk metrics refreshed successfully"
+      text: t("metrics.disk.refresh.success")
     })
   } finally {
     isRefreshing.value = false

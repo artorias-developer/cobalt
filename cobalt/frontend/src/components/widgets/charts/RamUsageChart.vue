@@ -10,20 +10,20 @@
     <Header
       :icon="icon"
       :icon-color="iconColor"
-      :title="title"
-      :description="description"
+      :title="title ?? $t('metrics.ram.title')"
+      :description="description ?? $t('metrics.ram.description')"
       :size="size"
       :icon-filled="filled"
     />
     <Message
       v-if="mode !== 'empty' && !hasRamViewAccess"
       :icon="padlockIcon"
-      text="Access denied"
+      :text="$t('common.accessDenied')"
     />
     <Message
       v-else-if="mode === 'empty'"
       :icon="listIcon"
-      text="No data available"
+      :text="$t('common.noData')"
     />
     <LineChart
       v-else
@@ -36,6 +36,7 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from "vue-i18n"
 import { ref, computed, onMounted, onUnmounted, inject } from "vue"
 import { useNotification } from "@kyvg/vue3-notification"
 
@@ -69,8 +70,6 @@ const props = withDefaults(defineProps<{
   color: "green",
   icon: ramIcon,
   iconColor: "green",
-  title: "RAM",
-  description: "Memory usage",
   size: "large",
   filled: true
 })
@@ -80,6 +79,7 @@ const wsMetricsApiService = inject(WS_METRICS_API_SERVICE_KEY)!
 const httpMetricsApiService = inject(HTTP_METRICS_API_SERVICE_KEY)!
 const userStore = useUserStore()
 const { notify } = useNotification()
+const { t } = useI18n()
 
 const chartRef = ref<InstanceType<typeof LineChart> | null>(null)
 
@@ -112,7 +112,7 @@ async function fetchInitialData(): Promise<void> {
     chartRef.value?.hideLoading()
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to fetch RAM metrics"
+      text: error?.response?.data?.message ?? t("metrics.ram.fetch.error")
     })
   }
 }

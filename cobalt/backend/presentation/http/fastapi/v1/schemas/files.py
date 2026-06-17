@@ -12,31 +12,37 @@ from pydantic import BaseModel, Field, ConfigDict, RootModel
 class FileSchema(BaseModel):
     name: str = Field(
         ...,
+        title="File name",
         description="File name"
     )
 
     path: str = Field(
         ...,
+        title="Path",
         description="Full path to the file"
     )
 
     type: Literal["file", "directory"] = Field(
         ...,
+        title="Type",
         description="File type"
     )
 
     format: Optional[str] = Field(
         None,
+        title="Format",
         description="File format/extension (e.g. json, txt, jar)"
     )
 
     size: Optional[int] = Field(
         None,
+        title="Size",
         description="File size in bytes, None for directories"
     )
 
     modified_at: datetime = Field(
         ...,
+        title="Modified at",
         description="Last modification timestamp"
     )
 
@@ -57,21 +63,25 @@ class FileSchema(BaseModel):
 class FilesListSchema(BaseModel):
     files: List[FileSchema] = Field(
         ...,
+        title="Files",
         description="List of files and directories"
     )
 
     path: str = Field(
         ...,
+        title="Path",
         description="Current directory path"
     )
 
     total_files: int = Field(
         ...,
+        title="Total files",
         description="Total number of files"
     )
 
     total_directories: int = Field(
         ...,
+        title="Total directories",
         description="Total number of directories"
     )
 
@@ -107,31 +117,37 @@ class FilesListSchema(BaseModel):
 class FileContentSchema(BaseModel):
     path: str = Field(
         ...,
+        title="Path",
         description="Full path to the file"
     )
 
     name: str = Field(
         ...,
+        title="File name",
         description="File name"
     )
 
     format: Optional[str] = Field(
         None,
+        title="Format",
         description="File format/extension"
     )
 
     size: int = Field(
         ...,
+        title="Size",
         description="File size in bytes"
     )
 
     content: str = Field(
         ...,
+        title="Content",
         description="File content (max 3MB)"
     )
 
     modified_at: datetime = Field(
         ...,
+        title="Modified at",
         description="Last modification timestamp"
     )
 
@@ -152,6 +168,7 @@ class FileContentSchema(BaseModel):
 class FilesGetListSchema(BaseModel):
     path: str = Field(
         "/",
+        title="Path",
         description="Directory path to list"
     )
 
@@ -167,6 +184,7 @@ class FilesGetListSchema(BaseModel):
 class FileGetContentSchema(BaseModel):
     path: str = Field(
         ...,
+        title="Path",
         description="Path to the file to read"
     )
 
@@ -183,11 +201,13 @@ class FilesMoveSchema(BaseModel):
     paths: List[str] = Field(
         ...,
         min_length=1,
+        title="Paths",
         description="List of source paths to move"
     )
 
     destination_path: str = Field(
         ...,
+        title="Destination path",
         description="Destination directory path"
     )
 
@@ -204,11 +224,13 @@ class FilesMoveSchema(BaseModel):
 class FileRenameSchema(BaseModel):
     path: str = Field(
         ...,
+        title="Path",
         description="Path to the file or directory to rename"
     )
 
     name: str = Field(
         ...,
+        title="New name",
         description="New name"
     )
 
@@ -225,11 +247,13 @@ class FileRenameSchema(BaseModel):
 class FileSaveContentSchema(BaseModel):
     path: str = Field(
         ...,
+        title="Path",
         description="Path to the file to save"
     )
 
     content: str = Field(
         ...,
+        title="Content",
         description="New file content"
     )
 
@@ -247,6 +271,7 @@ class FilesDeleteSchema(RootModel):
     root: List[str] = Field(
         ...,
         min_length=1,
+        title="Paths",
         description="List of paths to delete"
     )
 
@@ -260,6 +285,7 @@ class FilesDownloadSchema(RootModel):
     root: List[str] = Field(
         ...,
         min_length=1,
+        title="Paths",
         description="List of paths to download"
     )
 
@@ -273,6 +299,7 @@ class FilesDuplicateSchema(RootModel):
     root: List[str] = Field(
         ...,
         min_length=1,
+        title="Paths",
         description="List of paths to duplicate"
     )
 
@@ -285,16 +312,19 @@ class FilesDuplicateSchema(RootModel):
 class FileCreateSchema(BaseModel):
     path: str = Field(
         ...,
+        title="Path",
         description="Path for the new file/directory including name"
     )
 
     type: Literal["file", "directory"] = Field(
         ...,
+        title="Type",
         description="Type of entry to create"
     )
 
     content: Optional[str] = Field(
         None,
+        title="Content",
         description="Initial file content (only for files)"
     )
 
@@ -312,11 +342,13 @@ class FileCreateSchema(BaseModel):
 class FilesExtractSchema(BaseModel):
     path: str = Field(
         ...,
+        title="Path",
         description="Path to the ZIP archive"
     )
 
     destination_path: Optional[str] = Field(
         None,
+        title="Destination path",
         description="Destination directory path, defaults to archive's parent directory"
     )
 

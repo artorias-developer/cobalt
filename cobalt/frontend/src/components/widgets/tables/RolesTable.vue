@@ -11,8 +11,8 @@
       <Header
         :icon="icon"
         :icon-color="iconColor"
-        :title="title"
-        :description="description"
+        :title="title ?? $t('roles.list.title')"
+        :description="description ?? $t('roles.list.description')"
         :size="size"
         :icon-filled="filled"
       />
@@ -57,7 +57,7 @@
         <SolidButton
           v-if="hasRolesCreateAccess"
           type="button"
-          text="Create"
+          :text="$t('common.create')"
           color="blue"
           name="role-create-popup"
           @click="openCreateRole"
@@ -65,7 +65,7 @@
         <SolidButton
           v-if="hasSelected && hasRolesDeleteAccess"
           type="button"
-          text="Delete"
+          :text="$t('common.delete')"
           color="gray"
           @click="handleDeleteSelected"
         />
@@ -90,8 +90,8 @@
       <Header
         :icon="rolesIcon"
         icon-color="blue"
-        title="Role"
-        description="New role creation"
+        :title="$t('roles.list.popup.create.title')"
+        :description="$t('roles.list.popup.create.description')"
         size="large"
         :icon-filled="true"
       />
@@ -102,9 +102,9 @@
       >
         <Input
           v-model="roleName"
-          validationName="Name"
-          label="Name"
-          placeholder="Enter role name"
+          :validationName="$t('roles.list.popup.name.label')"
+          :label="$t('roles.list.popup.name.label')"
+          :placeholder="$t('roles.list.popup.name.placeholder')"
           name="role-name"
           :required="true"
         />
@@ -128,13 +128,13 @@
       <div class="actions">
         <SolidButton
           type="button"
-          text="Close"
+          :text="$t('common.close')"
           color="gray"
           @click="close"
         />
         <SolidButton
           type="button"
-          text="Create"
+          :text="$t('common.create')"
           color="blue"
           name="role-create"
           @click="createRoleForm?.validate() && handleCreateRole(close)"
@@ -147,8 +147,8 @@
       <Header
         :icon="rolesIcon"
         icon-color="blue"
-        title="Role"
-        description="Edit role"
+        :title="$t('roles.list.popup.edit.title')"
+        :description="$t('roles.list.popup.edit.description')"
         size="large"
         :icon-filled="true"
       />
@@ -159,9 +159,9 @@
       >
         <Input
           v-model="editRoleName"
-          validationName="Name"
-          label="Name"
-          placeholder="Enter role name"
+          :validationName="$t('roles.list.popup.name.label')"
+          :label="$t('roles.list.popup.name.label')"
+          :placeholder="$t('roles.list.popup.name.placeholder')"
           name="role-name"
           :required="false"
         />
@@ -185,13 +185,13 @@
       <div class="actions">
         <SolidButton
           type="button"
-          text="Close"
+          :text="$t('common.close')"
           color="gray"
           @click="close"
         />
         <SolidButton
           type="button"
-          text="Save"
+          :text="$t('common.save')"
           color="blue"
           name="role-update"
           @click="editRoleForm?.validate() && handleEditRole(close)"
@@ -203,6 +203,7 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from "vue-i18n"
 import { computed, inject, onMounted, onUnmounted, ref } from "vue"
 import { useNotification } from "@kyvg/vue3-notification"
 
@@ -245,8 +246,6 @@ withDefaults(defineProps<{
 }>(), {
   icon: rolesIcon,
   iconColor: "blue",
-  title: "Roles",
-  description: "Admin panel roles",
   size: "large",
   filled: true
 })
@@ -255,8 +254,8 @@ const localeHelper = inject(LOCALE_HELPER_KEY)!
 const httpRolesApiService = inject(HTTP_ROLES_API_SERVICE_KEY)!
 const tableStore = useTableStore()
 const userStore = useUserStore()
-
 const { notify } = useNotification()
+const { t } = useI18n()
 
 const pageData = ref<RolesPageEntity | null>(null)
 const tableStoreId = "roles"
@@ -274,75 +273,75 @@ const editSelectedPermissions = ref<PermissionsEnum[]>([])
 
 const confirmPopup = ref<InstanceType<typeof ConfirmPopup> | null>(null)
 
-const permissionGroups: PermissionGroup[] = [
+const permissionGroups = computed((): PermissionGroup[] => [
   {
-    label: "Dashboard",
+    label: t("roles.list.permissions.groups.dashboard"),
     permissions: [
-      { value: PermissionsEnum.DASHBOARD_VIEW, label: "View dashboard" },
-      { value: PermissionsEnum.DASHBOARD_CPU_VIEW, label: "View CPU metrics" },
-      { value: PermissionsEnum.DASHBOARD_RAM_VIEW, label: "View RAM metrics" },
-      { value: PermissionsEnum.DASHBOARD_DISK_VIEW, label: "View disk metrics" },
-      { value: PermissionsEnum.DASHBOARD_LOGS_VIEW, label: "View logs" }
+      { value: PermissionsEnum.DASHBOARD_VIEW, label: t("roles.list.permissions.dashboard.view") },
+      { value: PermissionsEnum.DASHBOARD_CPU_VIEW, label: t("roles.list.permissions.dashboard.cpuView") },
+      { value: PermissionsEnum.DASHBOARD_RAM_VIEW, label: t("roles.list.permissions.dashboard.ramView") },
+      { value: PermissionsEnum.DASHBOARD_DISK_VIEW, label: t("roles.list.permissions.dashboard.diskView") },
+      { value: PermissionsEnum.DASHBOARD_LOGS_VIEW, label: t("roles.list.permissions.dashboard.logsView") }
     ]
   },
   {
-    label: "Servers",
+    label: t("roles.list.permissions.groups.servers"),
     permissions: [
-      { value: PermissionsEnum.SERVERS_VIEW, label: "View servers list" },
-      { value: PermissionsEnum.SERVERS_CREATE, label: "Create new servers" },
-      { value: PermissionsEnum.SERVERS_DELETE, label: "Delete existing servers" }
+      { value: PermissionsEnum.SERVERS_VIEW, label: t("roles.list.permissions.servers.view") },
+      { value: PermissionsEnum.SERVERS_CREATE, label: t("roles.list.permissions.servers.create") },
+      { value: PermissionsEnum.SERVERS_DELETE, label: t("roles.list.permissions.servers.delete") }
     ]
   },
   {
-    label: "Server",
+    label: t("roles.list.permissions.groups.server"),
     permissions: [
-      { value: PermissionsEnum.SERVER_VIEW, label: "View server page" },
-      { value: PermissionsEnum.SERVER_UPDATE, label: "Edit existing server" },
-      { value: PermissionsEnum.SERVER_START, label: "Start server" },
-      { value: PermissionsEnum.SERVER_STOP, label: "Stop server" },
-      { value: PermissionsEnum.SERVER_CPU_VIEW, label: "View server CPU metrics" },
-      { value: PermissionsEnum.SERVER_RAM_VIEW, label: "View server RAM metrics" },
-      { value: PermissionsEnum.SERVER_LOGS_VIEW, label: "View server logs" },
-      { value: PermissionsEnum.SERVER_CONSOLE_EXECUTE, label: "Execute console commands" },
-      { value: PermissionsEnum.SERVER_FILES_VIEW, label: "View server files" },
-      { value: PermissionsEnum.SERVER_FILES_UPDATE, label: "Edit server files" },
-      { value: PermissionsEnum.SERVER_FILES_DOWNLOAD, label: "Download server files" },
-      { value: PermissionsEnum.SERVER_SETTINGS_VIEW, label: "View server settings" },
-      { value: PermissionsEnum.SERVER_SETTINGS_UPDATE, label: "Edit server settings" }
+      { value: PermissionsEnum.SERVER_VIEW, label: t("roles.list.permissions.server.view") },
+      { value: PermissionsEnum.SERVER_UPDATE, label: t("roles.list.permissions.server.update") },
+      { value: PermissionsEnum.SERVER_START, label: t("roles.list.permissions.server.start") },
+      { value: PermissionsEnum.SERVER_STOP, label: t("roles.list.permissions.server.stop") },
+      { value: PermissionsEnum.SERVER_CPU_VIEW, label: t("roles.list.permissions.server.cpuView") },
+      { value: PermissionsEnum.SERVER_RAM_VIEW, label: t("roles.list.permissions.server.ramView") },
+      { value: PermissionsEnum.SERVER_LOGS_VIEW, label: t("roles.list.permissions.server.logsView") },
+      { value: PermissionsEnum.SERVER_CONSOLE_EXECUTE, label: t("roles.list.permissions.server.consoleExecute") },
+      { value: PermissionsEnum.SERVER_FILES_VIEW, label: t("roles.list.permissions.server.files.view") },
+      { value: PermissionsEnum.SERVER_FILES_UPDATE, label: t("roles.list.permissions.server.files.update") },
+      { value: PermissionsEnum.SERVER_FILES_DOWNLOAD, label: t("roles.list.permissions.server.files.download") },
+      { value: PermissionsEnum.SERVER_SETTINGS_VIEW, label: t("roles.list.permissions.server.settings.view") },
+      { value: PermissionsEnum.SERVER_SETTINGS_UPDATE, label: t("roles.list.permissions.server.settings.update") }
     ]
   },
   {
-    label: "Users",
+    label: t("roles.list.permissions.groups.users"),
     permissions: [
-      { value: PermissionsEnum.USERS_VIEW, label: "View users list" },
-      { value: PermissionsEnum.USERS_CREATE, label: "Create new users" },
-      { value: PermissionsEnum.USERS_UPDATE, label: "Edit existing users" },
-      { value: PermissionsEnum.USERS_DELETE, label: "Delete existing users" }
+      { value: PermissionsEnum.USERS_VIEW, label: t("roles.list.permissions.users.view") },
+      { value: PermissionsEnum.USERS_CREATE, label: t("roles.list.permissions.users.create") },
+      { value: PermissionsEnum.USERS_UPDATE, label: t("roles.list.permissions.users.update") },
+      { value: PermissionsEnum.USERS_DELETE, label: t("roles.list.permissions.users.delete") }
     ]
   },
   {
-    label: "Roles",
+    label: t("roles.list.permissions.groups.roles"),
     permissions: [
-      { value: PermissionsEnum.ROLES_VIEW, label: "View roles list" },
-      { value: PermissionsEnum.ROLES_CREATE, label: "Create new roles" },
-      { value: PermissionsEnum.ROLES_UPDATE, label: "Edit existing roles" },
-      { value: PermissionsEnum.ROLES_DELETE, label: "Delete existing roles" }
+      { value: PermissionsEnum.ROLES_VIEW, label: t("roles.list.permissions.roles.view") },
+      { value: PermissionsEnum.ROLES_CREATE, label: t("roles.list.permissions.roles.create") },
+      { value: PermissionsEnum.ROLES_UPDATE, label: t("roles.list.permissions.roles.update") },
+      { value: PermissionsEnum.ROLES_DELETE, label: t("roles.list.permissions.roles.delete") }
     ]
   },
   {
-    label: "Games",
+    label: t("roles.list.permissions.groups.games"),
     permissions: [
-      { value: PermissionsEnum.GAMES_VIEW, label: "View games list" }
+      { value: PermissionsEnum.GAMES_VIEW, label: t("roles.list.permissions.games.view") }
     ]
   },
   {
-    label: "Settings",
+    label: t("roles.list.permissions.groups.settings"),
     permissions: [
-      { value: PermissionsEnum.SETTINGS_CACHE_CLEAR, label: "Clear cached data" },
-      { value: PermissionsEnum.SETTINGS_CONTAINERS_CLEAR, label: "Clear unused containers data" }
+      { value: PermissionsEnum.SETTINGS_CACHE_CLEAR, label: t("roles.list.permissions.settings.cache.clear") },
+      { value: PermissionsEnum.SETTINGS_CONTAINERS_CLEAR, label: t("roles.list.permissions.settings.containers.clear") }
     ]
   }
-]
+])
 
 const columns: TableColumn[] = [
   {
@@ -350,7 +349,7 @@ const columns: TableColumn[] = [
     type: "text",
     params: {
       label: {
-        value: "Name",
+        value: t("roles.list.columns.name"),
         highlighted: true
       },
       sorting: {
@@ -365,7 +364,7 @@ const columns: TableColumn[] = [
     type: "text",
     params: {
       label: {
-        value: "Created at",
+        value: t("roles.list.columns.createdAt"),
         highlighted: false
       },
       sorting: {
@@ -401,7 +400,7 @@ async function fetchRoles(): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to fetch roles"
+      text: error?.response?.data?.message ?? t("roles.list.fetch.error")
     })
     pageData.value = null
   }
@@ -519,13 +518,13 @@ async function deleteRole(roleId: number): Promise<void> {
     await httpRolesApiService.deleteOne(roleId)
     notify({
       type: "success",
-      text: "Role deleted successfully"
+      text: t("roles.list.delete.success")
     })
     fetchRoles()
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to delete role"
+      text: error?.response?.data?.message ?? t("roles.list.delete.error")
     })
   }
 }
@@ -559,14 +558,14 @@ async function deleteSelected(): Promise<void> {
     await httpRolesApiService.deleteMany(selected)
     notify({
       type: "success",
-      text: "Roles deleted successfully"
+      text: t("roles.list.deleteSelected.success")
     })
     tableStore.clearSelected(tableStoreId)
     fetchRoles()
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to delete selected roles"
+      text: error?.response?.data?.message ?? t("roles.list.deleteSelected.error")
     })
   }
 }
@@ -618,7 +617,7 @@ async function handleCreateRole(close: () => void): Promise<void> {
     })
     notify({
       type: "success",
-      text: "Role created successfully"
+      text: t("roles.list.create.success")
     })
     close()
     resetCreateRoleForm()
@@ -626,7 +625,7 @@ async function handleCreateRole(close: () => void): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to create role"
+      text: error?.response?.data?.message ?? t("roles.list.create.error")
     })
   }
 }
@@ -651,7 +650,7 @@ async function handleEditRole(close: () => void): Promise<void> {
     })
     notify({
       type: "success",
-      text: "Role updated successfully"
+      text: t("roles.list.update.success")
     })
 
     if (userStore.user?.role.id === editRoleId.value) {
@@ -664,7 +663,7 @@ async function handleEditRole(close: () => void): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to update role"
+      text: error?.response?.data?.message ?? t("roles.list.update.error")
     })
   }
 }
@@ -703,7 +702,7 @@ async function openEditRole(roleId: number): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to fetch role"
+      text: error?.response?.data?.message ?? t("roles.list.fetchRole.error")
     })
   }
 }

@@ -4,7 +4,7 @@
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from datetime import datetime, timezone, timedelta
-from typing import List, Dict
+from typing import List, Dict, Callable
 
 from psutil import disk_usage
 from orjson import loads
@@ -14,7 +14,10 @@ from application.contracts.clients import AbstractCachesClient
 from application.contracts.services import AbstractMetricsService
 from application.contracts.mappers import AbstractMetricsServiceMapper
 from application.contracts.clients import AbstractMetricsClient
-from application.contracts.managers import AbstractConnectionsManager
+from application.contracts.managers import (
+    AbstractConnectionsManager,
+    AbstractI18nManager
+)
 from application.clients.containers.shared import ContainersConstants
 from application.managers.connections.shared import RoomsConstants
 from application.clients.caches.shared import CacheConstants
@@ -34,18 +37,25 @@ class MetricsService(AbstractMetricsService):
     metrics_client: AbstractMetricsClient
     metrics_mapper: AbstractMetricsServiceMapper
     connections_manager: AbstractConnectionsManager
+    i18n_manager: AbstractI18nManager
+
+    _: Callable
 
     def __init__(
         self,
         caches_client: AbstractCachesClient,
         metrics_client: AbstractMetricsClient,
         metrics_mapper: AbstractMetricsServiceMapper,
-        connections_manager: AbstractConnectionsManager
+        connections_manager: AbstractConnectionsManager,
+        i18n_manager: AbstractI18nManager
     ):
         self.caches_client = caches_client
         self.metrics_client = metrics_client
         self.metrics_mapper = metrics_mapper
         self.connections_manager = connections_manager
+        self.i18n_manager = i18n_manager
+
+        self._ = i18n_manager.gettext
 
     @staticmethod
     def _get_container_names(
@@ -120,7 +130,7 @@ class MetricsService(AbstractMetricsService):
         metric = await self.metrics_client.host_last_cpu()
 
         if not metric:
-            raise NotFoundError("Host CPU metrics not found")
+            raise NotFoundError(self._("Host CPU metrics not found"))
 
         return self.metrics_mapper.dataclass_to_dto(
             dataclass=metric
@@ -139,7 +149,7 @@ class MetricsService(AbstractMetricsService):
         metric = await self.metrics_client.host_last_ram()
 
         if not metric:
-            raise NotFoundError("Host RAM metrics not found")
+            raise NotFoundError(self._("Host RAM metrics not found"))
 
         return self.metrics_mapper.dataclass_to_dto(
             dataclass=metric
@@ -158,7 +168,7 @@ class MetricsService(AbstractMetricsService):
         metrics = await self.metrics_client.host_all_cpu()
 
         if not metrics:
-            raise NotFoundError("Host CPU metrics not found")
+            raise NotFoundError(self._("Host CPU metrics not found"))
 
         return self.metrics_mapper.dataclasses_to_dtos(
             dataclasses=metrics
@@ -177,7 +187,7 @@ class MetricsService(AbstractMetricsService):
         metrics = await self.metrics_client.host_all_ram()
 
         if not metrics:
-            raise NotFoundError("Host RAM metrics not found")
+            raise NotFoundError(self._("Host RAM metrics not found"))
 
         return self.metrics_mapper.dataclasses_to_dtos(
             dataclasses=metrics
@@ -205,7 +215,7 @@ class MetricsService(AbstractMetricsService):
         )
 
         if not metric:
-            raise NotFoundError(f"CPU metrics for server {server_id} not found")
+            raise NotFoundError(self._("CPU metrics for server {server_id} not found").format(server_id=server_id))
 
         return self.metrics_mapper.dataclass_to_dto(
             dataclass=metric
@@ -233,7 +243,7 @@ class MetricsService(AbstractMetricsService):
         )
 
         if not metric:
-            raise NotFoundError(f"RAM metrics for server {server_id} not found")
+            raise NotFoundError(self._("RAM metrics for server {server_id} not found").format(server_id=server_id))
 
         return self.metrics_mapper.dataclass_to_dto(
             dataclass=metric
@@ -261,7 +271,7 @@ class MetricsService(AbstractMetricsService):
         )
 
         if not metrics:
-            raise NotFoundError("Servers CPU metrics not found")
+            raise NotFoundError(self._("Servers CPU metrics not found"))
 
         return {
             name: self.metrics_mapper.dataclass_to_dto(
@@ -292,7 +302,7 @@ class MetricsService(AbstractMetricsService):
         )
 
         if not metrics:
-            raise NotFoundError("Servers RAM metrics not found")
+            raise NotFoundError(self._("Servers RAM metrics not found"))
 
         return {
             name: self.metrics_mapper.dataclass_to_dto(
@@ -323,7 +333,7 @@ class MetricsService(AbstractMetricsService):
         )
 
         if not metrics:
-            raise NotFoundError(f"CPU metrics for server {server_id} not found")
+            raise NotFoundError(self._("CPU metrics for server {server_id} not found").format(server_id=server_id))
 
         return self.metrics_mapper.dataclasses_to_dtos(
             dataclasses=metrics
@@ -351,7 +361,7 @@ class MetricsService(AbstractMetricsService):
         )
 
         if not metrics:
-            raise NotFoundError(f"RAM metrics for server {server_id} not found")
+            raise NotFoundError(self._("RAM metrics for server {server_id} not found").format(server_id=server_id))
 
         return self.metrics_mapper.dataclasses_to_dtos(
             dataclasses=metrics

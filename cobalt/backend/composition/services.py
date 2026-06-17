@@ -20,7 +20,8 @@ from domain.repositories import (
 from application.contracts.clients import AbstractCachesClient
 from application.contracts.managers import (
     AbstractConnectionsManager,
-    AbstractArchivesManager
+    AbstractArchivesManager,
+    AbstractI18nManager
 )
 from application.contracts.clients import AbstractContainersClient
 from application.contracts.clients import AbstractMetricsClient
@@ -94,6 +95,7 @@ def create_passwords_service(
     )
 
 def create_roles_service(
+    i18n_manager: AbstractI18nManager,
     caches_client: AbstractCachesClient,
     roles_repository: AbstractRolesRepository,
     roles_mapper: AbstractRolesServiceMapper,
@@ -103,6 +105,7 @@ def create_roles_service(
     Creates the roles service.
 
     Parameters:
+    - i18n_manager: AbstractI18nManager object.
     - caches_client: AbstractCachesClient object.
     - roles_repository: AbstractRolesRepository object.
     - roles_mapper: AbstractRolesServiceMapper object.
@@ -112,6 +115,7 @@ def create_roles_service(
     - AbstractRolesService: AbstractRolesService object.
     """
     return RolesService(
+        i18n_manager=i18n_manager,
         caches_client=caches_client,
         roles_repository=roles_repository,
         roles_mapper=roles_mapper,
@@ -119,11 +123,13 @@ def create_roles_service(
     )
 
 def create_settings_service(
+    i18n_manager: AbstractI18nManager,
     config: ApplicationConfig,
     caches_client: AbstractCachesClient,
     settings_repository: AbstractSettingsRepository,
     settings_mapper: AbstractSettingsServiceMapper,
     containers_client: AbstractContainersClient,
+    connections_manager: AbstractConnectionsManager,
     servers_service: AbstractServersService,
     queue: AbstractQueue,
     logger: AbstractLogger
@@ -132,12 +138,14 @@ def create_settings_service(
     Creates the settings service.
 
     Parameters:
+    - i18n_manager: AbstractI18nManager object.
     - config: ApplicationConfig object.
     - caches_client: AbstractCachesClient object.
     - settings_repository: AbstractSettingsRepository object.
     - settings_mapper: AbstractSettingsServiceMapper object.
     - containers_client: AbstractContainersClient object.
     - servers_service: AbstractServersService object.
+    - connections_manager: AbstractConnectionsManager object.
     - queue: AbstractQueue object.
     - logger: AbstractLogger object.
 
@@ -145,17 +153,20 @@ def create_settings_service(
     - AbstractSettingsService: AbstractSettingsService object.
     """
     return SettingsService(
+        i18n_manager=i18n_manager,
         caches_client=caches_client,
         settings_repository=settings_repository,
         settings_mapper=settings_mapper,
         containers_client=containers_client,
         servers_service=servers_service,
+        connections_manager=connections_manager,
         queue=queue,
         logger=logger,
         app_containers_dir=config.server.app_containers_dir
     )
 
 def create_users_service(
+    i18n_manager: AbstractI18nManager,
     caches_client: AbstractCachesClient,
     users_repository: AbstractUsersRepository,
     users_mapper: AbstractUsersServiceMapper,
@@ -167,6 +178,7 @@ def create_users_service(
     Creates the users service.
 
     Parameters:
+    - i18n_manager: AbstractI18nManager object.
     - caches_client: AbstractCachesClient.
     - users_repository: AbstractUsersRepository object.
     - users_mapper: AbstractUsersServiceMapper object.
@@ -178,6 +190,7 @@ def create_users_service(
     - AbstractUsersService: AbstractUsersService object.
     """
     return UsersService(
+        i18n_manager=i18n_manager,
         caches_client=caches_client,
         users_repository=users_repository,
         users_mapper=users_mapper,
@@ -187,6 +200,7 @@ def create_users_service(
     )
 
 def create_auth_service(
+    i18n_manager: AbstractI18nManager,
     caches_client: AbstractCachesClient,
     users_service: AbstractUsersService,
     passwords_service: AbstractPasswordsService
@@ -195,6 +209,7 @@ def create_auth_service(
     Creates the auth service.
 
     Parameters:
+    - i18n_manager: AbstractI18nManager object.
     - caches_client: AbstractCachesClient object.
     - users_service: AbstractUsersService object.
     - passwords_service: AbstractPasswordsService object.
@@ -203,12 +218,14 @@ def create_auth_service(
     - AbstractAuthService: AbstractAuthService object.
     """
     return AuthService(
+        i18n_manager=i18n_manager,
         caches_client=caches_client,
         users_service=users_service,
         passwords_service=passwords_service
     )
 
 def create_games_service(
+    i18n_manager: AbstractI18nManager,
     caches_client: AbstractCachesClient,
     games_repository: AbstractGamesRepository,
     games_mapper: AbstractGamesServiceMapper
@@ -217,6 +234,7 @@ def create_games_service(
     Creates the games service.
 
     Parameters:
+    - i18n_manager: AbstractI18nManager object.
     - caches_client: AbstractCachesClient object.
     - games_repository: AbstractGamesRepository object.
     - games_mapper: AbstractGamesServiceMapper object.
@@ -225,12 +243,14 @@ def create_games_service(
     - AbstractGamesService: AbstractGamesService object.
     """
     return GamesService(
+        i18n_manager=i18n_manager,
         caches_client=caches_client,
         games_repository=games_repository,
         games_mapper=games_mapper
     )
 
 def create_loaders_service(
+    i18n_manager: AbstractI18nManager,
     caches_client: AbstractCachesClient,
     loaders_repository: AbstractLoadersRepository,
     loaders_mapper: AbstractLoadersServiceMapper
@@ -239,6 +259,7 @@ def create_loaders_service(
     Creates the loaders service.
 
     Parameters:
+    - i18n_manager: AbstractI18nManager object.
     - caches_client: AbstractCachesClient object.
     - loaders_repository: AbstractLoadersRepository object.
     - loaders_mapper: AbstractLoadersServiceMapper object.
@@ -247,12 +268,14 @@ def create_loaders_service(
     - AbstractLoadersService: AbstractLoadersService object.
     """
     return LoadersService(
+        i18n_manager=i18n_manager,
         caches_client=caches_client,
         loaders_repository=loaders_repository,
         loaders_mapper=loaders_mapper
     )
 
 def create_logs_service(
+    i18n_manager: AbstractI18nManager,
     logs_mapper: AbstractLogsServiceMapper,
     containers_client: AbstractContainersClient,
     connections_manager: AbstractConnectionsManager,
@@ -263,6 +286,7 @@ def create_logs_service(
     Creates the logs service.
 
     Parameters:
+    - i18n_manager: AbstractI18nManager object.
     - logs_mapper: AbstractLogsServiceMapper object.
     - containers_client: AbstractContainersClient object.
     - connections_manager: AbstractConnectionsManager object.
@@ -273,6 +297,7 @@ def create_logs_service(
     - AbstractLogsService: AbstractLogsService object.
     """
     return LogsService(
+        i18n_manager=i18n_manager,
         logs_mapper=logs_mapper,
         containers_client=containers_client,
         connections_manager=connections_manager,
@@ -281,6 +306,7 @@ def create_logs_service(
     )
 
 def create_metrics_service(
+    i18n_manager: AbstractI18nManager,
     caches_client: AbstractCachesClient,
     metrics_client: AbstractMetricsClient,
     metrics_mapper: AbstractMetricsServiceMapper,
@@ -290,6 +316,7 @@ def create_metrics_service(
     Creates the metrics service.
 
     Parameters:
+    - i18n_manager: AbstractI18nManager object.
     - caches_client: AbstractCachesClient object.
     - metrics_client: AbstractMetricsClient object.
     - metrics_mapper: AbstractMetricsServiceMapper object.
@@ -299,6 +326,7 @@ def create_metrics_service(
     - AbstractMetricsService: AbstractMetricsService object.
     """
     return MetricsService(
+        i18n_manager=i18n_manager,
         caches_client=caches_client,
         metrics_client=metrics_client,
         metrics_mapper=metrics_mapper,
@@ -306,7 +334,9 @@ def create_metrics_service(
     )
 
 def create_servers_service(
+    i18n_manager: AbstractI18nManager,
     caches_client: AbstractCachesClient,
+    connections_manager: AbstractConnectionsManager,
     servers_repository: AbstractServersRepository,
     servers_mapper: AbstractServersServiceMapper,
     queue: AbstractQueue,
@@ -317,7 +347,9 @@ def create_servers_service(
     Creates the servers service.
 
     Parameters:
+    - i18n_manager: AbstractI18nManager object.
     - caches_client: AbstractCachesClient object.
+    - connections_manager: AbstractConnectionsManager object.
     - servers_repository: AbstractServersRepository object.
     - servers_mapper: AbstractServersServiceMapper object.
     - queue: AbstractQueue object.
@@ -328,7 +360,9 @@ def create_servers_service(
     - AbstractServersService: AbstractServersService object.
     """
     return ServersService(
+        i18n_manager=i18n_manager,
         caches_client=caches_client,
+        connections_manager=connections_manager,
         servers_repository=servers_repository,
         servers_mapper=servers_mapper,
         queue=queue,
@@ -337,6 +371,7 @@ def create_servers_service(
     )
 
 def create_attributes_service(
+    i18n_manager: AbstractI18nManager,
     caches_client: AbstractCachesClient,
     attributes_repository: AbstractAttributesRepository,
     attributes_mapper: AbstractAttributesServiceMapper
@@ -345,6 +380,7 @@ def create_attributes_service(
     Creates the attributes service.
 
     Parameters:
+    - i18n_manager: AbstractI18nManager object.
     - caches_client: AbstractCachesClient object.
     - attributes_repository: AbstractAttributesRepository object.
     - attributes_mapper: AbstractAttributesServiceMapper object.
@@ -353,12 +389,14 @@ def create_attributes_service(
     - AbstractAttributesService: AbstractAttributesService object.
     """
     return AttributesService(
+        i18n_manager=i18n_manager,
         caches_client=caches_client,
         attributes_repository=attributes_repository,
         attributes_mapper=attributes_mapper
     )
 
 def create_files_service(
+    i18n_manager: AbstractI18nManager,
     config: ApplicationConfig,
     archives_manager: AbstractArchivesManager
 ) -> AbstractFilesService:
@@ -366,6 +404,7 @@ def create_files_service(
     Creates the files service.
 
     Parameters:
+    - i18n_manager: AbstractI18nManager object.
     - config: ApplicationConfig object.
     - archives_manager: AbstractArchivesManager object.
 
@@ -373,6 +412,7 @@ def create_files_service(
     - AbstractFilesService: AbstractFilesService object.
     """
     return FilesService(
+        i18n_manager=i18n_manager,
         app_containers_dir=config.server.app_containers_dir,
         archives_manager=archives_manager
     )
@@ -408,6 +448,7 @@ def create_services_container(
     )
 
     roles_service = create_roles_service(
+        i18n_manager=managers.i18n,
         caches_client=clients.caches,
         roles_repository=database.repositories.roles,
         roles_mapper=mappers.services.roles,
@@ -415,7 +456,9 @@ def create_services_container(
     )
 
     servers_service = create_servers_service(
+        i18n_manager=managers.i18n,
         caches_client=clients.caches,
+        connections_manager=managers.connections,
         servers_repository=database.repositories.servers,
         servers_mapper=mappers.services.servers,
         queue=queue,
@@ -424,17 +467,20 @@ def create_services_container(
     )
 
     settings_service = create_settings_service(
+        i18n_manager=managers.i18n,
         config=config,
         caches_client=clients.caches,
         settings_repository=database.repositories.settings,
         settings_mapper=mappers.services.settings,
         containers_client=clients.containers,
         servers_service=servers_service,
+        connections_manager=managers.connections,
         queue=queue,
         logger=logger
     )
 
     users_service = create_users_service(
+        i18n_manager=managers.i18n,
         caches_client=clients.caches,
         users_repository=database.repositories.users,
         users_mapper=mappers.services.users,
@@ -444,24 +490,28 @@ def create_services_container(
     )
 
     auth_service = create_auth_service(
+        i18n_manager=managers.i18n,
         caches_client=clients.caches,
         users_service=users_service,
         passwords_service=passwords_service
     )
 
     games_service = create_games_service(
+        i18n_manager=managers.i18n,
         caches_client=clients.caches,
         games_repository=database.repositories.games,
         games_mapper=mappers.services.games
     )
 
     loaders_service = create_loaders_service(
+        i18n_manager=managers.i18n,
         caches_client=clients.caches,
         loaders_repository=database.repositories.loaders,
         loaders_mapper=mappers.services.loaders
     )
 
     logs_service = create_logs_service(
+        i18n_manager=managers.i18n,
         logs_mapper=mappers.services.logs,
         containers_client=clients.containers,
         connections_manager=managers.connections,
@@ -470,6 +520,7 @@ def create_services_container(
     )
 
     metrics_service = create_metrics_service(
+        i18n_manager=managers.i18n,
         caches_client=clients.caches,
         metrics_client=clients.metrics,
         metrics_mapper=mappers.services.metrics,
@@ -477,12 +528,14 @@ def create_services_container(
     )
 
     attributes_service = create_attributes_service(
+        i18n_manager=managers.i18n,
         caches_client=clients.caches,
         attributes_repository=database.repositories.attributes,
         attributes_mapper=mappers.services.attributes
     )
 
     files_service = create_files_service(
+        i18n_manager=managers.i18n,
         config=config,
         archives_manager=managers.archives
     )

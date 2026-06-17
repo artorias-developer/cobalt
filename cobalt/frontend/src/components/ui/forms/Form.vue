@@ -16,6 +16,7 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from "vue-i18n"
 import { provide, ref } from "vue"
 import { useNotification } from "@kyvg/vue3-notification"
 
@@ -31,6 +32,7 @@ defineExpose({
 })
 
 const { notify } = useNotification()
+const { t } = useI18n()
 
 const fields = ref<Map<symbol, FormField>>(new Map())
 
@@ -93,7 +95,7 @@ function validate(): boolean {
     if (empty) {
       notify({
         type: "warn",
-        text: `${field.name} is required`
+        text: t("common.form.required", { field: field.name })
       })
 
       return false

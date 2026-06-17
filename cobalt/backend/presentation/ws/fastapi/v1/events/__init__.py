@@ -5,8 +5,10 @@
 
 from .logs import WsLogsEvents
 from .metrics import WsMetricsEvents
+from .servers import WsServersEvents
 
 __all__ = [
     "WsLogsEvents",
-    "WsMetricsEvents"
+    "WsMetricsEvents",
+    "WsServersEvents"
 ]

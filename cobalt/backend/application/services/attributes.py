@@ -3,12 +3,16 @@
 #  Repository: https://github.com/ArtoriasCode/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-from typing import List
+from typing import List, Callable
 
 from orjson import loads
 
-from domain.exceptions import NotFoundError
+from domain.exceptions import (
+    NotFoundError,
+    ValidationError
+)
 from domain.repositories import AbstractAttributesRepository
+from application.contracts.managers import AbstractI18nManager
 from application.contracts.clients import AbstractCachesClient
 from application.contracts.services import AbstractAttributesService
 from application.contracts.mappers import AbstractAttributesServiceMapper
@@ -29,16 +33,23 @@ class AttributesService(AbstractAttributesService):
     caches_client: AbstractCachesClient
     attributes_repository: AbstractAttributesRepository
     attributes_mapper: AbstractAttributesServiceMapper
+    i18n_manager: AbstractI18nManager
+
+    _: Callable
 
     def __init__(
         self,
         caches_client: AbstractCachesClient,
         attributes_repository: AbstractAttributesRepository,
-        attributes_mapper: AbstractAttributesServiceMapper
+        attributes_mapper: AbstractAttributesServiceMapper,
+        i18n_manager: AbstractI18nManager
     ):
         self.caches_client = caches_client
         self.attributes_repository = attributes_repository
         self.attributes_mapper = attributes_mapper
+        self.i18n_manager = i18n_manager
+
+        self._ = i18n_manager.gettext
 
     async def get_page(
         self,
@@ -83,7 +94,7 @@ class AttributesService(AbstractAttributesService):
         )
 
         if not received_entity.attributes:
-            raise NotFoundError("Server or attributes not found")
+            raise NotFoundError(self._("Server or attributes not found"))
 
         mapped_dto = self.attributes_mapper.page_entity_to_dto(
             entity=received_entity
@@ -132,7 +143,12 @@ class AttributesService(AbstractAttributesService):
         )
 
         if not received_entity:
-            raise NotFoundError(f"Server {server_id} or attribute {attribute_id} not found")
+            raise NotFoundError(
+                self._("Server {server_id} or attribute {attribute_id} not found").format(
+                    server_id=server_id,
+                    attribute_id=attribute_id
+                )
+            )
 
         key = self.caches_client.format_pattern(
             pattern=CacheConstants.ATTRIBUTES_ITEM_KEY,
@@ -256,6 +272,9 @@ class AttributesService(AbstractAttributesService):
         Returns:
         - AttributeDto: AttributeDto object.
         """
+        if dto.key is None and dto.value is None:
+            raise ValidationError(self._("At least one field (key or value) must be provided"))
+
         mapped_entity = self.attributes_mapper.update_dto_to_entity(
             dto=dto
         )
@@ -266,7 +285,7 @@ class AttributesService(AbstractAttributesService):
         )
 
         if not updated_entity:
-            raise NotFoundError("Server or attribute not found")
+            raise NotFoundError(self._("Server or attribute not found"))
 
         await self.caches_client.delete(
             patterns=[
@@ -317,7 +336,7 @@ class AttributesService(AbstractAttributesService):
         )
 
         if not updated_entities:
-            raise NotFoundError("Server or attributes not found")
+            raise NotFoundError(self._("Server or attributes not found"))
 
         patterns_to_delete = [
             self.caches_client.format_pattern(
@@ -370,7 +389,7 @@ class AttributesService(AbstractAttributesService):
         )
 
         if not deleted_entity:
-            raise NotFoundError("Server or attribute not found")
+            raise NotFoundError(self._("Server or attribute not found"))
 
         await self.caches_client.delete(
             patterns=[
@@ -413,7 +432,7 @@ class AttributesService(AbstractAttributesService):
         )
 
         if not deleted_entities:
-            raise NotFoundError("Server or attributes not found")
+            raise NotFoundError(self._("Server or attributes not found"))
 
         patterns_to_delete = [
             self.caches_client.format_pattern(

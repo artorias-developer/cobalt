@@ -3,7 +3,7 @@
 #  Repository: https://github.com/ArtoriasCode/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-from typing import Optional, List, cast
+from typing import Optional, List, cast, Callable
 
 from sqlalchemy import select, delete
 from sqlalchemy.orm import joinedload, selectinload
@@ -23,6 +23,7 @@ from domain.exceptions import (
     NotFoundError
 )
 from domain.repositories import AbstractServersRepository
+from application.contracts.managers import AbstractI18nManager
 from application.contracts.loggers import AbstractLogger
 from infrastructure.contracts.databases.mappers import AbstractServersRepositoryMapper
 from infrastructure.databases.postgres.models import (
@@ -42,18 +43,25 @@ class ServersRepository(AbstractServersRepository, BaseRepository):
     Repository for working with the 'servers' table.
     """
     servers_mapper: AbstractServersRepositoryMapper
+    i18n_manager: AbstractI18nManager
     logger: AbstractLogger
+
+    _: Callable
 
     def __init__(
         self,
         async_session: async_sessionmaker,
         servers_mapper: AbstractServersRepositoryMapper,
+        i18n_manager: AbstractI18nManager,
         logger: AbstractLogger
     ):
         super().__init__(async_session)
 
         self.servers_mapper = servers_mapper
+        self.i18n_manager = i18n_manager
         self.logger = logger
+
+        self._ = i18n_manager.gettext
 
     def _handle_integrity_error(
         self,
@@ -80,17 +88,22 @@ class ServersRepository(AbstractServersRepository, BaseRepository):
             ]:
                 server_name = details.get("name")
 
-                raise ConflictError(f'Server "{server_name}" already exists') from e
+                raise ConflictError(self._('Server "{name}" already exists').format(name=server_name)) from e
 
         if sqlstate == IntegrityCodesEnum.FOREIGN_KEY_VIOLATION:
             if operation == RepositoryOperationsEnum.CREATE:
                 game_id = details.get("game_id")
                 loader_id = details.get("loader_id")
 
-                raise NotFoundError(f"Game {game_id} or loader {loader_id} not found") from e
+                raise NotFoundError(
+                    self._("Game {game_id} or loader {loader_id} not found").format(
+                        game_id=game_id,
+                        loader_id=loader_id
+                    )
+                ) from e
 
         self.logger.exception(f"Unhandled DB integrity error during {operation}:")
-        raise UnexpectedError("Internal server error") from e
+        raise UnexpectedError(self._("Internal server error")) from e
 
     async def get_page(
         self,

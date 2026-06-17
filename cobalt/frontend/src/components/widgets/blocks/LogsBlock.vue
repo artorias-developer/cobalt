@@ -11,20 +11,20 @@
       <Header
         :icon="monitorIcon"
         icon-color="blue"
-        :title="title"
-        :description="description"
+        :title="title ?? $t('logs.title')"
+        :description="description ?? $t('logs.description')"
         :icon-filled="true"
       />
     </div>
     <Message
       v-if="mode !== 'empty' && !hasLogsViewAccess"
       :icon="padlockIcon"
-      text="Access denied"
+      :text="$t('common.accessDenied')"
     />
     <Message
       v-else-if="mode === 'empty' || parsedLogs.length === 0"
       :icon="listIcon"
-      text="No data available"
+      :text="$t('common.noData')"
     />
     <BlockTabs
       v-else
@@ -53,7 +53,7 @@
       <input
         class="console-input"
         v-model="command"
-        placeholder="Enter a command..."
+        :placeholder="$t('logs.placeholder')"
         name="server-console"
         @keydown.enter="handleExecute"
       />
@@ -62,6 +62,7 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from "vue-i18n"
 import { inject, onMounted, onUnmounted, ref, computed, nextTick, watch } from "vue"
 import { useNotification } from "@kyvg/vue3-notification"
 
@@ -86,9 +87,7 @@ const props = withDefaults(defineProps<{
   maxLogs: number
   logsRegex?: RegExp
 }>(), {
-  serverId: undefined,
-  title: "Logs",
-  description: "Admin panel logs"
+  serverId: undefined
 })
 
 const wsLogsApiService = inject(WS_LOGS_API_SERVICE_KEY)!
@@ -97,6 +96,7 @@ const httpServersApiService = inject(HTTP_SERVERS_API_SERVICE_KEY)!
 const localeHelper = inject(LOCALE_HELPER_KEY)!
 const userStore = useUserStore()
 const { notify } = useNotification()
+const { t } = useI18n()
 
 const parsedLogs = ref<ParsedLog[]>([])
 const tabsRef = ref<InstanceType<typeof BlockTabs> | null>(null)
@@ -302,7 +302,7 @@ async function fetchInitialData(): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to fetch logs"
+      text: error?.response?.data?.message ?? t("logs.fetch.error")
     })
   }
 }
@@ -348,7 +348,7 @@ async function handleExecute(): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to execute command"
+      text: error?.response?.data?.message ?? t("logs.execute.error")
     })
   }
 }
@@ -374,7 +374,7 @@ const logTabs = computed(() => {
   return Object.entries(counts)
     .sort(([a], [b]) => (LEVEL_ORDER[a] ?? 99) - (LEVEL_ORDER[b] ?? 99))
     .map(([level, count]) => ({
-      label: `${level} ${count}`,
+      label: `${t(`logs.levels.${level.toLowerCase()}`)} ${count}`,
       value: level
     }))
 })

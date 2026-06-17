@@ -57,6 +57,8 @@ class LanguageEnum(StrEnum):
     Language enum.
     """
     EN = "en"
+    UK = "uk"
+    RU = "ru"
 
 class ThemeEnum(StrEnum):
     """

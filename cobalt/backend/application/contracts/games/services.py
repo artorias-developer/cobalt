@@ -14,11 +14,14 @@ from typing import Optional, Dict, Any, Union
 from aiofiles import os
 from aioshutil import rmtree
 
+from application.managers.events.shared import ServersEventsEnum
 from domain.enums import ServerStatusEnum
+from application.contracts.managers import AbstractConnectionsManager
 from application.contracts.clients import AbstractContainersClient
 from application.contracts.services import AbstractServersService as CoreServersService
 from application.contracts.loggers import AbstractLogger
 from application.clients.containers.shared import ContainersConstants
+from application.managers.connections.shared import RoomsConstants
 from application.dtos import ServerUpdateDto
 
 
@@ -33,6 +36,7 @@ class AbstractServersService(ABC):
     app_containers_dir: Path
     core_servers_service: CoreServersService
     containers_client: AbstractContainersClient
+    connections_manager: AbstractConnectionsManager
     logger: AbstractLogger
 
     def __init__(
@@ -41,12 +45,14 @@ class AbstractServersService(ABC):
         app_containers_dir: Path,
         core_servers_service: CoreServersService,
         containers_client: AbstractContainersClient,
-        logger: AbstractLogger,
+        connections_manager: AbstractConnectionsManager,
+        logger: AbstractLogger
     ):
         self.build_dir = build_dir
         self.app_containers_dir = app_containers_dir
         self.core_servers_service = core_servers_service
         self.containers_client = containers_client
+        self.connections_manager = connections_manager
         self.logger = logger
 
     async def _remove_container(
@@ -119,7 +125,7 @@ class AbstractServersService(ABC):
         status: ServerStatusEnum
     ) -> None:
         """
-        Updates server status.
+        Updates server status and sends it to all subscribers.
 
         Parameters:
         - server_id: Server ID.
@@ -132,6 +138,18 @@ class AbstractServersService(ABC):
         await self.core_servers_service.update_one(
             server_id=server_id,
             dto=request_dto
+        )
+
+        await self.connections_manager.send_to_room(
+            room_name=RoomsConstants.SERVERS_STATUSES_KEY,
+            data={
+                "type": "message",
+                "event": ServersEventsEnum.SERVER_STATUS,
+                "data": {
+                    "server_id": server_id,
+                    "status": status
+                }
+            }
         )
 
     @staticmethod

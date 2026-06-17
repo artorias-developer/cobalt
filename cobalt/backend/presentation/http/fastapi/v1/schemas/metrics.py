@@ -11,11 +11,13 @@ from pydantic import BaseModel, Field, ConfigDict
 class MetricSchema(BaseModel):
     value: float = Field(
         ...,
+        title="Value",
         description="Metric value"
     )
 
     date: datetime = Field(
         ...,
+        title="Date",
         description="Metric timestamp"
     )
 
@@ -32,21 +34,25 @@ class MetricSchema(BaseModel):
 class MetricDiskSchema(BaseModel):
     free: int = Field(
         ...,
+        title="Free",
         description="Free disk space in bytes"
     )
 
     total: int = Field(
         ...,
+        title="Total",
         description="Total disk space in bytes"
     )
 
     last_check: datetime = Field(
         ...,
+        title="Last check",
         description="Last check timestamp"
     )
 
     next_check: datetime = Field(
         ...,
+        title="Next check",
         description="Next check timestamp"
     )
 

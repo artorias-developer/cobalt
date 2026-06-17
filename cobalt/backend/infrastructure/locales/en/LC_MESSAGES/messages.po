@@ -1,0 +1,681 @@
+# English translations for Cobalt.
+# Copyright (C) 2026 ArtoriasCode
+# This file is distributed under the same license as the Cobalt project.
+# FIRST AUTHOR artorias.code@gmail.com, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version:  1.1.0\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-06-17 17:14+0300\n"
+"PO-Revision-Date: 2026-06-17 11:40+0300\n"
+"Last-Translator: ArtoriasCode artorias.code@gmail.com\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: cobalt/backend/application/services/attributes.py:97
+#: cobalt/backend/application/services/attributes.py:339
+#: cobalt/backend/application/services/attributes.py:435
+msgid "Server or attributes not found"
+msgstr ""
+
+#: cobalt/backend/application/services/attributes.py:147
+msgid "Server {server_id} or attribute {attribute_id} not found"
+msgstr ""
+
+#: cobalt/backend/application/services/attributes.py:276
+msgid "At least one field (key or value) must be provided"
+msgstr ""
+
+#: cobalt/backend/application/services/attributes.py:288
+#: cobalt/backend/application/services/attributes.py:392
+msgid "Server or attribute not found"
+msgstr ""
+
+#: cobalt/backend/application/services/auth.py:77
+#: cobalt/backend/application/services/auth.py:84
+#: cobalt/backend/application/services/users.py:228
+msgid "Invalid login or password"
+msgstr ""
+
+#: cobalt/backend/application/services/auth.py:156
+msgid "User not found"
+msgstr ""
+
+#: cobalt/backend/application/services/auth.py:160
+msgid "Current password is required"
+msgstr ""
+
+#: cobalt/backend/application/services/auth.py:169
+msgid "Invalid current password"
+msgstr ""
+
+#: cobalt/backend/application/services/files.py:108
+msgid "Access outside the server root is not allowed"
+msgstr ""
+
+#: cobalt/backend/application/services/files.py:156
+msgid "Path \"{relative_path}\" not found"
+msgstr ""
+
+#: cobalt/backend/application/services/files.py:181
+#: cobalt/backend/application/services/files.py:341
+#: cobalt/backend/application/services/files.py:425
+msgid "Path \"{path}\" not found"
+msgstr ""
+
+#: cobalt/backend/application/services/files.py:184
+#: cobalt/backend/application/services/files.py:344
+msgid "Path \"{path}\" is not a directory"
+msgstr ""
+
+#: cobalt/backend/application/services/files.py:245
+#: cobalt/backend/application/services/files.py:285
+#: cobalt/backend/application/services/files.py:485
+msgid "File \"{path}\" not found"
+msgstr ""
+
+#: cobalt/backend/application/services/files.py:248
+#: cobalt/backend/application/services/files.py:288
+#: cobalt/backend/application/services/files.py:488
+msgid "Path \"{path}\" is not a file"
+msgstr ""
+
+#: cobalt/backend/application/services/files.py:253
+msgid "File \"{path}\" exceeds the read limit"
+msgstr ""
+
+#: cobalt/backend/application/services/files.py:311
+msgid "Path \"{path}\" already exists"
+msgstr ""
+
+#: cobalt/backend/application/services/files.py:394
+#: cobalt/backend/application/services/files.py:497
+msgid "Destination path \"{path}\" not found"
+msgstr ""
+
+#: cobalt/backend/application/services/files.py:397
+msgid "Destination path \"{path}\" is not a directory"
+msgstr ""
+
+#: cobalt/backend/application/services/files.py:430
+msgid "Name \"{name}\" is already in use"
+msgstr ""
+
+#: cobalt/backend/application/services/games.py:90
+msgid "Game not found"
+msgstr ""
+
+#: cobalt/backend/application/services/games.py:135
+#: cobalt/backend/application/services/games.py:262
+#: cobalt/backend/application/services/games.py:305
+msgid "Game {game_id} not found"
+msgstr ""
+
+#: cobalt/backend/application/services/games.py:186
+#: cobalt/backend/application/services/servers.py:97
+#: cobalt/backend/application/services/servers.py:129
+msgid "Game \"{name}\" not found"
+msgstr ""
+
+#: cobalt/backend/application/services/loaders.py:85
+msgid "Loader \"{name}\" for game {game_id} not found"
+msgstr ""
+
+#: cobalt/backend/application/services/loaders.py:175
+#: cobalt/backend/application/services/loaders.py:225
+msgid "Loader {loader_id} not found"
+msgstr ""
+
+#: cobalt/backend/application/services/logs.py:253
+msgid "Logs for host not found"
+msgstr ""
+
+#: cobalt/backend/application/services/logs.py:277
+msgid "Server with ID {server_id} not found"
+msgstr ""
+
+#: cobalt/backend/application/services/logs.py:293
+msgid "Logs for server with ID {server_id} not found"
+msgstr ""
+
+#: cobalt/backend/application/services/metrics.py:133
+#: cobalt/backend/application/services/metrics.py:171
+msgid "Host CPU metrics not found"
+msgstr ""
+
+#: cobalt/backend/application/services/metrics.py:152
+#: cobalt/backend/application/services/metrics.py:190
+msgid "Host RAM metrics not found"
+msgstr ""
+
+#: cobalt/backend/application/services/metrics.py:218
+#: cobalt/backend/application/services/metrics.py:336
+msgid "CPU metrics for server {server_id} not found"
+msgstr ""
+
+#: cobalt/backend/application/services/metrics.py:246
+#: cobalt/backend/application/services/metrics.py:364
+msgid "RAM metrics for server {server_id} not found"
+msgstr ""
+
+#: cobalt/backend/application/services/metrics.py:274
+msgid "Servers CPU metrics not found"
+msgstr ""
+
+#: cobalt/backend/application/services/metrics.py:305
+msgid "Servers RAM metrics not found"
+msgstr ""
+
+#: cobalt/backend/application/services/roles.py:96
+#: cobalt/backend/application/services/roles.py:303
+msgid "Roles not found"
+msgstr ""
+
+#: cobalt/backend/application/services/roles.py:141
+#: cobalt/backend/application/services/roles.py:211
+#: cobalt/backend/application/services/roles.py:264
+#: cobalt/backend/infrastructure/databases/postgres/repositories/users.py:91
+msgid "Role {role_id} not found"
+msgstr ""
+
+#: cobalt/backend/application/services/servers.py:102
+msgid "Loader \"{name}\" not found"
+msgstr ""
+
+#: cobalt/backend/application/services/servers.py:124
+#: cobalt/backend/application/services/servers.py:217
+#: cobalt/backend/application/services/servers.py:319
+#: cobalt/backend/application/services/servers.py:355
+#: cobalt/backend/infrastructure/databases/postgres/repositories/attributes.py:83
+msgid "Server {server_id} not found"
+msgstr ""
+
+#: cobalt/backend/application/services/servers.py:172
+#: cobalt/backend/application/services/servers.py:411
+msgid "Servers not found"
+msgstr ""
+
+#: cobalt/backend/application/services/servers.py:358
+msgid "Server {server_id} is still being installed"
+msgstr ""
+
+#: cobalt/backend/application/services/servers.py:419
+msgid "Some servers are still being installed"
+msgstr ""
+
+#: cobalt/backend/application/services/settings.py:208
+msgid "Settings for user with ID {user_id} not found"
+msgstr ""
+
+#: cobalt/backend/application/services/settings.py:280
+msgid "Cannot clear containers while servers are being created"
+msgstr ""
+
+#: cobalt/backend/application/services/users.py:131
+#: cobalt/backend/application/services/users.py:389
+msgid "Users not found"
+msgstr ""
+
+#: cobalt/backend/application/services/users.py:176
+#: cobalt/backend/application/services/users.py:321
+#: cobalt/backend/application/services/users.py:357
+msgid "User {user_id} not found"
+msgstr ""
+
+#: cobalt/backend/infrastructure/clients/caches/redis.py:91
+msgid "Error while getting value from cache"
+msgstr ""
+
+#: cobalt/backend/infrastructure/clients/caches/redis.py:124
+msgid "Error while writing value to cache"
+msgstr ""
+
+#: cobalt/backend/infrastructure/clients/caches/redis.py:150
+msgid "Error while setting expire in cache"
+msgstr ""
+
+#: cobalt/backend/infrastructure/clients/caches/redis.py:199
+msgid "Error while deleting values from cache"
+msgstr ""
+
+#: cobalt/backend/infrastructure/clients/caches/redis.py:220
+msgid "Error while clearing cache"
+msgstr ""
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:92
+msgid "Error while getting container \"{name}\""
+msgstr ""
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:94
+msgid "Container \"{name}\" not found"
+msgstr ""
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:160
+msgid "Error while building image \"{tag}\""
+msgstr ""
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:183
+msgid "Error while removing image \"{image}\""
+msgstr ""
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:203
+msgid "Error while pruning images"
+msgstr ""
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:226
+msgid "Error while listing containers"
+msgstr ""
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:327
+msgid "Error while creating container \"{name}\""
+msgstr ""
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:348
+msgid "Error while starting container \"{name}\""
+msgstr ""
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:371
+msgid "Error while stopping container \"{name}\""
+msgstr ""
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:396
+msgid "Error while removing container \"{name}\""
+msgstr ""
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:419
+msgid "Error while restarting container \"{name}\""
+msgstr ""
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:440
+msgid "Error while waiting for container \"{name}\""
+msgstr ""
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:477
+msgid "Error while getting logs for container \"{name}\""
+msgstr ""
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:512
+msgid "Error while streaming logs for container \"{name}\""
+msgstr ""
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:548
+msgid "Error while getting status for container \"{name}\""
+msgstr ""
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:580
+msgid "Error while executing command in container \"{name}\""
+msgstr ""
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:600
+msgid "Error while pruning volumes"
+msgstr ""
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:647
+msgid "Error while pruning builder cache"
+msgstr ""
+
+#: cobalt/backend/infrastructure/databases/postgres/repositories/attributes.py:94
+msgid "Attribute \"{key}\" already exists for server {server_id}"
+msgstr ""
+
+#: cobalt/backend/infrastructure/databases/postgres/repositories/attributes.py:101
+#: cobalt/backend/infrastructure/databases/postgres/repositories/games.py:92
+#: cobalt/backend/infrastructure/databases/postgres/repositories/loaders.py:86
+#: cobalt/backend/infrastructure/databases/postgres/repositories/roles.py:94
+#: cobalt/backend/infrastructure/databases/postgres/repositories/servers.py:106
+#: cobalt/backend/infrastructure/databases/postgres/repositories/users.py:103
+msgid "Internal server error"
+msgstr ""
+
+#: cobalt/backend/infrastructure/databases/postgres/repositories/games.py:89
+msgid "Game \"{name}\" already exists"
+msgstr ""
+
+#: cobalt/backend/infrastructure/databases/postgres/repositories/loaders.py:83
+msgid "Loader \"{name}\" already exists"
+msgstr ""
+
+#: cobalt/backend/infrastructure/databases/postgres/repositories/roles.py:85
+msgid "Role \"{role_name}\" already exists"
+msgstr ""
+
+#: cobalt/backend/infrastructure/databases/postgres/repositories/roles.py:91
+msgid "Role {role_id} is still assigned to users"
+msgstr ""
+
+#: cobalt/backend/infrastructure/databases/postgres/repositories/servers.py:91
+msgid "Server \"{name}\" already exists"
+msgstr ""
+
+#: cobalt/backend/infrastructure/databases/postgres/repositories/servers.py:99
+msgid "Game {game_id} or loader {loader_id} not found"
+msgstr ""
+
+#: cobalt/backend/infrastructure/databases/postgres/repositories/users.py:100
+msgid "User \"{user_login}\" already exists"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:9
+msgid "Id"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:10
+#: cobalt/backend/infrastructure/locales/stub.py:52
+msgid "Server id"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:11
+msgid "Key"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:12
+#: cobalt/backend/infrastructure/locales/stub.py:42
+msgid "Value"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:13
+msgid "Created at"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:14
+msgid "Updated at"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:15
+msgid "Attributes"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:16
+msgid "Total"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:17
+msgid "Page"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:18
+msgid "Pages"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:19
+msgid "Search"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:20
+msgid "Sort field"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:21
+msgid "Sort direction"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:22
+msgid "Limit"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:23
+msgid "Root"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:24
+msgid "Login"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:25
+msgid "Password"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:26
+msgid "Old password"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:27
+msgid "New password"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:28
+msgid "Name"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:29
+msgid "Format"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:30
+msgid "Size"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:31
+msgid "Modified at"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:32
+msgid "Files"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:33
+msgid "Total files"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:34
+msgid "Total directories"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:35
+msgid "Paths"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:36
+msgid "Destination path"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:37
+msgid "New name"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:38
+msgid "Games"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:39
+msgid "Loader id"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:40
+msgid "Loader name"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:41
+msgid "Message"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:43
+msgid "Date"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:44
+msgid "Free"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:45
+msgid "Last check"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:46
+msgid "Next check"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:47
+msgid "Role id"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:48
+msgid "Role name"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:49
+msgid "Permissions"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:50
+msgid "Roles"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:51
+msgid "Role ids"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:53
+msgid "Server name"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:54
+msgid "Server version"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:55
+msgid "Server status"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:56
+msgid "Servers"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:57
+msgid "Running"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:58
+msgid "Port"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:59
+msgid "Server ids"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:60
+msgid "Command"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:61
+msgid "Settings id"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:62
+msgid "Settings user id"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:63
+msgid "Language"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:64
+msgid "Theme"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:65
+msgid "Timezone"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:66
+msgid "Users"
+msgstr ""
+
+#: cobalt/backend/infrastructure/locales/stub.py:67
+msgid "User ids"
+msgstr ""
+
+#: cobalt/backend/presentation/http/fastapi/v1/middlewares/validation.py:51
+msgid "Unknown"
+msgstr ""
+
+#: cobalt/backend/presentation/http/fastapi/v1/middlewares/validation.py:58
+msgid "{field_name} is required"
+msgstr ""
+
+#: cobalt/backend/presentation/http/fastapi/v1/middlewares/validation.py:64
+msgid "{field_name} must be at least {min_length} characters long"
+msgstr ""
+
+#: cobalt/backend/presentation/http/fastapi/v1/middlewares/validation.py:71
+msgid "{field_name} cannot be longer than {max_length} characters"
+msgstr ""
+
+#: cobalt/backend/presentation/http/fastapi/v1/middlewares/validation.py:77
+msgid "{field_name} contains invalid characters"
+msgstr ""
+
+#: cobalt/backend/presentation/http/fastapi/v1/middlewares/validation.py:83
+msgid "{field_name} must be greater than {gt}"
+msgstr ""
+
+#: cobalt/backend/presentation/http/fastapi/v1/middlewares/validation.py:90
+msgid "{field_name} must be greater than or equal to {ge}"
+msgstr ""
+
+#: cobalt/backend/presentation/http/fastapi/v1/middlewares/validation.py:97
+msgid "{field_name} must be less than {lt}"
+msgstr ""
+
+#: cobalt/backend/presentation/http/fastapi/v1/middlewares/validation.py:104
+msgid "{field_name} must be less than or equal to {le}"
+msgstr ""
+
+#: cobalt/backend/presentation/http/fastapi/v1/middlewares/validation.py:110
+msgid "{field_name} must be a valid integer"
+msgstr ""
+
+#: cobalt/backend/presentation/http/fastapi/v1/middlewares/validation.py:115
+msgid "{field_name} must be a valid number"
+msgstr ""
+
+#: cobalt/backend/presentation/http/fastapi/v1/middlewares/validation.py:120
+msgid "{field_name} must be a valid boolean"
+msgstr ""
+
+#: cobalt/backend/presentation/http/fastapi/v1/middlewares/validation.py:126
+msgid "{field_name} must be one of the allowed values: {expected}"
+msgstr ""
+
+#: cobalt/backend/presentation/http/fastapi/v1/middlewares/validation.py:132
+msgid "{field_name} must be a list"
+msgstr ""
+
+#: cobalt/backend/presentation/http/fastapi/v1/middlewares/validation.py:138
+msgid "{field_name} must contain at least {min_length} item(s)"
+msgstr ""
+
+#: cobalt/backend/presentation/http/fastapi/v1/middlewares/validation.py:145
+msgid "{field_name} cannot contain more than {max_length} item(s)"
+msgstr ""
+
+#: cobalt/backend/presentation/http/fastapi/v1/middlewares/validation.py:151
+msgid "{field_name}: {msg}"
+msgstr ""
+
+#: cobalt/backend/presentation/http/fastapi/v1/middlewares/validation.py:157
+msgid "{field_name} failed validation"
+msgstr ""
+
+#: cobalt/backend/presentation/http/fastapi/v1/routers/base.py:58
+#: cobalt/backend/presentation/http/fastapi/v1/routers/base.py:83
+#: cobalt/backend/presentation/ws/fastapi/v1/routers/base.py:61
+#: cobalt/backend/presentation/ws/fastapi/v1/routers/base.py:87
+msgid "Invalid session"
+msgstr ""
+
+#: cobalt/backend/presentation/http/fastapi/v1/routers/base.py:86
+#: cobalt/backend/presentation/ws/fastapi/v1/routers/base.py:90
+msgid "Not enough permissions"
+msgstr ""
+
+#: cobalt/backend/presentation/ws/fastapi/v1/managers/events.py:229
+msgid "Unknown event \"{event}\""
+msgstr ""
+

@@ -38,10 +38,10 @@ test.describe("Settings page", () => {
     expect(response.status()).toBe(409)
   })
 
-  test("Should return 400 on one of the password is missing", async ({ page }) => {
+  test("Should return 400 on old password is missing", async ({ page }) => {
     await page.locator('.tabs .nav button[name="security"]').click()
 
-    await page.locator('input[name="old-password"]').fill("wrong")
+    await page.locator('input[name="new-password"]').fill("wrong")
     const [response] = await Promise.all([
       page.waitForResponse((resp) =>
         resp.url().includes("credentials") && resp.request().method() === "PATCH"

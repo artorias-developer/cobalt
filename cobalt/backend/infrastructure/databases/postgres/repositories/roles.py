@@ -3,7 +3,7 @@
 #  Repository: https://github.com/ArtoriasCode/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-from typing import Optional, cast, List
+from typing import Optional, cast, List, Callable
 
 from sqlalchemy import select, delete
 from sqlalchemy.exc import IntegrityError
@@ -21,6 +21,7 @@ from domain.entities import (
     RoleUpdateEntity
 )
 from domain.repositories import AbstractRolesRepository
+from application.contracts.managers import AbstractI18nManager
 from application.contracts.loggers import AbstractLogger
 from infrastructure.contracts.databases.mappers import AbstractRolesRepositoryMapper
 from infrastructure.databases.postgres.models import RoleModel
@@ -36,18 +37,25 @@ class RolesRepository(AbstractRolesRepository, BaseRepository):
     Repository for working with the 'users_roles' table.
     """
     roles_mapper: AbstractRolesRepositoryMapper
+    i18n_manager: AbstractI18nManager
     logger: AbstractLogger
+
+    _: Callable
 
     def __init__(
         self,
         async_session: async_sessionmaker,
         roles_mapper: AbstractRolesRepositoryMapper,
+        i18n_manager: AbstractI18nManager,
         logger: AbstractLogger
     ):
         super().__init__(async_session)
 
         self.roles_mapper = roles_mapper
+        self.i18n_manager = i18n_manager
         self.logger = logger
+
+        self._ = i18n_manager.gettext
 
     def _handle_integrity_error(
         self,
@@ -74,16 +82,16 @@ class RolesRepository(AbstractRolesRepository, BaseRepository):
             ]:
                 role_name = details.get("name")
 
-                raise ConflictError(f'Role "{role_name}" already exists') from e
+                raise ConflictError(self._('Role "{role_name}" already exists').format(role_name=role_name)) from e
 
         if sqlstate == IntegrityCodesEnum.FOREIGN_KEY_VIOLATION:
             if operation == RepositoryOperationsEnum.DELETE:
                 role_id = details.get("id")
 
-                raise ConflictError(f"Role {role_id} is still assigned to users") from e
+                raise ConflictError(self._("Role {role_id} is still assigned to users").format(role_id=role_id)) from e
 
         self.logger.exception(f"Unhandled DB integrity error during {operation}:")
-        raise UnexpectedError("Internal server error") from e
+        raise UnexpectedError(self._("Internal server error")) from e
 
     async def get_page(
         self,

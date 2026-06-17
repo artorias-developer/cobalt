@@ -6,39 +6,43 @@
 from datetime import datetime
 from typing import List, Literal, Optional, Annotated
 
-from pydantic import BaseModel, Field, ConfigDict, RootModel, model_validator
-
-from domain.exceptions import ValidationError
+from pydantic import BaseModel, Field, ConfigDict, RootModel
 
 
 class AttributeSchema(BaseModel):
     id: int = Field(
         ...,
+        title="Attribute id",
         description="Attribute ID"
     )
 
     server_id: int = Field(
         ...,
+        title="Server id",
         description="Server ID"
     )
 
     key: str = Field(
         ...,
+        title="Attribute key",
         description="Attribute key"
     )
 
     value: str = Field(
         ...,
+        title="Attribute value",
         description="Attribute value"
     )
 
     created_at: datetime = Field(
         ...,
+        title="Created at",
         description="Creation timestamp"
     )
 
     updated_at: datetime = Field(
         ...,
+        title="Updated at",
         description="Last update timestamp"
     )
 
@@ -59,21 +63,25 @@ class AttributeSchema(BaseModel):
 class AttributesPageSchema(BaseModel):
     attributes: List[AttributeSchema] = Field(
         ...,
+        title="Attributes",
         description="List of attributes"
     )
 
     total: int = Field(
         ...,
+        title="Total",
         description="Total number of attributes"
     )
 
     page: int = Field(
         ...,
+        title="Page",
         description="Current page"
     )
 
     pages: int = Field(
         ...,
+        title="Pages",
         description="Total number of pages"
     )
 
@@ -102,22 +110,26 @@ class AttributesGetPageSchema(BaseModel):
     page: int = Field(
         1,
         gt=0,
+        title="Page",
         description="Page number"
     )
 
     search: Optional[str] = Field(
         None,
         max_length=100,
+        title="Search",
         description="Search query (by key or value)"
     )
 
     sort_field: Literal["id", "key", "value", "created_at", "updated_at"] = Field(
         "id",
+        title="Sort field",
         description="Field to sort by"
     )
 
     sort_direction: Literal["asc", "desc"] = Field(
         "desc",
+        title="Sort direction",
         description="Sort direction"
     )
 
@@ -125,6 +137,7 @@ class AttributesGetPageSchema(BaseModel):
         10,
         gt=0,
         le=100,
+        title="Limit",
         description="Number of items per page"
     )
 
@@ -147,11 +160,13 @@ class AttributeCreateSchema(BaseModel):
         min_length=1,
         max_length=64,
         pattern=r"^[a-zA-Z0-9_]+$",
+        title="Attribute key",
         description="Attribute key"
     )
 
     value: str = Field(
         ...,
+        title="Attribute value",
         description="Attribute value"
     )
 
@@ -171,11 +186,13 @@ class AttributeUpdateSchema(BaseModel):
         min_length=1,
         max_length=64,
         pattern=r"^[a-zA-Z0-9_]+$",
+        title="Attribute key",
         description="Attribute key"
     )
 
     value: Optional[str] = Field(
         None,
+        title="Attribute value",
         description="New attribute value"
     )
 
@@ -189,15 +206,10 @@ class AttributeUpdateSchema(BaseModel):
         }
     )
 
-    @model_validator(mode="after")
-    def check_at_least_one_field(self):
-        if not any([self.key, self.value]):
-            raise ValidationError("At least one field (key or value) must be provided")
-        return self
-
 class AttributesUpdateSchema(AttributeUpdateSchema):
     id: int = Field(
         ...,
+        title="Attribute id",
         description="Attribute ID"
     )
 
@@ -217,6 +229,7 @@ class AttributesDeleteSchema(RootModel):
         ...,
         min_length=1,
         max_length=100,
+        title="Attribute ids",
         description="List of attribute IDs to delete"
     )
 

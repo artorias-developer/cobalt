@@ -200,11 +200,13 @@ class CobaltApplication:
         )
 
         managers_container = create_fastapi_managers_container(
+            config=self.config,
             logger=logger
         )
 
         clients_container = create_redis_prometheus_docker_clients_container(
             config=self.config,
+            managers=managers_container,
             logger=logger
         )
 
@@ -212,6 +214,7 @@ class CobaltApplication:
 
         database_container = create_postgres_database_container(
             config=self.config,
+            managers=managers_container,
             mappers=mappers_container,
             logger=logger
         )
@@ -242,6 +245,8 @@ class CobaltApplication:
         setup_fastapi_middlewares(
             app=self.app,
             config=self.config,
+            managers=managers_container,
+            services=services_container,
             logger=logger
         )
 
