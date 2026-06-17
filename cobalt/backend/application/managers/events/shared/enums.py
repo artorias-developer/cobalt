@@ -41,3 +41,9 @@ class ServersEventsEnum(StrEnum):
     SUBSCRIBE_STATUSES = "servers_subscribe_statuses"
     UNSUBSCRIBE_STATUSES = "servers_unsubscribe_statuses"
     SERVER_STATUS = "server_status"
+
+class RolesEventsEnum(StrEnum):
+    """
+    Roles WebSocket events enum.
+    """
+    ROLE_UPDATE = "role_update"
