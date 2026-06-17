@@ -39,6 +39,9 @@ Whether you're setting up Cobalt for the first time or looking to contribute, th
 - [Ideas](https://github.com/ArtoriasCode/cobalt/discussions/43) - suggest and discuss new features.
 - [Game requests](https://github.com/ArtoriasCode/cobalt/discussions/42) - request support for new games.
 
+> [!WARNING]
+> Before posting anything, please read the guidelines.
+
 ## Supported games
 
 Currently, you can create a server for one of the following games:
@@ -58,9 +61,12 @@ The main features of Cobalt:
 - Real-time / last 15 minutes monitoring of CPU and RAM usage for your VPS / VDS and each game server.
 - Creating multiple users and roles with the ability to control access to virtually every section of the dashboard.
 - A convenient file manager and editor for managing files and editing configuration files.
-
-> [!NOTE]
-> It will become even more feature-rich and even easier to use in the future.
+- Several languages to choose from:
+  - English
+  - Russian
+  - Ukrainian
+  
+If you have any ideas you'd like to see here, please share them in [Ideas](https://github.com/ArtoriasCode/cobalt/discussions/43).
 
 ## FAQ
 
