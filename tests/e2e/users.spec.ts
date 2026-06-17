@@ -36,7 +36,7 @@ async function createUser(
 
   await page.locator('div[aria-label="user-role"]').click()
   await page.locator(".select-dropdown .option").first().waitFor()
-  await page.waitForTimeout(500)
+  await page.waitForTimeout(700)
   const options = page.locator(".select-dropdown .option")
   const count = await options.count()
   for (let i = 0; i < count; i++) {
