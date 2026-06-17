@@ -38,7 +38,7 @@ async function createServer(
 
   await page.locator('div[aria-label="server-loader"]').click()
   await page.locator(".select-dropdown .option").first().waitFor()
-  await page.waitForTimeout(500)
+  await page.waitForTimeout(700)
   await page.locator(".select-dropdown .option").first().click()
 
   if (!selectVersion) {
@@ -48,7 +48,7 @@ async function createServer(
 
   await page.locator('div[aria-label="server-version"]').click()
   await page.locator(".select-dropdown .option").first().waitFor()
-  await page.waitForTimeout(500)
+  await page.waitForTimeout(700)
   await page.locator(".select-dropdown .option").first().click()
 
   const [response] = await Promise.all([

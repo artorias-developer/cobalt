@@ -10,14 +10,14 @@ import { test, expect, type Page, type Response } from "@playwright/test"
 async function createFile(
   page: Page,
   name: string,
-  type: "File" | "Directory" = "File",
+  type: "file" | "directory" = "file",
 ): Promise<Response> {
   await page.locator('button[name="file-create-popup"]').click()
   await page.locator('input[name="file-name"]').fill(name)
   await page.locator('div[aria-label="file-type"]').click()
   await page.locator(".select-dropdown .option").first().waitFor()
-  await page.waitForTimeout(500)
-  await page.locator(".select-dropdown .option").filter({ hasText: type }).click()
+  await page.waitForTimeout(700)
+  await page.locator(`.select-dropdown .option .value[aria-label="${type}"]`).click()
 
   const [response] = await Promise.all([
     page.waitForResponse((resp) =>
@@ -85,7 +85,7 @@ test.describe("Server files", () => {
       page.waitForResponse((resp) =>
         resp.url().includes("files") && resp.request().method() === "POST"
       ),
-      createFile(page, "e2e_test_dir", "Directory"),
+      createFile(page, "e2e_test_dir", "directory"),
     ])
     expect(response3.status()).toBe(204)
   })
