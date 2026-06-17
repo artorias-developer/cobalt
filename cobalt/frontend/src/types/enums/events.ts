@@ -34,3 +34,7 @@ export enum ServersEventsEnum {
   UNSUBSCRIBE_STATUSES = "servers_unsubscribe_statuses",
   SERVER_STATUS = "server_status"
 }
+
+export enum RolesEventsEnum {
+  ROLE_UPDATE = "role_update"
+}

@@ -17,6 +17,7 @@ from application.contracts.clients import AbstractCachesClient
 from application.contracts.services import AbstractRolesService
 from application.contracts.mappers import AbstractRolesServiceMapper
 from application.clients.caches.shared import CacheConstants
+from application.managers.events.shared.enums import RolesEventsEnum
 from application.dtos import (
     RoleDto,
     RolesGetPageDto,
@@ -229,19 +230,31 @@ class RolesService(AbstractRolesService):
             ]
         )
 
+        mapped_dto = self.roles_mapper.entity_to_dto(
+            entity=updated_entity
+        )
+
         connections = await self.connections_manager.get_connections()
+        data_dict = mapped_dto.model_dump(mode="json")
 
         for connection_id, connection in connections.items():
             if connection.state.user.role.id != role_id:
                 continue
 
+            await self.connections_manager.send_to_connection(
+                connection_id=connection_id,
+                data={
+                    "type": "message",
+                    "event": RolesEventsEnum.ROLE_UPDATE,
+                    "data": data_dict
+                }
+            )
+
             await self.connections_manager.disconnect(
                 connection_id=connection_id
             )
 
-        return self.roles_mapper.entity_to_dto(
-            entity=updated_entity
-        )
+        return mapped_dto
 
     async def delete_one(
         self,
