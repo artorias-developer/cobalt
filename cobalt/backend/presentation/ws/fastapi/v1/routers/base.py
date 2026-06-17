@@ -12,9 +12,9 @@ from domain.exceptions import (
     AuthenticationError
 )
 from domain.enums import PermissionsEnum
+from application.contracts.managers import AbstractI18nManager
 from application.contracts.services import AbstractAuthService
 from application.dtos import UserDto
-from presentation.shared import CookieConstants
 from presentation.ws.shared import WebSocketStatusCodesEnum
 
 
@@ -23,12 +23,19 @@ class BaseWsRouter:
     Base WebSockets router.
     """
     auth_service: AbstractAuthService
+    i18n_manager: AbstractI18nManager
+
+    _: Callable
 
     def __init__(
         self,
-        auth_service: AbstractAuthService
+        auth_service: AbstractAuthService,
+        i18n_manager: AbstractI18nManager
     ):
         self.auth_service = auth_service
+        self.i18n_manager = i18n_manager
+
+        self._ = i18n_manager.gettext
 
     async def ws_session_required(
         self,
@@ -42,29 +49,17 @@ class BaseWsRouter:
 
         Returns:
         - UserDto: UserDto object.
+
+        Raises:
+        - WebSocketException: If user is not authenticated.
         """
-        if hasattr(websocket.state, "user"):
-            return websocket.state.user
-
-        session_id = websocket.cookies.get(CookieConstants.SESSION_KEY)
-
-        if not session_id:
-            raise WebSocketException(
-                code=WebSocketStatusCodesEnum.WS_4401_UNAUTHORIZED,
-                reason="Not authenticated"
-            )
-
-        user = await self.auth_service.get_session_user(
-            session_id=session_id
-        )
+        user = getattr(websocket.state, "user", None)
 
         if not user:
             raise WebSocketException(
                 code=WebSocketStatusCodesEnum.WS_4401_UNAUTHORIZED,
-                reason="Invalid session"
+                reason=self._("Invalid session")
             )
-
-        websocket.state.user = user
 
         return user
 
@@ -80,15 +75,19 @@ class BaseWsRouter:
 
         Returns:
         - Callable: Dependency function.
+
+        Raises:
+        - AuthenticationError: If user is not authenticated.
+        - PermissionsError: If user does not have required permissions.
         """
         async def dependency(websocket: WebSocket) -> UserDto:
-            if not hasattr(websocket.state, "user"):
-                raise AuthenticationError("Not authenticated")
+            user = getattr(websocket.state, "user", None)
 
-            user = websocket.state.user
+            if not user:
+                raise AuthenticationError(self._("Invalid session"))
 
             if not any(permission in user.role.permissions for permission in permissions):
-                raise PermissionsError("Not enough permissions")
+                raise PermissionsError(self._("Not enough permissions"))
 
             return user
 

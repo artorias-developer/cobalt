@@ -11,7 +11,10 @@ export PYTHONPATH := $(shell pwd)/cobalt/backend
     alembic-revision a\:r \
     alembic-upgrade a\:u \
     alembic-downgrade a\:d \
-    branches-local-delete b\:l\:d
+    branches-local-delete b\:l\:d \
+    locales-generate l\:g \
+    locales-update l\:u \
+    locales-compile l\:c
 
 docker-build-dev:
 	docker compose -f build/dev/docker-compose.yaml up -d
@@ -56,3 +59,16 @@ a\:d: alembic-downgrade
 branches-local-delete:
 	git branch | grep -v "dev\|main" | xargs git branch -D
 b\:l\:d: branches-local-delete
+
+locales-generate:
+	mkdir -p cobalt/backend/infrastructure/locales
+	pybabel extract -F cobalt/backend/babel.cfg -o cobalt/backend/infrastructure/locales/messages.pot cobalt/backend/ --no-wrap
+l\:g: locales-generate
+
+locales-update:
+	pybabel update -i cobalt/backend/infrastructure/locales/messages.pot -d cobalt/backend/infrastructure/locales --no-wrap --no-fuzzy-matching --ignore-obsolete
+l\:u: locales-update
+
+locales-compile:
+	pybabel compile -d cobalt/backend/infrastructure/locales
+l\:c: locales-compile

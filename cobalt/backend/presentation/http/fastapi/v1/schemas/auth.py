@@ -5,9 +5,7 @@
 
 from typing import Optional
 
-from pydantic import BaseModel, Field, ConfigDict, model_validator
-
-from domain.exceptions import ValidationError
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class AuthLoginSchema(BaseModel):
@@ -16,6 +14,7 @@ class AuthLoginSchema(BaseModel):
         min_length=3,
         max_length=32,
         pattern=r"^[a-zA-Z0-9_-]+$",
+        title="Login",
         description="User login"
     )
 
@@ -24,6 +23,7 @@ class AuthLoginSchema(BaseModel):
         min_length=3,
         max_length=32,
         pattern=r"^[a-zA-Z0-9!@#$%&*]+$",
+        title="Password",
         description="User password"
     )
 
@@ -43,6 +43,7 @@ class AuthChangeCredentialsSchema(BaseModel):
         min_length=3,
         max_length=32,
         pattern=r"^[a-zA-Z0-9_-]+$",
+        title="Login",
         description="New login"
     )
 
@@ -51,6 +52,7 @@ class AuthChangeCredentialsSchema(BaseModel):
         min_length=3,
         max_length=32,
         pattern=r"^[a-zA-Z0-9!@#$%&*]+$",
+        title="Old password",
         description="Current password"
     )
 
@@ -59,6 +61,7 @@ class AuthChangeCredentialsSchema(BaseModel):
         min_length=3,
         max_length=32,
         pattern=r"^[a-zA-Z0-9!@#$%&*]+$",
+        title="New password",
         description="New password"
     )
 
@@ -72,9 +75,3 @@ class AuthChangeCredentialsSchema(BaseModel):
             }
         }
     )
-
-    @model_validator(mode="after")
-    def validate_passwords(self) -> "AuthChangeCredentialsSchema":
-        if bool(self.old_password) != bool(self.new_password):
-            raise ValidationError("One of the passwords is missing")
-        return self

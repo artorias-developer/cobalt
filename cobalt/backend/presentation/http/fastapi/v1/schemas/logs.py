@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field, ConfigDict
 class LogSchema(BaseModel):
     message: str = Field(
         ...,
+        title="Message",
         description="Log message"
     )
 

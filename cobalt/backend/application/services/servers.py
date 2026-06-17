@@ -3,7 +3,7 @@
 #  Repository: https://github.com/ArtoriasCode/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Callable
 
 from orjson import loads
 
@@ -17,7 +17,10 @@ from domain.repositories import AbstractServersRepository
 from application.contracts.loggers import AbstractLogger
 from application.contracts.queues import AbstractQueue
 from application.contracts.clients import AbstractCachesClient
-from application.contracts.managers import AbstractConnectionsManager
+from application.contracts.managers import (
+    AbstractConnectionsManager,
+    AbstractI18nManager
+)
 from application.contracts.services import AbstractServersService
 from application.contracts.mappers import AbstractServersServiceMapper
 from application.contracts.games import (
@@ -46,9 +49,12 @@ class ServersService(AbstractServersService):
     connections_manager: AbstractConnectionsManager
     servers_repository: AbstractServersRepository
     servers_mapper: AbstractServersServiceMapper
+    i18n_manager: AbstractI18nManager
     queue: AbstractQueue
     logger: AbstractLogger
     game_modules: Dict[str, AbstractGameModule]
+
+    _: Callable
 
     def __init__(
         self,
@@ -56,6 +62,7 @@ class ServersService(AbstractServersService):
         connections_manager: AbstractConnectionsManager,
         servers_repository: AbstractServersRepository,
         servers_mapper: AbstractServersServiceMapper,
+        i18n_manager: AbstractI18nManager,
         queue: AbstractQueue,
         logger: AbstractLogger,
         game_modules: Dict[str, AbstractGameModule]
@@ -64,9 +71,12 @@ class ServersService(AbstractServersService):
         self.connections_manager = connections_manager
         self.servers_repository = servers_repository
         self.servers_mapper = servers_mapper
+        self.i18n_manager = i18n_manager
         self.queue = queue
         self.logger = logger
         self.game_modules = game_modules
+
+        self._ = i18n_manager.gettext
 
     async def _get_server_data(
         self,
@@ -84,12 +94,12 @@ class ServersService(AbstractServersService):
         game_module = self.game_modules.get(server.game.name)
 
         if not game_module:
-            raise NotFoundError(f'Game "{server.game.name}" not found')
+            raise NotFoundError(self._('Game "{name}" not found').format(name=server.game.name))
 
         loader = game_module.loaders.get(server.loader.name)
 
         if not loader:
-            raise NotFoundError(f'Loader "{server.loader.name}" not found')
+            raise NotFoundError(self._('Loader "{name}" not found').format(name=server.loader.name))
 
         return game_module, loader
 
@@ -111,12 +121,12 @@ class ServersService(AbstractServersService):
         )
 
         if not server:
-            raise NotFoundError(f"Server {server_id} not found")
+            raise NotFoundError(self._("Server {server_id} not found").format(server_id=server_id))
 
         game_module = self.game_modules.get(server.game.name)
 
         if not game_module:
-            raise NotFoundError(f'Game "{server.game.name}" not found')
+            raise NotFoundError(self._('Game "{name}" not found').format(name=server.game.name))
 
         return game_module
 
@@ -159,7 +169,7 @@ class ServersService(AbstractServersService):
         )
 
         if not received_entity.servers:
-            raise NotFoundError("Servers not found")
+            raise NotFoundError(self._("Servers not found"))
 
         mapped_dto = self.servers_mapper.page_entity_to_dto(
             entity=received_entity
@@ -204,7 +214,7 @@ class ServersService(AbstractServersService):
         )
 
         if not received_entity:
-            raise NotFoundError(f"Server {server_id} not found")
+            raise NotFoundError(self._("Server {server_id} not found").format(server_id=server_id))
 
         key = self.caches_client.format_pattern(
             pattern=CacheConstants.SERVERS_ITEM_KEY,
@@ -306,7 +316,7 @@ class ServersService(AbstractServersService):
         )
 
         if not updated_entity:
-            raise NotFoundError(f"Server {server_id} not found")
+            raise NotFoundError(self._("Server {server_id} not found").format(server_id=server_id))
 
         await self.caches_client.delete(
             patterns=[
@@ -342,10 +352,10 @@ class ServersService(AbstractServersService):
         )
 
         if not received_entity:
-            raise NotFoundError(f"Server {server_id} not found")
+            raise NotFoundError(self._("Server {server_id} not found").format(server_id=server_id))
 
         if received_entity.status not in (ServerStatusEnum.CREATED, ServerStatusEnum.FAILED):
-            raise ConflictError(f"Server {server_id} is still being installed")
+            raise ConflictError(self._("Server {server_id} is still being installed").format(server_id=server_id))
 
         await self.servers_repository.delete_one(
             server_id=server_id
@@ -398,7 +408,7 @@ class ServersService(AbstractServersService):
         )
 
         if not received_entities:
-            raise NotFoundError("Servers not found")
+            raise NotFoundError(self._("Servers not found"))
 
         installing = [
             server for server in received_entities
@@ -406,7 +416,7 @@ class ServersService(AbstractServersService):
         ]
 
         if installing:
-            raise ConflictError("Some servers are still being installed")
+            raise ConflictError(self._("Some servers are still being installed"))
 
         await self.servers_repository.delete_many(
             server_ids=server_ids

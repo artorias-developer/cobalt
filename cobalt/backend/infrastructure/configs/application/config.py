@@ -6,6 +6,7 @@
 from os import getenv
 from pathlib import Path
 
+from domain.enums import LanguageEnum
 from infrastructure.configs.application.dataclasses import (
     ApplicationConfig,
     ServerSettings,
@@ -13,7 +14,8 @@ from infrastructure.configs.application.dataclasses import (
     DatabaseSettings,
     RedisSettings,
     PrometheusSettings,
-    SecuritySettings
+    SecuritySettings,
+    I18nSettings
 )
 from infrastructure.configs.application.enums import EnvironmentEnum
 
@@ -96,11 +98,18 @@ def get_application_config() -> ApplicationConfig:
         log_file="cobalt.log"
     )
 
+    i18n = I18nSettings(
+        locales_dir=Path(__file__).parents[3] / "infrastructure" / "locales",
+        domain="messages",
+        default_language=LanguageEnum.EN
+    )
+
     return ApplicationConfig(
         server=server,
         database=database,
         redis=redis,
         prometheus=prometheus,
         logging=logging,
-        security=security
+        security=security,
+        i18n=i18n
     )

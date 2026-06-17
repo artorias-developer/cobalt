@@ -46,7 +46,8 @@ from application.contracts.services import (
 from application.contracts.managers import (
     AbstractEventsManager,
     AbstractConnectionsManager,
-    AbstractArchivesManager
+    AbstractArchivesManager,
+    AbstractI18nManager
 )
 from application.contracts.clients import AbstractMetricsClient
 from application.contracts.clients import AbstractContainersClient
@@ -87,6 +88,7 @@ class SchedulerJob:
 
 @dataclass(slots=True)
 class ManagersContainer:
+    i18n: AbstractI18nManager
     events: AbstractEventsManager
     connections: AbstractConnectionsManager
     archives: AbstractArchivesManager

@@ -18,36 +18,43 @@ from domain.enums import (
 class SettingsSchema(BaseModel):
     id: int = Field(
         ...,
+        title="Settings id",
         description="Settings ID"
     )
 
     user_id: int = Field(
         ...,
+        title="Settings user id",
         description="Settings user ID"
     )
 
     language: LanguageEnum = Field(
         ...,
+        title="Language",
         description="Language"
     )
 
     theme: ThemeEnum = Field(
         ...,
+        title="Theme",
         description="Theme"
     )
 
     timezone: TimezoneEnum = Field(
         ...,
+        title="Timezone",
         description="Timezone"
     )
 
     created_at: datetime = Field(
         ...,
+        title="Created at",
         description="Creation timestamp"
     )
 
     updated_at: datetime = Field(
         ...,
+        title="Updated at",
         description="Last update timestamp"
     )
 
@@ -69,16 +76,19 @@ class SettingsSchema(BaseModel):
 class SettingsUpdateSchema(BaseModel):
     language: Optional[LanguageEnum] = Field(
         None,
+        title="Language",
         description="Language"
     )
 
     theme: Optional[ThemeEnum] = Field(
         None,
+        title="Theme",
         description="Theme"
     )
 
     timezone: Optional[TimezoneEnum] = Field(
         None,
+        title="Timezone",
         description="Timezone"
     )
 

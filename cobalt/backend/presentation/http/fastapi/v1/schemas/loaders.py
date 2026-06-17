@@ -12,31 +12,37 @@ from pydantic import BaseModel, Field, ConfigDict
 class LoaderSchema(BaseModel):
     id: int = Field(
         ...,
+        title="Loader id",
         description="Loader ID"
     )
 
     game_id: int = Field(
         ...,
+        title="Game id",
         description="Game ID"
     )
 
     name: str = Field(
         ...,
+        title="Loader name",
         description="Loader name"
     )
 
     versions: List[str] = Field(
         ...,
+        title="Versions",
         description="List of supported versions"
     )
 
     created_at: datetime = Field(
         ...,
+        title="Created at",
         description="Creation timestamp"
     )
 
     updated_at: datetime = Field(
         ...,
+        title="Updated at",
         description="Last update timestamp"
     )
 
@@ -57,26 +63,31 @@ class LoaderSchema(BaseModel):
 class LoaderShortSchema(BaseModel):
     id: int = Field(
         ...,
+        title="Loader id",
         description="Loader ID"
     )
 
     game_id: int = Field(
         ...,
+        title="Game id",
         description="Game ID"
     )
 
     name: str = Field(
         ...,
+        title="Loader name",
         description="Loader name"
     )
 
     created_at: datetime = Field(
         ...,
+        title="Created at",
         description="Creation timestamp"
     )
 
     updated_at: datetime = Field(
         ...,
+        title="Updated at",
         description="Last update timestamp"
     )
 

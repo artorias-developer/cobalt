@@ -3,7 +3,7 @@
 #  Repository: https://github.com/ArtoriasCode/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-from typing import Optional, List, cast
+from typing import Optional, List, cast, Callable
 
 from sqlalchemy import select, delete
 from sqlalchemy.orm import joinedload
@@ -23,6 +23,7 @@ from domain.entities import (
     UserUpdateEntity
 )
 from domain.repositories import AbstractUsersRepository
+from application.contracts.managers import AbstractI18nManager
 from application.contracts.loggers import AbstractLogger
 from infrastructure.contracts.databases.mappers import AbstractUsersRepositoryMapper
 from infrastructure.databases.postgres.models import (
@@ -42,18 +43,25 @@ class UsersRepository(AbstractUsersRepository, BaseRepository):
     Repository for working with the 'users' table.
     """
     users_mapper: AbstractUsersRepositoryMapper
+    i18n_manager: AbstractI18nManager
     logger: AbstractLogger
+
+    _: Callable
 
     def __init__(
         self,
         async_session: async_sessionmaker,
         users_mapper: AbstractUsersRepositoryMapper,
+        i18n_manager: AbstractI18nManager,
         logger: AbstractLogger
     ):
         super().__init__(async_session)
 
         self.users_mapper = users_mapper
+        self.i18n_manager = i18n_manager
         self.logger = logger
+
+        self._ = i18n_manager.gettext
 
     def _handle_integrity_error(
         self,
@@ -80,7 +88,7 @@ class UsersRepository(AbstractUsersRepository, BaseRepository):
             ]:
                 role_id = details.get("role_id")
 
-                raise NotFoundError(f"Role {role_id} not found") from e
+                raise NotFoundError(self._("Role {role_id} not found").format(role_id=role_id)) from e
 
         if sqlstate == IntegrityCodesEnum.UNIQUE_VIOLATION:
             if operation in [
@@ -89,10 +97,10 @@ class UsersRepository(AbstractUsersRepository, BaseRepository):
             ]:
                 user_login = details.get("login")
 
-                raise ConflictError(f'User "{user_login}" already exists') from e
+                raise ConflictError(self._('User "{user_login}" already exists').format(user_login=user_login)) from e
 
         self.logger.exception(f"Unhandled DB integrity error during {operation}:")
-        raise UnexpectedError("Internal server error") from e
+        raise UnexpectedError(self._("Internal server error")) from e
 
     async def get_page(
         self,
