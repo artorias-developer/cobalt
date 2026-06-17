@@ -475,8 +475,14 @@ const columns = computed((): TableColumn[] => [
 ])
 
 const createTypeOptions = computed((): SelectOption[] => [
-  { value: "file", label: t("servers.server.files.types.file") },
-  { value: "directory", label: t("servers.server.files.types.directory") }
+  {
+    value: "file",
+    label: t("servers.server.files.types.file")
+  },
+  {
+    value: "directory",
+    label: t("servers.server.files.types.directory")
+  }
 ])
 
 const FILE_TYPE_MAP: Record<string, FileTypeEntry> = {

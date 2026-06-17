@@ -62,9 +62,13 @@
               class="icon"
               v-html="option.icon"
             />
-            <span class="value" :class="{ selected: modelValue === option.value }">
-              {{ option.label }}
-            </span>
+              <span
+                class="value"
+                :class="{ selected: modelValue === option.value }"
+                :aria-label="String(option.value)"
+              >
+                {{ option.label }}
+              </span>
           </div>
         </div>
       </Transition>
