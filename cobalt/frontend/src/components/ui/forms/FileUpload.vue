@@ -27,9 +27,9 @@
         @change="handleChange"
       />
       <div class="placeholder">
-        <span>{{ placeholder }}</span>
+        <span>{{ placeholder ?? $t("servers.server.files.popup.upload.placeholder") }}</span>
         <span v-if="modelValue.length" class="count">
-          {{ modelValue.length }} file(s) selected
+          {{ $t('servers.server.files.popup.upload.selected', { n: modelValue.length }) }}
         </span>
       </div>
     </div>
@@ -53,7 +53,6 @@ const props = withDefaults(defineProps<{
   accept?: string
   required?: boolean
 }>(), {
-  placeholder: "Click or drag files here",
   multiple: true
 })
 

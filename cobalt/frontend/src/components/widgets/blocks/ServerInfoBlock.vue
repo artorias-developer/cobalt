@@ -10,14 +10,14 @@
     <Header
       :icon="listIcon"
       icon-color="blue"
-      title="Control"
-      description="Manage server"
+      :title="$t('servers.server.overview.control.title')"
+      :description="$t('servers.server.overview.control.description')"
       :icon-filled="true"
     />
     <Message
       v-if="fields.length === 0"
       :icon="listBlankIcon"
-      text="No data available"
+      :text="$t('common.noData')"
     />
     <div v-else class="fields">
       <div v-for="field in fields" :key="field.label" class="field">
@@ -27,7 +27,7 @@
           :class="{ copyable: field.copyable }"
           @click="field.copyable && copyValue(field.value)"
         >
-          {{ field.value ?? 'Unknown' }}
+          {{ field.value ?? $t('common.unknown') }}
         </span>
       </div>
     </div>
@@ -36,7 +36,7 @@
         v-if="!status?.running && hasServerStartAccess"
         type="button"
         :icon="startIcon"
-        text="Start"
+        :text="$t('servers.server.overview.control.start.label')"
         base-color="green"
         hover-color="green"
         :filled="true"
@@ -49,7 +49,7 @@
         v-if="status?.running && hasServerStopAccess"
         type="button"
         :icon="stopIcon"
-        text="Stop"
+        :text="$t('servers.server.overview.control.stop.label')"
         base-color="red"
         hover-color="red"
         :filled="true"
@@ -62,7 +62,7 @@
         v-if="hasServerStartAccess"
         type="button"
         :icon="restartIcon"
-        text="Restart"
+        :text="$t('servers.server.overview.control.restart.label')"
         base-color="gray"
         hover-color="gray"
         :filled="true"
@@ -77,6 +77,7 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from "vue-i18n"
 import { computed, ref, inject } from "vue"
 import { useNotification } from "@kyvg/vue3-notification"
 
@@ -103,6 +104,7 @@ const httpServersApiService = inject(HTTP_SERVERS_API_SERVICE_KEY)!
 const serverStore = useServerStore()
 const userStore = useUserStore()
 const { notify } = useNotification()
+const { t } = useI18n()
 
 const actionLoading = ref(false)
 
@@ -123,7 +125,7 @@ async function fetchServerStatus(): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to fetch server status"
+      text: error?.response?.data?.message ?? t("servers.server.overview.control.fetchStatus.error")
     })
   }
 }
@@ -146,7 +148,7 @@ async function handleStart(): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to start server"
+      text: error?.response?.data?.message ?? t("servers.server.overview.control.start.error")
     })
   } finally {
     actionLoading.value = false
@@ -171,7 +173,7 @@ async function handleStop(): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to stop server"
+      text: error?.response?.data?.message ?? t("servers.server.overview.control.stop.error")
     })
   } finally {
     actionLoading.value = false
@@ -196,7 +198,7 @@ async function handleRestart(): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to restart server"
+      text: error?.response?.data?.message ?? t("servers.server.overview.control.restart.error")
     })
   } finally {
     actionLoading.value = false
@@ -219,12 +221,12 @@ async function copyValue(value: string | null): Promise<void> {
     await navigator.clipboard.writeText(value)
     notify({
       type: "success",
-      text: "Copied to clipboard"
+      text: t("common.copy.success")
     })
   } catch {
     notify({
       type: "error",
-      text: "Failed to copy"
+      text: t("common.copyError")
     })
   }
 }
@@ -243,12 +245,12 @@ const fields = computed((): InfoField[] => {
 
   return [
     {
-      label: "IP Address",
+      label: t("servers.server.overview.control.ipAddress"),
       value: status.value ? hostname.value : null,
       copyable: true
     },
     {
-      label: "Port",
+      label: t("servers.server.overview.control.port"),
       value: status.value?.port != null ? String(status.value.port) : null,
       copyable: true
     }

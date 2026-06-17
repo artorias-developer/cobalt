@@ -9,7 +9,8 @@ from application.contracts.loggers import AbstractLogger
 from infrastructure.configs import ApplicationConfig
 from composition.dataclasses import (
     DatabaseContainer,
-    MappersContainer
+    MappersContainer,
+    ManagersContainer
 )
 
 from .repositories import create_postgres_repositories
@@ -22,6 +23,7 @@ __all__ = [
 
 def create_postgres_database_container(
     config: ApplicationConfig,
+    managers: ManagersContainer,
     mappers: MappersContainer,
     logger: AbstractLogger
 ) -> DatabaseContainer:
@@ -30,6 +32,7 @@ def create_postgres_database_container(
 
     Parameters:
     - config: ApplicationConfig object.
+    - managers: ManagersContainer object.
     - mappers: MappersContainer object.
     - logger: AbstractLogger object.
 
@@ -54,6 +57,7 @@ def create_postgres_database_container(
 
     created_repositories = create_postgres_repositories(
         session_factory=session_factory,
+        managers=managers,
         mappers=mappers.repositories,
         logger=logger
     )

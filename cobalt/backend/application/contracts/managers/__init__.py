@@ -6,9 +6,11 @@
 from .archives import AbstractArchivesManager
 from .connections import AbstractConnectionsManager
 from .events import AbstractEventsManager
+from .i18n import AbstractI18nManager
 
 __all__ = [
     "AbstractArchivesManager",
     "AbstractConnectionsManager",
-    "AbstractEventsManager"
+    "AbstractEventsManager",
+    "AbstractI18nManager"
 ]

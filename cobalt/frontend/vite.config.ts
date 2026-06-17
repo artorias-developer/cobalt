@@ -6,39 +6,30 @@ import vue from "@vitejs/plugin-vue"
 // https://vite.dev/config/
 export default defineConfig({
   define: {
-    __VUE_PROD_DEVTOOLS__: false
+    __VUE_PROD_DEVTOOLS__: false,
+    __BUNDLED_DEV__: JSON.stringify(false),
+    __VUE_I18N_FULL_INSTALL__: JSON.stringify(true),
+    __VUE_I18N_LEGACY_API__: JSON.stringify(false),
+    __SERVER_FORWARD_CONSOLE__: JSON.stringify(false),
   },
   plugins: [
     vue()
   ],
   build: {
     sourcemap: false,
-    rollupOptions: {
+    rolldownOptions: {
       output: {
-        manualChunks: {
-          vue: [
-            "vue",
-            "vue-router",
-            "pinia"
-          ],
-          echarts: [
-            "echarts"
-          ],
-          codemirror: [
-            "codemirror",
-            "@codemirror/state",
-            "@codemirror/view",
-            "@codemirror/language",
-            "@codemirror/commands",
-            "@codemirror/lang-json",
-            "@codemirror/lang-xml",
-            "@codemirror/lang-yaml",
-            "@codemirror/theme-one-dark",
-            "@lezer/highlight"
-          ],
-          "qrcode": [
-            "qr-code-styling"
-          ]
+        manualChunks: (id: string) => {
+          const chunks: Record<string, string[]> = {
+            vue: ["vue", "vue-router", "vue-i18n", "pinia"],
+            echarts: ["echarts"],
+            codemirror: ["codemirror", "@codemirror", "@lezer"],
+            qrcode: ["qr-code-styling"],
+          }
+
+          for (const [chunk, packages] of Object.entries(chunks)) {
+            if (packages.some(pkg => id.includes(pkg))) return chunk
+          }
         }
       }
     }
@@ -49,6 +40,7 @@ export default defineConfig({
       "axios",
       "pinia",
       "vue-router",
+      "vue-i18n",
       "@kyvg/vue3-notification",
       "qr-code-styling"
     ]

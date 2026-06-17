@@ -6,6 +6,7 @@
 from dataclasses import dataclass
 from pathlib import Path
 
+from domain.enums import LanguageEnum
 from infrastructure.configs.application.enums import EnvironmentEnum
 
 
@@ -53,6 +54,12 @@ class SecuritySettings:
     bcrypt_rounds: int
 
 @dataclass(slots=True)
+class I18nSettings:
+    locales_dir: Path
+    domain: str
+    default_language: LanguageEnum
+
+@dataclass(slots=True)
 class ApplicationConfig:
     server: ServerSettings
     database: DatabaseSettings
@@ -60,3 +67,4 @@ class ApplicationConfig:
     prometheus: PrometheusSettings
     logging: LoggerSettings
     security: SecuritySettings
+    i18n: I18nSettings

@@ -5,8 +5,10 @@
 
 from .archives import create_archives_manager
 from .fastapi import create_fastapi_managers_container
+from .i18n import create_i18n_manager
 
 __all__ = [
     "create_archives_manager",
-    "create_fastapi_managers_container"
+    "create_fastapi_managers_container",
+    "create_i18n_manager"
 ]

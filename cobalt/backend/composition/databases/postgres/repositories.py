@@ -15,6 +15,7 @@ from domain.repositories import (
     AbstractUsersRepository
 )
 from application.contracts.loggers import AbstractLogger
+from application.contracts.managers import AbstractI18nManager
 from infrastructure.contracts.databases.mappers import (
     AbstractAttributesRepositoryMapper,
     AbstractGamesRepositoryMapper,
@@ -35,13 +36,15 @@ from infrastructure.databases.postgres.repositories import (
 )
 from composition.dataclasses import (
     RepositoriesContainer,
-    RepositoriesMappersContainer
+    RepositoriesMappersContainer,
+    ManagersContainer
 )
 
 
 def create_postgres_attributes_repository(
     async_session: async_sessionmaker,
     attributes_mapper: AbstractAttributesRepositoryMapper,
+    i18n_manager: AbstractI18nManager,
     logger: AbstractLogger
 ) -> AbstractAttributesRepository:
     """
@@ -50,6 +53,7 @@ def create_postgres_attributes_repository(
     Parameters:
     - async_session: Async session factory.
     - attributes_mapper: AbstractAttributesRepositoryMapper object.
+    - i18n_manager: AbstractI18nManager object.
     - logger: AbstractLogger object.
 
     Returns:
@@ -58,12 +62,14 @@ def create_postgres_attributes_repository(
     return AttributesRepository(
         async_session=async_session,
         attributes_mapper=attributes_mapper,
+        i18n_manager=i18n_manager,
         logger=logger
     )
 
 def create_postgres_games_repository(
     async_session: async_sessionmaker,
     games_mapper: AbstractGamesRepositoryMapper,
+    i18n_manager: AbstractI18nManager,
     logger: AbstractLogger
 ) -> AbstractGamesRepository:
     """
@@ -72,6 +78,7 @@ def create_postgres_games_repository(
     Parameters:
     - async_session: Async session factory.
     - games_mapper: AbstractGamesRepositoryMapper object.
+    - i18n_manager: AbstractI18nManager object.
     - logger: AbstractLogger object.
 
     Returns:
@@ -80,12 +87,14 @@ def create_postgres_games_repository(
     return GamesRepository(
         async_session=async_session,
         games_mapper=games_mapper,
+        i18n_manager=i18n_manager,
         logger=logger
     )
 
 def create_postgres_loaders_repository(
     async_session: async_sessionmaker,
     loaders_mapper: AbstractLoadersRepositoryMapper,
+    i18n_manager: AbstractI18nManager,
     logger: AbstractLogger
 ) -> AbstractLoadersRepository:
     """
@@ -94,6 +103,7 @@ def create_postgres_loaders_repository(
     Parameters:
     - async_session: Async session factory.
     - loaders_mapper: AbstractLoadersRepositoryMapper object.
+    - i18n_manager: AbstractI18nManager object.
     - logger: AbstractLogger object.
 
     Returns:
@@ -102,12 +112,14 @@ def create_postgres_loaders_repository(
     return LoadersRepository(
         async_session=async_session,
         loaders_mapper=loaders_mapper,
+        i18n_manager=i18n_manager,
         logger=logger
     )
 
 def create_postgres_roles_repository(
     async_session: async_sessionmaker,
     roles_mapper: AbstractRolesRepositoryMapper,
+    i18n_manager: AbstractI18nManager,
     logger: AbstractLogger
 ) -> AbstractRolesRepository:
     """
@@ -116,6 +128,7 @@ def create_postgres_roles_repository(
     Parameters:
     - async_session: Async session factory.
     - roles_mapper: AbstractRolesRepositoryMapper object.
+    - i18n_manager: AbstractI18nManager object.
     - logger: AbstractLogger object.
 
     Returns:
@@ -124,12 +137,14 @@ def create_postgres_roles_repository(
     return RolesRepository(
         async_session=async_session,
         roles_mapper=roles_mapper,
+        i18n_manager=i18n_manager,
         logger=logger
     )
 
 def create_postgres_servers_repository(
     async_session: async_sessionmaker,
     servers_mapper: AbstractServersRepositoryMapper,
+    i18n_manager: AbstractI18nManager,
     logger: AbstractLogger
 ) -> AbstractServersRepository:
     """
@@ -138,6 +153,7 @@ def create_postgres_servers_repository(
     Parameters:
     - async_session: Async session factory.
     - servers_mapper: AbstractServersRepositoryMapper object.
+    - i18n_manager: AbstractI18nManager object.
     - logger: AbstractLogger object.
 
     Returns:
@@ -146,6 +162,7 @@ def create_postgres_servers_repository(
     return ServersRepository(
         async_session=async_session,
         servers_mapper=servers_mapper,
+        i18n_manager=i18n_manager,
         logger=logger
     )
 
@@ -174,6 +191,7 @@ def create_postgres_settings_repository(
 def create_postgres_users_repository(
     async_session: async_sessionmaker,
     users_mapper: AbstractUsersRepositoryMapper,
+    i18n_manager: AbstractI18nManager,
     logger: AbstractLogger
 ) -> AbstractUsersRepository:
     """
@@ -182,6 +200,7 @@ def create_postgres_users_repository(
     Parameters:
     - async_session: Async session factory.
     - users_mapper: AbstractUsersRepositoryMapper object.
+    - i18n_manager: AbstractI18nManager object.
     - logger: AbstractLogger object.
 
     Returns:
@@ -190,12 +209,14 @@ def create_postgres_users_repository(
     return UsersRepository(
         async_session=async_session,
         users_mapper=users_mapper,
+        i18n_manager=i18n_manager,
         logger=logger
     )
 
 def create_postgres_repositories(
     session_factory: async_sessionmaker,
     mappers: RepositoriesMappersContainer,
+    managers: ManagersContainer,
     logger: AbstractLogger
 ) -> RepositoriesContainer:
     """
@@ -204,6 +225,7 @@ def create_postgres_repositories(
     Parameters:
     - session_factory: async_sessionmaker object.
     - mappers: RepositoriesMappersContainer object.
+    - managers: ManagersContainer object.
     - logger: AbstractLogger object.
 
     Returns:
@@ -212,30 +234,35 @@ def create_postgres_repositories(
     attributes_repository = create_postgres_attributes_repository(
         async_session=session_factory,
         attributes_mapper=mappers.attributes,
+        i18n_manager=managers.i18n,
         logger=logger
     )
 
     games_repository = create_postgres_games_repository(
         async_session=session_factory,
         games_mapper=mappers.games,
+        i18n_manager=managers.i18n,
         logger=logger
     )
 
     loaders_repository = create_postgres_loaders_repository(
         async_session=session_factory,
         loaders_mapper=mappers.loaders,
+        i18n_manager=managers.i18n,
         logger=logger
     )
 
     roles_repository = create_postgres_roles_repository(
         async_session=session_factory,
         roles_mapper=mappers.roles,
+        i18n_manager=managers.i18n,
         logger=logger
     )
 
     servers_repository = create_postgres_servers_repository(
         async_session=session_factory,
         servers_mapper=mappers.servers,
+        i18n_manager=managers.i18n,
         logger=logger
     )
 
@@ -248,6 +275,7 @@ def create_postgres_repositories(
     users_repository = create_postgres_users_repository(
         async_session=session_factory,
         users_mapper=mappers.users,
+        i18n_manager=managers.i18n,
         logger=logger
     )
 

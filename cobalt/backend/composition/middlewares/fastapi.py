@@ -9,13 +9,25 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from starlette.middleware.cors import CORSMiddleware
 
 from application.contracts.loggers import AbstractLogger
+from application.contracts.managers import AbstractI18nManager
+from application.contracts.services import AbstractAuthService
 from infrastructure.configs import (
     EnvironmentEnum,
     ApplicationConfig
 )
 from presentation.http.fastapi.v1.middlewares import (
     HttpErrorsMiddleware,
+    HttpAuthMiddleware,
+    HttpLocaleMiddleware,
     HttpValidationMiddleware
+)
+from presentation.ws.fastapi.v1.middlewares import (
+    WsAuthMiddleware,
+    WsLocaleMiddleware
+)
+from composition.dataclasses import (
+    ManagersContainer,
+    ServicesContainer
 )
 
 
@@ -106,8 +118,47 @@ def setup_fastapi_http_errors_middleware(
         logger=logger
     )
 
+def setup_fastapi_http_locale_middleware(
+    app: FastAPI,
+    i18n_manager: AbstractI18nManager
+) -> None:
+    """
+    Setups the HTTP locale middleware.
+
+    Parameters:
+    - app: FastAPI object.
+    - i18n_manager: AbstractI18nManager object.
+
+    Returns:
+    - None.
+    """
+    app.add_middleware(
+        HttpLocaleMiddleware,
+        i18n_manager=i18n_manager
+    )
+
+def setup_fastapi_http_auth_middleware(
+    app: FastAPI,
+    auth_service: AbstractAuthService
+) -> None:
+    """
+    Setups the HTTP auth middleware.
+
+    Parameters:
+    - app: FastAPI object.
+    - auth_service: AbstractAuthService object.
+
+    Returns:
+    - None.
+    """
+    app.add_middleware(
+        HttpAuthMiddleware,
+        auth_service=auth_service
+    )
+
 def setup_fastapi_http_validation_middleware(
     app: FastAPI,
+    i18n_manager: AbstractI18nManager,
     logger: AbstractLogger
 ) -> None:
     """
@@ -115,12 +166,14 @@ def setup_fastapi_http_validation_middleware(
 
     Parameters:
     - app: FastAPI object.
+    - i18n_manager: AbstractI18nManager object.
     - logger: AbstractLogger object.
 
     Returns:
     - None.
     """
     handler = HttpValidationMiddleware(
+        i18n_manager=i18n_manager,
         logger=logger
     )
 
@@ -129,9 +182,49 @@ def setup_fastapi_http_validation_middleware(
         handler.dispatch
     )
 
+def setup_fastapi_ws_locale_middleware(
+    app: FastAPI,
+    i18n_manager: AbstractI18nManager
+) -> None:
+    """
+    Setups the WebSocket locale middleware.
+
+    Parameters:
+    - app: FastAPI object.
+    - i18n_manager: AbstractI18nManager object.
+
+    Returns:
+    - None.
+    """
+    app.add_middleware(
+        WsLocaleMiddleware,
+        i18n_manager=i18n_manager
+    )
+
+def setup_fastapi_ws_auth_middleware(
+    app: FastAPI,
+    auth_service: AbstractAuthService
+) -> None:
+    """
+    Setups the WebSocket auth middleware.
+
+    Parameters:
+    - app: FastAPI object.
+    - auth_service: AbstractAuthService object.
+
+    Returns:
+    - None.
+    """
+    app.add_middleware(
+        WsAuthMiddleware,
+        auth_service=auth_service
+    )
+
 def setup_fastapi_middlewares(
     app: FastAPI,
     config: ApplicationConfig,
+    services: ServicesContainer,
+    managers: ManagersContainer,
     logger: AbstractLogger
 ) -> None:
     """
@@ -140,6 +233,8 @@ def setup_fastapi_middlewares(
     Parameters:
     - app: FastAPI object.
     - config: ApplicationConfig object.
+    - services: ServicesContainer object.
+    - managers: ManagersContainer object.
     - logger: AbstractLogger object.
 
     Returns:
@@ -160,7 +255,29 @@ def setup_fastapi_middlewares(
         logger=logger
     )
 
+    setup_fastapi_http_locale_middleware(
+        app=app,
+        i18n_manager=managers.i18n
+    )
+
+    setup_fastapi_http_auth_middleware(
+        app=app,
+        auth_service=services.auth
+    )
+
     setup_fastapi_http_validation_middleware(
         app=app,
+        i18n_manager=managers.i18n,
         logger=logger
     )
+
+    setup_fastapi_ws_locale_middleware(
+        app=app,
+        i18n_manager=managers.i18n
+    )
+
+    setup_fastapi_ws_auth_middleware(
+        app=app,
+        auth_service=services.auth
+    )
+

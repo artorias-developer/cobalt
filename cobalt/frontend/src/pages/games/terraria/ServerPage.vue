@@ -27,6 +27,7 @@
 
 <script setup lang="ts">
 import { ref } from "vue"
+import { useI18n } from "vue-i18n"
 
 import PageTabs from "@/components/ui/tabs/PageTabs.vue"
 import OverviewTab from "@/components/widgets/server/OverviewTab.vue"
@@ -36,16 +37,18 @@ defineProps<{
   serverId: number
 }>()
 
-const activeTab = ref<string | null>(null)
+const { t } = useI18n()
 
+const activeTab = ref<string | null>(null)
 const logsRegex = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})\.\d+Z ()?(.*)/s
+
 const tabs = [
   {
-    label: "Overview",
+    label: t("servers.server.tabs.overview"),
     value: "overview"
   },
   {
-    label: "Files",
+    label: t("servers.server.tabs.files"),
     value: "files"
   }
 ]

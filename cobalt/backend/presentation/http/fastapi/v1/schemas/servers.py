@@ -17,46 +17,55 @@ from presentation.http.fastapi.v1.schemas.attributes import AttributeSchema
 class ServerSchema(BaseModel):
     id: int = Field(
         ...,
+        title="Server id",
         description="Server ID"
     )
 
     name: str = Field(
         ...,
+        title="Server name",
         description="Server name"
     )
 
     version: str = Field(
         ...,
+        title="Server version",
         description="Server version"
     )
 
     game: GameShortSchema = Field(
         ...,
+        title="Games",
         description="Game object"
     )
 
     loader: LoaderShortSchema = Field(
         ...,
+        title="Loaders",
         description="Loader object"
     )
 
     attributes: List[AttributeSchema] = Field(
         ...,
+        title="Attributes",
         description="List of server attributes"
     )
 
     status: ServerStatusEnum = Field(
         ...,
+        title="Server status",
         description="Server status"
     )
 
     created_at: datetime = Field(
         ...,
+        title="Created at",
         description="Creation timestamp"
     )
 
     updated_at: datetime = Field(
         ...,
+        title="Updated at",
         description="Last update timestamp"
     )
 
@@ -100,21 +109,25 @@ class ServerSchema(BaseModel):
 class ServersPageSchema(BaseModel):
     servers: List[ServerSchema] = Field(
         ...,
+        title="Servers",
         description="List of servers"
     )
 
     total: int = Field(
         ...,
+        title="Total",
         description="Total number of servers"
     )
 
     page: int = Field(
         ...,
+        title="Page",
         description="Current page"
     )
 
     pages: int = Field(
         ...,
+        title="Pages",
         description="Total number of pages"
     )
 
@@ -165,11 +178,13 @@ class ServersPageSchema(BaseModel):
 class ServerStatusSchema(BaseModel):
     running: bool = Field(
         ...,
+        title="Running",
         description="Whether the server is running"
     )
 
     port: Optional[int] = Field(
         None,
+        title="Port",
         description="Host port"
     )
 
@@ -187,22 +202,26 @@ class ServersGetPageSchema(BaseModel):
     page: int = Field(
         1,
         gt=0,
+        title="Page",
         description="Page number"
     )
 
     search: Optional[str] = Field(
         None,
         max_length=100,
+        title="Search",
         description="Search query"
     )
 
     sort_field: Literal["id", "name", "game_id", "loader_id", "version", "created_at", "updated_at"] = Field(
         "id",
+        title="Sort field",
         description="Field to sort by"
     )
 
     sort_direction: Literal["asc", "desc"] = Field(
         "desc",
+        title="Sort direction",
         description="Sort direction"
     )
 
@@ -210,6 +229,7 @@ class ServersGetPageSchema(BaseModel):
         10,
         gt=0,
         le=100,
+        title="Limit",
         description="Number of items per page"
     )
 
@@ -232,18 +252,21 @@ class ServerCreateSchema(BaseModel):
         min_length=1,
         max_length=128,
         pattern=r"^[a-zA-Z0-9_\- ]+$",
+        title="Server name",
         description="Server name"
     )
 
     game_id: int = Field(
         ...,
         gt=0,
+        title="Game id",
         description="Game ID"
     )
 
     loader_id: int = Field(
         ...,
         gt=0,
+        title="Loader id",
         description="Loader ID"
     )
 
@@ -251,6 +274,7 @@ class ServerCreateSchema(BaseModel):
         ...,
         min_length=1,
         max_length=16,
+        title="Server version",
         description="Server version"
     )
 
@@ -272,6 +296,7 @@ class ServerUpdateSchema(BaseModel):
         min_length=1,
         max_length=128,
         pattern=r"^[a-zA-Z0-9_\- ]+$",
+        title="Server name",
         description="Server name"
     )
 
@@ -289,6 +314,7 @@ class ServersDeleteSchema(RootModel):
         ...,
         min_length=1,
         max_length=100,
+        title="Server ids",
         description="List of server IDs to delete"
     )
 
@@ -303,6 +329,7 @@ class ServerExecuteSchema(BaseModel):
         ...,
         min_length=1,
         max_length=1024,
+        title="Command",
         description="Command to execute"
     )
 

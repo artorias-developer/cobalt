@@ -15,8 +15,8 @@
     <Header
       :icon="githubIcon"
       icon-color="blue"
-      title="Sources"
-      description="Star it if you like it!"
+      :title="$t('nav.banners.sources.title')"
+      :description="$t('nav.banners.sources.description')"
       size="small"
       :icon-filled="true"
     />

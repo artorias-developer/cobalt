@@ -25,17 +25,17 @@
       >
         <Input
           v-model="login"
-          validationName="Login"
-          label="Login"
-          placeholder="Enter your login"
+          :validationName="$t('login.login.label')"
+          :label="$t('login.login.label')"
+          :placeholder="$t('login.login.placeholder')"
           name="login"
           :required="true"
         />
         <Input
           v-model="password"
-          validationName="Password"
-          label="Password"
-          placeholder="Enter your password"
+          :validationName="$t('login.password.label')"
+          :label="$t('login.password.label')"
+          :placeholder="$t('login.password.placeholder')"
           name="password"
           :required="true"
         />
@@ -43,7 +43,7 @@
       <div class="actions">
         <SolidButton
           type="button"
-          text="Sign in"
+          :text="$t('login.signIn.label')"
           color="blue"
           name="sign-in"
           @click="loginForm?.validate() && handleLogin()"
@@ -55,6 +55,7 @@
 
 <script setup lang="ts">
 import { ref, inject } from "vue"
+import { useI18n } from "vue-i18n"
 import { useRouter } from "vue-router"
 import { useNotification } from "@kyvg/vue3-notification"
 
@@ -74,6 +75,7 @@ const wsClient = inject(WS_CLIENT_KEY)!
 const userStore = useUserStore()
 const router = useRouter()
 const { notify } = useNotification()
+const { t } = useI18n()
 
 const loginForm = ref<InstanceType<typeof Form> | null>(null)
 const login = ref<string>("")
@@ -109,7 +111,7 @@ async function handleLogin(): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to sign in"
+      text: error?.response?.data?.message ?? t("login.signIn.error")
     })
   }
 }

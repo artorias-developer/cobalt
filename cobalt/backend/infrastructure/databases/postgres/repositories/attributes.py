@@ -3,7 +3,7 @@
 #  Repository: https://github.com/ArtoriasCode/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-from typing import Optional, List, cast
+from typing import Optional, List, cast, Callable
 
 from sqlalchemy import select, delete
 from sqlalchemy.exc import IntegrityError
@@ -22,6 +22,7 @@ from domain.entities import (
     AttributeUpdateEntity
 )
 from domain.repositories import AbstractAttributesRepository
+from application.contracts.managers import AbstractI18nManager
 from application.contracts.loggers import AbstractLogger
 from infrastructure.contracts.databases.mappers import AbstractAttributesRepositoryMapper
 from infrastructure.databases.postgres.models import AttributeModel
@@ -37,18 +38,25 @@ class AttributesRepository(AbstractAttributesRepository, BaseRepository):
     Repository for working with the 'servers_attributes' table.
     """
     attributes_mapper: AbstractAttributesRepositoryMapper
+    i18n_manager: AbstractI18nManager
     logger: AbstractLogger
+
+    _: Callable
 
     def __init__(
         self,
         async_session: async_sessionmaker,
         attributes_mapper: AbstractAttributesRepositoryMapper,
+        i18n_manager: AbstractI18nManager,
         logger: AbstractLogger
     ):
         super().__init__(async_session)
 
         self.attributes_mapper = attributes_mapper
         self.logger = logger
+        self.i18n_manager = i18n_manager
+
+        self._ = i18n_manager.gettext
 
     def _handle_integrity_error(
         self,
@@ -72,7 +80,7 @@ class AttributesRepository(AbstractAttributesRepository, BaseRepository):
             if operation == RepositoryOperationsEnum.CREATE:
                 server_id = details.get("server_id")
 
-                raise NotFoundError(f"Server {server_id} not found") from e
+                raise NotFoundError(self._("Server {server_id} not found").format(server_id=server_id)) from e
 
         if sqlstate == IntegrityCodesEnum.UNIQUE_VIOLATION:
             if operation in [
@@ -82,10 +90,15 @@ class AttributesRepository(AbstractAttributesRepository, BaseRepository):
                 key = details.get("key")
                 server_id = details.get("server_id")
 
-                raise ConflictError(f'Attribute "{key}" already exists for server {server_id}') from e
+                raise ConflictError(
+                    self._('Attribute "{key}" already exists for server {server_id}').format(
+                        key=key,
+                        server_id=server_id
+                    )
+                ) from e
 
         self.logger.exception(f"Unhandled DB integrity error during {operation}:")
-        raise UnexpectedError("Internal server error") from e
+        raise UnexpectedError(self._("Internal server error")) from e
 
     async def get_page(
         self,

@@ -15,26 +15,31 @@ from presentation.http.fastapi.v1.schemas.settings import SettingsSchema
 class UserSchema(BaseModel):
     id: int = Field(
         ...,
+        title="User id",
         description="User ID"
     )
 
     login: str = Field(
         ...,
+        title="Login",
         description="User login"
     )
 
     role: RoleSchema = Field(
         ...,
+        title="Roles",
         description="User role object"
     )
 
     created_at: datetime = Field(
         ...,
+        title="Created at",
         description="Creation timestamp"
     )
 
     updated_at: datetime = Field(
         ...,
+        title="Updated at",
         description="Last update timestamp"
     )
 
@@ -64,31 +69,37 @@ class UserSchema(BaseModel):
 class UserMeSchema(BaseModel):
     id: int = Field(
         ...,
+        title="User id",
         description="User ID"
     )
 
     login: str = Field(
         ...,
+        title="Login",
         description="User login"
     )
 
     role: RoleSchema = Field(
         ...,
+        title="Roles",
         description="User role object"
     )
 
     settings: SettingsSchema = Field(
         ...,
+        title="Settings",
         description="User settings"
     )
 
     created_at: datetime = Field(
         ...,
+        title="Created at",
         description="Creation timestamp"
     )
 
     updated_at: datetime = Field(
         ...,
+        title="Updated at",
         description="Last update timestamp"
     )
 
@@ -122,21 +133,25 @@ class UserMeSchema(BaseModel):
 class UsersPageSchema(BaseModel):
     users: List[UserSchema] = Field(
         ...,
+        title="Users",
         description="List of users"
     )
 
     total: int = Field(
         ...,
+        title="Total",
         description="Total number of users"
     )
 
     page: int = Field(
         ...,
+        title="Page",
         description="Current page"
     )
 
     pages: int = Field(
         ...,
+        title="Pages",
         description="Total number of pages"
     )
 
@@ -174,22 +189,26 @@ class UsersGetPageSchema(BaseModel):
     page: int = Field(
         1,
         gt=0,
+        title="Page",
         description="Page number"
     )
 
     search: Optional[str] = Field(
         None,
         max_length=100,
+        title="Search",
         description="Search query"
     )
 
     sort_field: Literal["id", "login", "role_id", "created_at", "updated_at"] = Field(
         "id",
+        title="Sort field",
         description="Field to sort by"
     )
 
     sort_direction: Literal["asc", "desc"] = Field(
         "desc",
+        title="Sort direction",
         description="Sort direction"
     )
 
@@ -197,6 +216,7 @@ class UsersGetPageSchema(BaseModel):
         10,
         gt=0,
         le=100,
+        title="Limit",
         description="Number of items per page"
     )
 
@@ -219,6 +239,7 @@ class UserCreateSchema(BaseModel):
         min_length=3,
         max_length=32,
         pattern=r"^[a-zA-Z0-9_-]+$",
+        title="Login",
         description="User login"
     )
 
@@ -227,12 +248,14 @@ class UserCreateSchema(BaseModel):
         min_length=3,
         max_length=32,
         pattern=r"^[a-zA-Z0-9!@#$%&*]+$",
+        title="Password",
         description="User password"
     )
 
     role_id: int = Field(
         ...,
         gt=0,
+        title="Role id",
         description="User role ID"
     )
 
@@ -253,6 +276,7 @@ class UserUpdateSchema(BaseModel):
         min_length=3,
         max_length=32,
         pattern="^[a-zA-Z0-9_-]+$",
+        title="Login",
         description="User login"
     )
 
@@ -261,12 +285,14 @@ class UserUpdateSchema(BaseModel):
         min_length=3,
         max_length=32,
         pattern=r"^[a-zA-Z0-9!@#$%&*]+$",
+        title="Password",
         description="User password"
     )
 
     role_id: Optional[int] = Field(
         None,
         gt=0,
+        title="Role id",
         description="User role ID"
     )
 
@@ -285,6 +311,7 @@ class UsersDeleteSchema(RootModel):
     root: List[Annotated[int, Field(gt=0)]] = Field(
         ...,
         min_length=1,
+        title="User ids",
         description="List of user IDs to delete"
     )
 

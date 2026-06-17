@@ -14,26 +14,31 @@ from domain.enums import PermissionsEnum
 class RoleSchema(BaseModel):
     id: int = Field(
         ...,
+        title="Role id",
         description="Role ID"
     )
 
     name: str = Field(
         ...,
+        title="Role name",
         description="Role name"
     )
 
     permissions: List[PermissionsEnum] = Field(
         ...,
+        title="Permissions",
         description="List of permissions"
     )
 
     created_at: datetime = Field(
         ...,
+        title="Created at",
         description="Creation timestamp"
     )
 
     updated_at: datetime = Field(
         ...,
+        title="Updated at",
         description="Last update timestamp"
     )
 
@@ -57,21 +62,25 @@ class RoleSchema(BaseModel):
 class RolesPageSchema(BaseModel):
     roles: List[RoleSchema] = Field(
         ...,
+        title="Roles",
         description="List of roles"
     )
 
     total: int = Field(
         ...,
+        title="Total",
         description="Total number of roles"
     )
 
     page: int = Field(
         ...,
+        title="Page",
         description="Current page"
     )
 
     pages: int = Field(
         ...,
+        title="Pages",
         description="Total number of pages"
     )
 
@@ -103,22 +112,26 @@ class RolesGetPageSchema(BaseModel):
     page: int = Field(
         1,
         gt=0,
+        title="Page",
         description="Page number"
     )
 
     search: Optional[str] = Field(
         None,
         max_length=100,
+        title="Search",
         description="Search query"
     )
 
     sort_field: Literal["id", "name", "created_at", "updated_at"] = Field(
         "id",
+        title="Sort field",
         description="Field to sort by"
     )
 
     sort_direction: Literal["asc", "desc"] = Field(
         "desc",
+        title="Sort direction",
         description="Sort direction"
     )
 
@@ -126,6 +139,7 @@ class RolesGetPageSchema(BaseModel):
         10,
         gt=0,
         le=100,
+        title="Limit",
         description="Number of items per page"
     )
 
@@ -147,11 +161,13 @@ class RoleCreateSchema(BaseModel):
         ...,
         min_length=3,
         max_length=32,
+        title="Role name",
         description="Role name"
     )
 
     permissions: List[PermissionsEnum] = Field(
         ...,
+        title="Permissions",
         description="List of permissions"
     )
 
@@ -173,11 +189,13 @@ class RoleUpdateSchema(BaseModel):
         None,
         min_length=3,
         max_length=32,
+        title="Role name",
         description="Role name"
     )
 
     permissions: Optional[List[PermissionsEnum]] = Field(
         None,
+        title="Permissions",
         description="List of permissions"
     )
 
@@ -198,6 +216,7 @@ class RolesDeleteSchema(RootModel):
     root: List[Annotated[int, Field(gt=0)]] = Field(
         ...,
         min_length=1,
+        title="Role ids",
         description="List of role IDs to delete"
     )
 

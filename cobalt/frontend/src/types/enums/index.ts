@@ -6,6 +6,7 @@
  */
 
 export * from "./events"
+export * from "./language"
 export * from "./permissions"
 export * from "./routes"
 export * from "./status"

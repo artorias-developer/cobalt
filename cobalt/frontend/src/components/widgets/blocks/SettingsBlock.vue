@@ -11,8 +11,8 @@
       <Header
         :icon="settingsIcon"
         icon-color="blue"
-        title="Settings"
-        description="Admin panel settings"
+        :title="$t('settings.title')"
+        :description="$t('settings.description')"
         :icon-filled="true"
       />
     </div>
@@ -25,35 +25,35 @@
         >
           <div class="field">
             <FieldLabel
-              text="Theme"
-              description="Color scheme and visual style"
+              :text="$t('settings.general.theme.title')"
+              :description="$t('settings.general.theme.description')"
             />
             <Select
               v-model="generalSettings.theme"
               :options="themeOptions"
-              placeholder="Select theme..."
+              :placeholder="$t('settings.general.theme.placeholder')"
             />
           </div>
           <div class="field">
             <FieldLabel
-              text="Time zone"
-              description="Local time and date"
+              :text="$t('settings.general.timezone.title')"
+              :description="$t('settings.general.timezone.description')"
             />
             <Select
               v-model="generalSettings.timezone"
               :options="timezoneOptions"
-              placeholder="Select timezone..."
+              :placeholder="$t('settings.general.timezone.placeholder')"
             />
           </div>
           <div class="field">
             <FieldLabel
-              text="Language"
-              description="Interface language and localization"
+              :text="$t('settings.general.language.title')"
+              :description="$t('settings.general.language.description')"
             />
             <Select
               v-model="generalSettings.language"
               :options="languageOptions"
-              placeholder="Select language..."
+              :placeholder="$t('settings.general.language.placeholder')"
             />
           </div>
         </Form>
@@ -66,31 +66,31 @@
         >
           <div class="field">
             <FieldLabel
-              text="Login"
-              description="Account username"
+              :text="$t('settings.security.login.title')"
+              :description="$t('settings.security.login.description')"
             />
             <Input
               v-model="securitySettings.login"
-              placeholder="Your login"
+              :placeholder="$t('settings.security.login.placeholder')"
               name="login"
             />
           </div>
           <div class="field">
             <FieldLabel
-              text="Password"
-              description="Access credentials and authentication"
+              :text="$t('settings.security.password.title')"
+              :description="$t('settings.security.password.description')"
             />
             <div class="inputs">
               <Input
                 v-model="securitySettings.old_password"
                 type="password"
-                placeholder="Old password"
+                :placeholder="$t('settings.security.password.old.placeholder')"
                 name="old-password"
               />
               <Input
                 v-model="securitySettings.new_password"
                 type="password"
-                placeholder="New password"
+                :placeholder="$t('settings.security.password.new.placeholder')"
                 name="new-password"
               />
             </div>
@@ -101,12 +101,12 @@
         <div v-if="hasSettingsSystemAccess" class="form">
           <div v-if="hasSettingsCacheClearAccess" class="field">
             <FieldLabel
-              text="Cache"
-              description="Admin panel cached data"
+              :text="$t('settings.system.cache.title')"
+              :description="$t('settings.system.cache.description')"
             />
             <SolidButton
               type="button"
-              text="Clear"
+              :text="$t('common.clear')"
               color="gray"
               name="clear-cache"
               @click="handleClearCache"
@@ -114,12 +114,12 @@
           </div>
           <div v-if="hasSettingsContainersClearAccess" class="field">
             <FieldLabel
-              text="Containers"
-              description="Unused containers, volumes and images"
+              :text="$t('settings.system.containers.title')"
+              :description="$t('settings.system.containers.description')"
             />
             <SolidButton
               type="button"
-              text="Clear"
+              :text="$t('common.clear')"
               color="gray"
               name="clear-containers"
               @click="handleClearContainers"
@@ -129,7 +129,7 @@
         <div v-else class="empty-state">
           <Message
             :icon="padlockIcon"
-            text="Access denied"
+            :text="$t('common.accessDenied')"
           />
         </div>
       </template>
@@ -138,7 +138,7 @@
       <SolidButton
         v-if="activeTab === 'general'"
         type="button"
-        text="Save"
+        :text="$t('common.save')"
         color="blue"
         name="settings-save-general"
         @click="generalSettingsForm?.validate() && handleSave()"
@@ -146,7 +146,7 @@
       <SolidButton
         v-if="activeTab === 'security'"
         type="button"
-        text="Save"
+        :text="$t('common.save')"
         color="blue"
         name="settings-save-security"
         @click="securitySettingsForm?.validate() && handleChangeCredentials()"
@@ -156,6 +156,7 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from "vue-i18n"
 import { ref, inject, onMounted, computed } from "vue"
 import { useRouter } from "vue-router"
 import { useNotification } from "@kyvg/vue3-notification"
@@ -181,26 +182,27 @@ const httpSettingsApiService = inject(HTTP_SETTINGS_API_SERVICE_KEY)!
 const httpAuthApiService = inject(HTTP_AUTH_API_SERVICE_KEY)!
 const userStore = useUserStore()
 const { notify } = useNotification()
+const { t } = useI18n()
 const router = useRouter()
 
 const activeTab = ref<string | null>(null)
 const generalSettingsForm = ref<InstanceType<typeof Form> | null>(null)
 const securitySettingsForm = ref<InstanceType<typeof Form> | null>(null)
 
-const tabs = [
+const tabs = computed(() => [
   {
-    label: "General",
+    label: t("settings.tabs.general"),
     value: "general"
   },
   {
-    label: "Security",
+    label: t("settings.tabs.security"),
     value: "security"
   },
   {
-    label: "System",
+    label: t("settings.tabs.system"),
     value: "system"
   }
-]
+])
 
 const generalSettings = ref({
   theme: "dark",
@@ -214,12 +216,12 @@ const securitySettings = ref({
   new_password: ""
 })
 
-const themeOptions: SelectOption[] = [
+const themeOptions = computed((): SelectOption[] => [
   {
     value: "dark",
-    label: "Dark"
+    label: t("settings.general.theme.options.dark")
   }
-]
+])
 
 const timezoneOptions: SelectOption[] = [
   {
@@ -327,7 +329,15 @@ const timezoneOptions: SelectOption[] = [
 const languageOptions: SelectOption[] = [
   {
     value: "en",
-    label: "English"
+    label: t("settings.general.language.options.en")
+  },
+  {
+    value: "ru",
+    label: t("settings.general.language.options.ru")
+  },
+  {
+    value: "uk",
+    label: t("settings.general.language.options.uk")
   }
 ]
 
@@ -375,12 +385,12 @@ async function handleSave(): Promise<void> {
 
     notify({
       type: "success",
-      text: "Settings saved successfully"
+      text: t("settings.general.save.success")
     })
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to save settings"
+      text: error?.response?.data?.message ?? t("settings.general.save.error")
     })
   }
 }
@@ -422,12 +432,12 @@ async function handleChangeCredentials(): Promise<void> {
 
     notify({
       type: "success",
-      text: "Credentials updated successfully"
+      text: t("settings.security.save.success")
     })
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to update credentials"
+      text: error?.response?.data?.message ?? t("settings.security.save.error")
     })
   }
 }
@@ -452,12 +462,12 @@ async function handleClearCache(): Promise<void> {
 
     notify({
       type: "success",
-      text: "Cache cleared successfully"
+      text: t("settings.system.cache.clear.success")
     })
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to clear cache"
+      text: error?.response?.data?.message ?? t("settings.system.cache.clear.error")
     })
   }
 }
@@ -477,12 +487,12 @@ async function handleClearContainers(): Promise<void> {
 
     notify({
       type: "success",
-      text: "Containers data cleanup added to queue"
+      text: t("settings.system.containers.clear.success")
     })
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to clear containers data"
+      text: error?.response?.data?.message ?? t("settings.system.containers.clear.error")
     })
   }
 }

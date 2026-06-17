@@ -10,7 +10,10 @@ from application.contracts.services import (
     AbstractAuthService,
     AbstractLogsService
 )
-from application.contracts.managers import AbstractEventsManager
+from application.contracts.managers import (
+    AbstractEventsManager,
+    AbstractI18nManager
+)
 from application.managers.events.shared import LogsEventsEnum
 from application.dtos import (
     LogsSubscribeServerDto,
@@ -33,9 +36,10 @@ class WsLogsEvents(AbstractWsLogsEvents, BaseWsRouter):
         router: APIRouter,
         events_manager: AbstractEventsManager,
         logs_service: AbstractLogsService,
-        auth_service: AbstractAuthService
+        auth_service: AbstractAuthService,
+        i18n_manager: AbstractI18nManager
     ):
-        BaseWsRouter.__init__(self, auth_service)
+        BaseWsRouter.__init__(self, auth_service, i18n_manager)
 
         self.router = router
         self.events_manager = events_manager

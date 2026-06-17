@@ -11,8 +11,8 @@
       <Header
         :icon="icon"
         :icon-color="iconColor"
-        :title="title"
-        :description="description"
+        :title="title ?? $t('servers.list.title')"
+        :description="description ?? $t('servers.list.description')"
         :size="size"
         :icon-filled="filled"
       />
@@ -67,7 +67,7 @@
         <SolidButton
           v-if="hasServersCreateAccess"
           type="button"
-          text="Create"
+          :text="$t('common.create')"
           color="blue"
           name="server-create-popup"
           @click="openCreateServer"
@@ -75,7 +75,7 @@
         <SolidButton
           v-if="hasSelected && hasServersDeleteAccess"
           type="button"
-          text="Delete"
+          :text="$t('common.delete')"
           color="gray"
           @click="handleDeleteSelected"
         />
@@ -101,8 +101,8 @@
         <Header
           :icon="serversIcon"
           icon-color="blue"
-          title="Step 1 of 2"
-          description="Game selection"
+          :title="$t('servers.list.popup.step1.title')"
+          :description="$t('servers.list.popup.step1.description')"
           size="large"
           :icon-filled="true"
         />
@@ -116,20 +116,20 @@
             :options="gameOptions"
             :searchable="true"
             :required="true"
-            validationName="Game"
+            :validationName="$t('servers.list.popup.step1.game.label')"
             name="server-game"
           />
         </Form>
         <div class="actions">
           <SolidButton
             type="button"
-            text="Close"
+            :text="$t('common.close')"
             color="gray"
             @click="close"
           />
           <SolidButton
             type="button"
-            text="Next"
+            :text="$t('common.next')"
             color="blue"
             name="server-next-step"
             @click="step1Form?.validate() && (createServerStep = 2)"
@@ -140,8 +140,8 @@
         <Header
           :icon="serversIcon"
           icon-color="blue"
-          title="Step 2 of 2"
-          description="Server properties"
+          :title="$t('servers.list.popup.step2.title')"
+          :description="$t('servers.list.popup.step2.description')"
           size="large"
           :icon-filled="true"
         />
@@ -158,23 +158,23 @@
             />
             <div class="game-info">
               <h3>{{ selectedGameModule?.displayName }}</h3>
-              <p>{{ selectedGameModule?.description }}</p>
+              <p>{{ $t(`games.${selectedGameEntity?.name}.description`) }}</p>
             </div>
           </div>
           <Input
             v-model="serverName"
-            validationName="Name"
-            label="Name"
-            placeholder="Enter server name"
+            :validationName="$t('servers.list.popup.step2.name.label')"
+            :label="$t('servers.list.popup.step2.name.label')"
+            :placeholder="$t('servers.list.popup.step2.name.placeholder')"
             name="server-name"
             :required="true"
           />
           <Select
             v-model="selectedLoader"
             :options="loaderOptions"
-            validationName="Loader"
-            label="Loader"
-            placeholder="Select loader..."
+            :validationName="$t('servers.list.popup.step2.loader.label')"
+            :label="$t('servers.list.popup.step2.loader.label')"
+            :placeholder="$t('servers.list.popup.step2.loader.placeholder')"
             :required="true"
             name="server-loader"
             @update:model-value="selectedVersion = undefined"
@@ -182,9 +182,9 @@
           <Select
             v-model="selectedVersion"
             :options="versionOptions"
-            validationName="Version"
-            label="Version"
-            placeholder="Select version..."
+            :validationName="$t('servers.list.popup.step2.version.label')"
+            :label="$t('servers.list.popup.step2.version.label')"
+            :placeholder="$t('servers.list.popup.step2.version.placeholder')"
             :required="true"
             :disabled="!selectedLoader"
             name="server-version"
@@ -194,7 +194,7 @@
           <div class="left">
             <SolidButton
               type="button"
-              text="Close"
+              :text="$t('common.close')"
               color="gray"
               @click="close"
             />
@@ -202,13 +202,13 @@
           <div class="right">
             <SolidButton
               type="button"
-              text="Back"
+              :text="$t('common.back')"
               color="gray"
               @click="createServerStep = 1"
             />
             <SolidButton
               type="button"
-              text="Create"
+              :text="$t('common.create')"
               color="blue"
               name="server-create"
               @click="step2Form?.validate() && handleCreateServer(close)"
@@ -222,6 +222,7 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from "vue-i18n"
 import { ref, computed, inject, onMounted, onUnmounted } from "vue"
 import { useNotification } from "@kyvg/vue3-notification"
 
@@ -276,8 +277,6 @@ withDefaults(defineProps<{
 }>(), {
   icon: serversIcon,
   iconColor: "blue",
-  title: "Servers",
-  description: "Created game servers",
   size: "large",
   filled: true
 })
@@ -288,8 +287,8 @@ const httpGamesApiService = inject(HTTP_GAMES_API_SERVICE_KEY)!
 const wsServersApiService = inject(WS_SERVERS_API_SERVICE_KEY)!
 const tableStore = useTableStore()
 const userStore = useUserStore()
-
 const { notify } = useNotification()
+const { t } = useI18n()
 
 const pageData = ref<ServersPageEntity | null>(null)
 const games = ref<GameEntity[]>([])
@@ -309,9 +308,9 @@ const serverName = ref<string>("")
 const confirmPopup = ref<InstanceType<typeof ConfirmPopup> | null>(null)
 
 const statusMessages: Record<ServerStatusEnum, string> = {
-  [ServerStatusEnum.PENDING]: "Server is in queue",
-  [ServerStatusEnum.PROCESSING]: "Server is being created",
-  [ServerStatusEnum.FAILED]: "Error while creating server",
+  [ServerStatusEnum.PENDING]: t("servers.list.status.pending"),
+  [ServerStatusEnum.PROCESSING]: t("servers.list.status.processing"),
+  [ServerStatusEnum.FAILED]: t("servers.list.status.failed"),
   [ServerStatusEnum.CREATED]: ""
 }
 
@@ -321,7 +320,7 @@ const columns: TableColumn[] = [
     type: "icon-text",
     params: {
       label: {
-        value: "Game",
+        value: t("servers.list.columns.game"),
         highlighted: true
       },
       sorting: {
@@ -338,7 +337,7 @@ const columns: TableColumn[] = [
     type: "tag",
     params: {
       label: {
-        value: "Version"
+        value: t("servers.list.columns.version")
       },
       sorting: {
         sortable: true,
@@ -353,7 +352,7 @@ const columns: TableColumn[] = [
     type: "tag",
     params: {
       label: {
-        value: "Loader"
+        value: t("servers.list.columns.loader")
       },
       sorting: {
         sortable: true,
@@ -368,7 +367,7 @@ const columns: TableColumn[] = [
     type: "text",
     params: {
       label: {
-        value: "Name",
+        value: t("servers.list.columns.name"),
         highlighted: false
       },
       sorting: {
@@ -383,7 +382,7 @@ const columns: TableColumn[] = [
     type: "text",
     params: {
       label: {
-        value: "Created at",
+        value: t("servers.list.columns.createdAt"),
         highlighted: false
       },
       sorting: {
@@ -419,7 +418,7 @@ async function fetchServers(): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to fetch servers"
+      text: error?.response?.data?.message ?? t("servers.list.fetch.error")
     })
     pageData.value = null;
   }
@@ -455,7 +454,7 @@ async function fetchGames(): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to fetch games"
+      text: error?.response?.data?.message ?? t("servers.list.fetchGames.error")
     })
   }
 }
@@ -531,14 +530,14 @@ async function deleteServer(serverId: number): Promise<void> {
 
     notify({
       type: "success",
-      text: "Server deleted successfully"
+      text: t("servers.list.delete.success")
     })
 
     fetchServers()
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to delete server"
+      text: error?.response?.data?.message ?? t("servers.list.delete.error")
     })
   }
 }
@@ -573,7 +572,7 @@ async function deleteSelected(): Promise<void> {
 
     notify({
       type: "success",
-      text: "Servers deleted successfully"
+      text: t("servers.list.deleteSelected.success")
     })
 
     tableStore.clearSelected(tableStoreId)
@@ -581,7 +580,7 @@ async function deleteSelected(): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to delete selected servers"
+      text: error?.response?.data?.message ?? t("servers.list.deleteSelected.error")
     })
   }
 }
@@ -624,7 +623,7 @@ async function handleCreateServer(close: () => void): Promise<void> {
 
     notify({
       type: "success",
-      text: "Server added to queue"
+      text: t("servers.list.create.success")
     })
 
     close()
@@ -633,7 +632,7 @@ async function handleCreateServer(close: () => void): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to create server"
+      text: error?.response?.data?.message ?? t("servers.list.create.error")
     })
   }
 }
@@ -760,7 +759,7 @@ const gameOptions = computed((): RadioOption[] =>
     return {
       value: game.id,
       title: gameModule.displayName,
-      description: gameModule.description,
+      description: t(`games.${game.name}.description`),
       icon: gameModule.icon,
       sort_number: gameModule.sort_number
     }

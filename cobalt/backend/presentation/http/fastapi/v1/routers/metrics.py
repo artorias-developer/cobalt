@@ -8,6 +8,7 @@ from typing import List
 from fastapi import APIRouter, Depends
 
 from domain.enums import PermissionsEnum
+from application.contracts.managers import AbstractI18nManager
 from application.contracts.services import (
     AbstractAuthService,
     AbstractMetricsService
@@ -34,9 +35,10 @@ class HttpMetricsRouter(AbstractHttpMetricsRouter, HttpBaseRouter):
         router: APIRouter,
         metrics_service: AbstractMetricsService,
         metrics_mapper: AbstractMetricsRouterMapper,
-        auth_service: AbstractAuthService
+        auth_service: AbstractAuthService,
+        i18n_manager: AbstractI18nManager
     ):
-        HttpBaseRouter.__init__(self, auth_service)
+        HttpBaseRouter.__init__(self, auth_service, i18n_manager)
 
         self.router = router
         self.metrics_service = metrics_service

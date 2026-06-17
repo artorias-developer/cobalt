@@ -9,7 +9,7 @@
   <div class="radio-list">
     <div v-if="searchable" class="search">
       <Input
-        placeholder="Search"
+        :placeholder="$t('common.search')"
         :model-value="localSearch"
         @update:model-value="localSearch = $event"
       />

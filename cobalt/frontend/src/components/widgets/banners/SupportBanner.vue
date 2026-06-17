@@ -10,8 +10,8 @@
     <Header
       :icon="coinIcon"
       icon-color="green"
-      title="Support"
-      description="Improve the project"
+      :title="$t('nav.banners.support.title')"
+      :description="$t('nav.banners.support.description')"
       size="small"
       :icon-filled="true"
     />

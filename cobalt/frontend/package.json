@@ -28,18 +28,18 @@
     "pinia": "^3.0.4",
     "qr-code-styling": "^1.9.2",
     "vue": "^3.5.27",
+    "vue-i18n": "^11.4.5",
     "vue-router": "^5.0.2"
   },
   "devDependencies": {
     "@tsconfig/node24": "^24.0.4",
-    "@types/node": "^24.10.9",
     "@types/vue-router": "^2.0.0",
     "@vitejs/plugin-vue": "^6.0.3",
     "@vue/tsconfig": "^0.8.1",
     "npm-run-all2": "^8.0.4",
     "sass-embedded": "^1.97.3",
     "typescript": "~5.9.3",
-    "vite": "^7.3.1",
+    "vite": "^8.0.16",
     "vite-plugin-vue-devtools": "^8.0.5",
     "vue-tsc": "^3.2.4"
   },

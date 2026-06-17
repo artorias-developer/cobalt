@@ -8,6 +8,7 @@ from typing import List
 from fastapi import APIRouter, Response, status, Depends, Body
 
 from domain.enums import PermissionsEnum
+from application.contracts.managers import AbstractI18nManager
 from application.contracts.services import (
     AbstractAttributesService,
     AbstractAuthService
@@ -39,9 +40,10 @@ class HttpAttributesRouter(AbstractHttpAttributesRouter, HttpBaseRouter):
         router: APIRouter,
         attributes_service: AbstractAttributesService,
         attributes_mapper: AbstractAttributesRouterMapper,
-        auth_service: AbstractAuthService
+        auth_service: AbstractAuthService,
+        i18n_manager: AbstractI18nManager
     ):
-        HttpBaseRouter.__init__(self, auth_service)
+        HttpBaseRouter.__init__(self, auth_service, i18n_manager)
 
         self.router = router
         self.attributes_service = attributes_service

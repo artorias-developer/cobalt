@@ -22,20 +22,20 @@
           :filled="true"
         />
         <div class="text">
-          <span class="title">{{ title }}</span>
-          <span class="message">{{ message }}</span>
+          <span class="title">{{ title ?? $t('common.popups.delete.title') }}</span>
+          <span class="message">{{ message ?? $t('common.popups.delete.message') }}</span>
         </div>
       </Form>
       <div class="actions">
         <SolidButton
           type="button"
-          :text="cancelText"
+          :text="cancelText ?? $t('common.cancel')"
           color="gray"
           @click="close"
         />
         <SolidButton
           type="button"
-          :text="confirmText"
+          :text="confirmText ?? $t('common.confirm')"
           color="blue"
           name="confirm"
           @click="handleConfirm(close)"
@@ -54,17 +54,12 @@ import Form from "@/components/ui/forms/Form.vue"
 import SolidButton from "@/components/ui/forms/buttons/SolidButton.vue"
 import warningIcon from "@/assets/images/svg/warning.svg?raw"
 
-withDefaults(defineProps<{
+defineProps<{
   title?: string
   message?: string
   confirmText?: string
   cancelText?: string
-}>(), {
-  title: "Are you sure?",
-  message: "Are you sure you want to delete this item? This action is irreversible and cannot be undone.",
-  confirmText: "Confirm",
-  cancelText: "Cancel"
-})
+}>()
 
 const popup = ref<InstanceType<typeof Popup> | null>(null)
 let pendingCallback: (() => void) | null = null
