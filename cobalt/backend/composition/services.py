@@ -129,6 +129,7 @@ def create_settings_service(
     settings_repository: AbstractSettingsRepository,
     settings_mapper: AbstractSettingsServiceMapper,
     containers_client: AbstractContainersClient,
+    connections_manager: AbstractConnectionsManager,
     servers_service: AbstractServersService,
     queue: AbstractQueue,
     logger: AbstractLogger
@@ -144,6 +145,7 @@ def create_settings_service(
     - settings_mapper: AbstractSettingsServiceMapper object.
     - containers_client: AbstractContainersClient object.
     - servers_service: AbstractServersService object.
+    - connections_manager: AbstractConnectionsManager object.
     - queue: AbstractQueue object.
     - logger: AbstractLogger object.
 
@@ -157,6 +159,7 @@ def create_settings_service(
         settings_mapper=settings_mapper,
         containers_client=containers_client,
         servers_service=servers_service,
+        connections_manager=connections_manager,
         queue=queue,
         logger=logger,
         app_containers_dir=config.server.app_containers_dir
@@ -471,6 +474,7 @@ def create_services_container(
         settings_mapper=mappers.services.settings,
         containers_client=clients.containers,
         servers_service=servers_service,
+        connections_manager=managers.connections,
         queue=queue,
         logger=logger
     )

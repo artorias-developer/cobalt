@@ -118,6 +118,7 @@ class HttpSettingsRouter(AbstractHttpSettingsRouter, HttpBaseRouter):
 
         response_dto = await self.settings_service.update_one(
             user_id=request.state.user.id,
+            current_user=request.state.user,
             dto=request_dto
         )
 
