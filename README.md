@@ -3,10 +3,10 @@
 
   <h3>Self-hosted game servers dashboard for friend groups</h3>
 
-  ![License](https://img.shields.io/badge/License-AGPL--3.0-blue)
-  ![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
-  ![Vue](https://img.shields.io/badge/Vue-4FC08D?logo=vuedotjs&logoColor=white)
-  [![Wiki](https://img.shields.io/badge/Wiki-grey?logo=gitbook&logoColor=white)](https://github.com/ArtoriasCode/cobalt/wiki/Installation)
+  [![License](https://img.shields.io/badge/License-AGPL--3.0-blue)](https://github.com/ArtoriasCode/cobalt/blob/main/LICENSE)
+  [![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+  [![Vue](https://img.shields.io/badge/Vue-4FC08D?logo=vuedotjs&logoColor=white)](https://vuejs.org/)
+  [![Wiki](https://img.shields.io/badge/Wiki-grey?logo=gitbook&logoColor=white)](https://artoriascode.github.io/cobalt/)
 </div>
 
 ---
