@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="docs/logo.svg" alt="Cobalt" width="400">
+  <img src="docs/readme/images/logo.svg" alt="Cobalt" width="400">
 
   <h3>Self-hosted game servers dashboard for friend groups</h3>
 
@@ -13,20 +13,20 @@
 
 ## What is Cobalt?
 
-Cobalt is a web dashboard for running game servers on your own VPS / VDS. Set up a server in just a few clicks. It's a fraction of the cost compared to specialized hosting platforms. You stay in full control of your data, your configs, and your uptime.
+Cobalt is a web dashboard for running game servers on your own VPS / VDS. Set up a server in just a few clicks. It's a fraction of the cost compared to specialized hosting platforms. You stay in full control of your data.
 
 <ins>Dashboard screenshots:</ins>
 
 <details>
 <summary>Click me</summary>
 
-<img src="docs/website/website-1.png" width="100%">
-<img src="docs/website/website-2.png" width="100%">
-<img src="docs/website/website-3.png" width="100%">
-<img src="docs/website/website-4.png" width="100%">
-<img src="docs/website/website-5.png" width="100%">
-<img src="docs/website/website-6.png" width="100%">
-<img src="docs/website/website-7.png" width="100%">
+<img src="docs/readme/images/cobalt/1.png" width="100%">
+<img src="docs/readme/images/cobalt/2.png" width="100%">
+<img src="docs/readme/images/cobalt/3.png" width="100%">
+<img src="docs/readme/images/cobalt/4.png" width="100%">
+<img src="docs/readme/images/cobalt/5.png" width="100%">
+<img src="docs/readme/images/cobalt/6.png" width="100%">
+<img src="docs/readme/images/cobalt/7.png" width="100%">
 
 </details>
 
@@ -87,13 +87,13 @@ Yes, the dashboard is adapted for all devices.
 <details>
 <summary>What does the dashboard look like?</summary>
 
-<img src="docs/website/website-1.png" width="100%">
-<img src="docs/website/website-2.png" width="100%">
-<img src="docs/website/website-3.png" width="100%">
-<img src="docs/website/website-4.png" width="100%">
-<img src="docs/website/website-5.png" width="100%">
-<img src="docs/website/website-6.png" width="100%">
-<img src="docs/website/website-7.png" width="100%">
+<img src="docs/readme/images/cobalt/1.png" width="100%">
+<img src="docs/readme/images/cobalt/2.png" width="100%">
+<img src="docs/readme/images/cobalt/3.png" width="100%">
+<img src="docs/readme/images/cobalt/4.png" width="100%">
+<img src="docs/readme/images/cobalt/5.png" width="100%">
+<img src="docs/readme/images/cobalt/6.png" width="100%">
+<img src="docs/readme/images/cobalt/7.png" width="100%">
 
 </details>
 
