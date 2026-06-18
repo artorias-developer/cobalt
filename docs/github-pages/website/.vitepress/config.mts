@@ -1,8 +1,9 @@
 import { defineConfig } from 'vitepress'
 
 export default defineConfig({
-  title: "Cobalt Documentation",
-  description: "Documentation for the Cobalt Web Panel",
+  base: '/cobalt/',
+  title: 'Cobalt Documentation',
+  description: 'Documentation for the Cobalt dashboard',
   themeConfig: {
     nav: [
       { text: 'Home', link: '/' },
