@@ -53,7 +53,7 @@ import de from "@/locales/de.json"
 
 4. Add the new locale to `setupI18n`:
 
-```typescript
+```typescript{9}
 function setupI18n() {
   return createI18n<[MessageSchema], LanguageEnum>({
     legacy: false,
@@ -62,7 +62,7 @@ function setupI18n() {
     pluralRules: {
       // ...
     },
-    messages: { en, uk, ru, de },
+    messages: { en, uk, ru, de }
   })
 }
 ```
@@ -77,9 +77,9 @@ pluralRules: {
     if (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) return 2
     return 3
   },
-  [LanguageEnum.DE]: (n: number): number => {
-    return n === 1 ? 0 : 1
-  },
+  [LanguageEnum.DE]: (n: number): number => { // [!code ++]
+    return n === 1 ? 0 : 1 // [!code ++]
+  } // [!code ++]
 }
 ```
 
@@ -94,7 +94,7 @@ export enum LanguageEnum {
   EN = "en",
   RU = "ru",
   UK = "uk",
-  DE = "de",
+  DE = "de", // [!code ++]
 }
 ```
 
@@ -114,10 +114,10 @@ const languageOptions: SelectOption[] = [
     value: LanguageEnum.UK,
     label: t("settings.general.language.options.uk")
   },
-  {
-    value: LanguageEnum.DE,
-    label: t("settings.general.language.options.de")
-  }
+  { // [!code ++]
+    value: LanguageEnum.DE, // [!code ++]
+    label: t("settings.general.language.options.de") // [!code ++]
+  } // [!code ++]
 ]
 ```
 
