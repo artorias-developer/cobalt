@@ -12,6 +12,7 @@ export PYTHONPATH := $(shell pwd)/cobalt/backend
     alembic-upgrade a\:u \
     alembic-downgrade a\:d \
     branches-local-delete b\:l\:d \
+    locales-init l\:i \
     locales-generate l\:g \
     locales-update l\:u \
     locales-compile l\:c
@@ -59,6 +60,10 @@ a\:d: alembic-downgrade
 branches-local-delete:
 	git branch | grep -v "dev\|main" | xargs git branch -D
 b\:l\:d: branches-local-delete
+
+locales-init:
+	pybabel init -i cobalt/backend/infrastructure/locales/messages.pot -d cobalt/backend/infrastructure/locales -l $(locale)
+l\:i: locales-init
 
 locales-generate:
 	mkdir -p cobalt/backend/infrastructure/locales
