@@ -34,10 +34,9 @@ Cobalt is a web dashboard for running game servers on your own VPS / VDS. Set up
 
 Whether you're setting up Cobalt for the first time or looking to contribute, the links below cover everything you need - from installation guides to community discussions where you can share ideas and vote on new game support.
 
-- [Documentation](https://artoriascode.github.io/cobalt/) - installation, configuration, and other documentation.
+- [Documentation](https://artoriascode.github.io/cobalt/) - installation, testing and more.
 - [Issues](https://github.com/ArtoriasCode/cobalt/issues) - report bugs and problems.
-- [Ideas](https://github.com/ArtoriasCode/cobalt/discussions/43) - suggest and discuss new features.
-- [Game requests](https://github.com/ArtoriasCode/cobalt/discussions/42) - request support for new games.
+- [Ideas](https://github.com/ArtoriasCode/cobalt/discussions/categories/ideas) - share your ideas and suggest new games.
 
 > [!WARNING]
 > Before posting anything, please read the guidelines.
@@ -66,7 +65,7 @@ The main features of Cobalt:
   - Russian
   - Ukrainian
   
-If you have any ideas you'd like to see here, please share them in [Ideas](https://github.com/ArtoriasCode/cobalt/discussions/43).
+If you have any ideas you'd like to see here, please share them in [Ideas](https://github.com/ArtoriasCode/cobalt/discussions/categories/ideas).
 
 ## FAQ
 
