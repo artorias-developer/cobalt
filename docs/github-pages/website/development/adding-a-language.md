@@ -2,6 +2,43 @@
 
 This guide explains how to add support for a new language to Cobalt.
 
+## Backend
+
+1. Make sure you start from the project root.
+
+2. Create a new locale by initializing it with `pybabel`:
+
+```bash
+make locales-init locale=de
+```
+
+::: tip
+Short alias is also available: `make l:i locale=de`.
+:::
+
+3. Run the following commands to extract and update the translation strings:
+
+```bash
+make locales-generate
+make locales-update
+```
+
+::: tip
+Short aliases are also available: `make l:g`, `make l:u`.
+:::
+
+4. Add translations to the generated file at `cobalt/backend/infrastructure/locales/de/LC_MESSAGES/messages.po`.
+
+5. Compile the translations:
+
+```bash
+make locales-compile
+```
+
+::: tip
+Short alias is also available: `make l:c`.
+:::
+
 ## Frontend
 
 1. Make sure you start from the project root.
@@ -86,41 +123,4 @@ const languageOptions: SelectOption[] = [
 
 ::: tip
 Don't forget to add the `settings.general.language.options.de` translation key to all locale files, including the new one.
-:::
-
-## Backend
-
-1. Make sure you start from the project root.
-
-2. Create a new locale by initializing it with `pybabel`:
-
-```bash
-make locales-init locale=de
-```
-
-::: tip
-Short alias is also available: `make l:i locale=de`.
-:::
-
-3. Run the following commands to extract and update the translation strings:
-
-```bash
-make locales-generate
-make locales-update
-```
-
-::: tip
-Short aliases are also available: `make l:g`, `make l:u`.
-:::
-
-4. Add translations to the generated file at `cobalt/backend/infrastructure/locales/de/LC_MESSAGES/messages.po`.
-
-5. Compile the translations:
-
-```bash
-make locales-compile
-```
-
-::: tip
-Short alias is also available: `make l:c`.
 :::
