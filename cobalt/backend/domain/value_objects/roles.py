@@ -3,6 +3,8 @@
 #  Repository: https://github.com/ArtoriasCode/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
+from re import compile as re_compile
+
 from domain.value_objects import AbstractStrValueObject
 
 
@@ -10,6 +12,7 @@ class RoleName(AbstractStrValueObject):
     """
     Role name value object.
     """
+    _PATTERN = re_compile(r"^[a-zA-Zа-яА-ЯёЁіІїЇєЄ0-9_\-' ]+$")
     _MIN_LENGTH = 3
     _MAX_LENGTH = 32
 
@@ -27,4 +30,9 @@ class RoleName(AbstractStrValueObject):
             value=value,
             min_length=self._MIN_LENGTH,
             max_length=self._MAX_LENGTH
+        )
+
+        self._validate_pattern(
+            value=value,
+            pattern=self._PATTERN
         )

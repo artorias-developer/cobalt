@@ -117,6 +117,7 @@ class AttributesGetPageSchema(BaseModel):
     search: Optional[str] = Field(
         None,
         max_length=100,
+        pattern=r"^[a-zA-Z0-9_\-]+$",
         title="Search",
         description="Search query (by key or value)"
     )
