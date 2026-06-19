@@ -209,6 +209,7 @@ class ServersGetPageSchema(BaseModel):
     search: Optional[str] = Field(
         None,
         max_length=100,
+        pattern=r"^[a-zA-Zа-яА-ЯёЁіІїЇєЄ0-9_\-.,' ]+$",
         title="Search",
         description="Search query"
     )
@@ -251,7 +252,7 @@ class ServerCreateSchema(BaseModel):
         ...,
         min_length=1,
         max_length=128,
-        pattern=r"^[a-zA-Z0-9_\- ]+$",
+        pattern=r"^[a-zA-Zа-яА-ЯёЁіІїЇєЄ0-9_\-' ]+$",
         title="Server name",
         description="Server name"
     )
@@ -295,7 +296,7 @@ class ServerUpdateSchema(BaseModel):
         None,
         min_length=1,
         max_length=128,
-        pattern=r"^[a-zA-Z0-9_\- ]+$",
+        pattern=r"^[a-zA-Zа-яА-ЯёЁіІїЇєЄ0-9_\-' ]+$",
         title="Server name",
         description="Server name"
     )

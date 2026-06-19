@@ -12,7 +12,7 @@ class UserLogin(AbstractStrValueObject):
     """
     User login value object.
     """
-    _PATTERN = re_compile(r"^[a-zA-Z0-9_-]+$")
+    _PATTERN = re_compile(r"^[a-zA-Zа-яА-ЯёЁіІїЇєЄ0-9_\-' ]+$")
     _MIN_LENGTH = 3
     _MAX_LENGTH = 32
 

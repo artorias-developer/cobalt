@@ -12,7 +12,7 @@ class LoaderName(AbstractStrValueObject):
     """
     Loader name value object.
     """
-    _PATTERN = re_compile(r'^[a-z_]+$')
+    _PATTERN = re_compile(r"^[a-z_]+$")
     _MIN_LENGTH = 1
     _MAX_LENGTH = 32
 
