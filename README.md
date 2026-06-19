@@ -37,6 +37,7 @@ Whether you're setting up Cobalt for the first time or looking to contribute, th
 - [Documentation](https://artoriascode.github.io/cobalt/) - installation, testing and more.
 - [Issues](https://github.com/ArtoriasCode/cobalt/issues) - report bugs and problems.
 - [Ideas](https://github.com/ArtoriasCode/cobalt/discussions/categories/ideas) - share your ideas and suggest new games.
+- [Help](https://github.com/ArtoriasCode/cobalt/discussions/categories/help) - ask your questions.
 
 > [!WARNING]
 > Before posting anything, please read the guidelines.

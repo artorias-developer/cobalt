@@ -9,17 +9,23 @@ export default defineConfig({
       { text: 'Home', link: '/' },
       { text: 'Documentation', link: '/getting-started/installation' }
     ],
-
     sidebar: [
       {
-        text: 'Getting Started',
+        text: 'Getting started',
         items: [
           { text: 'Installation', link: '/getting-started/installation' },
           { text: 'Testing', link: '/getting-started/testing' }
         ]
+      },
+      {
+        text: 'Development',
+        items: [
+          { text: 'Local installation', link: '/development/local-installation' },
+          { text: 'Adding a language', link: '/development/adding-a-language' },
+          { text: 'Adding a game', link: '/development/adding-a-game' }
+        ]
       }
     ],
-
     socialLinks: [
       { icon: 'github', link: 'https://github.com/ArtoriasCode/cobalt' }
     ]
