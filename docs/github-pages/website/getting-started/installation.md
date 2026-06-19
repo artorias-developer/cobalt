@@ -58,9 +58,11 @@ The installer will automatically install Docker and Docker Compose if not presen
 
 Your dashboard will be accessible at `https://<server_ip>`.
 
-**Default login**: `admin`
+:::tip Credentials
+**Login**: `admin`
 
-**Default password**: `admin`
+**Password**: `admin`
+:::
 
 ::: warning
 Since the certificates are self-signed, you'll see a security warning the first time you open the dashboard. Click `Advanced` and then `Proceed to <server_ip> (unsafe)`.

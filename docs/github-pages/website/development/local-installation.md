@@ -48,9 +48,11 @@ You can optionally pass a custom local domain, e.g. `./build/scripts/install.sh 
 
 If a domain is provided, the dashboard will be available at `https://<domain>`. Otherwise, it will be available at `https://127.0.0.1`.
 
-**Default login**: `admin`
+:::tip Credentials
+**Login**: `admin`
 
-**Default password**: `admin`
+**Password**: `admin`
+:::
 
 ## Already installed
 

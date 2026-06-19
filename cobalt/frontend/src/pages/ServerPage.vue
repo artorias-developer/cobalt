@@ -48,14 +48,14 @@ import type { Tag, ServerEntity, ServerStatusEntity } from "@/types"
 
 import NotFound from "@/components/widgets/NotFound.vue"
 
-import DontStarveTogether from "@/pages/games/dont-starve-together/ServerPage.vue"
+import DontStarveTogetherServerPage from "@/pages/games/dont-starve-together/ServerPage.vue"
 import FactorioServerPage from "@/pages/games/factorio/ServerPage.vue"
 import MinecraftServerPage from "@/pages/games/minecraft/ServerPage.vue"
 import TerrariaServerPage from "@/pages/games/terraria/ServerPage.vue"
 import RimWorldServerPage from "@/pages/games/rim-world/ServerPage.vue"
 
 const gameComponents: Record<string, Component> = {
-  dont_starve_together: DontStarveTogether,
+  dont_starve_together: DontStarveTogetherServerPage,
   factorio: FactorioServerPage,
   minecraft: MinecraftServerPage,
   terraria: TerrariaServerPage,
