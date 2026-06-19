@@ -119,6 +119,7 @@ class RolesGetPageSchema(BaseModel):
     search: Optional[str] = Field(
         None,
         max_length=100,
+        pattern=r"^[a-zA-Zа-яА-ЯёЁіІїЇєЄ0-9_\-.,' ]+$",
         title="Search",
         description="Search query"
     )
@@ -161,6 +162,7 @@ class RoleCreateSchema(BaseModel):
         ...,
         min_length=3,
         max_length=32,
+        pattern=r"^[a-zA-Zа-яА-ЯёЁіІїЇєЄ0-9_\-' ]+$",
         title="Role name",
         description="Role name"
     )
@@ -189,6 +191,7 @@ class RoleUpdateSchema(BaseModel):
         None,
         min_length=3,
         max_length=32,
+        pattern=r"^[a-zA-Zа-яА-ЯёЁіІїЇєЄ0-9_\-' ]+$",
         title="Role name",
         description="Role name"
     )

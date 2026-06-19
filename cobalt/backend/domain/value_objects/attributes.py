@@ -12,7 +12,7 @@ class AttributeKey(AbstractStrValueObject):
     """
     Attribute key value object.
     """
-    _PATTERN = re_compile(r'^[a-zA-Z0-9_]+$')
+    _PATTERN = re_compile(r"^[a-zA-Z0-9_]+$")
     _MIN_LENGTH = 1
     _MAX_LENGTH = 64
 

@@ -166,6 +166,7 @@ class GamesGetPageSchema(BaseModel):
     search: Optional[str] = Field(
         None,
         max_length=100,
+        pattern=r"^[a-zA-Zа-яА-ЯёЁіІїЇєЄ0-9_\-.,' ]+$",
         title="Search",
         description="Search query"
     )

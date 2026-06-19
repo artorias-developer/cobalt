@@ -13,7 +13,7 @@ class AuthLoginSchema(BaseModel):
         ...,
         min_length=3,
         max_length=32,
-        pattern=r"^[a-zA-Z0-9_-]+$",
+        pattern=r"^[a-zA-Zа-яА-ЯёЁіІїЇєЄ0-9_\-' ]+$",
         title="Login",
         description="User login"
     )
@@ -42,7 +42,7 @@ class AuthChangeCredentialsSchema(BaseModel):
         None,
         min_length=3,
         max_length=32,
-        pattern=r"^[a-zA-Z0-9_-]+$",
+        pattern=r"^[a-zA-Zа-яА-ЯёЁіІїЇєЄ0-9_\-' ]+$",
         title="Login",
         description="New login"
     )

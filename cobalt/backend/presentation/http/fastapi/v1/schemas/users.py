@@ -196,6 +196,7 @@ class UsersGetPageSchema(BaseModel):
     search: Optional[str] = Field(
         None,
         max_length=100,
+        pattern=r"^[a-zA-Zа-яА-ЯёЁіІїЇєЄ0-9_\-.,' ]+$",
         title="Search",
         description="Search query"
     )
@@ -238,7 +239,7 @@ class UserCreateSchema(BaseModel):
         ...,
         min_length=3,
         max_length=32,
-        pattern=r"^[a-zA-Z0-9_-]+$",
+        pattern=r"^[a-zA-Zа-яА-ЯёЁіІїЇєЄ0-9_\-' ]+$",
         title="Login",
         description="User login"
     )
@@ -275,7 +276,7 @@ class UserUpdateSchema(BaseModel):
         None,
         min_length=3,
         max_length=32,
-        pattern="^[a-zA-Z0-9_-]+$",
+        pattern="^[a-zA-Zа-яА-ЯёЁіІїЇєЄ0-9_\-' ]+$",
         title="Login",
         description="User login"
     )
