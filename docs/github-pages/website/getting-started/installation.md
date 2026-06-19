@@ -1,11 +1,14 @@
 # Installation
 
+This guide explains how to install and run Cobalt on your own VPS / VDS.
+
 ## Requirements
 
-- VPS / VDS running **Ubuntu 22+**
-- A public IP address
+**Operating System**: Ubuntu 22.04 LTS or newer. Other distributions are not officially supported and may require manual adjustments to the installer.
 
-## Installation
+**Public IP address**: A static public IPv4 address is required so the dashboard and game servers are reachable from the internet. A dynamic IP may work but is not recommended for production use.
+
+## Quick start
 
 1. Open CMD / Terminal.
 
@@ -51,10 +54,18 @@ chmod +x build/scripts/install.sh
 
 The installer will automatically install Docker and Docker Compose if not present, generate SSL certificates and all config files, build and start the containers.
 
-::: tip
-Your dashboard will be accessible at `https://<server_ip>`, using the default login and password `admin`.
-:::
+## Dashboard access
+
+Your dashboard will be accessible at `https://<server_ip>`.
+
+**Default login**: `admin`
+
+**Default password**: `admin`
 
 ::: warning
 Since the certificates are self-signed, you'll see a security warning the first time you open the dashboard. Click `Advanced` and then `Proceed to <server_ip> (unsafe)`.
+:::
+
+::: warning
+Change the default password immediately after your first login to keep your dashboard secure.
 :::

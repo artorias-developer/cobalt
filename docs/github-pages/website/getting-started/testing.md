@@ -1,5 +1,11 @@
 # Testing
 
+This guide explains how to run Cobalt's end-to-end (E2E) test suite locally.
+
+::: warning
+Make sure the dashboard and all required containers are running before executing tests.
+:::
+
 1. Navigate to the tests directory:
 
 ```bash
@@ -23,7 +29,3 @@ cp .env.example .env
 ```bash
 npm run test:e2e
 ```
-
-::: warning
-Make sure the dashboard and all required containers are running before executing tests.
-:::

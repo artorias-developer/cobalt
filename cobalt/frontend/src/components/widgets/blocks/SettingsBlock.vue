@@ -163,7 +163,7 @@ import { useNotification } from "@kyvg/vue3-notification"
 
 import { HTTP_SETTINGS_API_SERVICE_KEY, HTTP_AUTH_API_SERVICE_KEY } from "@/utils"
 import { useUserStore } from "@/stores"
-import { PermissionsEnum, RoutesEnum } from "@/types"
+import { LanguageEnum, PermissionsEnum, RoutesEnum } from "@/types"
 import type { AuthChangeCredentialsRequest, SelectOption } from "@/types"
 
 import Block from "@/components/ui/Block.vue"
@@ -328,15 +328,15 @@ const timezoneOptions: SelectOption[] = [
 
 const languageOptions: SelectOption[] = [
   {
-    value: "en",
+    value: LanguageEnum.EN,
     label: t("settings.general.language.options.en")
   },
   {
-    value: "ru",
+    value: LanguageEnum.RU,
     label: t("settings.general.language.options.ru")
   },
   {
-    value: "uk",
+    value: LanguageEnum.UK,
     label: t("settings.general.language.options.uk")
   }
 ]
