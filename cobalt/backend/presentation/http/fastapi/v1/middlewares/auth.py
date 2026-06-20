@@ -42,19 +42,25 @@ class HttpAuthMiddleware:
         Returns:
         - None.
         """
-        if scope["type"] == "http":
-            request = Request(scope)
-            session_id = request.cookies.get(CookieConstants.SESSION_KEY)
+        if scope["type"] != "http":
+            await self._app(scope, receive, send)
+            return
 
-            if session_id:
-                try:
-                    user = await self._auth_service.get_session_user(
-                        session_id=session_id
-                    )
+        request = Request(scope)
+        session_id = request.cookies.get(CookieConstants.SESSION_KEY)
 
-                    if user:
-                        request.state.user = user
-                except Exception:
-                    pass
+        if not session_id:
+            await self._app(scope, receive, send)
+            return
+
+        try:
+            user = await self._auth_service.get_session_user(
+                session_id=session_id
+            )
+        except Exception:
+            user = None
+
+        if user:
+            request.state.user = user
 
         await self._app(scope, receive, send)
