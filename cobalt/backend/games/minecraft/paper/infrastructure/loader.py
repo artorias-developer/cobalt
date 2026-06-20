@@ -27,7 +27,7 @@ class PaperLoader(AbstractLoader, HttpClientMixin):
         name: str,
         logger: AbstractLogger,
         servers_service: AbstractServersService,
-        timeout: Optional[float] = 60.0
+        timeout: float = 60.0
     ):
         AbstractLoader.__init__(
             self,

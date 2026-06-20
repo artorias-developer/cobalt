@@ -28,7 +28,7 @@ class VanillaLoader(AbstractLoader, HttpClientMixin):
         name: str,
         servers_service: AbstractServersService,
         logger: AbstractLogger,
-        timeout: Optional[float] = 60.0
+        timeout: float = 60.0
     ):
         AbstractLoader.__init__(
             self,

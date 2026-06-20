@@ -26,7 +26,7 @@ class PrometheusClient(AbstractMetricsClient, HttpClientMixin):
         self,
         base_url: str,
         logger: AbstractLogger,
-        timeout: Optional[float] = 60.0
+        timeout: float = 60.0
     ):
         HttpClientMixin.__init__(
             self,
