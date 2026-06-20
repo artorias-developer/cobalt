@@ -6,8 +6,8 @@
  */
 
 import axios, { AxiosError } from "axios"
-import router from "@/router"
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios"
+import type { Router } from "vue-router"
 import { notify } from "@kyvg/vue3-notification"
 
 import { RoutesEnum } from "@/types"
@@ -19,15 +19,19 @@ import type { IHttpClient } from "@/contracts"
  */
 export class HttpAxiosClient implements IHttpClient {
   private client: AxiosInstance
+  private router: Router
   private isRedirecting = false
 
   /**
    * Creates a new HttpAxiosClient instance with configured axios client.
    *
    * Parameters:
+   * - router: Router instance used for auth redirects.
    * - baseURL: Base URL for all API requests (default: empty string)
    */
-  constructor(baseURL?: string) {
+  constructor(router: Router, baseURL?: string) {
+    this.router = router
+
     this.client = axios.create({
       baseURL,
       timeout: 0,
@@ -84,13 +88,13 @@ export class HttpAxiosClient implements IHttpClient {
     const status = error.response.status
 
     if (status === 401) {
-      if (router.currentRoute.value.name !== RoutesEnum.LOGIN && !this.isRedirecting) {
+      if (this.router.currentRoute.value.name !== RoutesEnum.LOGIN && !this.isRedirecting) {
         this.isRedirecting = true
         notify({
           type: "error",
           text: (error.response.data as any)?.message ?? "Invalid session"
         })
-        router.push({ name: RoutesEnum.LOGIN }).finally(() => {
+        this.router.push({ name: RoutesEnum.LOGIN }).finally(() => {
           this.isRedirecting = false
         })
       }

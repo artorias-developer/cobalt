@@ -5,6 +5,8 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
+import type { Router } from "vue-router"
+
 import { HttpAxiosClient } from "@/clients"
 import type { IHttpClient } from "@/contracts"
 
@@ -17,6 +19,6 @@ import type { IHttpClient } from "@/contracts"
  * Returns:
  * - IHttpClient: A new HttpAxiosClient instance.
  */
-export function createHttpAxiosClient(baseURL?: string): IHttpClient {
-  return new HttpAxiosClient(baseURL)
+export function createHttpAxiosClient(router: Router, baseURL?: string): IHttpClient {
+  return new HttpAxiosClient(router, baseURL)
 }
