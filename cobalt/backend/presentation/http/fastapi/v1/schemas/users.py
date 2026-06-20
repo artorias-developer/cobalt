@@ -276,7 +276,7 @@ class UserUpdateSchema(BaseModel):
         None,
         min_length=3,
         max_length=32,
-        pattern="^[a-zA-Zа-яА-ЯёЁіІїЇєЄ0-9_\-' ]+$",
+        pattern=r"^[a-zA-Zа-яА-ЯёЁіІїЇєЄ0-9_\-' ]+$",
         title="Login",
         description="User login"
     )
