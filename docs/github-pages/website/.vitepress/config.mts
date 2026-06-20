@@ -7,22 +7,22 @@ export default defineConfig({
   themeConfig: {
     nav: [
       { text: 'Home', link: '/' },
-      { text: 'Documentation', link: '/getting-started/installation' }
+      { text: 'Documentation', link: '/docs/getting-started/installation' }
     ],
     sidebar: [
       {
         text: 'Getting started',
         items: [
-          { text: 'Installation', link: '/getting-started/installation' },
-          { text: 'Testing', link: '/getting-started/testing' }
+          { text: 'Installation', link: '/docs/getting-started/installation' },
+          { text: 'Testing', link: '/docs/getting-started/testing' }
         ]
       },
       {
         text: 'Development',
         items: [
-          { text: 'Local installation', link: '/development/local-installation' },
-          { text: 'Adding a language', link: '/development/adding-a-language' },
-          { text: 'Adding a game', link: '/development/adding-a-game' }
+          { text: 'Local installation', link: '/docs/development/local-installation' },
+          { text: 'Adding a language', link: '/docs/development/adding-a-language' },
+          { text: 'Adding a game', link: '/docs/development/adding-a-game' }
         ]
       }
     ],

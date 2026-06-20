@@ -8,7 +8,7 @@ hero:
   actions:
     - theme: brand
       text: Getting Started
-      link: /getting-started/installation
+      link: /docs/getting-started/installation
     - theme: alt
       text: View on GitHub
       link: https://github.com/ArtoriasCode/cobalt
