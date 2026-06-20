@@ -42,19 +42,21 @@ class HttpLocaleMiddleware:
         Returns:
         - None.
         """
-        if scope["type"] == "http":
-            request = Request(scope)
-            language = self._i18n_manager.get_default_language()
+        if scope["type"] != "http":
+            await self._app(scope, receive, send)
+            return
 
-            user = getattr(request.state, "user", None)
+        request = Request(scope)
+        language = self._i18n_manager.get_default_language()
+        user = getattr(request.state, "user", None)
 
-            if user:
-                try:
-                    language = LanguageEnum(user.settings.language)
-                except (ValueError, TypeError, AttributeError):
-                    pass
+        if user:
+            try:
+                language = LanguageEnum(user.settings.language)
+            except (ValueError, TypeError, AttributeError):
+                pass
 
-            self._i18n_manager.activate(language)
-            scope["state"]["language"] = language
+        self._i18n_manager.activate(language)
+        scope["state"]["language"] = language
 
         await self._app(scope, receive, send)
