@@ -22,6 +22,10 @@ A single game can have multiple loaders, each in its own package.
 [Terraria's vanilla loader](https://github.com/ArtoriasCode/cobalt/blob/main/cobalt/backend/games/terraria/vanilla/infrastructure/loader.py)
 :::
 
+:::tip
+If the loader's versions are parsed from GitHub releases, use `GithubClientMixin` instead of duplicating the pagination logic. See [Terraria's tModLoader loader](https://github.com/ArtoriasCode/cobalt/blob/main/cobalt/backend/games/terraria/tmodloader/infrastructure/loader.py) for an example.
+:::
+
 4. Inside the loader package, create `infrastructure/__init__.py`.
 
 :::info Example

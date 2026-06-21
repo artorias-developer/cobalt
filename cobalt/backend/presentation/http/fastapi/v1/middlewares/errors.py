@@ -5,9 +5,9 @@
 
 from typing import Tuple, Dict, Type
 
-from fastapi import Request, Response, FastAPI, status
+from fastapi import status
 from fastapi.responses import JSONResponse
-from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
+from starlette.types import ASGIApp, Scope, Receive, Send
 
 from domain.exceptions import (
     BaseError,
@@ -30,19 +30,19 @@ EXCEPTION_TO_HTTP_STATUS: Dict[Type[BaseError], int] = {
     ConflictError: status.HTTP_409_CONFLICT,
 }
 
-class HttpErrorsMiddleware(BaseHTTPMiddleware):
+class HttpErrorsMiddleware:
     """
     Handles errors when processing HTTP requests.
     """
+    app: ASGIApp
     logger: AbstractLogger
 
     def __init__(
         self,
-        app: FastAPI,
+        app: ASGIApp,
         logger: AbstractLogger
     ):
-        super().__init__(app)
-
+        self.app = app
         self.logger = logger
 
     def get_http_error(
@@ -71,32 +71,50 @@ class HttpErrorsMiddleware(BaseHTTPMiddleware):
         self.logger.exception("Unhandled exception occurred:")
         return status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal server error"
 
-    async def dispatch(
+    async def __call__(
         self,
-        request: Request,
-        call_next: RequestResponseEndpoint
-    ) -> Response:
+        scope: Scope,
+        receive: Receive,
+        send: Send
+    ) -> None:
         """
-        Dispatches a request and handles errors.
+        Processes an ASGI request and handles errors.
 
         Parameters:
-        - request: Request object.
-        - call_next: Callable handler.
-
-        Returns:
-        - Response: Response object.
+        - scope: ASGI connection scope.
+        - receive: Callable to receive ASGI events.
+        - send: Callable to send ASGI events.
         """
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        response_started = False
+
+        async def send_wrapper(message) -> None:
+            nonlocal response_started
+
+            if message["type"] == "http.response.start":
+                response_started = True
+
+            await send(message)
+
         try:
-            response = await call_next(request)
-            return response
+            await self.app(scope, receive, send_wrapper)
         except Exception as e:
+            if response_started:
+                self.logger.exception("Error occurred mid-stream, response already started:")
+                raise
+
             code, message = self.get_http_error(
                 error=e
             )
 
-            return JSONResponse(
+            response = JSONResponse(
                 status_code=code,
                 content={
                     "message": message
                 }
             )
+
+            await response(scope, receive, send)

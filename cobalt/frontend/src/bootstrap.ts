@@ -1,4 +1,12 @@
+/*
+ * Copyright (C) 2026 ArtoriasCode
+ * Author: ArtoriasCode
+ * Repository: https://github.com/ArtoriasCode/cobalt
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
 import { watch } from "vue"
+import { createRouter, createWebHistory } from "vue-router"
 import { createI18n } from "vue-i18n"
 import { createPinia } from "pinia"
 import Notifications from "@kyvg/vue3-notification"
@@ -6,10 +14,18 @@ import { useNotification } from "@kyvg/vue3-notification"
 import type { App } from "vue"
 import type { Composer } from "vue-i18n"
 
-import router from "@/router"
 import { useUserStore } from "@/stores"
 import { LanguageEnum, RoutesEnum, RolesEventsEnum } from "@/types"
 import type { RoleEntity } from "@/types"
+
+import LoginPage from "@/pages/LoginPage.vue"
+import DashboardPage from "@/pages/DashboardPage.vue"
+import ServersPage from "@/pages/ServersPage.vue"
+import ServerPage from "@/pages/ServerPage.vue"
+import UsersPage from "@/pages/UsersPage.vue"
+import RolesPage from "@/pages/RolesPage.vue"
+import SettingsPage from "@/pages/SettingsPage.vue"
+import NotFoundPage from "@/pages/NotFoundPage.vue"
 
 import {
   createHttpAxiosClient,
@@ -54,17 +70,82 @@ import ru from "@/locales/ru.json"
 type MessageSchema = typeof en
 
 /**
+ * Defines the application's route table, mapping URL paths
+ * to their corresponding page components.
+ */
+const routes = [
+  {
+    path: "/login",
+    name: RoutesEnum.LOGIN,
+    component: LoginPage
+  },
+  {
+    path: "/",
+    name: RoutesEnum.DASHBOARD,
+    component: DashboardPage
+  },
+  {
+    path: "/servers",
+    name: RoutesEnum.SERVERS,
+    component: ServersPage
+  },
+  {
+    path: "/servers/:game/:server_id",
+    name: RoutesEnum.SERVER,
+    component: ServerPage
+  },
+  {
+    path: "/users",
+    name: RoutesEnum.USERS,
+    component: UsersPage
+  },
+  {
+    path: "/roles",
+    name: RoutesEnum.ROLES,
+    component: RolesPage
+  },
+  {
+    path: "/settings",
+    name: RoutesEnum.SETTINGS,
+    component: SettingsPage
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    name: RoutesEnum.NOT_FOUND,
+    component: NotFoundPage
+  }
+]
+
+/**
+ * Creates the Vue Router instance using HTML5 history mode
+ * and the application's route table.
+ *
+ * Parameters:
+ * - null.
+ *
+ * Returns:
+ * - Router: Configured router instance ready to be used with app.use().
+ */
+function setupRouterInstance() {
+  return createRouter({
+    history: createWebHistory(import.meta.env.BASE_URL),
+    routes
+  })
+}
+
+/**
  * Sets up all dependency providers for the Vue application.
  * Creates and provides all dependencies to the app instance.
  *
  * Parameters:
  * - app: Vue application instance.
+ * - router: Router instance, required by the HTTP client for auth redirects.
  *
  * Returns:
  * - object: Object containing selected initialized services.
  */
-function setupProviders(app: App) {
-  const httpClient = createHttpAxiosClient()
+function setupProviders(app: App, router: ReturnType<typeof setupRouterInstance>) {
+  const httpClient = createHttpAxiosClient(router)
   const wsClient = createWebSocketClient()
 
   const documentHelper = createDocumentHelper()
@@ -111,6 +192,9 @@ function setupProviders(app: App) {
 /**
  * Creates and configures the vue-i18n instance with support for
  * English and Ukrainian locales, including Ukrainian plural rules.
+ *
+ * Parameters:
+ * - null.
  *
  * Returns:
  * - I18n: Configured i18n instance ready to be used with app.use().
@@ -187,12 +271,16 @@ function setupTimezoneWatch(localeHelper: ReturnType<typeof createLocaleHelper>)
  * before each route and redirects to login if the session is invalid.
  *
  * Parameters:
+ * - router: Router instance to attach the guard to.
  * - httpUsersApiService: HTTP Users API service instance.
  *
  * Returns:
  * - void.
  */
-function setupRouter(httpUsersApiService: ReturnType<typeof createHttpUsersApiService>): void {
+function setupRouterGuard(
+  router: ReturnType<typeof setupRouterInstance>,
+  httpUsersApiService: ReturnType<typeof createHttpUsersApiService>
+): void {
   router.beforeEach(async (to, from, next) => {
     const userStore = useUserStore()
     const { notify } = useNotification()
@@ -245,12 +333,13 @@ function setupRoleUpdateListener(wsClient: ReturnType<typeof createWebSocketClie
  */
 export function bootstrap(app: App): void {
   const i18n = setupI18n()
+  const router = setupRouterInstance()
 
-  const { httpUsersApiService, localeHelper, wsClient } = setupProviders(app)
+  const { httpUsersApiService, localeHelper, wsClient } = setupProviders(app, router)
   app.use(createPinia())
   app.use(Notifications)
   app.use(i18n)
-  setupRouter(httpUsersApiService)
+  setupRouterGuard(router, httpUsersApiService)
   app.use(router)
   setupLanguageWatch(i18n)
   setupTimezoneWatch(localeHelper)

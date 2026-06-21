@@ -3,21 +3,21 @@
 #  Repository: https://github.com/ArtoriasCode/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-from typing import List, Optional
+from typing import List
 
 from application.contracts.games import (
     AbstractLoader,
     AbstractServersService
 )
 from application.contracts.loggers import AbstractLogger
-from infrastructure.mixins import HttpClientMixin
+from infrastructure.mixins import GithubClientMixin
 
 
-class TModLoaderLoader(AbstractLoader, HttpClientMixin):
+class TModLoaderLoader(AbstractLoader, GithubClientMixin):
     """
     Terraria TModLoader loader.
     """
-    GITHUB_API = "https://api.github.com/repos/tModLoader/tModLoader/releases"
+    GITHUB_REPOSITORY = "tModLoader/tModLoader"
     DOWNLOAD_LINK = "https://github.com/tModLoader/tModLoader/releases/download/{version}/tModLoader.zip"
 
     def __init__(
@@ -26,7 +26,7 @@ class TModLoaderLoader(AbstractLoader, HttpClientMixin):
         name: str,
         logger: AbstractLogger,
         servers_service: AbstractServersService,
-        timeout: Optional[float] = 60.0
+        timeout: float = 60.0
     ):
         AbstractLoader.__init__(
             self,
@@ -35,7 +35,7 @@ class TModLoaderLoader(AbstractLoader, HttpClientMixin):
             servers_service=servers_service
         )
 
-        HttpClientMixin.__init__(
+        GithubClientMixin.__init__(
             self,
             logger=logger,
             timeout=timeout
@@ -295,54 +295,19 @@ class TModLoaderLoader(AbstractLoader, HttpClientMixin):
         Returns:
         - List: List of available versions.
         """
-        default_versions = self.get_default_versions()
         unsupported_versions = self.get_unsupported_versions()
-        latest_default = default_versions[0]
+        default_versions = self.get_default_versions()
 
-        versions = []
-        page = 1
-        per_page = 100
-        found_latest = False
+        all_versions = await self.get_repository_release_versions(
+            repository=self.GITHUB_REPOSITORY,
+            stop_on_version=default_versions[0]
+        )
 
-        try:
-            while True:
-                response = await self.request(
-                    url=self.GITHUB_API,
-                    method="GET",
-                    params={"per_page": per_page, "page": page},
-                )
-
-                if not response or not isinstance(response, list):
-                    break
-
-                stable_versions = [
-                    release.get("tag_name")
-                    for release in response
-                    if release.get("tag_name")
-                    and not release.get("prerelease", False)
-                    and release.get("tag_name") not in unsupported_versions
-                ]
-
-                if not stable_versions:
-                    break
-
-                for version in stable_versions:
-                    if version == latest_default:
-                        found_latest = True
-                        break
-
-                    versions.append(version)
-
-                if found_latest:
-                    break
-
-                page += 1
-
-                if len(response) < per_page:
-                    break
-
-        except Exception:
-            self.logger.exception(f'Error while getting "{self.name}" versions:')
+        versions = [
+            version
+            for version in all_versions
+            if version not in unsupported_versions
+        ]
 
         if not versions:
             return default_versions

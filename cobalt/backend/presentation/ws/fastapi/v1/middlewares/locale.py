@@ -41,17 +41,20 @@ class WsLocaleMiddleware:
         Returns:
         - None.
         """
-        if scope["type"] == "websocket":
-            language = LanguageEnum.EN
+        if scope["type"] != "websocket":
+            await self._app(scope, receive, send)
+            return
 
-            user = scope.get("state", {}).get("user")
-            if user:
-                try:
-                    language = LanguageEnum(user.settings.language)
-                except (ValueError, TypeError, AttributeError):
-                    pass
+        language = self._i18n_manager.get_default_language()
+        user = scope.get("state", {}).get("user")
 
-            self._i18n_manager.activate(language)
-            scope["state"]["language"] = language
+        if user:
+            try:
+                language = LanguageEnum(user.settings.language)
+            except (ValueError, TypeError, AttributeError):
+                pass
+
+        self._i18n_manager.activate(language)
+        scope["state"]["language"] = language
 
         await self._app(scope, receive, send)

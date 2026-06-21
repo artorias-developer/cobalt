@@ -42,19 +42,25 @@ class WsAuthMiddleware:
         Returns:
         - None.
         """
-        if scope["type"] == "websocket":
-            websocket = WebSocket(scope, receive, send)
-            session_id = websocket.cookies.get(CookieConstants.SESSION_KEY)
+        if scope["type"] != "websocket":
+            await self._app(scope, receive, send)
+            return
 
-            if session_id:
-                try:
-                    user = await self._auth_service.get_session_user(
-                        session_id=session_id
-                    )
+        websocket = WebSocket(scope, receive, send)
+        session_id = websocket.cookies.get(CookieConstants.SESSION_KEY)
 
-                    if user:
-                        scope["state"]["user"] = user
-                except Exception:
-                    pass
+        if not session_id:
+            await self._app(scope, receive, send)
+            return
+
+        try:
+            user = await self._auth_service.get_session_user(
+                session_id=session_id
+            )
+        except Exception:
+            user = None
+
+        if user:
+            scope["state"]["user"] = user
 
         await self._app(scope, receive, send)

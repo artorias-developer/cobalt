@@ -914,6 +914,11 @@ onUnmounted(() => {
 
 <style lang="scss">
 .create-server-popup {
+  .form {
+    flex: 1;
+    min-height: 0;
+  }
+
   .selected-game {
     display: flex;
     align-items: center;
@@ -946,6 +951,17 @@ onUnmounted(() => {
         color: $color-text;
         line-height: unset;
       }
+    }
+  }
+
+  .radio-list {
+    flex: 1;
+    min-height: 0;
+
+    .options {
+      overflow-y: auto;
+      overscroll-behavior: none;
+      @include scrollbar();
     }
   }
 
