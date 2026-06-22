@@ -268,16 +268,21 @@ class ServersService(AbstractServersService):
             server=created_entity
         )
 
-        container_name = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
-            server_id=created_entity.id
-        )
-
         try:
             download_link = await loader.get_download_link(
                 version=created_entity.version
             )
         except NotImplementedError:
             download_link = None
+        except Exception:
+            await self.servers_repository.delete_one(
+                server_id=created_entity.id
+            )
+            raise
+
+        container_name = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
+            server_id=created_entity.id
+        )
 
         await self.queue.enqueue(
             loader.servers_service.create,

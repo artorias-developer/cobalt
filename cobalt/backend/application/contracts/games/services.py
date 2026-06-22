@@ -8,7 +8,7 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from secrets import choice
 from string import ascii_letters, digits
-from socket import socket, AF_INET, SOCK_STREAM
+from socket import socket, AF_INET, SOCK_STREAM, SOCK_DGRAM
 from typing import Optional, Dict, Any, Union
 
 from aiofiles import os
@@ -153,22 +153,105 @@ class AbstractServersService(ABC):
         )
 
     @staticmethod
-    def get_available_port() -> int:
+    def _is_port_free(
+        port: int
+    ) -> bool:
         """
-        Gets a random available port.
+        Checks whether a single port is currently free for both TCP and UDP.
 
         Parameters:
-        - None.
+        - port: Port number to check.
+
+        Returns:
+        - bool: True if the port is free on both protocols, False otherwise.
+        """
+        try:
+            with socket(AF_INET, SOCK_STREAM) as tcp_sock:
+                tcp_sock.bind(('', port))
+        except OSError:
+            return False
+
+        try:
+            with socket(AF_INET, SOCK_DGRAM) as udp_sock:
+                udp_sock.bind(('', port))
+        except OSError:
+            return False
+
+        return True
+
+    def _is_port_range_free(
+        self,
+        start_port: int,
+        count: int
+    ) -> bool:
+        """
+        Checks whether every port in [start_port, start_port + count - 1]
+        is currently free for both TCP and UDP.
+
+        Parameters:
+        - start_port: First port of the range to check.
+        - count: Number of consecutive ports to check.
+
+        Returns:
+        - bool: True if all ports in the range are free, False otherwise.
+        """
+        return all(
+            self._is_port_free(start_port + offset)
+            for offset in range(count)
+        )
+
+    def get_available_port(
+        self,
+        max_attempts: int = 1000
+    ) -> int:
+        """
+        Gets a random available port that is free on both TCP and UDP.
+
+        Parameters:
+        - max_attempts: Maximum number of candidate ports to try before giving up.
 
         Returns:
         - int: Available port number.
         """
-        with socket(AF_INET, SOCK_STREAM) as sock:
-            sock.bind(('', 0))
-            sock.listen(1)
-            port = sock.getsockname()[1]
+        for _ in range(max_attempts):
+            with socket(AF_INET, SOCK_STREAM) as sock:
+                sock.bind(('', 0))
+                sock.listen(1)
+                port: int = sock.getsockname()[1]
 
-        return port
+            if self._is_port_free(port):
+                return port
+
+        raise RuntimeError(f"Could not find an available port free on both TCP and UDP after {max_attempts} attempts")
+
+    def get_available_port_range(
+        self,
+        count: int,
+        max_attempts: int = 1000
+    ) -> int:
+        """
+        Gets a starting port of a contiguous range of available ports.
+
+        Parameters:
+        - count: Number of consecutive ports required.
+        - max_attempts: Maximum number of candidate ports to try before giving up.
+
+        Returns:
+        - int: The first port of a free contiguous range of size `count`.
+        """
+        for _ in range(max_attempts):
+            with socket(AF_INET, SOCK_STREAM) as sock:
+                sock.bind(('', 0))
+                sock.listen(1)
+                candidate: int = sock.getsockname()[1]
+
+            if candidate + count - 1 > 65535:
+                continue
+
+            if self._is_port_range_free(candidate, count):
+                return candidate
+
+        raise RuntimeError(f"Could not find {count} consecutive available ports after {max_attempts} attempts")
 
     @staticmethod
     def generate_random_key(
@@ -411,3 +494,23 @@ class AbstractServersService(ABC):
         await self.containers_client.container_start(
             container_name=container_name
         )
+
+    async def _verify_installation(
+        self,
+        container_name: str,
+        install_marker: str
+    ) -> None:
+        """
+        Verifies that the installation was completed successfully.
+
+        Parameters:
+        - container_name: Container name.
+        - install_marker: File or directory that indicates a successful installation.
+
+        Returns:
+        - None.
+        """
+        app_container_dir = path.join(self.app_containers_dir, container_name)
+
+        if not await os.path.exists(path.join(app_container_dir, install_marker)):
+            raise Exception(f'Installation failed: "{install_marker}" not found in "{app_container_dir}"')

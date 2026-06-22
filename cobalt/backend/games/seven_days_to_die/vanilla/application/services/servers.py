@@ -17,10 +17,10 @@ from application.clients.containers.shared import ContainersConstants
 
 class VanillaServersService(AbstractServersService):
     """
-    Don't Starve Together Vanilla servers service.
+    7 Days to Die Vanilla servers service.
     """
-    _INTERNAL_PORT = 10999
-    _INSTALL_MARKER = "bin/dontstarve_dedicated_server_nullrenderer"
+    _INTERNAL_PORT = 26900
+    _INSTALL_MARKER = "7DaysToDieServer.x86_64"
 
     host_containers_dir: Path
 
@@ -59,7 +59,7 @@ class VanillaServersService(AbstractServersService):
         - server_id: Server ID.
         - container_name: Container name.
         - version: Game version.
-        - download_link: Download link for Vanilla Don't Starve Together.
+        - download_link: Download link for Vanilla 7 Days to Die.
 
         Returns:
         - None.
@@ -72,7 +72,9 @@ class VanillaServersService(AbstractServersService):
         app_container_dir = path.join(self.app_containers_dir, container_name)
         host_container_dir = path.join(self.host_containers_dir, container_name)
 
-        port = self.get_available_port()
+        port_base = self.get_available_port_range(count=3)
+        port_1 = port_base + 1
+        port_2 = port_base + 2
 
         makedirs(
             name=app_container_dir,
@@ -98,7 +100,10 @@ class VanillaServersService(AbstractServersService):
                 container_file=self._CONTAINER_RUNTIME_FILE,
                 container_name=container_name,
                 ports={
-                    f"{self._INTERNAL_PORT}/udp": port
+                    f"{port_base}/tcp": port_base,
+                    f"{port_base}/udp": port_base,
+                    f"{port_1}/udp": port_1,
+                    f"{port_2}/udp": port_2
                 },
                 volumes={
                     host_container_dir: {
@@ -107,8 +112,7 @@ class VanillaServersService(AbstractServersService):
                     }
                 },
                 container_environment={
-                    "CONTAINER_NAME": container_name,
-                    "CLUSTER_KEY": self.generate_random_key()
+                    "SERVER_PORT": str(port_base)
                 },
                 container_kwargs={
                     "security_opt": ["seccomp=unconfined"],

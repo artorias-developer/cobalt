@@ -600,13 +600,16 @@
       "description": "Explore caves, fight bosses, and build in 2D world."
     },
     "dont_starve_together": {
-      "description": "Survive the wilderness together in a dark world."
+      "description": "Fight hunger, monsters, and your own insanity."
     },
     "factorio": {
       "description": "Build and automate factories while surviving alien attacks."
     },
     "rim_world": {
       "description": "Manage a colony of survivors stranded on a distant planet."
+    },
+    "seven_days_to_die": {
+      "description": "Craft weapons, fortify your base, and survive while surrounded by zombies."
     }
   }
 }

@@ -10,7 +10,7 @@ import type { DiskMetricsEntity, MetricEntity } from "@/types"
 
 /**
  * API service for metrics endpoints.
- * Covers host and per-server CPU, RAM, and disk metrics.
+ * Covers host and per-server CPU, RAM and disk metrics.
  */
 export class HttpMetricsApiService implements IHttpMetricsApiService {
   private readonly prefix = "/api/v1/metrics"

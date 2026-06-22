@@ -20,6 +20,7 @@ class TogetherServersService(AbstractServersService):
     RimWorld Together servers service.
     """
     _INTERNAL_PORT = 25555
+    _INSTALL_MARKER = "GameServer"
 
     host_containers_dir: Path
 
@@ -86,6 +87,11 @@ class TogetherServersService(AbstractServersService):
                 image_build_args={
                     "TOGETHER_LINK": download_link
                 }
+            )
+
+            await self._verify_installation(
+                container_name=container_name,
+                install_marker=self._INSTALL_MARKER
             )
 
             await self._create_runtime_container(

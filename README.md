@@ -53,6 +53,7 @@ Currently, you can create a server for one of the following games:
 | <img src="cobalt/frontend/src/assets/images/games/dont-starve-together/icon.png" height="30"> | Don't Starve Together | Vanilla              |
 |       <img src="cobalt/frontend/src/assets/images/games/factorio/icon.png" height="30">       | Factorio              | Vanilla              |
 |      <img src="cobalt/frontend/src/assets/images/games/rim-world/icon.png" height="30">       | RimWorld              | Together             |
+|      <img src="cobalt/frontend/src/assets/images/games/seven-days-to-die/icon.png" height="30">       | 7 Days to Die         | Vanilla             |
 
 ## Features
 
@@ -65,8 +66,7 @@ The main features of Cobalt:
   - English
   - Russian
   - Ukrainian
-  
-If you have any ideas you'd like to see here, please share them in [Ideas](https://github.com/ArtoriasCode/cobalt/discussions/categories/ideas).
+- Full support for mobile devices.
 
 ## FAQ
 

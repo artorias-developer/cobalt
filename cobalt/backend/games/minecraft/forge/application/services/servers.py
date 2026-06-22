@@ -22,6 +22,7 @@ class ForgeServersService(AbstractServersService):
     Minecraft Forge servers service.
     """
     _INTERNAL_PORT = 25565
+    _INSTALL_MARKER = "libraries"
 
     host_containers_dir: Path
 
@@ -157,6 +158,11 @@ class ForgeServersService(AbstractServersService):
                     "FORGE_LINK": download_link,
                     "JAVA_VERSION": java_version
                 }
+            )
+
+            await self._verify_installation(
+                container_name=container_name,
+                install_marker=self._INSTALL_MARKER
             )
 
             await self._create_runtime_container(
