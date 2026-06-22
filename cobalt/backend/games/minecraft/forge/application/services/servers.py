@@ -7,6 +7,8 @@ from os import path, makedirs
 from pathlib import Path
 from typing import Literal
 
+from aiofiles import os
+
 from domain.enums import ServerStatusEnum
 from application.contracts.managers import AbstractConnectionsManager
 from application.contracts.clients import AbstractContainersClient
@@ -22,6 +24,7 @@ class ForgeServersService(AbstractServersService):
     Minecraft Forge servers service.
     """
     _INTERNAL_PORT = 25565
+    _SERVER_BINARY = "libraries"
 
     host_containers_dir: Path
 
@@ -158,6 +161,9 @@ class ForgeServersService(AbstractServersService):
                     "JAVA_VERSION": java_version
                 }
             )
+
+            if not await os.path.exists(path.join(app_container_dir, self._SERVER_BINARY)):
+                raise Exception(f'Installation failed: "{self._SERVER_BINARY}" not found in "{app_container_dir}"')
 
             await self._create_runtime_container(
                 container_file=self._CONTAINER_RUNTIME_FILE,

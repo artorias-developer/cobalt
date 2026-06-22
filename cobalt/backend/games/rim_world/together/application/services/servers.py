@@ -6,6 +6,8 @@
 from os import path, makedirs
 from pathlib import Path
 
+from aiofiles import os
+
 from domain.enums import ServerStatusEnum
 from application.contracts.managers import AbstractConnectionsManager
 from application.contracts.clients import AbstractContainersClient
@@ -20,6 +22,7 @@ class TogetherServersService(AbstractServersService):
     RimWorld Together servers service.
     """
     _INTERNAL_PORT = 25555
+    _SERVER_BINARY = "GameServer"
 
     host_containers_dir: Path
 
@@ -87,6 +90,9 @@ class TogetherServersService(AbstractServersService):
                     "TOGETHER_LINK": download_link
                 }
             )
+
+            if not await os.path.exists(path.join(app_container_dir, self._SERVER_BINARY)):
+                raise Exception(f'Installation failed: "{self._SERVER_BINARY}" not found in "{app_container_dir}"')
 
             await self._create_runtime_container(
                 container_file=self._CONTAINER_RUNTIME_FILE,
