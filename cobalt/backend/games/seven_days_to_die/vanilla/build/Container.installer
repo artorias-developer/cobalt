@@ -17,6 +17,7 @@ COPY scripts/entrypoint.sh /installer_src/entrypoint.sh
 RUN chmod +x /installer_src/entrypoint.sh
 
 WORKDIR ${SERVER_ROOT}
+ENV APP_ID=${APP_ID}
 
 CMD rsync -a /installer_src/. . && \
     steamcmd.sh +@ShutdownOnFailedCommand 1 +force_install_dir ${SERVER_ROOT} +login anonymous +app_update ${APP_ID} validate +quit && \
