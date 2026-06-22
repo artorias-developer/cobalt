@@ -112,6 +112,12 @@ const LEVEL_ORDER: Record<string, number> = {
   Critical: 3,
   Debug: 4
 }
+const LEVEL_ALIAS: Record<string, string> = {
+  INF: "Info",
+  WRN: "Warn",
+  ERR: "Error",
+  EXC: "Critical"
+}
 
 /**
  * Guesses log level from message content.
@@ -150,6 +156,8 @@ function parseLog(message: string, regex: RegExp): ParsedLog {
 
     if (!rawLevel) {
       level = guessLevel(rest)
+    } else if (LEVEL_ALIAS[rawLevel.toUpperCase()]) {
+      level = LEVEL_ALIAS[rawLevel.toUpperCase()] ?? "Info"
     } else if (rawLevel.toLowerCase() === "warning") {
       level = "Warn"
     } else {

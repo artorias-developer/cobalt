@@ -607,6 +607,9 @@
     },
     "rim_world": {
       "description": "Manage a colony of survivors stranded on a distant planet."
+    },
+    "seven_days_to_die": {
+      "description": "Craft weapons, fortify your base, and survive while surrounded by zombies."
     }
   }
 }

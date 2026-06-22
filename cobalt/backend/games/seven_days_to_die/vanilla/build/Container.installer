@@ -1,7 +1,7 @@
 FROM debian:bookworm-slim
 
 ARG SERVER_ROOT
-ARG APP_ID=343050
+ARG APP_ID=294420
 
 RUN apt-get update && \
     apt-get install -y \
@@ -20,6 +20,8 @@ WORKDIR ${SERVER_ROOT}
 
 CMD rsync -a /installer_src/. . && \
     steamcmd.sh +@ShutdownOnFailedCommand 1 +force_install_dir ${SERVER_ROOT} +login anonymous +app_update ${APP_ID} validate +quit && \
+    rm -f ${SERVER_ROOT}/serverconfig.xml && \
+    mv ${SERVER_ROOT}/serverconfig.example.xml ${SERVER_ROOT}/serverconfig.xml && \
     grep '"buildid"' ${SERVER_ROOT}/steamapps/appmanifest_${APP_ID}.acf \
         | grep -oP '"\K[^"]+(?=")' \
         | tail -1 > ${SERVER_ROOT}/steam_version.txt

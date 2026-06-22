@@ -12,6 +12,7 @@ import factorioIcon from "@/assets/images/games/factorio/icon.png"
 import minecraftIcon from "@/assets/images/games/minecraft/icon.png"
 import terrariaIcon from "@/assets/images/games/terraria/icon.png"
 import rimWorldIcon from "@/assets/images/games/rim-world/icon.png"
+import sevenDaysToDieIcon from "@/assets/images/games/seven-days-to-die/icon.png"
 
 export const GameModules: GameModulesMap = {
   minecraft: {
@@ -72,5 +73,15 @@ export const GameModules: GameModulesMap = {
       }
     },
     sort_number: 5
+  },
+  seven_days_to_die: {
+    displayName: "7 Days to Die",
+    icon: sevenDaysToDieIcon,
+    loaders: {
+      vanilla: {
+        displayName: "Vanilla"
+      }
+    },
+    sort_number: 6
   }
 }

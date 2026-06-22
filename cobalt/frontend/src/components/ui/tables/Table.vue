@@ -549,6 +549,7 @@ table {
         align-items: center;
 
         .hint {
+          text-align: center;
           @include tooltip-popup;
         }
 

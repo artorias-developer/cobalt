@@ -7,6 +7,7 @@ from .dont_starve_together import DontStarveTogetherGameModule
 from .factorio import FactorioGameModule
 from .minecraft import MinecraftGameModule
 from .rim_world import RimWorldGameModule
+from .seven_days_to_die import SevenDaysToDieGameModule
 from .terraria import TerrariaGameModule
 
 ENABLED_GAME_MODULES = [
@@ -14,6 +15,7 @@ ENABLED_GAME_MODULES = [
     FactorioGameModule,
     MinecraftGameModule,
     RimWorldGameModule,
+    SevenDaysToDieGameModule,
     TerrariaGameModule
 ]
 
@@ -22,6 +24,7 @@ __all__ = [
     "FactorioGameModule",
     "MinecraftGameModule",
     "RimWorldGameModule",
+    "SevenDaysToDieGameModule",
     "TerrariaGameModule",
     "ENABLED_GAME_MODULES"
 ]
