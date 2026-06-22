@@ -22,6 +22,7 @@ class VanillaServersService(AbstractServersService):
     Don't Starve Together Vanilla servers service.
     """
     _INTERNAL_PORT = 10999
+    _SERVER_BINARY = "bin/dontstarve_dedicated_server_nullrenderer"
 
     host_containers_dir: Path
 
@@ -90,6 +91,9 @@ class VanillaServersService(AbstractServersService):
                 }
             )
 
+            if not await os.path.exists(path.join(app_container_dir, self._SERVER_BINARY)):
+                raise Exception(f'Installation failed: "{self._SERVER_BINARY}" not found in "{app_container_dir}"')
+
             await self._create_runtime_container(
                 container_file=self._CONTAINER_RUNTIME_FILE,
                 container_name=container_name,
@@ -111,9 +115,6 @@ class VanillaServersService(AbstractServersService):
                     "network_mode": ContainersConstants.NETWORK_MODE
                 }
             )
-
-            if not await os.path.exists(path.join(app_container_dir, "bin")):
-                raise Exception(f'Installation failed: "bin" directory not found in "{app_container_dir}"')
 
             await self._update_server_status(
                 server_id=server_id,

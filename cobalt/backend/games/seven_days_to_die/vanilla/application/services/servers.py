@@ -22,6 +22,7 @@ class VanillaServersService(AbstractServersService):
     7 Days to Die Vanilla servers service.
     """
     _INTERNAL_PORT = 26900
+    _SERVER_BINARY = "7DaysToDieServer.x86_64"
 
     host_containers_dir: Path
 
@@ -92,6 +93,9 @@ class VanillaServersService(AbstractServersService):
                 }
             )
 
+            if not await os.path.exists(path.join(app_container_dir, self._SERVER_BINARY)):
+                raise Exception(f'Installation failed: "{self._SERVER_BINARY}" not found in "{app_container_dir}"')
+
             await self._create_runtime_container(
                 container_file=self._CONTAINER_RUNTIME_FILE,
                 container_name=container_name,
@@ -115,9 +119,6 @@ class VanillaServersService(AbstractServersService):
                     "network_mode": ContainersConstants.NETWORK_MODE
                 }
             )
-
-            if not await os.path.exists(path.join(app_container_dir, "7DaysToDieServer.x86_64")):
-                raise Exception(f'Installation failed: "7DaysToDieServer.x86_64" not found in "{app_container_dir}"')
 
             await self._update_server_status(
                 server_id=server_id,
