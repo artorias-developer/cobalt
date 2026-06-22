@@ -6,8 +6,6 @@
 from os import path, makedirs
 from pathlib import Path
 
-from aiofiles import os
-
 from domain.enums import ServerStatusEnum
 from application.contracts.managers import AbstractConnectionsManager
 from application.contracts.clients import AbstractContainersClient
@@ -22,10 +20,6 @@ class VanillaServersService(AbstractServersService):
     Factorio Vanilla servers service.
     """
     _INTERNAL_PORT = 34197
-    _SERVER_SETTINGS_FILE = path.join("data", "server-settings.json")
-    _SERVER_WHITELIST_FILE = path.join("data", "server-whitelist.json")
-    _SERVER_BANLIST_FILE = path.join("data", "server-banlist.json")
-    _SERVER_ADMIN_LIST_FILE = path.join("data", "server-adminlist.json")
 
     host_containers_dir: Path
 
@@ -69,45 +63,6 @@ class VanillaServersService(AbstractServersService):
         patch = int(parts[2]) if len(parts) >= 3 else 0
 
         return major, minor, patch
-
-    async def _remove_unsupported_option_files(
-        self,
-        container_dir: str,
-        has_server_settings: bool,
-        has_whitelist: bool,
-        has_banlist: bool,
-        has_admin_list: bool
-    ) -> None:
-        """
-        Removes configuration files for options not supported by the given Factorio version.
-
-        Parameters:
-        - container_dir: Path to the container directory.
-        - has_server_settings: Whether the version supports --server-settings.
-        - has_whitelist: Whether the version supports --server-whitelist.
-        - has_banlist: Whether the version supports --server-banlist.
-        - has_admin_list: Whether the version supports --server-adminlist.
-
-        Returns:
-        - None.
-        """
-        files_to_remove = []
-
-        if not has_server_settings:
-            files_to_remove.append(path.join(container_dir, self._SERVER_SETTINGS_FILE))
-
-        if not has_whitelist:
-            files_to_remove.append(path.join(container_dir, self._SERVER_WHITELIST_FILE))
-
-        if not has_banlist:
-            files_to_remove.append(path.join(container_dir, self._SERVER_BANLIST_FILE))
-
-        if not has_admin_list:
-            files_to_remove.append(path.join(container_dir, self._SERVER_ADMIN_LIST_FILE))
-
-        for file_path in files_to_remove:
-            if await os.path.exists(file_path):
-                await os.remove(file_path)
 
     def _has_admin_list_option(
         self,
@@ -276,15 +231,11 @@ class VanillaServersService(AbstractServersService):
                 installation_dir=host_container_dir,
                 image_build_args={
                     "FACTORIO_LINK": download_link,
+                    "HAS_ADMIN_LIST_OPTION": str(has_admin_list).lower(),
+                    "HAS_WHITELIST_OPTION": str(has_whitelist).lower(),
+                    "HAS_BANLIST_OPTION": str(has_banlist).lower(),
+                    "HAS_SERVER_SETTINGS_OPTION": str(has_server_settings).lower(),
                 }
-            )
-
-            await self._remove_unsupported_option_files(
-                container_dir=app_container_dir,
-                has_server_settings=has_server_settings,
-                has_whitelist=has_whitelist,
-                has_banlist=has_banlist,
-                has_admin_list=has_admin_list
             )
 
             await self._create_runtime_container(
