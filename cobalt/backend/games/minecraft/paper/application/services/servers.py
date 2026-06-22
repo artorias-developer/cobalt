@@ -21,6 +21,7 @@ class PaperServersService(AbstractServersService):
     Minecraft Paper servers service.
     """
     _INTERNAL_PORT = 25565
+    _INSTALL_MARKER = "paper-server.jar"
 
     host_containers_dir: Path
 
@@ -88,6 +89,11 @@ class PaperServersService(AbstractServersService):
                 image_build_args={
                     "PAPER_LINK": download_link
                 }
+            )
+
+            await self._verify_installation(
+                container_name=container_name,
+                install_marker=self._INSTALL_MARKER
             )
 
             await self._create_runtime_container(

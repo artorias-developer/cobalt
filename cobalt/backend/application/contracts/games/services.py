@@ -494,3 +494,23 @@ class AbstractServersService(ABC):
         await self.containers_client.container_start(
             container_name=container_name
         )
+
+    async def _verify_installation(
+        self,
+        container_name: str,
+        install_marker: str
+    ) -> None:
+        """
+        Verifies that the installation was completed successfully.
+
+        Parameters:
+        - container_name: Container name.
+        - install_marker: File or directory that indicates a successful installation.
+
+        Returns:
+        - None.
+        """
+        app_container_dir = path.join(self.app_containers_dir, container_name)
+
+        if not await os.path.exists(path.join(app_container_dir, install_marker)):
+            raise Exception(f'Installation failed: "{install_marker}" not found in "{app_container_dir}"')

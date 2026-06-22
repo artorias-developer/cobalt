@@ -20,6 +20,7 @@ class TModLoaderServersService(AbstractServersService):
     Terraria tModLoader servers service.
     """
     _INTERNAL_PORT = 7777
+    _INSTALL_MARKER = "LaunchUtils/ScriptCaller.sh"
 
     host_containers_dir: Path
 
@@ -86,6 +87,11 @@ class TModLoaderServersService(AbstractServersService):
                 image_build_args={
                     "TMODLOADER_LINK": download_link
                 }
+            )
+
+            await self._verify_installation(
+                container_name=container_name,
+                install_marker=self._INSTALL_MARKER
             )
 
             await self._create_runtime_container(

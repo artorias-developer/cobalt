@@ -17,9 +17,19 @@ COPY scripts/entrypoint.sh /installer_src/entrypoint.sh
 RUN chmod +x /installer_src/entrypoint.sh
 
 WORKDIR ${SERVER_ROOT}
+ENV APP_ID=${APP_ID}
 
 CMD rsync -a /installer_src/. . && \
-    steamcmd.sh +@ShutdownOnFailedCommand 1 +force_install_dir ${SERVER_ROOT} +login anonymous +app_update ${APP_ID} validate +quit && \
+    for i in 1 2 3; do \
+        steamcmd.sh +@ShutdownOnFailedCommand 1 \
+                    +@sSteamCmdForcePlatformType linux \
+                    +force_install_dir ${SERVER_ROOT} \
+                    +login anonymous \
+                    +app_update ${APP_ID} validate \
+                    +quit && \
+        [ -f "${SERVER_ROOT}/7DaysToDieServer.x86_64" ] && break || \
+        { echo "Attempt $i failed, retrying..."; [ $i -eq 3 ] && exit 1; }; \
+    done && \
     rm -f ${SERVER_ROOT}/serverconfig.xml && \
     mv ${SERVER_ROOT}/serverconfig.example.xml ${SERVER_ROOT}/serverconfig.xml && \
     grep '"buildid"' ${SERVER_ROOT}/steamapps/appmanifest_${APP_ID}.acf \
