@@ -1,0 +1,22 @@
+FROM debian:bookworm-slim
+
+ARG SERVER_ROOT
+
+RUN dpkg --add-architecture i386 && \
+    apt-get update && \
+    apt-get install -y \
+        bash \
+        lib32gcc-s1 \
+        lib32stdc++6 \
+        libsdl2-2.0-0 \
+        libsdl2-2.0-0:i386 \
+        ca-certificates \
+        netcat-openbsd && \
+    update-ca-certificates && \
+    rm -rf /var/lib/apt/lists/* && \
+    mkdir -p /root/.steam/sdk64 && \
+    ln -sf ${SERVER_ROOT}/7DaysToDieServer_Data/Plugins/x86_64/steamclient.so /root/.steam/sdk64/steamclient.so
+
+WORKDIR ${SERVER_ROOT}
+
+ENTRYPOINT ["/bin/bash", "-c", "exec ./entrypoint.sh"]
