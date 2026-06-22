@@ -6,8 +6,6 @@
 from os import path, makedirs
 from pathlib import Path
 
-from aiofiles import os
-
 from domain.enums import ServerStatusEnum
 from application.contracts.managers import AbstractConnectionsManager
 from application.contracts.clients import AbstractContainersClient
@@ -22,7 +20,7 @@ class VanillaServersService(AbstractServersService):
     7 Days to Die Vanilla servers service.
     """
     _INTERNAL_PORT = 26900
-    _SERVER_BINARY = "7DaysToDieServer.x86_64"
+    _INSTALL_MARKER = "7DaysToDieServer.x86_64"
 
     host_containers_dir: Path
 
@@ -93,8 +91,10 @@ class VanillaServersService(AbstractServersService):
                 }
             )
 
-            if not await os.path.exists(path.join(app_container_dir, self._SERVER_BINARY)):
-                raise Exception(f'Installation failed: "{self._SERVER_BINARY}" not found in "{app_container_dir}"')
+            await self._verify_installation(
+                container_name=container_name,
+                install_marker=self._INSTALL_MARKER
+            )
 
             await self._create_runtime_container(
                 container_file=self._CONTAINER_RUNTIME_FILE,

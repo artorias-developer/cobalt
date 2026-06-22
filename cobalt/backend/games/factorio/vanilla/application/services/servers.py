@@ -6,8 +6,6 @@
 from os import path, makedirs
 from pathlib import Path
 
-from aiofiles import os
-
 from domain.enums import ServerStatusEnum
 from application.contracts.managers import AbstractConnectionsManager
 from application.contracts.clients import AbstractContainersClient
@@ -22,7 +20,7 @@ class VanillaServersService(AbstractServersService):
     Factorio Vanilla servers service.
     """
     _INTERNAL_PORT = 34197
-    _SERVER_BINARY = "bin/x64/factorio"
+    _INSTALL_MARKER = "bin/x64/factorio"
 
     host_containers_dir: Path
 
@@ -241,8 +239,10 @@ class VanillaServersService(AbstractServersService):
                 }
             )
 
-            if not await os.path.exists(path.join(app_container_dir, self._SERVER_BINARY)):
-                raise Exception(f'Installation failed: "{self._SERVER_BINARY}" not found in "{app_container_dir}"')
+            await self._verify_installation(
+                container_name=container_name,
+                install_marker=self._INSTALL_MARKER
+            )
 
             await self._create_runtime_container(
                 container_file=self._CONTAINER_RUNTIME_FILE,

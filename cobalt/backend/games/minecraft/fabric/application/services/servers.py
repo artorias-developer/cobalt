@@ -6,8 +6,6 @@
 from os import path, makedirs
 from pathlib import Path
 
-from aiofiles import os
-
 from domain.enums import ServerStatusEnum
 from application.contracts.managers import AbstractConnectionsManager
 from application.contracts.clients import AbstractContainersClient
@@ -23,7 +21,7 @@ class FabricServersService(AbstractServersService):
     Minecraft Fabric servers service.
     """
     _INTERNAL_PORT = 25565
-    _SERVER_BINARY = "fabric-server.jar"
+    _INSTALL_MARKER = "fabric-server.jar"
 
     host_containers_dir: Path
 
@@ -93,8 +91,10 @@ class FabricServersService(AbstractServersService):
                 }
             )
 
-            if not await os.path.exists(path.join(app_container_dir, self._SERVER_BINARY)):
-                raise Exception(f'Installation failed: "{self._SERVER_BINARY}" not found in "{app_container_dir}"')
+            await self._verify_installation(
+                container_name=container_name,
+                install_marker=self._INSTALL_MARKER
+            )
 
             await self._create_runtime_container(
                 container_file=self._CONTAINER_RUNTIME_FILE,
