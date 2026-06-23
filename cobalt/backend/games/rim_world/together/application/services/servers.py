@@ -113,7 +113,7 @@ class TogetherServersService(AbstractServersService):
         except Exception:
             self.logger.exception(f'Error while creating container "{container_name}":')
 
-            await self._remove_files(
+            await self._remove_container_dir(
                 container_name=container_name
             )
 
