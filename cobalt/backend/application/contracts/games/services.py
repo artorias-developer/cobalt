@@ -316,6 +316,26 @@ class AbstractServersService(ABC):
             container_name=container_name
         )
 
+    async def _create_container_dir(
+        self,
+        container_name: str
+    ) -> None:
+        """
+        Creates a server container directory.
+
+        Parameters:
+        - container_name: Container name.
+
+        Returns:
+        - None.
+        """
+        app_container_dir = path.join(self.app_containers_dir, container_name)
+
+        await os.makedirs(
+            name=app_container_dir,
+            exist_ok=True
+        )
+
     async def _create_installer_container(
         self,
         container_file: str,
@@ -416,6 +436,26 @@ class AbstractServersService(ABC):
                     image_name=installer_name
                 )
 
+    async def _verify_installation(
+        self,
+        container_name: str,
+        install_marker: str
+    ) -> None:
+        """
+        Verifies that the installation was completed successfully.
+
+        Parameters:
+        - container_name: Container name.
+        - install_marker: File or directory that indicates a successful installation.
+
+        Returns:
+        - None.
+        """
+        app_container_dir = path.join(self.app_containers_dir, container_name)
+
+        if not await os.path.exists(path.join(app_container_dir, install_marker)):
+            raise Exception(f'Installation failed: "{install_marker}" not found in "{app_container_dir}"')
+
     async def _create_runtime_container(
         self,
         container_file: str,
@@ -494,23 +534,3 @@ class AbstractServersService(ABC):
         await self.containers_client.container_start(
             container_name=container_name
         )
-
-    async def _verify_installation(
-        self,
-        container_name: str,
-        install_marker: str
-    ) -> None:
-        """
-        Verifies that the installation was completed successfully.
-
-        Parameters:
-        - container_name: Container name.
-        - install_marker: File or directory that indicates a successful installation.
-
-        Returns:
-        - None.
-        """
-        app_container_dir = path.join(self.app_containers_dir, container_name)
-
-        if not await os.path.exists(path.join(app_container_dir, install_marker)):
-            raise Exception(f'Installation failed: "{install_marker}" not found in "{app_container_dir}"')

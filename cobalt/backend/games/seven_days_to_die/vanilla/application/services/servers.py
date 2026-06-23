@@ -3,7 +3,7 @@
 #  Repository: https://github.com/ArtoriasCode/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-from os import path, makedirs
+from os import path
 from pathlib import Path
 
 from domain.enums import ServerStatusEnum
@@ -69,19 +69,17 @@ class VanillaServersService(AbstractServersService):
             status=ServerStatusEnum.PROCESSING
         )
 
-        app_container_dir = path.join(self.app_containers_dir, container_name)
         host_container_dir = path.join(self.host_containers_dir, container_name)
 
-        port_base = self.get_available_port_range(count=3)
-        port_1 = port_base + 1
-        port_2 = port_base + 2
-
-        makedirs(
-            name=app_container_dir,
-            exist_ok=True
-        )
-
         try:
+            port_base = self.get_available_port_range(count=3)
+            port_1 = port_base + 1
+            port_2 = port_base + 2
+
+            await self._create_container_dir(
+                container_name=container_name
+            )
+
             await self._create_installer_container(
                 container_file=self._CONTAINER_INSTALLER_FILE,
                 container_name=container_name,
