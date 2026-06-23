@@ -55,4 +55,5 @@ class ServerCreateEntity:
 class ServerUpdateEntity:
     id: int
     name: Optional[ServerName] = None
+    version: Optional[ServerVersion] = None
     status: Optional[ServerStatusEnum] = None

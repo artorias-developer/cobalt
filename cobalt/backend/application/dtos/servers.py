@@ -49,6 +49,7 @@ class ServerCreateDto(BaseDto):
 
 class ServerUpdateDto(BaseDto):
     name: Optional[str] = None
+    version: Optional[str] = None
     status: Optional[ServerStatusEnum] = None
 
 class ServerExecuteDto(BaseDto):
