@@ -4,6 +4,7 @@
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from os import path
+from re import compile
 from abc import ABC, abstractmethod
 from pathlib import Path
 from secrets import choice
@@ -11,7 +12,7 @@ from string import ascii_letters, digits
 from socket import socket, AF_INET, SOCK_STREAM, SOCK_DGRAM
 from typing import Optional, Dict, Any, Union
 
-from aiofiles import os
+from aiofiles import os, open
 from aioshutil import rmtree
 
 from application.managers.events.shared import ServersEventsEnum
@@ -31,6 +32,7 @@ class AbstractServersService(ABC):
     """
     _CONTAINER_INSTALLER_FILE = "Container.installer"
     _CONTAINER_RUNTIME_FILE = "Container.runtime"
+    _STEAM_BUILD_ID_PATTERN = compile(r'"buildid"\s+"(\d+)"')
 
     build_dir: Path
     app_containers_dir: Path
@@ -98,41 +100,23 @@ class AbstractServersService(ABC):
         except Exception:
             self.logger.exception(f'Error while removing image "{image_name}":')
 
-    async def _remove_files(
-        self,
-        container_name: str
-    ) -> None:
-        """
-        Removes an existing server files.
-
-        Parameters:
-        - container_name: Container name.
-
-        Returns:
-        - None.
-        """
-        app_container_dir = path.join(self.app_containers_dir, container_name)
-
-        if await os.path.exists(app_container_dir):
-            try:
-                await rmtree(app_container_dir)
-            except Exception:
-                self.logger.exception(f'Error while removing files "{container_name}":')
-
-    async def _update_server_status(
+    async def _update_server_state(
         self,
         server_id: int,
-        status: ServerStatusEnum
+        status: ServerStatusEnum,
+        version: Optional[str] = None
     ) -> None:
         """
-        Updates server status and sends it to all subscribers.
+        Updates server and sends new data to all subscribers.
 
         Parameters:
         - server_id: Server ID.
         - status: Server status.
+        - version: Server version.
         """
         request_dto = ServerUpdateDto(
-            status=status
+            status=status,
+            version=version
         )
 
         await self.core_servers_service.update_one(
@@ -140,15 +124,20 @@ class AbstractServersService(ABC):
             dto=request_dto
         )
 
+        server_data = {
+            "server_id": server_id,
+            "status": status
+        }
+
+        if version is not None:
+            server_data["version"] = version
+
         await self.connections_manager.send_to_room(
             room_name=RoomsConstants.SERVERS_STATUSES_KEY,
             data={
                 "type": "message",
-                "event": ServersEventsEnum.SERVER_STATUS,
-                "data": {
-                    "server_id": server_id,
-                    "status": status
-                }
+                "event": ServersEventsEnum.SERVER_STATE,
+                "data": server_data
             }
         )
 
@@ -312,9 +301,50 @@ class AbstractServersService(ABC):
             image_name=container_name
         )
 
-        await self._remove_files(
+        await self._remove_container_dir(
             container_name=container_name
         )
+
+    async def _create_container_dir(
+        self,
+        container_name: str
+    ) -> None:
+        """
+        Creates a server container directory.
+
+        Parameters:
+        - container_name: Container name.
+
+        Returns:
+        - None.
+        """
+        app_container_dir = path.join(self.app_containers_dir, container_name)
+
+        await os.makedirs(
+            name=app_container_dir,
+            exist_ok=True
+        )
+
+    async def _remove_container_dir(
+        self,
+        container_name: str
+    ) -> None:
+        """
+        Removes an existing server container directory.
+
+        Parameters:
+        - container_name: Container name.
+
+        Returns:
+        - None.
+        """
+        app_container_dir = path.join(self.app_containers_dir, container_name)
+
+        if await os.path.exists(app_container_dir):
+            try:
+                await rmtree(app_container_dir)
+            except Exception:
+                self.logger.exception(f'Error while removing files "{container_name}":')
 
     async def _create_installer_container(
         self,
@@ -416,6 +446,26 @@ class AbstractServersService(ABC):
                     image_name=installer_name
                 )
 
+    async def _verify_installation(
+        self,
+        container_name: str,
+        install_marker: str
+    ) -> None:
+        """
+        Verifies that the installation was completed successfully.
+
+        Parameters:
+        - container_name: Container name.
+        - install_marker: File or directory that indicates a successful installation.
+
+        Returns:
+        - None.
+        """
+        app_container_dir = path.join(self.app_containers_dir, container_name)
+
+        if not await os.path.exists(path.join(app_container_dir, install_marker)):
+            raise Exception(f'Installation failed: "{install_marker}" not found in "{app_container_dir}"')
+
     async def _create_runtime_container(
         self,
         container_file: str,
@@ -495,22 +545,34 @@ class AbstractServersService(ABC):
             container_name=container_name
         )
 
-    async def _verify_installation(
+    async def _read_steam_version(
         self,
         container_name: str,
-        install_marker: str
-    ) -> None:
+        app_id: int
+    ) -> str:
         """
-        Verifies that the installation was completed successfully.
+        Reads the installed Steam build version from the app manifest file.
 
         Parameters:
         - container_name: Container name.
-        - install_marker: File or directory that indicates a successful installation.
+        - app_id: Steam application ID.
 
         Returns:
-        - None.
+        - str: Steam build version string.
         """
-        app_container_dir = path.join(self.app_containers_dir, container_name)
+        manifest_file = path.join(
+            self.app_containers_dir,
+            container_name,
+            "steamapps",
+            f"appmanifest_{app_id}.acf"
+        )
 
-        if not await os.path.exists(path.join(app_container_dir, install_marker)):
-            raise Exception(f'Installation failed: "{install_marker}" not found in "{app_container_dir}"')
+        async with open(manifest_file, "r") as f:
+            content = await f.read()
+
+        match = self._STEAM_BUILD_ID_PATTERN.search(content)
+
+        if not match:
+            return "Unknown"
+
+        return match.group(1)

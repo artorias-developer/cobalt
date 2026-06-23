@@ -52,8 +52,8 @@ class WsServersEvents(AbstractWsServersEvents, BaseWsRouter):
         - None.
         """
         self.events_manager.on_event(
-            event=ServersEventsEnum.SUBSCRIBE_STATUSES,
-            handler=self.subscribe_statuses,
+            event=ServersEventsEnum.SUBSCRIBE_STATES,
+            handler=self.subscribe_states,
             dependencies=[
                 Depends(self.ws_permission_required(
                     permissions=[
@@ -64,8 +64,8 @@ class WsServersEvents(AbstractWsServersEvents, BaseWsRouter):
         )
 
         self.events_manager.on_event(
-            event=ServersEventsEnum.UNSUBSCRIBE_STATUSES,
-            handler=self.unsubscribe_statuses,
+            event=ServersEventsEnum.UNSUBSCRIBE_STATES,
+            handler=self.unsubscribe_states,
             dependencies=[
                 Depends(self.ws_permission_required(
                     permissions=[
@@ -75,12 +75,12 @@ class WsServersEvents(AbstractWsServersEvents, BaseWsRouter):
             ]
         )
 
-    async def subscribe_statuses(
+    async def subscribe_states(
         self,
         connection_id: int
     ) -> None:
         """
-        Subscribes to servers statuses.
+        Subscribes to servers states.
 
         Parameters:
         - connection_id: Connection ID.
@@ -88,16 +88,16 @@ class WsServersEvents(AbstractWsServersEvents, BaseWsRouter):
         Returns:
         - None.
         """
-        await self.servers_service.subscribe_statuses(
+        await self.servers_service.subscribe_states(
             connection_id=connection_id
         )
 
-    async def unsubscribe_statuses(
+    async def unsubscribe_states(
         self,
         connection_id: int
     ) -> None:
         """
-        Unsubscribes from server statuses.
+        Unsubscribes from servers states.
 
         Parameters:
         - connection_id: Connection ID.
@@ -105,6 +105,6 @@ class WsServersEvents(AbstractWsServersEvents, BaseWsRouter):
         Returns:
         - None.
         """
-        await self.servers_service.unsubscribe_statuses(
+        await self.servers_service.unsubscribe_states(
             connection_id=connection_id
         )

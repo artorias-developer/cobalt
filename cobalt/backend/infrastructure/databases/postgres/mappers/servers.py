@@ -130,6 +130,9 @@ class ServersRepositoryMapper(AbstractServersRepositoryMapper):
         if entity.name is not None:
             model.name = entity.name
 
+        if entity.version is not None:
+            model.version = entity.version
+
         if entity.status is not None:
             model.status = entity.status
 

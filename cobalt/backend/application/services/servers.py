@@ -605,12 +605,12 @@ class ServersService(AbstractServersService):
             dataclass=status
         )
 
-    async def subscribe_statuses(
+    async def subscribe_states(
         self,
         connection_id: int
     ) -> None:
         """
-        Subscribes to servers statuses.
+        Subscribes to servers states.
 
         Parameters:
         - connection_id: Connection ID.
@@ -623,12 +623,12 @@ class ServersService(AbstractServersService):
             room_name=RoomsConstants.SERVERS_STATUSES_KEY
         )
 
-    async def unsubscribe_statuses(
+    async def unsubscribe_states(
         self,
         connection_id: int
     ) -> None:
         """
-        Unsubscribes from servers statuses.
+        Unsubscribes from servers states.
 
         Parameters:
         - connection_id: Connection ID.

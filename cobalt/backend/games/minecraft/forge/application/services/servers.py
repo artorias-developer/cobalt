@@ -131,25 +131,23 @@ class ForgeServersService(AbstractServersService):
         Returns:
         - None.
         """
-        await self._update_server_status(
+        await self._update_server_state(
             server_id=server_id,
             status=ServerStatusEnum.PROCESSING
         )
 
-        app_container_dir = path.join(self.app_containers_dir, container_name)
         host_container_dir = path.join(self.host_containers_dir, container_name)
-
-        port = self.get_available_port()
         java_version = get_java_version(version)
         loader_mode = self._get_loader_mode(version)
         tweak_class = self._get_tweak_class(version)
 
-        makedirs(
-            name=app_container_dir,
-            exist_ok=True
-        )
-
         try:
+            port = self.get_available_port()
+
+            await self._create_container_dir(
+                container_name=container_name
+            )
+
             await self._create_installer_container(
                 container_file=self._CONTAINER_INSTALLER_FILE,
                 container_name=container_name,
@@ -186,18 +184,18 @@ class ForgeServersService(AbstractServersService):
                 }
             )
 
-            await self._update_server_status(
+            await self._update_server_state(
                 server_id=server_id,
                 status=ServerStatusEnum.CREATED
             )
         except Exception:
             self.logger.exception(f'Error while creating container "{container_name}":')
 
-            await self._remove_files(
+            await self._remove_container_dir(
                 container_name=container_name
             )
 
-            await self._update_server_status(
+            await self._update_server_state(
                 server_id=server_id,
                 status=ServerStatusEnum.FAILED
             )

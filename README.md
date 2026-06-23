@@ -15,10 +15,8 @@
 
 Cobalt is a web dashboard for running game servers on your own VPS / VDS. Set up a server in just a few clicks. It's a fraction of the cost compared to specialized hosting platforms. You stay in full control of your data.
 
-<ins>Dashboard screenshots:</ins>
-
 <details>
-<summary>Click me</summary>
+<summary><ins>Dashboard screenshots</ins></summary>
 
 <img src="docs/readme/images/cobalt/1.png" width="100%">
 <img src="docs/readme/images/cobalt/2.png" width="100%">
@@ -62,11 +60,9 @@ The main features of Cobalt:
 - Real-time / last 15 minutes monitoring of CPU and RAM usage for your VPS / VDS and each game server.
 - Creating multiple users and roles with the ability to control access to virtually every section of the dashboard.
 - A convenient file manager and editor for managing files and editing configuration files.
-- Several languages to choose from:
-  - English
-  - Russian
-  - Ukrainian
-- Full support for mobile devices.
+- Automatic fetching of the latest available game versions.
+- Multilingual support (English, Russian, Ukrainian).
+- Full mobile devices support.
 
 ## FAQ
 
@@ -74,13 +70,6 @@ The main features of Cobalt:
 <summary>Where can I get a VPS / VDS?</summary>
 
 Any VPS / VDS provider works. Just make sure it runs Ubuntu 22+.
-
-</details>
-
-<details>
-<summary>Can I access the dashboard from my phone?</summary>
-
-Yes, the dashboard is adapted for all devices.
 
 </details>
 

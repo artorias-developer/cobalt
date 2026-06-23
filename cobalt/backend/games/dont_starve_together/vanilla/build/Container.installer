@@ -1,7 +1,7 @@
 FROM debian:bookworm-slim
 
 ARG SERVER_ROOT
-ARG APP_ID=343050
+ARG APP_ID
 
 RUN apt-get update && \
     apt-get install -y \
@@ -29,7 +29,4 @@ CMD rsync -a /installer_src/. . && \
                     +quit && \
         [ -f "${SERVER_ROOT}/bin/dontstarve_dedicated_server_nullrenderer" ] && break || \
         { echo "Attempt $i failed, retrying..."; [ $i -eq 3 ] && exit 1; }; \
-    done && \
-    grep '"buildid"' ${SERVER_ROOT}/steamapps/appmanifest_${APP_ID}.acf \
-        | grep -oP '"\K[^"]+(?=")' \
-        | tail -1 > ${SERVER_ROOT}/steam_version.txt
+    done

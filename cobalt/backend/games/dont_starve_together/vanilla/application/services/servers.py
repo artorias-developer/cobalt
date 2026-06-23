@@ -3,7 +3,7 @@
 #  Repository: https://github.com/ArtoriasCode/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-from os import path, makedirs
+from os import path
 from pathlib import Path
 
 from domain.enums import ServerStatusEnum
@@ -20,6 +20,7 @@ class VanillaServersService(AbstractServersService):
     Don't Starve Together Vanilla servers service.
     """
     _INTERNAL_PORT = 10999
+    _STEAM_APP_ID = 343050
     _INSTALL_MARKER = "bin/dontstarve_dedicated_server_nullrenderer"
 
     host_containers_dir: Path
@@ -64,28 +65,29 @@ class VanillaServersService(AbstractServersService):
         Returns:
         - None.
         """
-        await self._update_server_status(
+        await self._update_server_state(
             server_id=server_id,
             status=ServerStatusEnum.PROCESSING
         )
 
-        app_container_dir = path.join(self.app_containers_dir, container_name)
         host_container_dir = path.join(self.host_containers_dir, container_name)
 
-        port = self.get_available_port()
-
-        makedirs(
-            name=app_container_dir,
-            exist_ok=True
-        )
-
         try:
+            port = self.get_available_port()
+
+            await self._create_container_dir(
+                container_name=container_name
+            )
+
             await self._create_installer_container(
                 container_file=self._CONTAINER_INSTALLER_FILE,
                 container_name=container_name,
                 installation_dir=host_container_dir,
                 container_kwargs={
                     "security_opt": ["seccomp=unconfined"]
+                },
+                image_build_args={
+                    "APP_ID": str(self._STEAM_APP_ID)
                 }
             )
 
@@ -116,18 +118,24 @@ class VanillaServersService(AbstractServersService):
                 }
             )
 
-            await self._update_server_status(
+            steam_version = await self._read_steam_version(
+                container_name=container_name,
+                app_id=self._STEAM_APP_ID
+            )
+
+            await self._update_server_state(
                 server_id=server_id,
-                status=ServerStatusEnum.CREATED
+                status=ServerStatusEnum.CREATED,
+                version=steam_version
             )
         except Exception:
             self.logger.exception(f'Error while creating container "{container_name}":')
 
-            await self._remove_files(
+            await self._remove_container_dir(
                 container_name=container_name
             )
 
-            await self._update_server_status(
+            await self._update_server_state(
                 server_id=server_id,
                 status=ServerStatusEnum.FAILED
             )

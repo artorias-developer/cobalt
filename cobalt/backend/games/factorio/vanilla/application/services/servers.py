@@ -3,7 +3,7 @@
 #  Repository: https://github.com/ArtoriasCode/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-from os import path, makedirs
+from os import path
 from pathlib import Path
 
 from domain.enums import ServerStatusEnum
@@ -204,15 +204,12 @@ class VanillaServersService(AbstractServersService):
         Returns:
         - None.
         """
-        await self._update_server_status(
+        await self._update_server_state(
             server_id=server_id,
             status=ServerStatusEnum.PROCESSING
         )
 
-        app_container_dir = path.join(self.app_containers_dir, container_name)
         host_container_dir = path.join(self.host_containers_dir, container_name)
-
-        port = self.get_available_port()
         has_admin_list = self._has_admin_list_option(version)
         has_use_whitelist = self._has_use_whitelist_option(version)
         has_whitelist = self._has_whitelist_option(version)
@@ -220,12 +217,13 @@ class VanillaServersService(AbstractServersService):
         has_server_settings = self._has_server_settings_option(version)
         has_relative_create_path = self._has_relative_create_path(version)
 
-        makedirs(
-            name=app_container_dir,
-            exist_ok=True
-        )
-
         try:
+            port = self.get_available_port()
+
+            await self._create_container_dir(
+                container_name=container_name
+            )
+
             await self._create_installer_container(
                 container_file=self._CONTAINER_INSTALLER_FILE,
                 container_name=container_name,
@@ -266,18 +264,18 @@ class VanillaServersService(AbstractServersService):
                 }
             )
 
-            await self._update_server_status(
+            await self._update_server_state(
                 server_id=server_id,
                 status=ServerStatusEnum.CREATED
             )
         except Exception:
             self.logger.exception(f'Error while creating container "{container_name}":')
 
-            await self._remove_files(
+            await self._remove_container_dir(
                 container_name=container_name
             )
 
-            await self._update_server_status(
+            await self._update_server_state(
                 server_id=server_id,
                 status=ServerStatusEnum.FAILED
             )

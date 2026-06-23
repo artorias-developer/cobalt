@@ -199,5 +199,6 @@ class ServersServiceMapper(AbstractServersServiceMapper):
         return ServerUpdateEntity(
             id=server_id,
             name=ServerName(dto.name) if dto.name is not None else None,
+            version=ServerVersion(dto.version) if dto.version is not None else None,
             status=dto.status
         )
