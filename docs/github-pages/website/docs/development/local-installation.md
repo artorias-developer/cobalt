@@ -4,7 +4,9 @@ This guide explains how to install Cobalt locally.
 
 ## Requirements
 
-**Operating System**: Linux or macOS is recommended. Windows users should use WSL2, since the project relies on Unix shell scripts and Make.
+**Operating system**: Linux or macOS is recommended. Windows users should use WSL2, since the project relies on Unix shell scripts and Make.
+
+**Git**: Required to clone the Cobalt repository. Install it via `apt install git` on Linux or `brew install git` on macOS.
 
 **Make**: Used to run common development commands. Install it via your package manager, e.g. `apt install make` on Ubuntu or `brew install make` on macOS.
 
@@ -54,7 +56,7 @@ If a domain is provided, the dashboard will be available at `https://<domain>`. 
 **Password**: `admin`
 :::
 
-## Already installed
+## Makefile commands
 
 If you've already installed Cobalt before, you can manage the development environment directly using the [Makefile](https://github.com/ArtoriasCode/cobalt/blob/main/Makefile) commands:
 

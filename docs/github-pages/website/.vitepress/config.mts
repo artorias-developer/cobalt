@@ -11,6 +11,13 @@ export default defineConfig({
     ],
     sidebar: [
       {
+        text: 'Overview',
+        items: [
+          { text: 'Introduction', link: '/docs/overview/introduction' },
+          { text: 'Terminology', link: '/docs/overview/terminology' }
+        ]
+      },
+      {
         text: 'Getting started',
         items: [
           { text: 'Installation', link: '/docs/getting-started/installation' },
