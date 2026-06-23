@@ -13,7 +13,7 @@
 
 ## What is Cobalt?
 
-Cobalt is a web dashboard for running game servers on your own VPS / VDS. Set up a server in just a few clicks. It's a fraction of the cost compared to specialized hosting platforms. You stay in full control of your data.
+Cobalt is a web dashboard for running game servers on your own VPS / VDS. It cuts out the middleman - no overpriced hosting plans, no vendor lock-in, no handing your data over to third parties. One machine, multiple games, your rules.
 
 <details>
 <summary><ins>Dashboard screenshots</ins></summary>
@@ -42,20 +42,22 @@ Whether you're setting up Cobalt for the first time or looking to contribute, th
 
 ## Supported games
 
-Currently, you can create a server for one of the following games:
+Cobalt supports the creation of servers for a wide variety of games and their loaders. Each server runs in its own isolated Docker container. This ensures the independence of the servers and their files.
 
-|                                             Icon                                              | Game                  | Loaders              |
-|:---------------------------------------------------------------------------------------------:|-----------------------|----------------------|
-|      <img src="cobalt/frontend/src/assets/images/games/minecraft/icon.png" height="30">       | Minecraft             | Paper, Forge, Fabric |
-|       <img src="cobalt/frontend/src/assets/images/games/terraria/icon.png" height="30">       | Terraria              | Vanilla, tModLoader  |
-| <img src="cobalt/frontend/src/assets/images/games/dont-starve-together/icon.png" height="30"> | Don't Starve Together | Vanilla              |
-|       <img src="cobalt/frontend/src/assets/images/games/factorio/icon.png" height="30">       | Factorio              | Vanilla              |
-|      <img src="cobalt/frontend/src/assets/images/games/rim-world/icon.png" height="30">       | RimWorld              | Together             |
-|      <img src="cobalt/frontend/src/assets/images/games/seven-days-to-die/icon.png" height="30">       | 7 Days to Die         | Vanilla             |
+The following games are currently supported:
+
+|                                              Icon                                              | Game                  | Loaders              |
+|:----------------------------------------------------------------------------------------------:|-----------------------|----------------------|
+|       <img src="cobalt/frontend/src/assets/images/games/minecraft/icon.png" height="30">       | Minecraft             | Paper, Forge, Fabric |
+|       <img src="cobalt/frontend/src/assets/images/games/terraria/icon.png" height="30">        | Terraria              | Vanilla, tModLoader  |
+| <img src="cobalt/frontend/src/assets/images/games/dont-starve-together/icon.png" height="30">  | Don't Starve Together | Vanilla              |
+|       <img src="cobalt/frontend/src/assets/images/games/factorio/icon.png" height="30">        | Factorio              | Vanilla              |
+|       <img src="cobalt/frontend/src/assets/images/games/rim-world/icon.png" height="30">       | RimWorld              | Together             |
+|   <img src="cobalt/frontend/src/assets/images/games/seven-days-to-die/icon.png" height="30">   | 7 Days to Die         | Vanilla              |
 
 ## Features
 
-The main features of Cobalt:
+Cobalt ships with everything you need to run and manage game servers without leaving the browser:
 - Easy server management and sending game commands.
 - Real-time / last 15 minutes monitoring of CPU and RAM usage for your VPS / VDS and each game server.
 - Creating multiple users and roles with the ability to control access to virtually every section of the dashboard.
