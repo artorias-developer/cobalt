@@ -98,27 +98,6 @@ class AbstractServersService(ABC):
         except Exception:
             self.logger.exception(f'Error while removing image "{image_name}":')
 
-    async def _remove_files(
-        self,
-        container_name: str
-    ) -> None:
-        """
-        Removes an existing server files.
-
-        Parameters:
-        - container_name: Container name.
-
-        Returns:
-        - None.
-        """
-        app_container_dir = path.join(self.app_containers_dir, container_name)
-
-        if await os.path.exists(app_container_dir):
-            try:
-                await rmtree(app_container_dir)
-            except Exception:
-                self.logger.exception(f'Error while removing files "{container_name}":')
-
     async def _update_server_status(
         self,
         server_id: int,
@@ -312,7 +291,7 @@ class AbstractServersService(ABC):
             image_name=container_name
         )
 
-        await self._remove_files(
+        await self._remove_container_dir(
             container_name=container_name
         )
 
@@ -335,6 +314,27 @@ class AbstractServersService(ABC):
             name=app_container_dir,
             exist_ok=True
         )
+
+    async def _remove_container_dir(
+        self,
+        container_name: str
+    ) -> None:
+        """
+        Removes an existing server container directory.
+
+        Parameters:
+        - container_name: Container name.
+
+        Returns:
+        - None.
+        """
+        app_container_dir = path.join(self.app_containers_dir, container_name)
+
+        if await os.path.exists(app_container_dir):
+            try:
+                await rmtree(app_container_dir)
+            except Exception:
+                self.logger.exception(f'Error while removing files "{container_name}":')
 
     async def _create_installer_container(
         self,
