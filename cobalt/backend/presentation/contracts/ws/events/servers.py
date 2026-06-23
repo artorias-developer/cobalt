@@ -15,9 +15,9 @@ class AbstractWsServersEvents(AbstractWsRouter, ABC):
     """
 
     @abstractmethod
-    async def subscribe_statuses(self, *args: Any, **kwargs: Any) -> None:
+    async def subscribe_states(self, *args: Any, **kwargs: Any) -> None:
         """
-        Subscribes to servers statuses.
+        Subscribes to servers states.
 
         Parameters:
         - *args: Positional arguments.
@@ -29,9 +29,9 @@ class AbstractWsServersEvents(AbstractWsRouter, ABC):
         ...
 
     @abstractmethod
-    async def unsubscribe_statuses(self, *args: Any, **kwargs: Any) -> None:
+    async def unsubscribe_states(self, *args: Any, **kwargs: Any) -> None:
         """
-        Unsubscribes from servers statuses.
+        Unsubscribes from servers states.
 
         Parameters:
         - *args: Positional arguments.

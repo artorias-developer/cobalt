@@ -131,7 +131,7 @@ class ForgeServersService(AbstractServersService):
         Returns:
         - None.
         """
-        await self._update_server_status(
+        await self._update_server_state(
             server_id=server_id,
             status=ServerStatusEnum.PROCESSING
         )
@@ -184,7 +184,7 @@ class ForgeServersService(AbstractServersService):
                 }
             )
 
-            await self._update_server_status(
+            await self._update_server_state(
                 server_id=server_id,
                 status=ServerStatusEnum.CREATED
             )
@@ -195,7 +195,7 @@ class ForgeServersService(AbstractServersService):
                 container_name=container_name
             )
 
-            await self._update_server_status(
+            await self._update_server_state(
                 server_id=server_id,
                 status=ServerStatusEnum.FAILED
             )

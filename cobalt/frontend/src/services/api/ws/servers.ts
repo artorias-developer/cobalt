@@ -19,7 +19,7 @@ export class WsServersApiService implements IWsServersApiService {
   }
 
   /**
-   * Subscribes to servers statuses and registers a handler.
+   * Subscribes to servers states and registers a handler.
    *
    * Parameters:
    * - handler: Callback function for incoming server status.
@@ -27,13 +27,13 @@ export class WsServersApiService implements IWsServersApiService {
    * Returns:
    * - void.
    */
-  subscribeStatuses(handler: (status: any) => void): void {
-    this.client.listen(ServersEventsEnum.SERVER_STATUS, handler)
-    this.client.subscribe(ServersEventsEnum.SUBSCRIBE_STATUSES)
+  subscribeStates(handler: (status: any) => void): void {
+    this.client.listen(ServersEventsEnum.SERVER_STATE, handler)
+    this.client.subscribe(ServersEventsEnum.SUBSCRIBE_STATES)
   }
 
   /**
-   * Unsubscribes from servers statuses and removes the handler.
+   * Unsubscribes from servers states and removes the handler.
    *
    * Parameters:
    * - handler: Callback function to remove.
@@ -41,8 +41,8 @@ export class WsServersApiService implements IWsServersApiService {
    * Returns:
    * - void.
    */
-  unsubscribeStatuses(handler: (status: any) => void): void {
-    this.client.unlisten(ServersEventsEnum.SERVER_STATUS, handler)
-    this.client.unsubscribe(ServersEventsEnum.UNSUBSCRIBE_STATUSES)
+  unsubscribeStates(handler: (status: any) => void): void {
+    this.client.unlisten(ServersEventsEnum.SERVER_STATE, handler)
+    this.client.unsubscribe(ServersEventsEnum.UNSUBSCRIBE_STATES)
   }
 }

@@ -30,9 +30,9 @@ export enum MetricsEventsEnum {
 }
 
 export enum ServersEventsEnum {
-  SUBSCRIBE_STATUSES = "servers_subscribe_statuses",
-  UNSUBSCRIBE_STATUSES = "servers_unsubscribe_statuses",
-  SERVER_STATUS = "server_status"
+  SUBSCRIBE_STATES = "servers_subscribe_states",
+  UNSUBSCRIBE_STATES = "servers_unsubscribe_states",
+  SERVER_STATE = "server_state"
 }
 
 export enum RolesEventsEnum {

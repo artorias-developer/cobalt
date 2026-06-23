@@ -652,21 +652,25 @@ function openCreateServer(): void {
 }
 
 /**
- * Handles server status updates received from WebSocket.
+ * Handles servers state updates received from WebSocket.
  *
  * Parameters:
- * - status: Updated server status.
+ * - state: Updated server state.
  *
  * Returns:
  * - void.
  */
-function handleStatusUpdate(status: any): void {
+function handleStateUpdate(state: any): void {
   if (!pageData.value) return
 
-  const server = pageData.value.servers.find(server => server.id === status.data.server_id)
+  const server = pageData.value.servers.find(server => server.id === state.data.server_id)
 
   if (server) {
-    server.status = status.data.status
+    server.status = state.data.status
+
+    if (state.data.version !== undefined) {
+      server.version = state.data.version
+    }
   }
 }
 
@@ -866,7 +870,7 @@ const hasServerViewAccess = computed((): boolean =>
 onMounted(() => {
   if (hasServersViewAccess.value) {
     fetchServers()
-    wsServersApiService.subscribeStatuses(handleStatusUpdate)
+    wsServersApiService.subscribeStates(handleStateUpdate)
   }
 
   if (hasServersCreateAccess.value) {
@@ -876,7 +880,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   tableStore.clear(tableStoreId)
-  wsServersApiService.unsubscribeStatuses(handleStatusUpdate)
+  wsServersApiService.unsubscribeStates(handleStateUpdate)
 })
 </script>
 

@@ -4,6 +4,7 @@
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from os import path
+from re import compile
 from abc import ABC, abstractmethod
 from pathlib import Path
 from secrets import choice
@@ -11,7 +12,7 @@ from string import ascii_letters, digits
 from socket import socket, AF_INET, SOCK_STREAM, SOCK_DGRAM
 from typing import Optional, Dict, Any, Union
 
-from aiofiles import os
+from aiofiles import os, open
 from aioshutil import rmtree
 
 from application.managers.events.shared import ServersEventsEnum
@@ -31,6 +32,7 @@ class AbstractServersService(ABC):
     """
     _CONTAINER_INSTALLER_FILE = "Container.installer"
     _CONTAINER_RUNTIME_FILE = "Container.runtime"
+    _STEAM_BUILD_ID_PATTERN = compile(r'"buildid"\s+"(\d+)"')
 
     build_dir: Path
     app_containers_dir: Path
@@ -98,20 +100,23 @@ class AbstractServersService(ABC):
         except Exception:
             self.logger.exception(f'Error while removing image "{image_name}":')
 
-    async def _update_server_status(
+    async def _update_server_state(
         self,
         server_id: int,
-        status: ServerStatusEnum
+        status: ServerStatusEnum,
+        version: Optional[str] = None
     ) -> None:
         """
-        Updates server status and sends it to all subscribers.
+        Updates server and sends new data to all subscribers.
 
         Parameters:
         - server_id: Server ID.
         - status: Server status.
+        - version: Server version.
         """
         request_dto = ServerUpdateDto(
-            status=status
+            status=status,
+            version=version
         )
 
         await self.core_servers_service.update_one(
@@ -119,15 +124,20 @@ class AbstractServersService(ABC):
             dto=request_dto
         )
 
+        server_data = {
+            "server_id": server_id,
+            "status": status
+        }
+
+        if version is not None:
+            server_data["version"] = version
+
         await self.connections_manager.send_to_room(
             room_name=RoomsConstants.SERVERS_STATUSES_KEY,
             data={
                 "type": "message",
-                "event": ServersEventsEnum.SERVER_STATUS,
-                "data": {
-                    "server_id": server_id,
-                    "status": status
-                }
+                "event": ServersEventsEnum.SERVER_STATE,
+                "data": server_data
             }
         )
 
@@ -534,3 +544,35 @@ class AbstractServersService(ABC):
         await self.containers_client.container_start(
             container_name=container_name
         )
+
+    async def _read_steam_version(
+        self,
+        container_name: str,
+        app_id: int
+    ) -> str:
+        """
+        Reads the installed Steam build version from the app manifest file.
+
+        Parameters:
+        - container_name: Container name.
+        - app_id: Steam application ID.
+
+        Returns:
+        - str: Steam build version string.
+        """
+        manifest_file = path.join(
+            self.app_containers_dir,
+            container_name,
+            "steamapps",
+            f"appmanifest_{app_id}.acf"
+        )
+
+        async with open(manifest_file, "r") as f:
+            content = await f.read()
+
+        match = self._STEAM_BUILD_ID_PATTERN.search(content)
+
+        if not match:
+            return "Unknown"
+
+        return match.group(1)

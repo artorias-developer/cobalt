@@ -20,6 +20,7 @@ class VanillaServersService(AbstractServersService):
     7 Days to Die Vanilla servers service.
     """
     _INTERNAL_PORT = 26900
+    _STEAM_APP_ID = 294420
     _INSTALL_MARKER = "7DaysToDieServer.x86_64"
 
     host_containers_dir: Path
@@ -64,7 +65,7 @@ class VanillaServersService(AbstractServersService):
         Returns:
         - None.
         """
-        await self._update_server_status(
+        await self._update_server_state(
             server_id=server_id,
             status=ServerStatusEnum.PROCESSING
         )
@@ -86,6 +87,9 @@ class VanillaServersService(AbstractServersService):
                 installation_dir=host_container_dir,
                 container_kwargs={
                     "security_opt": ["seccomp=unconfined"]
+                },
+                image_build_args={
+                    "APP_ID": str(self._STEAM_APP_ID)
                 }
             )
 
@@ -118,9 +122,15 @@ class VanillaServersService(AbstractServersService):
                 }
             )
 
-            await self._update_server_status(
+            steam_version = await self._read_steam_version(
+                container_name=container_name,
+                app_id=self._STEAM_APP_ID
+            )
+
+            await self._update_server_state(
                 server_id=server_id,
-                status=ServerStatusEnum.CREATED
+                status=ServerStatusEnum.CREATED,
+                version=steam_version
             )
         except Exception:
             self.logger.exception(f'Error while creating container "{container_name}":')
@@ -129,7 +139,7 @@ class VanillaServersService(AbstractServersService):
                 container_name=container_name
             )
 
-            await self._update_server_status(
+            await self._update_server_state(
                 server_id=server_id,
                 status=ServerStatusEnum.FAILED
             )

@@ -65,7 +65,7 @@ class PaperServersService(AbstractServersService):
         Returns:
         - None.
         """
-        await self._update_server_status(
+        await self._update_server_state(
             server_id=server_id,
             status=ServerStatusEnum.PROCESSING
         )
@@ -111,7 +111,7 @@ class PaperServersService(AbstractServersService):
                 }
             )
 
-            await self._update_server_status(
+            await self._update_server_state(
                 server_id=server_id,
                 status=ServerStatusEnum.CREATED
             )
@@ -122,7 +122,7 @@ class PaperServersService(AbstractServersService):
                 container_name=container_name
             )
 
-            await self._update_server_status(
+            await self._update_server_state(
                 server_id=server_id,
                 status=ServerStatusEnum.FAILED
             )
