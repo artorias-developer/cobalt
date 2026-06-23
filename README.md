@@ -16,7 +16,7 @@
 Cobalt is a web dashboard for running game servers on your own VPS / VDS. Set up a server in just a few clicks. It's a fraction of the cost compared to specialized hosting platforms. You stay in full control of your data.
 
 <details>
-<summary><ins>Dashboard screenshots:</ins></summary>
+<summary><ins>Dashboard screenshots</ins></summary>
 
 <img src="docs/readme/images/cobalt/1.png" width="100%">
 <img src="docs/readme/images/cobalt/2.png" width="100%">
