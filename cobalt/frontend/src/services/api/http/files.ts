@@ -95,11 +95,12 @@ export class HttpFilesApiService implements IHttpFilesApiService {
    * Parameters:
    * - serverId: Server ID.
    * - data: FilesUploadRequest object.
+   * - onProgress: Optional callback invoked with upload percent (0–100).
    *
    * Returns:
    * - Promise<void>.
    */
-  async upload(serverId: number, data: FilesUploadRequest): Promise<void> {
+  async upload(serverId: number, data: FilesUploadRequest, onProgress?: (percent: number) => void): Promise<void> {
     const formData = new FormData()
 
     for (const file of data.files) {
@@ -112,6 +113,11 @@ export class HttpFilesApiService implements IHttpFilesApiService {
       },
       headers: {
         "Content-Type": "multipart/form-data"
+      },
+      onUploadProgress: (e: ProgressEvent) => {
+        if (onProgress && e.total) {
+          onProgress(Math.round((e.loaded / e.total) * 100))
+        }
       }
     })
   }
