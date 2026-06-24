@@ -81,11 +81,12 @@ export interface IHttpFilesApiService {
    * Parameters:
    * - serverId: Server ID.
    * - data: FilesUploadRequest object.
+   * - onProgress: Optional callback invoked with upload percent (0–100).
    *
    * Returns:
    * - Promise<void>.
    */
-  upload(serverId: number, data: FilesUploadRequest): Promise<void>
+  upload(serverId: number, data: FilesUploadRequest, onProgress?: (percent: number) => void): Promise<void>
 
   /**
    * Downloads one or multiple files/directories as a zip archive.

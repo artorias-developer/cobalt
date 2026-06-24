@@ -170,6 +170,11 @@ const isActiveRoute = computed((): boolean => {
     outline-offset: -2px;
   }
 
+  &:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
   &.align-start {
     justify-content: flex-start;
   }
@@ -306,11 +311,6 @@ const isActiveRoute = computed((): boolean => {
 
   &.same-color.hover-yellow:hover {
     background-color: rgba($color-yellow-background, 0.1);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    pointer-events: none;
   }
 }
 
