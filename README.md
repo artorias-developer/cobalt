@@ -71,7 +71,7 @@ Cobalt ships with everything you need to run and manage game servers without lea
 <details>
 <summary>Where can I get a VPS / VDS?</summary>
 
-Any VPS / VDS provider works. Just make sure it runs Ubuntu 22+.
+Any VPS / VDS provider works. Just make sure it runs Ubuntu 22+ and meets the game's requirements. You can choose a flexible VPS / VDS, for example, one powered by an AMD Epyc or Ryzen CPU with 8+ gigabytes of RAM.
 
 </details>
 
