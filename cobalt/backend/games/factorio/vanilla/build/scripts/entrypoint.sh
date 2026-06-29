@@ -16,6 +16,7 @@ HAS_RELATIVE_CREATE_PATH="${HAS_RELATIVE_CREATE_PATH:-false}"
 
 SERVER_BIN="$SERVER_ROOT/bin/x64/factorio"
 DATA_DIR="$SERVER_ROOT/data"
+MODS_DIR="$SERVER_ROOT/mods"
 SERVER_SETTINGS="$DATA_DIR/server-settings.json"
 MAP_SETTINGS="$DATA_DIR/map-settings.json"
 MAP_GEN_SETTINGS="$DATA_DIR/map-gen-settings.json"
@@ -90,8 +91,10 @@ FIFO_HOLDER_PID=$!
 # --server-adminlist
 # --use-server-whitelist
 # --server-whitelist
+# --mod-directory
 SERVER_ARGS=(
     --start-server "$MAP_SAVE"
+    --mod-directory "$MODS_DIR"
 )
 
 if [ "$HAS_SERVER_SETTINGS_OPTION" = "true" ] && [ -f "$SERVER_SETTINGS" ]; then
