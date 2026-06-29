@@ -22,17 +22,19 @@ This is an optional setting, you will still be able to connect to the server usi
 
 6. Find the server you want to add token in the table and click the first button in the actions column.
 
-7. Open the files tab at the top.
+7. Click the stop button in the control block.
 
-8. Open the `data/server-settings.json` file in the file editor.
+8. Open the files tab at the top.
 
-9. Insert the values for `username` and `token` into the appropriate fields.
+9. Open the `data/server-settings.json` file in the file editor.
 
-10. Click the save button in the bottom left corner.
+10. Insert the values for `username` and `token` into the appropriate fields.
 
-11. Open the overview tab at the top.
+11. Click the save button in the bottom left corner.
 
-12. Click the restart button in the control block.
+12. Open the overview tab at the top.
+
+13. Click the restart button in the control block.
 
 ## Changing configs
 
@@ -40,7 +42,9 @@ This is an optional setting, you will still be able to connect to the server usi
 
 2. Find the server you want to change settings in the table and click the first button in the actions column.
 
-3. Open the files tab at the top.
+3. Click the stop button in the control block.
+
+4. Open the files tab at the top.
 
    ---
 
@@ -266,9 +270,9 @@ This is an optional setting, you will still be able to connect to the server usi
 
    ---
 
-4. Open the overview tab at the top.
+5. Open the overview tab at the top.
 
-5. Click the restart button in the control block.
+6. Click the restart button in the control block.
 
 ## Adding mods
 
