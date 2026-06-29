@@ -1,6 +1,6 @@
 # Terraria
 
-This tutorial explains how to set up a Terraria server in the **Cobalt** dashboard.
+This tutorial explains how to set up a Terraria server in the Cobalt dashboard.
 
 ## Changing configs
 
