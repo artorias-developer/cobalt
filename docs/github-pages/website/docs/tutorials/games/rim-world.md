@@ -184,3 +184,7 @@ This tutorial explains how to set up a RimWorld server in the Cobalt dashboard.
 
 The first time you log in to the game, you'll be appointed as an admin and will be able to choose which mods to enable on the server.
 
+:::tip
+You can find mods on [Steam Workshop](https://steamcommunity.com/app/294100/workshop/).
+:::
+

@@ -292,7 +292,7 @@ This is an optional setting, you will still be able to connect to the server usi
 4. Select the mods files from your device.
 
 :::tip
-You can find mods on the [Factorio Mods website](https://mods.factorio.com).
+You can find mods on the [Factorio Mods Portal](https://mods.factorio.com).
 :::
 
 5. Click the upload button in the bottom right corner.
