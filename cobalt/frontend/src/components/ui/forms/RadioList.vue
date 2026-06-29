@@ -118,7 +118,7 @@ function handleFocus(): void {
 }
 
 /**
- * Handles arrow down key — only when focus is on the options list itself.
+ * Handles arrow down key - only when focus is on the options list itself.
  *
  * Parameters:
  * - event: KeyboardEvent.
@@ -132,7 +132,7 @@ function handleKeyDown(event: KeyboardEvent): void {
 }
 
 /**
- * Handles arrow up key — only when focus is on the options list itself.
+ * Handles arrow up key - only when focus is on the options list itself.
  *
  * Parameters:
  * - event: KeyboardEvent.

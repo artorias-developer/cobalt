@@ -363,7 +363,7 @@ async function handleExecute(): Promise<void> {
 
 /**
  * Builds the list of tabs from existing log levels.
- * Does not include an "All" tab — first available level is selected by default.
+ * Does not include an "All" tab - first available level is selected by default.
  *
  * Parameters:
  * - null.
