@@ -1,6 +1,6 @@
 # Terraria
 
-This tutorial explains how to set up a Terraria server in the **Cobalt** dashboard.
+This tutorial explains how to set up a Terraria server in the Cobalt dashboard.
 
 ## Changing configs
 
@@ -141,7 +141,7 @@ Mods can only be added for the `tModLoader` loader.
 
 3. Upload mods using one of the following methods:
 
-:::details File manager
+::::details File manager
 1. Open the files tab at the top.
 
 2. Open the `data/Mods` folder in the file manager.
@@ -150,8 +150,12 @@ Mods can only be added for the `tModLoader` loader.
 
 4. Select the mods files from your device.
 
-5. Click the upload button in the bottom right corner.
+:::tip
+You can find mods on [Steam Workshop](https://steamcommunity.com/app/1281930/workshop/).
 :::
+
+5. Click the upload button in the bottom right corner.
+::::
 
 4. Open the files tab at the top.
 

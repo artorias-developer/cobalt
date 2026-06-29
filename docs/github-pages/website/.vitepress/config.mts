@@ -35,19 +35,21 @@ export default defineConfig({
             text: "Dashboard",
             collapsed: true,
             items: [
-              { text: "Roles", link: "/docs/tutorials/roles" },
-              { text: "Users", link: "/docs/tutorials/users" },
-              { text: "Servers", link: "/docs/tutorials/servers" }
+              { text: "Roles", link: "/docs/tutorials/dashboard/roles" },
+              { text: "Users", link: "/docs/tutorials/dashboard/users" },
+              { text: "Servers", link: "/docs/tutorials/dashboard/servers" }
             ]
           },
           {
             text: "Games",
             collapsed: true,
             items: [
-              { text: "Minecraft", link: "/docs/tutorials/minecraft" },
-              { text: "Terraria", link: "/docs/tutorials/terraria" },
-              { text: "Don't Starve Together", link: "/docs/tutorials/dont-starve-together" },
-              { text: "Factorio", link: "/docs/tutorials/factorio" }
+              { text: "Minecraft", link: "/docs/tutorials/games/minecraft" },
+              { text: "Terraria", link: "/docs/tutorials/games/terraria" },
+              { text: "Don't Starve Together", link: "/docs/tutorials/games/dont-starve-together" },
+              { text: "Factorio", link: "/docs/tutorials/games/factorio" },
+              { text: "RimWorld", link: "/docs/tutorials/games/rim-world" },
+              { text: "7 Days to Die", link: "/docs/tutorials/games/seven-days-to-die" }
             ]
           }
         ]

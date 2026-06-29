@@ -119,7 +119,7 @@ Plugins can only be added for the `Paper` loader.
 
 3. Upload plugins using one of the following methods:
 
-:::details File manager
+::::details File manager
 1. Open the files tab at the top.
 
 2. Open the `plugins` folder in the file manager.
@@ -128,8 +128,12 @@ Plugins can only be added for the `Paper` loader.
 
 4. Select the plugins files from your device.
 
-5. Click the upload button in the bottom right corner.
+:::tip
+You can find plugins on [Hangar](https://hangar.papermc.io/) or [SpigotMC](https://www.spigotmc.org/resources/).
 :::
+
+5. Click the upload button in the bottom right corner.
+::::
 
 8. Open the overview tab at the top.
 
@@ -147,7 +151,7 @@ Mods can only be added for the `Fabric` and `Forge` loaders.
 
 3. Upload mods using one of the following methods:
 
-:::details File manager
+::::details File manager
 1. Open the files tab at the top.
 
 2. Open the `mods` folder in the file manager.
@@ -156,8 +160,12 @@ Mods can only be added for the `Fabric` and `Forge` loaders.
 
 4. Select the mods files from your device.
 
-5. Click the upload button in the bottom right corner.
+:::tip
+You can find mods on [Modrinth](https://modrinth.com/mods) or [CurseForge](https://www.curseforge.com/minecraft/mc-mods).
 :::
+
+5. Click the upload button in the bottom right corner.
+::::
 
 4. Open the overview tab at the top.
 

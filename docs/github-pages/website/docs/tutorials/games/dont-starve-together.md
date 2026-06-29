@@ -591,7 +591,7 @@ ServerModCollectionSetup("379114180")
 ```
 
 :::tip
-You can find the mod ID from the link in the Steam Workshop.
+You can find mods on [Steam Workshop](https://steamcommunity.com/app/322330/workshop/).
 
 Example: https://steamcommunity.com/sharedfiles/filedetails/?id=350811795
 
