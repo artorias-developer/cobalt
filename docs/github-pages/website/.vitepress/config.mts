@@ -47,7 +47,8 @@ export default defineConfig({
               { text: "Minecraft", link: "/docs/tutorials/games/minecraft" },
               { text: "Terraria", link: "/docs/tutorials/games/terraria" },
               { text: "Don't Starve Together", link: "/docs/tutorials/games/dont-starve-together" },
-              { text: "Factorio", link: "/docs/tutorials/games/factorio" }
+              { text: "Factorio", link: "/docs/tutorials/games/factorio" },
+              { text: "RimWorld", link: "/docs/tutorials/games/rim-world" }
             ]
           }
         ]
