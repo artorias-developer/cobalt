@@ -33,6 +33,7 @@ export default defineConfig({
         items: [
           {
             text: "Dashboard",
+            collapsed: true,
             items: [
               { text: "Roles", link: "/docs/tutorials/roles" },
               { text: "Users", link: "/docs/tutorials/users" },
@@ -41,6 +42,7 @@ export default defineConfig({
           },
           {
             text: "Games",
+            collapsed: true,
             items: [
               { text: "Minecraft", link: "/docs/tutorials/minecraft" },
               { text: "Terraria", link: "/docs/tutorials/terraria" },
