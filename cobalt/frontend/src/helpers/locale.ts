@@ -27,7 +27,7 @@ export class LocaleHelper implements ILocaleHelper {
 
   /**
    * Converts a UTC±N offset string to a valid IANA timezone name.
-   * Intl.DateTimeFormat requires IANA names — Etc/GMT uses inverted sign convention.
+   * Intl.DateTimeFormat requires IANA names - Etc/GMT uses inverted sign convention.
    *
    * Parameters:
    * - timezone: Timezone string, either UTC±N or a valid IANA name.

@@ -95,7 +95,7 @@ function close(): void {
 }
 
 /**
- * Handles confirm button click — invokes the pending callback and closes the popup.
+ * Handles confirm button click - invokes the pending callback and closes the popup.
  *
  * Parameters:
  * - closeFn: Popup close callback from slot.

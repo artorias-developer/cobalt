@@ -451,7 +451,7 @@ function handleSearchChange(): void {
 
 /**
  * Toggles a permission in the given permissions array.
- * If checked — adds the value, otherwise removes it.
+ * If checked - adds the value, otherwise removes it.
  *
  * Parameters:
  * - permissions: The permissions array to modify.
@@ -471,7 +471,7 @@ function togglePermission(permissions: PermissionsEnum[], value: PermissionsEnum
 
 /**
  * Toggles all permissions in a group.
- * If all permissions in the group are selected — deselects all, otherwise selects all.
+ * If all permissions in the group are selected - deselects all, otherwise selects all.
  *
  * Parameters:
  * - group: The permission group to toggle.

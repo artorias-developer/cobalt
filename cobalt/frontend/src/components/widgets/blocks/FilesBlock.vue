@@ -930,13 +930,13 @@ async function deletePaths(paths: string[]): Promise<void> {
     await httpFilesApiService.delete(props.serverId!, { paths })
     notify({
       type: "success",
-      text: t("servers.server.files.deleteSuccess")
+      text: t("servers.server.files.delete.success")
     })
     fetchFiles()
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? t("servers.server.files.deleteError"),
+      text: error?.response?.data?.message ?? t("servers.server.files.delete.error"),
     })
   }
 }

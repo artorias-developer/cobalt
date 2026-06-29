@@ -157,7 +157,7 @@ const otherButtons = computed((): Array<MenuButton> => [
   {
     type: "a",
     text: t("nav.menu.help"),
-    url: "https://github.com/ArtoriasCode/cobalt/issues",
+    url: "https://github.com/ArtoriasCode/cobalt/discussions/categories/help",
     icon: helpIcon,
     baseColor: "gray",
     hoverColor: "blue",
