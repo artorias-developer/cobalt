@@ -30,6 +30,7 @@
   </a>
   <button
     v-else
+    type="button"
     class="button"
     :class="[color]"
     :name="name"
@@ -83,6 +84,11 @@ defineProps<{
   &:focus-visible {
     outline: 2px solid $color-primary;
     outline-offset: -2px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    pointer-events: none;
   }
 
   &.blue {

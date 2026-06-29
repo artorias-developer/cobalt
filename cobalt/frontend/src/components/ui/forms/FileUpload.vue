@@ -33,6 +33,12 @@
         </span>
       </div>
     </div>
+    <div v-if="uploadProgress !== null" class="progress-bar">
+      <div class="progress-line">
+        <div class="progress-fill" :style="{ width: uploadProgress + '%' }" />
+      </div>
+      <span class="progress-label">{{ uploadProgress }}%</span>
+    </div>
   </div>
 </template>
 
@@ -52,8 +58,10 @@ const props = withDefaults(defineProps<{
   multiple?: boolean
   accept?: string
   required?: boolean
+  uploadProgress?: number | null
 }>(), {
-  multiple: true
+  multiple: true,
+  uploadProgress: null
 })
 
 const emit = defineEmits<{
@@ -114,9 +122,14 @@ onUnmounted(() => {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: $space-sm;
+  gap: $space-md;
 
   .upload-area {
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     border: 2px dashed $color-border;
     border-radius: 8px;
     padding: $space-xl;
@@ -144,6 +157,34 @@ onUnmounted(() => {
         font-weight: 600;
         font-size: $font-sm;
       }
+    }
+  }
+
+  .progress-bar {
+    display: flex;
+    align-items: center;
+    gap: $space-md;
+
+    .progress-line {
+      flex: 1;
+      height: 5px;
+      background-color: $color-border;
+      border-radius: 10px;
+      overflow: hidden;
+
+      .progress-fill {
+        height: 100%;
+        background-color: $color-blue;
+        border-radius: 2px;
+        transition: width 0.2s ease;
+      }
+    }
+
+    .progress-label {
+      font-size: $font-sm;
+      color: $color-description;
+      min-width: 36px;
+      text-align: right;
     }
   }
 }

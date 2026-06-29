@@ -292,6 +292,7 @@
         <FileUpload
           v-model="uploadFiles"
           :validationName="$t('servers.server.files.popup.upload.label')"
+          :upload-progress="uploadProgress"
           :required="true"
         />
       </Form>
@@ -306,6 +307,7 @@
           type="button"
           :text="$t('common.upload')"
           color="blue"
+          :disabled="isUploadFormLoading"
           @click="uploadForm?.validate() && handleUpload(close)"
         />
       </div>
@@ -425,6 +427,8 @@ const movePaths = ref<string[]>([])
 const uploadPopup = ref<InstanceType<typeof Popup> | null>(null)
 const uploadForm = ref<InstanceType<typeof Form> | null>(null)
 const uploadFiles = ref<File[]>([])
+const uploadProgress = ref<number | null>(null)
+const isUploadFormLoading = ref<boolean>(false)
 
 const confirmPopup = ref<InstanceType<typeof ConfirmPopup> | null>(null)
 
@@ -926,13 +930,13 @@ async function deletePaths(paths: string[]): Promise<void> {
     await httpFilesApiService.delete(props.serverId!, { paths })
     notify({
       type: "success",
-      text: t("servers.server.files.deleteSuccess")
+      text: t("servers.server.files.delete.success")
     })
     fetchFiles()
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? t("servers.server.files.deleteError"),
+      text: error?.response?.data?.message ?? t("servers.server.files.delete.error"),
     })
   }
 }
@@ -1146,10 +1150,15 @@ function openUploadPopup(): void {
 async function handleUpload(close: () => void): Promise<void> {
   if (!uploadFiles.value.length) return
 
+  isUploadFormLoading.value = true
+  uploadProgress.value = 0
+
   try {
     await httpFilesApiService.upload(props.serverId!, {
       path: currentPath.value,
       files: uploadFiles.value,
+    }, (percent) => {
+      uploadProgress.value = percent
     })
     notify({
       type: "success",
@@ -1162,6 +1171,9 @@ async function handleUpload(close: () => void): Promise<void> {
       type: "error",
       text: error?.response?.data?.message ?? t("servers.server.files.upload.error"),
     })
+  } finally {
+    uploadProgress.value = null
+    isUploadFormLoading.value = false
   }
 }
 
