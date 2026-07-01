@@ -1,11 +1,9 @@
 #!/bin/bash
 
-#
 # Copyright (C) 2026 ArtoriasCode
 # Author: ArtoriasCode
 # Repository: https://github.com/ArtoriasCode/cobalt
 # SPDX-License-Identifier: AGPL-3.0-or-later
-#
 
 set -e
 export DEBIAN_FRONTEND=noninteractive
@@ -62,14 +60,14 @@ generate() {
   local args="${@:3}"
   local name
   name=$(basename "$(dirname "$dest")")/$(basename "$dest")
+  local action="generated"
 
   if [[ -f "$dest" ]]; then
-    echo "  Skipping $name (already exists)."
-    return
+    action="replaced"
   fi
 
   sed $args "$src" > "$dest"
-  echo "  The $name file has been successfully generated."
+  echo "  The $name file has been successfully $action."
 }
 
 copy() {
@@ -77,14 +75,14 @@ copy() {
   local src="$2"
   local name
   name=$(basename "$(dirname "$dest")")/$(basename "$dest")
+  local action="generated"
 
   if [[ -f "$dest" ]]; then
-    echo "  Skipping $name (already exists)."
-    return
+    action="replaced"
   fi
 
   cp "$src" "$dest"
-  echo "  The $name file has been successfully generated."
+  echo "  The $name file has been successfully $action."
 }
 
 generate "$TARGET/backend/.env" "$TARGET/backend/.env.example" \
@@ -99,15 +97,18 @@ generate "$TARGET/postgres/.env" "$TARGET/postgres/.env.example" \
 generate "$TARGET/redis/.env" "$TARGET/redis/.env.example" \
   -e "s/{{redis_password}}/$REDIS_PASSWORD/"
 
+generate "$TARGET/nginx/.env" "$TARGET/nginx/.env.example" \
+  -e "s/{{domain}}/$DOMAIN/"
+
 copy "$TARGET/frontend/.env" "$TARGET/frontend/.env.example"
-copy "$TARGET/nginx/.env"    "$TARGET/nginx/.env.example"
 
 ALEMBIC_DEST="$ROOT/cobalt/backend/alembic.ini"
 ALEMBIC_SRC="$ROOT/cobalt/backend/alembic.ini.example"
+ALEMBIC_ACTION="generated"
 
 if [[ -f "$ALEMBIC_DEST" ]]; then
-  echo "  Skipping alembic.ini (already exists)."
-else
-  cp "$ALEMBIC_SRC" "$ALEMBIC_DEST"
-  echo "  The alembic.ini file has been successfully generated."
+  ALEMBIC_ACTION="replaced"
 fi
+
+cp "$ALEMBIC_SRC" "$ALEMBIC_DEST"
+echo "  The alembic.ini file has been successfully $ALEMBIC_ACTION."

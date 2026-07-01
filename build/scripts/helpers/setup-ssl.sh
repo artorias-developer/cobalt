@@ -52,9 +52,13 @@ SSL_DIR="$SCRIPT_DIR/../../$ENV/nginx/ssl"
 mkdir -p "$SSL_DIR"
 chmod 755 "$SSL_DIR"
 
-if [[ -f "$SSL_DIR/server.crt" && -f "$SSL_DIR/server.key" ]]; then
-  echo "  Skipping SSL certificates (already exist)."
-  exit 0
+SAFE_DOMAIN="${DOMAIN//:/_}"
+CERT_FILE="$SSL_DIR/$SAFE_DOMAIN.crt"
+KEY_FILE="$SSL_DIR/$SAFE_DOMAIN.key"
+ACTION="generated"
+
+if [[ -f "$CERT_FILE" && -f "$KEY_FILE" ]]; then
+  ACTION="replaced"
 fi
 
 if [[ "$DOMAIN" =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
@@ -64,10 +68,10 @@ else
 fi
 
 openssl req -x509 -nodes -newkey rsa:4096 \
-  -keyout "$SSL_DIR/server.key" \
-  -out "$SSL_DIR/server.crt" \
+  -keyout "$KEY_FILE" \
+  -out "$CERT_FILE" \
   -days 3650 \
   -subj "/CN=$DOMAIN" \
   -addext "subjectAltName=$SAN"
 
-echo "  SSL certificates have been successfully generated."
+echo "  SSL certificates ($SAFE_DOMAIN.crt / $SAFE_DOMAIN.key) have been successfully $ACTION."

@@ -15,8 +15,8 @@
 # Configs
 **/*.env
 **/alembic.ini
-**/server.crt
-**/server.key
+**/*.crt
+**/*.key
 
 # Logs
 **/npm-debug.log*
