@@ -12,6 +12,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$SCRIPT_DIR/.."
 ENV="prod"
 DOMAIN_ARG=""
+HTTPS_PORT="443"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -28,13 +29,25 @@ while [[ $# -gt 0 ]]; do
     --server)
       shift
       if [[ -z "$1" ]]; then
-        echo "Usage: $0 [--prod|--dev] [--local [domain]|--server <ip>]"
+        echo "Usage: $0 [--prod|--dev] [--local [domain]|--server <ip>] [--port <port>]"
         exit 1
       fi
       DOMAIN_ARG="--server $1"
       ;;
+    --port)
+      shift
+      if [[ -z "${1:-}" ]]; then
+        echo "Usage: $0 [--prod|--dev] [--local [domain]|--server <ip>] [--port <port>]"
+        exit 1
+      fi
+      if ! [[ "$1" =~ ^[0-9]+$ ]] || (( 10#$1 < 1 || 10#$1 > 65535 )); then
+        echo "Error: --port must be a number between 1 and 65535"
+        exit 1
+      fi
+      HTTPS_PORT="$1"
+      ;;
     *)
-      echo "Usage: $0 [--prod|--dev] [--local [domain]|--server <ip>]"
+      echo "Usage: $0 [--prod|--dev] [--local [domain]|--server <ip>] [--port <port>]"
       exit 1
       ;;
   esac
@@ -45,6 +58,8 @@ if [[ -z "$DOMAIN_ARG" ]]; then
   echo "Error: specify --local [domain] or --server <ip>"
   exit 1
 fi
+
+export HTTPS_PORT
 
 bash "$SCRIPT_DIR/helpers/setup-docker.sh"
 bash "$SCRIPT_DIR/helpers/setup-configs.sh" "--$ENV" $DOMAIN_ARG
