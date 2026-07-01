@@ -11,8 +11,7 @@ services:
       - ./nginx/.env
     entrypoint: ["sh", "/usr/local/bin/nginx-entrypoint.sh"]
     ports:
-      - "80:80"
-      - "443:443"
+      - "${HTTPS_PORT:-443}:443"
     networks:
       - cobalt
     volumes:
