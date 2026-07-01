@@ -97,8 +97,10 @@ generate "$TARGET/postgres/.env" "$TARGET/postgres/.env.example" \
 generate "$TARGET/redis/.env" "$TARGET/redis/.env.example" \
   -e "s/{{redis_password}}/$REDIS_PASSWORD/"
 
+generate "$TARGET/nginx/.env" "$TARGET/nginx/.env.example" \
+  -e "s/{{domain}}/$DOMAIN/"
+
 copy "$TARGET/frontend/.env" "$TARGET/frontend/.env.example"
-copy "$TARGET/nginx/.env"    "$TARGET/nginx/.env.example"
 
 ALEMBIC_DEST="$ROOT/cobalt/backend/alembic.ini"
 ALEMBIC_SRC="$ROOT/cobalt/backend/alembic.ini.example"
