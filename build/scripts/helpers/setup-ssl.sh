@@ -57,11 +57,17 @@ if [[ -f "$SSL_DIR/server.crt" && -f "$SSL_DIR/server.key" ]]; then
   exit 0
 fi
 
+if [[ "$DOMAIN" =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+  SAN="IP:$DOMAIN"
+else
+  SAN="DNS:$DOMAIN"
+fi
+
 openssl req -x509 -nodes -newkey rsa:4096 \
   -keyout "$SSL_DIR/server.key" \
   -out "$SSL_DIR/server.crt" \
   -days 3650 \
   -subj "/CN=$DOMAIN" \
-  -addext "subjectAltName=IP:$DOMAIN"
+  -addext "subjectAltName=$SAN"
 
 echo "  SSL certificates have been successfully generated."
