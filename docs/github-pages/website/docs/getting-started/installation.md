@@ -54,6 +54,10 @@ chmod +x build/scripts/install.sh
 ./build/scripts/install.sh --prod --server <server_ip>
 ```
 
+:::tip
+If you need to bind Cobalt to a port other than the default `443`, you can add the `--port <custom_port>` option.
+:::
+
 The installer will automatically install Docker and Docker Compose if not present, generate SSL certificates and all config files, build and start the containers.
 
 ## Dashboard access
