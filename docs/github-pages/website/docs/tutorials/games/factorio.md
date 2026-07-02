@@ -280,7 +280,9 @@ This is an optional setting, you will still be able to connect to the server usi
 
 2. Find the server you want to add mods in the table and click the first button in the actions column.
 
-3. Upload mods using one of the following methods:
+3. Click the stop button in the control block.
+
+4. Upload mods using one of the following methods:
 
 ::::details File manager
 1. Open the files tab at the top.
@@ -368,9 +370,9 @@ You can find mods on the [Factorio Mods Portal](https://mods.factorio.com).
 
 [//]: # (::::)
 
-4. Open the overview tab at the top.
+5. Open the overview tab at the top.
 
-5. Click the restart button in the control block.
+6. Click the restart button in the control block.
 
 
 <style>

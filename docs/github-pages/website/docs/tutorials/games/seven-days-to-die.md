@@ -127,7 +127,7 @@ This tutorial explains how to set up 7 Days to Die server in the Cobalt dashboar
    Do not change the `ServerPort` and `TelnetPort` settings.
    :::
 
-    3. Click the save button in the bottom left corner.
+   3. Click the save button in the bottom left corner.
 
    ---
 

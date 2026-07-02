@@ -95,7 +95,7 @@ This tutorial explains how to set up a RimWorld server in the Cobalt dashboard.
    | `Amount`            | integer | `3`     | Maximum amount of backups before automatic deletion.                                                  |
    :::
 
-    3. Click the save button in the bottom left corner.
+   3. Click the save button in the bottom left corner.
 
    ---
 
@@ -117,7 +117,7 @@ This tutorial explains how to set up a RimWorld server in the Cobalt dashboard.
    | `DisconnectNotifications` | boolean | `false`                   | Sends a message when a user logs off.               |
    :::
 
-    3. Click the save button in the bottom left corner.
+   3. Click the save button in the bottom left corner.
 
    ---
 
@@ -137,7 +137,7 @@ This tutorial explains how to set up a RimWorld server in the Cobalt dashboard.
    | `Name`       | string  | `Crashlanded` | Name of the enforced scenario.                                                          |
    :::
 
-    3. Click the save button in the bottom left corner.
+   3. Click the save button in the bottom left corner.
 
    ---
 
@@ -172,7 +172,7 @@ This tutorial explains how to set up a RimWorld server in the Cobalt dashboard.
    Do not change the `IP` and `Port` settings.
    :::
 
-    3. Click the save button in the bottom left corner.
+   3. Click the save button in the bottom left corner.
 
    ---
 
