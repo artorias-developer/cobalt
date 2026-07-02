@@ -73,9 +73,9 @@ class VanillaServersService(AbstractServersService):
         host_container_dir = path.join(self.host_containers_dir, container_name)
 
         try:
-            port_base = self.get_available_port_range(count=3)
-            port_1 = port_base + 1
-            port_2 = port_base + 2
+            port_1 = self.get_available_port_range(count=3)
+            port_2 = port_1 + 1
+            port_3 = port_1 + 2
 
             await self._create_container_dir(
                 container_name=container_name
@@ -102,10 +102,10 @@ class VanillaServersService(AbstractServersService):
                 container_file=self._CONTAINER_RUNTIME_FILE,
                 container_name=container_name,
                 ports={
-                    f"{port_base}/tcp": port_base,
-                    f"{port_base}/udp": port_base,
+                    f"{port_1}/tcp": port_1,
                     f"{port_1}/udp": port_1,
-                    f"{port_2}/udp": port_2
+                    f"{port_2}/udp": port_2,
+                    f"{port_3}/udp": port_3
                 },
                 volumes={
                     host_container_dir: {
@@ -114,7 +114,7 @@ class VanillaServersService(AbstractServersService):
                     }
                 },
                 container_environment={
-                    "SERVER_PORT": str(port_base)
+                    "SERVER_PORT": str(port_1)
                 },
                 container_kwargs={
                     "security_opt": ["seccomp=unconfined"],
