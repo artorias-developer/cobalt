@@ -15,7 +15,8 @@ RUN apt-get update && \
 COPY data/ /installer_src/
 COPY scripts/entrypoint.sh /installer_src/entrypoint.sh
 
-RUN chmod +x /installer_src/entrypoint.sh
+RUN chmod +x /installer_src/entrypoint.sh && \
+    mkdir -p /installer_src/Zomboid
 
 WORKDIR ${SERVER_ROOT}
 ENV APP_ID=${APP_ID}
@@ -28,6 +29,6 @@ CMD rsync -a /installer_src/. . && \
                     +login anonymous \
                     +app_update ${APP_ID} validate \
                     +quit && \
-        [ -f "${SERVER_ROOT}/bin/dontstarve_dedicated_server_nullrenderer" ] && break || \
+        [ -f "${SERVER_ROOT}/start-server.sh" ] && break || \
         { echo "Attempt $i failed, retrying..."; [ $i -eq 3 ] && exit 1; }; \
     done

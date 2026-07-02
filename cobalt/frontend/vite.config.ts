@@ -15,6 +15,16 @@ export default defineConfig({
   plugins: [
     vue()
   ],
+  server: {
+    host: "0.0.0.0",
+    port: 8011,
+    strictPort: true,
+    hmr: {
+      protocol: "wss",
+      host: "127.0.0.1",
+      clientPort: 443,
+    },
+  },
   build: {
     sourcemap: false,
     rolldownOptions: {

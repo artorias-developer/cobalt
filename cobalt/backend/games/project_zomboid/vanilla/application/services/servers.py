@@ -17,11 +17,11 @@ from application.clients.containers.shared import ContainersConstants
 
 class VanillaServersService(AbstractServersService):
     """
-    7 Days to Die Vanilla servers service.
+    Project Zomboid Vanilla servers service.
     """
-    _INTERNAL_PORT = 26900
-    _STEAM_APP_ID = 294420
-    _INSTALL_MARKER = "7DaysToDieServer.x86_64"
+    _INTERNAL_PORT = 16261
+    _STEAM_APP_ID = 380870
+    _INSTALL_MARKER = "start-server.sh"
 
     host_containers_dir: Path
 
@@ -60,7 +60,7 @@ class VanillaServersService(AbstractServersService):
         - server_id: Server ID.
         - container_name: Container name.
         - version: Game version.
-        - download_link: Download link for Vanilla 7 Days to Die.
+        - download_link: Download link for Vanilla Project Zomboid.
 
         Returns:
         - None.
@@ -73,9 +73,8 @@ class VanillaServersService(AbstractServersService):
         host_container_dir = path.join(self.host_containers_dir, container_name)
 
         try:
-            port_1 = self.get_available_port_range(count=3)
+            port_1 = self.get_available_port_range(count=2)
             port_2 = port_1 + 1
-            port_3 = port_1 + 2
 
             await self._create_container_dir(
                 container_name=container_name
@@ -102,10 +101,8 @@ class VanillaServersService(AbstractServersService):
                 container_file=self._CONTAINER_RUNTIME_FILE,
                 container_name=container_name,
                 ports={
-                    f"{port_1}/tcp": port_1,
                     f"{port_1}/udp": port_1,
-                    f"{port_2}/udp": port_2,
-                    f"{port_3}/udp": port_3
+                    f"{port_2}/udp": port_2
                 },
                 volumes={
                     host_container_dir: {
@@ -114,7 +111,9 @@ class VanillaServersService(AbstractServersService):
                     }
                 },
                 container_environment={
-                    "SERVER_PORT": str(port_1)
+                    "SERVER_DEFAULT_PORT": str(port_1),
+                    "SERVER_UDP_PORT": str(port_2)
+
                 },
                 container_kwargs={
                     "security_opt": ["seccomp=unconfined"],

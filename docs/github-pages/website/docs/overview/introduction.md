@@ -47,6 +47,11 @@ The following games are currently supported:
       <td>7 Days to Die</td>
       <td>Vanilla</td>
     </tr>
+    <tr>
+      <td style="display: flex;justify-content: center;"><img src="https://raw.githubusercontent.com/ArtoriasCode/cobalt/main/cobalt/frontend/src/assets/images/games/project-zomboid/icon.png" style="width: 30px"></td>
+      <td>Project Zomboid</td>
+      <td>Vanilla</td>
+    </tr>
   </tbody>
 </table>
 

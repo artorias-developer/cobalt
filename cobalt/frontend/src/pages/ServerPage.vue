@@ -51,6 +51,7 @@ import NotFound from "@/components/widgets/NotFound.vue"
 import DontStarveTogetherServerPage from "@/pages/games/dont-starve-together/ServerPage.vue"
 import FactorioServerPage from "@/pages/games/factorio/ServerPage.vue"
 import MinecraftServerPage from "@/pages/games/minecraft/ServerPage.vue"
+import ProjectZomboidServerPage from "@/pages/games/project-zomboid/ServerPage.vue"
 import RimWorldServerPage from "@/pages/games/rim-world/ServerPage.vue"
 import SevenDaysToDieServerPage from "@/pages/games/seven-days-to-die/ServerPage.vue"
 import TerrariaServerPage from "@/pages/games/terraria/ServerPage.vue"
@@ -59,6 +60,7 @@ const gameComponents: Record<string, Component> = {
   dont_starve_together: DontStarveTogetherServerPage,
   factorio: FactorioServerPage,
   minecraft: MinecraftServerPage,
+  project_zomboid: ProjectZomboidServerPage,
   rim_world: RimWorldServerPage,
   seven_days_to_die: SevenDaysToDieServerPage,
   terraria: TerrariaServerPage

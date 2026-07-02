@@ -99,7 +99,7 @@ This tutorial explains how to set up a Minecraft server in the Cobalt dashboard.
    Do not change the `server-port` and `server-ip` settings.
    :::
 
-    3. Click the save button in the bottom left corner.
+   3. Click the save button in the bottom left corner.
 
    ---
 
