@@ -14,6 +14,7 @@ RUN apt-get update && \
 
 COPY data/ /installer_src/
 COPY scripts/entrypoint.sh /installer_src/entrypoint.sh
+
 RUN chmod +x /installer_src/entrypoint.sh
 
 WORKDIR ${SERVER_ROOT}
