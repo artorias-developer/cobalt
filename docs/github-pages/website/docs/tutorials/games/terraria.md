@@ -121,7 +121,7 @@ This tutorial explains how to set up a Terraria server in the Cobalt dashboard.
    Do not change the `port` and `ip` settings.
    :::
 
-    3. Click the save button in the bottom left corner.
+   3. Click the save button in the bottom left corner.
 
    ---
 
