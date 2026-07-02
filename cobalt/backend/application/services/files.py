@@ -111,7 +111,7 @@ class FilesService(AbstractFilesService):
 
     @staticmethod
     def _get_format(
-        path: Path
+        file_path: Path
     ) -> Optional[str]:
         """
         Returns the file extension without the leading dot, or None for directories.
@@ -122,7 +122,7 @@ class FilesService(AbstractFilesService):
         Returns:
         - str: File extension.
         """
-        suffix = path.suffix
+        suffix = file_path.suffix
 
         if not suffix:
             return None
