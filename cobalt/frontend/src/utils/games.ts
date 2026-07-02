@@ -13,6 +13,7 @@ import minecraftIcon from "@/assets/images/games/minecraft/icon.png"
 import terrariaIcon from "@/assets/images/games/terraria/icon.png"
 import rimWorldIcon from "@/assets/images/games/rim-world/icon.png"
 import sevenDaysToDieIcon from "@/assets/images/games/seven-days-to-die/icon.png"
+import projectZomboidIcon from "@/assets/images/games/project-zomboid/icon.png"
 
 export const GameModules: GameModulesMap = {
   minecraft: {
@@ -83,5 +84,15 @@ export const GameModules: GameModulesMap = {
       }
     },
     sort_number: 6
+  },
+  project_zomboid: {
+    displayName: "Project Zomboid",
+    icon: projectZomboidIcon,
+    loaders: {
+      vanilla: {
+        displayName: "Vanilla"
+      }
+    },
+    sort_number: 7
   }
 }

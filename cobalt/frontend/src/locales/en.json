@@ -594,22 +594,25 @@
   },
   "games": {
     "minecraft": {
-      "description": "Mine resources, craft tools and survive in an infinite world."
+      "description": "Make your way through the wilderness and create the world of your dreams."
     },
     "terraria": {
-      "description": "Explore caves, fight bosses, and build in 2D world."
+      "description": "Explore a vibrant world full of mysteries, treasures, and unexpected encounters."
     },
     "dont_starve_together": {
-      "description": "Fight hunger, monsters, and your own insanity."
+      "description": "Survive in a world of nightmares, where hunger and darkness never let up."
     },
     "factorio": {
-      "description": "Build and automate factories while surviving alien attacks."
+      "description": "Transform a wild planet into the heart of a massive industrial empire."
     },
     "rim_world": {
-      "description": "Manage a colony of survivors stranded on a distant planet."
+      "description": "Lead your colony through the trials of a harsh and distant planet."
     },
     "seven_days_to_die": {
-      "description": "Craft weapons, fortify your base, and survive while surrounded by zombies."
+      "description": "Fortify the last stronghold against the onslaught of the undead hordes."
+    },
+    "project_zomboid": {
+      "description": "Hold on to life in a world where every mistake could be your last."
     }
   }
 }
