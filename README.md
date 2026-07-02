@@ -46,14 +46,15 @@ Cobalt supports the creation of servers for a wide variety of games and their lo
 
 The following games are currently supported:
 
-|                                              Icon                                              | Game                  | Loaders              |
-|:----------------------------------------------------------------------------------------------:|-----------------------|----------------------|
-|       <img src="cobalt/frontend/src/assets/images/games/minecraft/icon.png" height="30">       | Minecraft             | Paper, Forge, Fabric |
-|       <img src="cobalt/frontend/src/assets/images/games/terraria/icon.png" height="30">        | Terraria              | Vanilla, tModLoader  |
-| <img src="cobalt/frontend/src/assets/images/games/dont-starve-together/icon.png" height="30">  | Don't Starve Together | Vanilla              |
-|       <img src="cobalt/frontend/src/assets/images/games/factorio/icon.png" height="30">        | Factorio              | Vanilla              |
-|       <img src="cobalt/frontend/src/assets/images/games/rim-world/icon.png" height="30">       | RimWorld              | Together             |
-|   <img src="cobalt/frontend/src/assets/images/games/seven-days-to-die/icon.png" height="30">   | 7 Days to Die         | Vanilla              |
+|                                             Icon                                              | Game                  | Loaders              |
+|:---------------------------------------------------------------------------------------------:|-----------------------|----------------------|
+|      <img src="cobalt/frontend/src/assets/images/games/minecraft/icon.png" height="30">       | Minecraft             | Paper, Forge, Fabric |
+|       <img src="cobalt/frontend/src/assets/images/games/terraria/icon.png" height="30">       | Terraria              | Vanilla, tModLoader  |
+| <img src="cobalt/frontend/src/assets/images/games/dont-starve-together/icon.png" height="30"> | Don't Starve Together | Vanilla              |
+|       <img src="cobalt/frontend/src/assets/images/games/factorio/icon.png" height="30">       | Factorio              | Vanilla              |
+|      <img src="cobalt/frontend/src/assets/images/games/rim-world/icon.png" height="30">       | RimWorld              | Together             |
+|  <img src="cobalt/frontend/src/assets/images/games/seven-days-to-die/icon.png" height="30">   | 7 Days to Die         | Vanilla              |
+|    <img src="cobalt/frontend/src/assets/images/games/project-zomboid/icon.png" width="30">    | Project Zomboid       | Vanilla              |
 
 ## Features
 
