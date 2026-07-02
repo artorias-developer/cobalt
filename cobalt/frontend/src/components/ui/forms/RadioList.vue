@@ -298,6 +298,7 @@ onUnmounted(() => {
         display: flex;
         align-items: center;
         justify-content: center;
+        margin-left: auto;
         border-radius: 50%;
         border: 2px solid $color-border;
         transition: background-color 0.3s ease, border-color 0.3s ease;
