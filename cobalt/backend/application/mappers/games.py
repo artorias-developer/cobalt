@@ -53,7 +53,7 @@ class GamesServiceMapper(AbstractGamesServiceMapper):
         """
         return GameDto(
             id=entity.id,
-            name=entity.name,
+            name=entity.name.value,
             loaders=self.loaders_mapper.entities_to_dtos(
                 entities=entity.loaders
             ),

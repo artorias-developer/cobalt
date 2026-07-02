@@ -1,17 +1,22 @@
+#  Copyright (C) 2026 ArtoriasCode
+#  Author: ArtoriasCode
+#  Repository: https://github.com/ArtoriasCode/cobalt
+#  SPDX-License-Identifier: AGPL-3.0-or-later
+
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from re import Pattern
 from typing import Optional
-from abc import ABC, abstractmethod
 
 
-class AbstractStrValueObject(str, ABC):
+@dataclass(frozen=True, slots=True)
+class AbstractValueObject(ABC):
     """
-    Abstract string value object.
+    Abstract value object.
     """
 
-    def __new__(cls, value: str):
-        instance = super().__new__(cls, value)
-        instance._validate(value)
-        return instance
+    def __post_init__(self) -> None:
+        self._validate()
 
     @staticmethod
     def _validate_length(
@@ -55,7 +60,7 @@ class AbstractStrValueObject(str, ABC):
             raise ValueError(f'"{value}" must match pattern {pattern.pattern}')
 
     @abstractmethod
-    def _validate(self, value: str) -> None:
+    def _validate(self) -> None:
         """
         Validates the value object.
 

@@ -98,9 +98,9 @@ class UsersRepositoryMapper(AbstractUsersRepositoryMapper):
         - UserModel: UserModel object.
         """
         return UserModel(
-            login=entity.login,
-            hashed_password=entity.hashed_password,
-            salt=entity.salt,
+            login=entity.login.value,
+            hashed_password=entity.hashed_password.value,
+            salt=entity.salt.value,
             role_id=entity.role_id
         )
 
@@ -120,13 +120,13 @@ class UsersRepositoryMapper(AbstractUsersRepositoryMapper):
         - UserModel: UserModel object.
         """
         if entity.login is not None:
-            model.login = entity.login
+            model.login = entity.login.value
 
         if entity.hashed_password is not None:
-            model.hashed_password = entity.hashed_password
+            model.hashed_password = entity.hashed_password.value
 
         if entity.salt is not None:
-            model.salt = entity.salt
+            model.salt = entity.salt.value
 
         if entity.role_id is not None:
             model.role_id = entity.role_id

@@ -105,10 +105,10 @@ class ServersRepositoryMapper(AbstractServersRepositoryMapper):
         - ServerModel: ServerModel object.
         """
         return ServerModel(
-            name=entity.name,
+            name=entity.name.value,
             game_id=entity.game_id,
             loader_id=entity.loader_id,
-            version=entity.version,
+            version=entity.version.value,
             status=ServerStatusEnum.PENDING
         )
 
@@ -128,10 +128,10 @@ class ServersRepositoryMapper(AbstractServersRepositoryMapper):
         - ServerModel: ServerModel object.
         """
         if entity.name is not None:
-            model.name = entity.name
+            model.name = entity.name.value
 
         if entity.version is not None:
-            model.version = entity.version
+            model.version = entity.version.value
 
         if entity.status is not None:
             model.status = entity.status

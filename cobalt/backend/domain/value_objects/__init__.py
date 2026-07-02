@@ -3,7 +3,7 @@
 #  Repository: https://github.com/ArtoriasCode/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-from .base import AbstractStrValueObject
+from .base import AbstractValueObject
 from .attributes import AttributeKey
 from .games import GameName
 from .loaders import LoaderName
@@ -19,7 +19,7 @@ from .users import (
 )
 
 __all__ = [
-    "AbstractStrValueObject",
+    "AbstractValueObject",
     "AttributeKey",
     "GameName",
     "LoaderName",
