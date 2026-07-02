@@ -3,20 +3,25 @@
 #  Repository: https://github.com/ArtoriasCode/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
+from dataclasses import dataclass
 from re import compile as re_compile
+from typing import ClassVar, Pattern
 
-from domain.value_objects import AbstractStrValueObject
+from domain.value_objects import AbstractValueObject
 
 
-class AttributeKey(AbstractStrValueObject):
+@dataclass(frozen=True, slots=True)
+class AttributeKey(AbstractValueObject):
     """
     Attribute key value object.
     """
-    _PATTERN = re_compile(r"^[a-zA-Z0-9_]+$")
-    _MIN_LENGTH = 1
-    _MAX_LENGTH = 64
+    value: str
 
-    def _validate(self, value: str) -> None:
+    _PATTERN: ClassVar[Pattern] = re_compile(r"^[a-zA-Z0-9_]+$")
+    _MIN_LENGTH: ClassVar[int] = 1
+    _MAX_LENGTH: ClassVar[int] = 64
+
+    def _validate(self) -> None:
         """
         Validates the attribute key.
 
@@ -27,12 +32,12 @@ class AttributeKey(AbstractStrValueObject):
         - None.
         """
         self._validate_length(
-            value=value,
+            value=self.value,
             min_length=self._MIN_LENGTH,
             max_length=self._MAX_LENGTH
         )
 
         self._validate_pattern(
-            value=value,
+            value=self.value,
             pattern=self._PATTERN
         )

@@ -77,7 +77,7 @@ class AttributesRepositoryMapper(AbstractAttributesRepositoryMapper):
         """
         return AttributeModel(
             server_id=server_id,
-            key=entity.key,
+            key=entity.key.value,
             value=entity.value
         )
 

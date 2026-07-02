@@ -3,20 +3,25 @@
 #  Repository: https://github.com/ArtoriasCode/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
+from dataclasses import dataclass
 from re import compile as re_compile
+from typing import ClassVar, Pattern
 
-from domain.value_objects import AbstractStrValueObject
+from domain.value_objects import AbstractValueObject
 
 
-class UserLogin(AbstractStrValueObject):
+@dataclass(frozen=True, slots=True)
+class UserLogin(AbstractValueObject):
     """
     User login value object.
     """
-    _PATTERN = re_compile(r"^[a-zA-Zа-яА-ЯёЁіІїЇєЄ0-9_\-' ]+$")
-    _MIN_LENGTH = 3
-    _MAX_LENGTH = 32
+    value: str
 
-    def _validate(self, value: str) -> None:
+    _PATTERN: ClassVar[Pattern] = re_compile(r"^[a-zA-Zа-яА-ЯёЁіІїЇєЄ0-9_\-' ]+$")
+    _MIN_LENGTH: ClassVar[int] = 3
+    _MAX_LENGTH: ClassVar[int] = 32
+
+    def _validate(self) -> None:
         """
         Validates the user login.
 
@@ -27,23 +32,27 @@ class UserLogin(AbstractStrValueObject):
         - None.
         """
         self._validate_length(
-            value=value,
+            value=self.value,
             min_length=self._MIN_LENGTH,
             max_length=self._MAX_LENGTH
         )
 
         self._validate_pattern(
-            value=value,
+            value=self.value,
             pattern=self._PATTERN
         )
 
-class HashedPassword(AbstractStrValueObject):
+
+@dataclass(frozen=True, slots=True)
+class HashedPassword(AbstractValueObject):
     """
     Hashed password value object.
     """
-    _MAX_LENGTH = 128
+    value: str
 
-    def _validate(self, value: str) -> None:
+    _MAX_LENGTH: ClassVar[int] = 128
+
+    def _validate(self) -> None:
         """
         Validates the hashed password.
 
@@ -54,17 +63,21 @@ class HashedPassword(AbstractStrValueObject):
         - None.
         """
         self._validate_length(
-            value=value,
+            value=self.value,
             max_length=self._MAX_LENGTH
         )
 
-class Salt(AbstractStrValueObject):
+
+@dataclass(frozen=True, slots=True)
+class Salt(AbstractValueObject):
     """
     Salt value object.
     """
-    _MAX_LENGTH = 128
+    value: str
 
-    def _validate(self, value: str) -> None:
+    _MAX_LENGTH: ClassVar[int] = 128
+
+    def _validate(self) -> None:
         """
         Validates the salt.
 
@@ -75,6 +88,6 @@ class Salt(AbstractStrValueObject):
         - None.
         """
         self._validate_length(
-            value=value,
+            value=self.value,
             max_length=self._MAX_LENGTH
         )

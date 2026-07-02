@@ -61,9 +61,9 @@ class UsersServiceMapper(AbstractUsersServiceMapper):
         """
         return UserDto(
             id=entity.id,
-            login=entity.login,
-            hashed_password=entity.hashed_password,
-            salt=entity.salt,
+            login=entity.login.value,
+            hashed_password=entity.hashed_password.value,
+            salt=entity.salt.value,
             role=self.roles_mapper.entity_to_dto(
                 entity=entity.role
             ),

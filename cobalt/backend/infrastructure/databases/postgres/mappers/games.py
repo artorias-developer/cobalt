@@ -85,7 +85,7 @@ class GamesRepositoryMapper(AbstractGamesRepositoryMapper):
         - GameModel: GameModel object.
         """
         return GameModel(
-            name=entity.name
+            name=entity.name.value
         )
 
     def update_entity_to_model(
@@ -104,6 +104,6 @@ class GamesRepositoryMapper(AbstractGamesRepositoryMapper):
         - GameModel: GameModel object.
         """
         if entity.name is not None:
-            model.name = entity.name
+            model.name = entity.name.value
 
         return model

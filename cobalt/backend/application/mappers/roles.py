@@ -43,7 +43,7 @@ class RolesServiceMapper(AbstractRolesServiceMapper):
         """
         return RoleDto(
             id=entity.id,
-            name=entity.name,
+            name=entity.name.value,
             permissions=entity.permissions,
             created_at=entity.created_at,
             updated_at=entity.updated_at
