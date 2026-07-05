@@ -52,7 +52,8 @@ export default defineConfig({
       "vue-router",
       "vue-i18n",
       "@kyvg/vue3-notification",
-      "qr-code-styling"
+      "qr-code-styling",
+      "@uiw/codemirror-theme-github"
     ]
   },
   resolve: {
