@@ -149,7 +149,7 @@ onUnmounted(() => {
       flex-direction: column;
       align-items: center;
       gap: $space-md;
-      color: var(--color-description);
+      color: var(--color-description-muted);
       font-size: $font-md;
 
       .count {
@@ -182,7 +182,7 @@ onUnmounted(() => {
 
     .progress-label {
       font-size: $font-sm;
-      color: var(--color-description);
+      color: var(--color-description-muted);
       min-width: 36px;
       text-align: right;
     }

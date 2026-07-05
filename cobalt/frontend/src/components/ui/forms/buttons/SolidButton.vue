@@ -102,7 +102,7 @@ defineProps<{
 
   &.gray {
     background-color: var(--color-gray-background);
-    color: var(--color-text);
+    color: var(--color-description);
   }
 
   span {

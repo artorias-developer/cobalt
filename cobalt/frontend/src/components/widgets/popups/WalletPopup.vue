@@ -204,7 +204,7 @@ watch(selectedWalletName, (): void => {
     .network {
       font-size: $font-lg;
       font-weight: 600;
-      color: var(--color-text);
+      color: var(--color-description);
     }
   }
 
@@ -219,7 +219,7 @@ watch(selectedWalletName, (): void => {
   .address {
     font-size: $font-sm;
     font-weight: 500;
-    color: var(--color-text);
+    color: var(--color-description);
     background-color: var(--color-block-alt);
     padding: $space-md;
     border-radius: 6px;

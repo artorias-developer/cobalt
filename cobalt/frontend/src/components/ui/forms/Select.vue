@@ -358,14 +358,14 @@ onUnmounted(() => {
         .value {
           font-size: $font-md;
           font-weight: 600;
-          color: var(--color-text);
+          color: var(--color-description);
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
           line-height: normal;
 
           &.placeholder {
-            color: var(--color-text);
+            color: var(--color-description);
           }
         }
       }
@@ -374,7 +374,7 @@ onUnmounted(() => {
         width: 24px;
         height: 24px;
         flex-shrink: 0;
-        background-color: var(--color-text);
+        background-color: var(--color-description);
         -webkit-mask-image: url("@/assets/images/svg/angle-down.svg");
         mask-image: url("@/assets/images/svg/angle-down.svg");
         mask-repeat: no-repeat;
@@ -415,7 +415,7 @@ onUnmounted(() => {
   overscroll-behavior: none;
   @include scrollbar();
   border: 1px solid var(--color-border-alt);
-  box-shadow: var(--shadow-easy);
+  box-shadow: var(--shadow-soft);
 
   .option {
     padding: $space-md $space-lg;
@@ -443,7 +443,7 @@ onUnmounted(() => {
     .value {
       font-size: $font-md;
       font-weight: 600;
-      color: var(--color-text);
+      color: var(--color-description);
 
       &.selected {
         color: var(--color-title);

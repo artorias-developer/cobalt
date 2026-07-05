@@ -303,7 +303,7 @@ const hasRolesViewAccess = computed((): boolean =>
       p {
         font-size: $font-sm;
         font-weight: 600;
-        color: var(--color-text);
+        color: var(--color-description);
         line-height: 1;
         text-wrap: nowrap;
       }
@@ -315,7 +315,7 @@ const hasRolesViewAccess = computed((): boolean =>
       font-size: $font-xs;
       font-weight: 700;
       text-transform: uppercase;
-      color: var(--color-text);
+      color: var(--color-description);
       padding-left: $space-md;
       margin-bottom: $space-md;
     }

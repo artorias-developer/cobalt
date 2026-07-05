@@ -159,7 +159,7 @@ const isActiveRoute = computed((): boolean => {
   text-decoration: none;
   gap: $space-md;
   padding: $space-md;
-  color: var(--color-text);
+  color: var(--color-description);
   background-color: transparent;
   border-radius: 6px;
   transition: background-color 0.3s ease, color 0.3s ease;
@@ -204,7 +204,7 @@ const isActiveRoute = computed((): boolean => {
   }
 
   &.gray {
-    color: var(--color-text);
+    color: var(--color-description);
 
     &.background {
       background-color: var(--color-gray-background);
@@ -217,7 +217,7 @@ const isActiveRoute = computed((): boolean => {
 
   &.hover-gray:hover,
   &.active.hover-gray {
-    color: var(--color-text);
+    color: var(--color-description);
     background-color: var(--color-gray-background);
   }
 

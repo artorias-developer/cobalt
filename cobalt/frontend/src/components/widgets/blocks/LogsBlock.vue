@@ -503,7 +503,7 @@ onUnmounted(() => {
     padding: $space-xl;
     border-radius: 0 0 12px 12px;
     border: none;
-    color: var(--color-text);
+    color: var(--color-description);
     font-size: $font-md;
     font-weight: 600;
     font-family: "Montserrat", sans-serif;
@@ -512,7 +512,7 @@ onUnmounted(() => {
 
     &::placeholder {
       opacity: 1;
-      color: var(--color-text);
+      color: var(--color-description);
     }
   }
 
@@ -527,7 +527,7 @@ onUnmounted(() => {
 
       .line {
         .message {
-          color: var(--color-text);
+          color: var(--color-description);
           font-size: $font-sm;
           word-break: break-word;
           line-height: 1.8;

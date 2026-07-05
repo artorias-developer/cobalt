@@ -952,7 +952,7 @@ onUnmounted(() => {
       p {
         font-size: $font-sm;
         font-weight: 600;
-        color: var(--color-text);
+        color: var(--color-description);
         line-height: unset;
       }
     }

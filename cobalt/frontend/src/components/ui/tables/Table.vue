@@ -250,7 +250,7 @@ const currentSort = computed((): SortState | null =>
   left: 50%;
   transform: translateX(-50%);
   background-color: var(--color-block-alt);
-  color: var(--color-text);
+  color: var(--color-description);
   font-size: $font-xs;
   padding: $space-md;
   border-radius: 6px;
@@ -258,7 +258,7 @@ const currentSort = computed((): SortState | null =>
   z-index: 1;
   opacity: 0;
   border: 1px solid var(--color-border-alt);
-  box-shadow: var(--shadow-easy);
+  box-shadow: var(--shadow-soft);
   transition: opacity 0.3s;
   word-break: break-word;
   white-space: break-spaces;
@@ -295,7 +295,7 @@ const currentSort = computed((): SortState | null =>
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--color-text);
+      color: var(--color-description);
       font-size: $font-md;
       border-top: 1px solid var(--color-border-alt);
     }
@@ -330,7 +330,7 @@ table {
     th,
     td {
       font-size: $font-md;
-      color: var(--color-text);
+      color: var(--color-description);
       width: max-content;
       padding: $space-xl $space-md;
 
@@ -392,7 +392,7 @@ table {
           }
 
           &.gray {
-            color: var(--color-text);
+            color: var(--color-description);
             background-color: var(--color-gray-background);
           }
         }
@@ -455,7 +455,7 @@ table {
             transform: translateY(-50%) rotate(0deg);
             width: 20px;
             height: 20px;
-            background-color: var(--color-text);
+            background-color: var(--color-description);
             -webkit-mask-image: url("@/assets/images/svg/angle-down.svg");
             mask-image: url("@/assets/images/svg/angle-down.svg");
             mask-repeat: no-repeat;

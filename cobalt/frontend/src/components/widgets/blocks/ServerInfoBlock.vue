@@ -339,7 +339,7 @@ const hasServerStopAccess = computed((): boolean =>
       align-items: center;
 
       .label {
-        color: var(--color-text);
+        color: var(--color-description);
         font-size: $font-md;
         font-weight: 600;
       }
