@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch } from "vue"
+import { ref, computed, onMounted, onUnmounted, watch } from "vue"
 
 import { basicSetup } from "codemirror"
 import { EditorState, Compartment, type Extension } from "@codemirror/state"
@@ -19,13 +19,15 @@ import { defaultKeymap } from "@codemirror/commands"
 import { StreamLanguage, HighlightStyle, syntaxHighlighting } from "@codemirror/language"
 import { tags } from "@lezer/highlight"
 import { highlightSelectionMatches } from "@codemirror/search"
-import { oneDark } from "@codemirror/theme-one-dark"
+import { githubLight, githubDark } from "@uiw/codemirror-theme-github"
 import { json } from "@codemirror/lang-json"
 import { xml } from "@codemirror/lang-xml"
 import { yaml } from "@codemirror/lang-yaml"
 import { lua } from "@codemirror/legacy-modes/mode/lua"
 import { shell } from "@codemirror/legacy-modes/mode/shell"
 import { properties } from "@codemirror/legacy-modes/mode/properties"
+
+import { useUserStore } from "@/stores"
 
 const props = withDefaults(defineProps<{
   modelValue: string
@@ -42,9 +44,12 @@ defineExpose({
   getValue: () => view?.state.doc.toString() ?? ""
 })
 
+const userStore = useUserStore()
+
 let view: EditorView | null = null
 const container = ref<HTMLElement | null>(null)
 const languageCompartment = new Compartment()
+const themeCompartment = new Compartment()
 
 const luaLang = StreamLanguage.define(lua)
 const shellLang = StreamLanguage.define(shell)
@@ -60,6 +65,10 @@ const propertiesHighlight = HighlightStyle.define(
   {
     scope: propertiesLang
   }
+)
+
+const isLightTheme = computed((): boolean =>
+  userStore.user?.settings?.theme === "light"
 )
 
 /**
@@ -91,6 +100,19 @@ function resolveLanguage(language: string): Extension {
 }
 
 /**
+ * Resolves the CodeMirror editor theme extension based on the current user theme setting.
+ *
+ * Parameters:
+ * - light: Whether the light theme is currently active.
+ *
+ * Returns:
+ * - Extension: CodeMirror theme extension.
+ */
+function resolveTheme(light: boolean): Extension {
+  return light ? githubLight : githubDark
+}
+
+/**
  * Watches for language prop changes and updates editor mode via Compartment.
  *
  * Parameters:
@@ -104,6 +126,23 @@ watch(() => props.language, (language: string): void => {
 
   view.dispatch({
     effects: languageCompartment.reconfigure(resolveLanguage(language))
+  })
+})
+
+/**
+ * Watches for user theme setting changes and updates editor theme via Compartment.
+ *
+ * Parameters:
+ * - light: Whether the light theme is currently active.
+ *
+ * Returns:
+ * - void.
+ */
+watch(isLightTheme, (light: boolean): void => {
+  if (!view) return
+
+  view.dispatch({
+    effects: themeCompartment.reconfigure(resolveTheme(light))
   })
 })
 
@@ -122,7 +161,7 @@ onMounted(() => {
           highlightWordAroundCursor: true
         }),
         syntaxHighlighting(propertiesHighlight),
-        oneDark,
+        themeCompartment.of(resolveTheme(isLightTheme.value)),
         EditorView.updateListener.of((update) => {
           if (update.docChanged) {
             emit("update:modelValue", update.state.doc.toString())
@@ -179,6 +218,12 @@ onUnmounted(() => {
               background-color: var(--color-block-alt);
               color: var(--color-title);
             }
+          }
+        }
+
+        .cm-foldGutter {
+          .cm-activeLineGutter {
+            background-color: var(--color-block-alt);
           }
         }
       }
