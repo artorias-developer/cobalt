@@ -129,7 +129,7 @@ function handleConfirm(closeFn: () => void): void {
 
       .message {
         font-size: $font-sm;
-        color: var(--color-text);
+        color: var(--color-description);
         line-height: 1.5;
       }
     }

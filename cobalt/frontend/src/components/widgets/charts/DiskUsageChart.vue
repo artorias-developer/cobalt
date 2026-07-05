@@ -301,7 +301,7 @@ onMounted(() => {
         }
 
         &.yellow {
-          border-color: var(--color-yellow);
+          border-color: var(--color-yellow-soft);
         }
 
         p, span {
@@ -316,7 +316,7 @@ onMounted(() => {
 
         span {
           font-size: $font-md;
-          color: var(--color-text);
+          color: var(--color-description);
           font-weight: 600;
         }
       }
@@ -341,7 +341,7 @@ onMounted(() => {
 
           span {
             font-size: $font-md;
-            color: var(--color-text);
+            color: var(--color-description);
             font-weight: 600;
           }
         }
@@ -349,7 +349,7 @@ onMounted(() => {
         .free {
           p {
             font-size: $font-md;
-            color: var(--color-text);
+            color: var(--color-description);
             font-weight: 600;
           }
         }
@@ -390,7 +390,7 @@ onMounted(() => {
           }
 
           &.yellow {
-            background-color: var(--color-yellow);
+            background-color: var(--color-yellow-soft);
           }
         }
 
@@ -403,13 +403,13 @@ onMounted(() => {
 
         .separator {
           font-size: $font-md;
-          color: var(--color-text);
+          color: var(--color-description);
           font-weight: 600;
         }
 
         .size {
           font-size: $font-md;
-          color: var(--color-text);
+          color: var(--color-description);
           font-weight: 600;
         }
       }

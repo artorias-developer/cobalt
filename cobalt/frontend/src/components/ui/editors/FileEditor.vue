@@ -197,7 +197,7 @@ onUnmounted(() => {
     }
 
     .cm-cursor {
-      border-left-color: var(--color-text);
+      border-left-color: var(--color-description);
     }
 
     .cm-scroller {

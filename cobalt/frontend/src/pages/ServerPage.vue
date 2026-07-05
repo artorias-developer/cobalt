@@ -248,8 +248,8 @@ onMounted(async (): Promise<void> => {
         gap: $space-md;
 
         .tag {
-          color: var(--color-text);
-          background-color: var(--color-tag-background);
+          color: var(--color-description);
+          background-color: var(--color-gray-background);
           font-size: $font-md;
           font-weight: 600;
           padding: $space-sm $space-md;

@@ -60,7 +60,7 @@ function buildGradient(height: number): graphic.LinearGradient {
   const key = `${props.color}-${height}`
   if (gradientCache.has(key)) return gradientCache.get(key)!
 
-  const hexColor = documentHelper.getRootStyle(`--color-${props.color}`)
+  const hexColor = documentHelper.getRootStyle(`--color-${props.color}-soft`)
 
   const gradient = new graphic.LinearGradient(0, 0, 0, 1, [
     {offset: 0, color: `${hexColor}40`},
@@ -120,12 +120,12 @@ function padData(data: Array<ChartPoint>): Array<ChartPoint> {
  * - EChartsOption: A complete chart configuration object.
  */
 function createOption(data: Array<ChartPoint>): EChartsOption {
-  const mainColor = documentHelper.getRootStyle(`--color-${props.color}`)
+  const mainColor = documentHelper.getRootStyle(`--color-${props.color}-soft`)
   const titleColor = documentHelper.getRootStyle("--color-title")
-  const textColor = documentHelper.getRootStyle("--color-text")
+  const textColor = documentHelper.getRootStyle("--color-description")
   const blockColor = documentHelper.getRootStyle("--color-block-alt")
   const borderColor = documentHelper.getRootStyle("--color-border-alt")
-  const shadowEasy = documentHelper.getRootStyle("--shadow-easy")
+  const shadowEasy = documentHelper.getRootStyle("--shadow-soft")
 
   const paddedData = padData(data)
   const chartHeight = chartRef.value?.clientHeight || 220
@@ -357,8 +357,8 @@ function addPoint(label: string, value: number): void {
  * - void.
  */
 function showLoading(): void {
-  const mainColor = documentHelper.getRootStyle(`--color-${props.color}`)
-  const textColor = documentHelper.getRootStyle("--color-text")
+  const mainColor = documentHelper.getRootStyle(`--color-${props.color}-soft`)
+  const textColor = documentHelper.getRootStyle("--color-description")
   const blockColor = documentHelper.getRootStyle("--color-block")
 
   chart.value?.showLoading("default", {

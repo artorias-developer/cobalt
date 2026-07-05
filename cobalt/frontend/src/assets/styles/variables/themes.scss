@@ -1,0 +1,135 @@
+/*!
+ * Copyright (C) 2026 ArtoriasCode
+ * Author: ArtoriasCode
+ * Repository: https://github.com/ArtoriasCode/cobalt
+ * SPDX-License-Identifier: AGPL-3.0-or-later
+ */
+
+@use "sass:color";
+@use "sass:map";
+
+@mixin generate-theme($variables) {
+  --color-primary: #{map.get($variables, primary)};
+
+  --color-blue: #{map.get($variables, blue)};
+  --color-green: #{map.get($variables, green)};
+  --color-yellow: #{map.get($variables, yellow)};
+  --color-red: #{map.get($variables, red)};
+  --color-gray: #{map.get($variables, gray)};
+  --color-white: #{map.get($variables, white)};
+
+  --color-blue-soft: #{map.get($variables, blue-soft)};
+  --color-green-soft: #{map.get($variables, green-soft)};
+  --color-yellow-soft: #{map.get($variables, yellow-soft)};
+  --color-red-soft: #{map.get($variables, yellow-soft)};
+
+  --color-blue-background: #{map.get($variables, blue-background)};
+  --color-green-background: #{map.get($variables, green-background)};
+  --color-yellow-background: #{map.get($variables, yellow-background)};
+  --color-red-background: #{map.get($variables, red-background)};
+  --color-gray-background: #{map.get($variables, gray-background)};
+
+  --color-notification-success-background: #{map.get($variables, notification-success-background)};
+  --color-notification-warning-background: #{map.get($variables, notification-warning-background)};
+  --color-notification-error-background: #{map.get($variables, notification-error-background)};
+
+  --color-background: #{map.get($variables, background)};
+  --color-block: #{map.get($variables, block)};
+  --color-block-alt: #{map.get($variables, block-alt)};
+
+  --color-title: #{map.get($variables, title)};
+  --color-description: #{map.get($variables, description)};
+  --color-description-muted: #{map.get($variables, description-muted)};
+
+  --color-border: #{map.get($variables, border)};
+  --color-border-alt: #{map.get($variables, border-alt)};
+
+  --shadow-soft: #{map.get($variables, shadow-soft)};
+}
+
+$dark: (
+  primary: #3384FF,
+
+  blue: #5498FF,
+  green: #59c595,
+  yellow: #ddc965,
+  red: #DA6B6B,
+  gray: #8089af,
+  white: #f2f5f8,
+
+  blue-soft: #4d8ef1,
+  green-soft: #52b88b,
+  yellow-soft: #ccb95d,
+  red-soft: #cc6363,
+
+  blue-background: rgba(#5498FF, 0.16),
+  green-background: rgba(#59c595, 0.16),
+  yellow-background: rgba(#ddc965, 0.16),
+  red-background: rgba(#DA6B6B, 0.16),
+  gray-background: rgba(#8089af, 0.16),
+
+  notification-success-background: #4aa87e,
+  notification-warning-background: #c1b063,
+  notification-error-background: #c36161,
+
+  background: #1F2333,
+  block: #2E3244,
+  block-alt: #34384c,
+
+  title: #f2f5f8,
+  description: #9FA6C1,
+  description-muted: #64687D,
+
+  border: #44485D,
+  border-alt: rgba(#44485D, 0.55),
+
+  shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.1),
+);
+
+$light: (
+  primary: #3f85f1,
+
+  blue: #407cd8,
+  green: #3dac71,
+  yellow: #b6a945,
+  red: #ca5d5d,
+  gray: #9094a1,
+  white: #ffffff,
+
+  blue-soft: #4784e1,
+  green-soft: #41c17d,
+  yellow-soft: #dac94a,
+  red-soft: #d36161,
+
+  blue-background: rgba(#407cd8, 0.16),
+  green-background: rgba(#3dac71, 0.16),
+  yellow-background: rgba(#b6a945, 0.16),
+  red-background: rgba(#ca5d5d, 0.16),
+  gray-background: rgba(#9094a1, 0.16),
+
+  notification-success-background: #91daad,
+  notification-warning-background: #e4d690,
+  notification-error-background: #e69b9b,
+
+  background: #e7eaed,
+  block: #ffffff,
+  block-alt: #f3f5f6,
+
+  title: #28282c,
+  description: #646777,
+  description-muted: #878CAA,
+
+  border: #d6d9e6,
+  border-alt: rgba(#b9bfdd, 0.35),
+
+  shadow-soft: 0 1px 6px rgba(0, 0, 0, 0.1),
+);
+
+:root,
+[data-theme="dark"] {
+  @include generate-theme($dark);
+}
+
+[data-theme="light"] {
+  @include generate-theme($light);
+}

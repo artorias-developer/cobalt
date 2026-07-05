@@ -83,7 +83,7 @@ onUnmounted(() => {
     width: 100%;
     height: 40px;
     padding: 0 $space-lg;
-    color: var(--color-text);
+    color: var(--color-description);
     background-color: transparent;
     font-size: $font-md;
     font-weight: 600;
@@ -99,7 +99,7 @@ onUnmounted(() => {
     }
 
     &::placeholder {
-      color: var(--color-description);
+      color: var(--color-description-muted);
       opacity: 1;
     }
   }

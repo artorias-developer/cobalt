@@ -64,7 +64,7 @@ export default defineConfig({
     preprocessorOptions: {
       scss: {
         additionalData: `
-        @use "@/assets/styles/variables/colors" as *;
+        @use "@/assets/styles/variables/themes" as *;
         @use "@/assets/styles/variables/spacing" as *;
         @use "@/assets/styles/variables/fonts" as *;
         @use "@/assets/styles/globals" as *;
