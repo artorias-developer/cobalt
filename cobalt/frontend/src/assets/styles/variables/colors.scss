@@ -6,39 +6,40 @@
  */
 
 @use "sass:color";
+@use "sass:map";
 
 @mixin generate-theme($colors) {
-  --color-primary: #{map-get($colors, primary)};
-  --color-blue: #{map-get($colors, blue)};
-  --color-blue-background: #{map-get($colors, blue-background)};
-  --color-green: #{map-get($colors, green)};
-  --color-green-background: #{map-get($colors, green-background)};
-  --color-yellow: #{map-get($colors, yellow)};
-  --color-yellow-background: #{map-get($colors, yellow-background)};
-  --color-red: #{map-get($colors, red)};
-  --color-red-background: #{map-get($colors, red-background)};
-  --color-gray: #{map-get($colors, gray)};
-  --color-gray-background: #{map-get($colors, gray-background)};
-  --color-white: #{map-get($colors, white)};
+  --color-primary: #{map.get($colors, primary)};
+  --color-blue: #{map.get($colors, blue)};
+  --color-blue-background: #{map.get($colors, blue-background)};
+  --color-green: #{map.get($colors, green)};
+  --color-green-background: #{map.get($colors, green-background)};
+  --color-yellow: #{map.get($colors, yellow)};
+  --color-yellow-background: #{map.get($colors, yellow-background)};
+  --color-red: #{map.get($colors, red)};
+  --color-red-background: #{map.get($colors, red-background)};
+  --color-gray: #{map.get($colors, gray)};
+  --color-gray-background: #{map.get($colors, gray-background)};
+  --color-white: #{map.get($colors, white)};
 
-  --color-background: #{map-get($colors, background)};
-  --color-block: #{map-get($colors, block)};
-  --color-block-alt: #{map-get($colors, block-alt)};
+  --color-background: #{map.get($colors, background)};
+  --color-block: #{map.get($colors, block)};
+  --color-block-alt: #{map.get($colors, block-alt)};
 
-  --color-tag-background: #{map-get($colors, tag-background)};
+  --color-tag-background: #{map.get($colors, tag-background)};
 
-  --color-title: #{map-get($colors, title)};
-  --color-text: #{map-get($colors, text)};
-  --color-description: #{map-get($colors, description)};
+  --color-title: #{map.get($colors, title)};
+  --color-text: #{map.get($colors, text)};
+  --color-description: #{map.get($colors, description)};
 
-  --color-border: #{map-get($colors, border)};
-  --color-border-alt: #{map-get($colors, border-alt)};
+  --color-border: #{map.get($colors, border)};
+  --color-border-alt: #{map.get($colors, border-alt)};
 
-  --color-notification-success-background: #{map-get($colors, notify-success)};
-  --color-notification-warning-background: #{map-get($colors, notify-warning)};
-  --color-notification-error-background: #{map-get($colors, notify-error)};
+  --color-notification-success-background: #{map.get($colors, notify-success)};
+  --color-notification-warning-background: #{map.get($colors, notify-warning)};
+  --color-notification-error-background: #{map.get($colors, notify-error)};
 
-  --shadow-easy: #{map-get($colors, shadow-easy)};
+  --shadow-easy: #{map.get($colors, shadow-easy)};
 }
 
 $dark: (
