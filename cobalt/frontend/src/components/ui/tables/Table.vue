@@ -43,6 +43,7 @@
           <td v-if="withCheckboxes">
             <div class="label-checkbox">
               <input
+                v-if="row.id !== '__back__'"
                 type="checkbox"
                 class="checkbox item"
                 :checked="tableStore.isSelected(tableId, row.id)"
@@ -208,7 +209,9 @@ function handleSortClick(column: TableColumn): void {
  * - Array<string | number>: List of IDs from all currently rendered rows.
  */
 const rowIds = computed((): Array<string | number> =>
-  props.rows.map(r => r.id)
+  props.rows
+    .filter(row => row.id !== "__back__")
+    .map(row => row.id)
 )
 
 /**
