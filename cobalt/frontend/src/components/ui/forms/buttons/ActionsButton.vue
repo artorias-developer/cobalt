@@ -159,7 +159,7 @@ onUnmounted(() => {
     background: transparent;
     border: none;
     cursor: pointer;
-    color: $color-text;
+    color: var(--color-text);
 
     .dots {
       font-size: $font-md;
@@ -170,9 +170,9 @@ onUnmounted(() => {
 
 <style lang="scss">
 .actions-button-items {
-  background-color: $color-block-alt;
-  border: 1px solid $color-border-alt;
-  box-shadow: $shadow-easy;
+  background-color: var(--color-block-alt);
+  border: 1px solid var(--color-border-alt);
+  box-shadow: var(--shadow-easy);
   border-radius: 6px;
   min-width: 160px;
   display: flex;
@@ -190,17 +190,17 @@ onUnmounted(() => {
     background: none;
     border: none;
     cursor: pointer;
-    color: $color-text;
+    color: var(--color-text);
     font-size: $font-sm;
     text-align: left;
     transition: background-color 0.3s;
 
     &:hover {
-      background-color: $color-block;
+      background-color: var(--color-block);
     }
 
     &.danger {
-      color: $color-red;
+      color: var(--color-red);
     }
 
     .icon {

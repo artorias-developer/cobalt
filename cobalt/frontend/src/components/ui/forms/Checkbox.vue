@@ -80,7 +80,7 @@ onUnmounted(() => {
     width: 20px;
     height: 20px;
     margin: 0;
-    border: 2px solid $color-border;
+    border: 2px solid var(--color-border);
     border-radius: 4px;
     background-color: transparent;
     cursor: pointer;
@@ -92,7 +92,7 @@ onUnmounted(() => {
       content: "";
       position: absolute;
       inset: 0;
-      background-color: $color-title;
+      background-color: var(--color-white);
       -webkit-mask-image: url("@/assets/images/svg/check.svg");
       mask-image: url("@/assets/images/svg/check.svg");
       mask-repeat: no-repeat;
@@ -103,13 +103,13 @@ onUnmounted(() => {
     }
 
     &:focus-visible {
-      outline: 2px solid $color-primary;
+      outline: 2px solid var(--color-primary);
       outline-offset: -2px;
     }
 
     &:checked {
-      background-color: $color-primary;
-      border-color: $color-primary;
+      background-color: var(--color-primary);
+      border-color: var(--color-primary);
 
       &::after {
         opacity: 1;
@@ -119,7 +119,7 @@ onUnmounted(() => {
 
   :deep(.label) {
     &.checked .text {
-      color: $color-title;
+      color: var(--color-title);
     }
   }
 }

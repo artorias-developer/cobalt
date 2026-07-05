@@ -150,7 +150,7 @@ watch(
     flex-shrink: 0;
     gap: $space-md;
     padding: $space-md;
-    background-color: $color-block;
+    background-color: var(--color-block);
     border-radius: 12px;
     overflow-x: auto;
     overscroll-behavior: none;

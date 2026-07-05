@@ -246,16 +246,16 @@ const currentSort = computed((): SortState | null =>
   bottom: calc(100% + #{$space-md});
   left: 50%;
   transform: translateX(-50%);
-  background-color: $color-block-alt;
-  color: $color-text;
+  background-color: var(--color-block-alt);
+  color: var(--color-text);
   font-size: $font-xs;
   padding: $space-md;
   border-radius: 6px;
   position: absolute;
   z-index: 1;
   opacity: 0;
-  border: 1px solid $color-border-alt;
-  box-shadow: $shadow-easy;
+  border: 1px solid var(--color-border-alt);
+  box-shadow: var(--shadow-easy);
   transition: opacity 0.3s;
   word-break: break-word;
   white-space: break-spaces;
@@ -268,7 +268,7 @@ const currentSort = computed((): SortState | null =>
     margin-left: -5px;
     border-width: 5px;
     border-style: solid;
-    border-color: $color-block-alt transparent transparent transparent;
+    border-color: var(--color-block-alt) transparent transparent transparent;
   }
 }
 
@@ -292,9 +292,9 @@ const currentSort = computed((): SortState | null =>
       display: flex;
       align-items: center;
       justify-content: center;
-      color: $color-text;
+      color: var(--color-text);
       font-size: $font-md;
-      border-top: 1px solid $color-border-alt;
+      border-top: 1px solid var(--color-border-alt);
     }
   }
 }
@@ -310,23 +310,24 @@ table {
     z-index: 1;
 
     tr {
-      background-color: $color-block-alt;
+      background-color: var(--color-block-alt);
       border-bottom: unset;
 
       th {
         padding: $space-md;
+        font-weight: 600;
       }
     }
   }
 
   tr {
     text-align: left;
-    border-bottom: 1px solid $color-border-alt;
+    border-bottom: 1px solid var(--color-border-alt);
 
     th,
     td {
       font-size: $font-md;
-      color: $color-text;
+      color: var(--color-text);
       width: max-content;
       padding: $space-xl $space-md;
 
@@ -352,7 +353,7 @@ table {
           align-items: center;
 
           &.highlighted {
-            color: $color-title;
+            color: var(--color-title);
           }
 
           .value {
@@ -368,28 +369,28 @@ table {
           border-radius: 4px;
 
           &.red {
-            color: $color-red;
-            background-color: $color-red-background;
+            color: var(--color-red);
+            background-color: var(--color-red-background);
           }
 
           &.blue {
-            color: $color-blue;
-            background-color: $color-blue-background;
+            color: var(--color-blue);
+            background-color: var(--color-blue-background);
           }
 
           &.green {
-            color: $color-green;
-            background-color: $color-green-background;
+            color: var(--color-green);
+            background-color: var(--color-green-background);
           }
 
           &.yellow {
-            color: $color-yellow;
-            background-color: $color-yellow-background;
+            color: var(--color-yellow);
+            background-color: var(--color-yellow-background);
           }
 
           &.gray {
-            color: $color-text;
-            background-color: $color-gray-background;
+            color: var(--color-text);
+            background-color: var(--color-gray-background);
           }
         }
 
@@ -451,7 +452,7 @@ table {
             transform: translateY(-50%) rotate(0deg);
             width: 20px;
             height: 20px;
-            background-color: $color-text;
+            background-color: var(--color-text);
             -webkit-mask-image: url("@/assets/images/svg/angle-down.svg");
             mask-image: url("@/assets/images/svg/angle-down.svg");
             mask-repeat: no-repeat;
@@ -477,7 +478,7 @@ table {
         -webkit-appearance: none;
         width: 20px;
         height: 20px;
-        border: 2px solid $color-border;
+        border: 2px solid var(--color-border);
         border-radius: 4px;
         background-color: transparent;
         cursor: pointer;
@@ -485,19 +486,19 @@ table {
         position: relative;
 
         &:focus-visible {
-          outline: 2px solid $color-primary;
+          outline: 2px solid var(--color-primary);
           outline-offset: -2px;
         }
 
         &:checked {
-          background-color: $color-primary;
-          border-color: $color-primary;
+          background-color: var(--color-primary);
+          border-color: var(--color-primary);
 
           &::after {
             content: "";
             position: absolute;
             inset: 0;
-            background-color: $color-title;
+            background-color: var(--color-white);
             -webkit-mask-image: url("@/assets/images/svg/check.svg");
             mask-image: url("@/assets/images/svg/check.svg");
             mask-repeat: no-repeat;
@@ -518,7 +519,7 @@ table {
           transition: color 0.3s ease;
 
           &:hover {
-            color: $color-primary;
+            color: var(--color-primary);
           }
         }
       }
@@ -569,7 +570,7 @@ table {
   gap: $space-md;
   padding: $space-xl;
   margin-top: auto;
-  border-top: 1px solid $color-border-alt;
+  border-top: 1px solid var(--color-border-alt);
 
   .actions,
   .pagination,

@@ -23,7 +23,7 @@ defineProps<{
   width: 100%;
   display: flex;
   flex-direction: column;
-  background-color: $color-block;
+  background-color: var(--color-block);
   border-radius: 12px;
   box-sizing: border-box;
 

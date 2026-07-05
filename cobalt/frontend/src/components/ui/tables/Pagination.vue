@@ -80,12 +80,12 @@ const emit = defineEmits<{
     align-items: center;
     justify-content: center;
     border-radius: 6px;
-    background-color: $color-primary;
+    background-color: var(--color-primary);
 
     span {
       font-size: $font-md;
       font-weight: 600;
-      color: $color-title;
+      color: var(--color-white);
     }
   }
 }

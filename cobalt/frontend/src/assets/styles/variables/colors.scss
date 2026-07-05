@@ -5,61 +5,115 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-$color-primary: #3384FF;
-$color-blue: #5498FF;
-$color-blue-background: rgba($color-blue, 0.16);
-$color-green: #59c595;
-$color-green-background: rgba($color-green, 0.16);
-$color-yellow: #ddc965;
-$color-yellow-background: rgba($color-yellow, 0.16);
-$color-red: #DA6B6B;
-$color-red-background: rgba($color-red, 0.16);
-$color-gray: #8089af;
-$color-gray-background: rgba($color-gray, 0.16);
+@use "sass:color";
 
-$color-background: #1F2333;
-$color-block: #2E3244;
-$color-block-alt: #34384c;
-$color-block-background: #282C3D;
+@mixin generate-theme($colors) {
+  --color-primary: #{map-get($colors, primary)};
+  --color-blue: #{map-get($colors, blue)};
+  --color-blue-background: #{map-get($colors, blue-background)};
+  --color-green: #{map-get($colors, green)};
+  --color-green-background: #{map-get($colors, green-background)};
+  --color-yellow: #{map-get($colors, yellow)};
+  --color-yellow-background: #{map-get($colors, yellow-background)};
+  --color-red: #{map-get($colors, red)};
+  --color-red-background: #{map-get($colors, red-background)};
+  --color-gray: #{map-get($colors, gray)};
+  --color-gray-background: #{map-get($colors, gray-background)};
+  --color-white: #{map-get($colors, white)};
 
-$color-tag-background: rgba(#809AC3, 0.16);
+  --color-background: #{map-get($colors, background)};
+  --color-block: #{map-get($colors, block)};
+  --color-block-alt: #{map-get($colors, block-alt)};
 
-$color-title: #f2f5f8;
-$color-text: #9FA6C1;
-$color-description: #64687D;
+  --color-tag-background: #{map-get($colors, tag-background)};
 
-$color-border: #44485D;
-$color-border-alt: rgba($color-border, 0.55);
+  --color-title: #{map-get($colors, title)};
+  --color-text: #{map-get($colors, text)};
+  --color-description: #{map-get($colors, description)};
 
-$color-notification-success-background: #4aa87e;
-$color-notification-warning-background: #c1b063;
-$color-notification-error-background: #c36161;
+  --color-border: #{map-get($colors, border)};
+  --color-border-alt: #{map-get($colors, border-alt)};
 
-$shadow-easy: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --color-notification-success-background: #{map-get($colors, notify-success)};
+  --color-notification-warning-background: #{map-get($colors, notify-warning)};
+  --color-notification-error-background: #{map-get($colors, notify-error)};
 
-:root {
-  --color-primary: #{$color-primary};
-  --color-blue: #{$color-blue};
-  --color-blue-background: #{$color-blue-background};
-  --color-green: #{$color-green};
-  --color-green-background: #{$color-green-background};
-  --color-yellow: #{$color-yellow};
-  --color-yellow-background: #{$color-yellow-background};
-  --color-red: #{$color-red};
-  --color-red-background: #{$color-red-background};
-  --color-gray: #{$color-gray};
-  --color-gray-background: #{$color-gray-background};
-  --color-background: #{$color-background};
-  --color-block: #{$color-block};
-  --color-block-alt: #{$color-block-alt};
-  --color-block-background: #{$color-block-background};
-  --color-tag-background: #{$color-tag-background};
-  --color-title: #{$color-title};
-  --color-text: #{$color-text};
-  --color-description: #{$color-description};
-  --color-border: #{$color-border};
-  --color-border-alt: #{$color-border-alt};
-  --color-notification-success-background: #{$color-notification-success-background};
-  --color-notification-warning-background: #{$color-notification-warning-background};
-  --color-notification-error-background: #{$color-notification-error-background};
+  --shadow-easy: #{map-get($colors, shadow-easy)};
+}
+
+$dark: (
+  primary: #3384FF,
+  blue: #5498FF,
+  blue-background: rgba(#5498FF, 0.16),
+  green: #59c595,
+  green-background: rgba(#59c595, 0.16),
+  yellow: #ddc965,
+  yellow-background: rgba(#ddc965, 0.16),
+  red: #DA6B6B,
+  red-background: rgba(#DA6B6B, 0.16),
+  gray: #8089af,
+  gray-background: rgba(#8089af, 0.16),
+  white: #F9FCFF,
+
+  background: #1F2333,
+  block: #2E3244,
+  block-alt: #34384c,
+
+  tag-background: rgba(#809AC3, 0.16),
+
+  title: #f2f5f8,
+  text: #9FA6C1,
+  description: #64687D,
+
+  border: #44485D,
+  border-alt: rgba(#44485D, 0.55),
+
+  notify-success: #4aa87e,
+  notify-warning: #c1b063,
+  notify-error: #c36161,
+
+  shadow-easy: 0 4px 12px rgba(0, 0, 0, 0.1),
+);
+
+$light: (
+  primary: #3f85f1,
+  blue: #407cd8,
+  blue-background: rgba(#407cd8, 0.16),
+  green: #3bb374,
+  green-background: rgba(#3dbc79, 0.16),
+  yellow: #ccbe55,
+  yellow-background: rgba(#d1bf40, 0.16),
+  red: #ca5d5d,
+  red-background: rgba(#ca5d5d, 0.16),
+  gray: #9094a1,
+  gray-background: rgba(#9ba1b5, 0.16),
+  white: #ffffff,
+
+  background: #eef1f3,
+  block: #ffffff,
+  block-alt: #f3f5f6,
+
+  tag-background: rgba(#adb3ba, 0.16),
+
+  title: #28282c,
+  text: #646777,
+  description: #878CAA,
+
+  border: #d6d9e6,
+  border-alt: rgba(#b9bfdd, 0.35),
+
+  notify-success: #91daad,
+  notify-warning: #e4d690,
+  notify-error: #e69b9b,
+
+  shadow-easy: 0 1px 6px rgba(0, 0, 0, 0.1),
+);
+
+:root,
+[data-theme="dark"] {
+  @include generate-theme($dark);
+}
+
+[data-theme="light"] {
+  @include generate-theme($light);
 }

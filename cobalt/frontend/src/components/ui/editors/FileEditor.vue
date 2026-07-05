@@ -143,7 +143,7 @@ onUnmounted(() => {
 <style scoped lang="scss">
 .codemirror-editor {
   :deep(.cm-editor) {
-    background-color: $color-block;
+    background-color: var(--color-block);
     font-size: 14px;
     line-height: 22px;
     height: 100%;
@@ -158,7 +158,7 @@ onUnmounted(() => {
     }
 
     .cm-cursor {
-      border-left-color: $color-text;
+      border-left-color: var(--color-text);
     }
 
     .cm-scroller {
@@ -166,9 +166,9 @@ onUnmounted(() => {
       @include scrollbar();
 
       .cm-gutters {
-        background-color: $color-block;
+        background-color: var(--color-block);
         border: none;
-        border-right: 1px solid $color-border;
+        border-right: 1px solid var(--color-border);
         padding-left: 0;
 
         .cm-lineNumbers {
@@ -176,8 +176,8 @@ onUnmounted(() => {
             padding-left: $space-xl;
 
             &.cm-activeLineGutter {
-              background-color: $color-block-alt;
-              color: $color-title;
+              background-color: var(--color-block-alt);
+              color: var(--color-title);
             }
           }
         }
@@ -188,7 +188,7 @@ onUnmounted(() => {
 
         .cm-line {
           &.cm-activeLine {
-            background-color: $color-block-alt;
+            background-color: var(--color-block-alt);
           }
         }
       }

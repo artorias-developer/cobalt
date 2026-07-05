@@ -264,7 +264,7 @@ const hasRolesViewAccess = computed((): boolean =>
   flex-direction: column;
   gap: $space-xl;
   padding: $space-xl;
-  border-right: 1px solid $color-border-alt;
+  border-right: 1px solid var(--color-border-alt);
   overflow-y: auto;
   overscroll-behavior: none;
   @include scrollbar-hidden();
@@ -296,14 +296,14 @@ const hasRolesViewAccess = computed((): boolean =>
       h2 {
         font-size: $font-xxl;
         font-weight: 700;
-        color: $color-title;
+        color: var(--color-title);
         line-height: 1;
       }
 
       p {
         font-size: $font-sm;
         font-weight: 600;
-        color: $color-text;
+        color: var(--color-text);
         line-height: 1;
         text-wrap: nowrap;
       }
@@ -315,7 +315,7 @@ const hasRolesViewAccess = computed((): boolean =>
       font-size: $font-xs;
       font-weight: 700;
       text-transform: uppercase;
-      color: $color-text;
+      color: var(--color-text);
       padding-left: $space-md;
       margin-bottom: $space-md;
     }
@@ -358,7 +358,7 @@ const hasRolesViewAccess = computed((): boolean =>
     z-index: 100;
     transform: translateX(-100%);
     transition: transform 0.3s ease;
-    background-color: $color-background;
+    background-color: var(--color-background);
 
     &.open {
       transform: translateX(0);

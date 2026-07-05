@@ -223,6 +223,28 @@ function setupI18n() {
 }
 
 /**
+ * Watches for changes in user theme settings and syncs
+ * the active theme on the document root element.
+ *
+ * Parameters:
+ * - null.
+ *
+ * Returns:
+ * - void.
+ */
+function setupThemeWatch(): void {
+  const userStore = useUserStore()
+
+  watch(
+    () => userStore.user?.settings?.theme,
+    (theme) => {
+      if (theme) document.documentElement.setAttribute("data-theme", theme)
+    },
+    { immediate: true }
+  )
+}
+
+/**
  * Watches for changes in user language settings and syncs
  * the active locale on the given i18n instance.
  *
@@ -341,6 +363,7 @@ export function bootstrap(app: App): void {
   app.use(i18n)
   setupRouterGuard(router, httpUsersApiService)
   app.use(router)
+  setupThemeWatch()
   setupLanguageWatch(i18n)
   setupTimezoneWatch(localeHelper)
   setupRoleUpdateListener(wsClient)

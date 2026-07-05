@@ -529,7 +529,8 @@
         "description": "Color scheme and visual style",
         "placeholder": "Select theme...",
         "options": {
-          "dark": "Dark"
+          "dark": "Dark",
+          "light": "Light"
         }
       },
       "timezone": {

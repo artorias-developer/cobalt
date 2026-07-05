@@ -68,14 +68,14 @@ const router = useRouter()
     h1 {
       font-size: $font-xxl;
       font-weight: 700;
-      color: $color-title;
+      color: var(--color-title);
       text-align: center;
     }
 
     p {
       font-size: $font-md;
       font-weight: 600;
-      color: $color-text;
+      color: var(--color-text);
       text-align: center;
     }
   }

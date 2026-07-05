@@ -928,7 +928,7 @@ onUnmounted(() => {
     align-items: center;
     gap: $space-xl;
     padding: $space-xl;
-    background-color: $color-block-alt;
+    background-color: var(--color-block-alt);
     border-radius: 12px;
 
     .game-icon {
@@ -946,13 +946,13 @@ onUnmounted(() => {
       h3 {
         font-size: $font-md;
         font-weight: 600;
-        color: $color-title;
+        color: var(--color-title);
       }
 
       p {
         font-size: $font-sm;
         font-weight: 600;
-        color: $color-text;
+        color: var(--color-text);
         line-height: unset;
       }
     }

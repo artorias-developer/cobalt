@@ -23,7 +23,7 @@ const props = defineProps<{
 .counter {
   font-size: $font-md;
   font-weight: 600;
-  color: $color-text;
+  color: var(--color-text);
 }
 
 @media (max-width: 768px) {

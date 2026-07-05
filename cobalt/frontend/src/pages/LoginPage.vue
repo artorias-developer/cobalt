@@ -157,14 +157,14 @@ async function handleLogin(): Promise<void> {
         h2 {
           font-size: $font-xxl;
           font-weight: 700;
-          color: $color-title;
+          color: var(--color-title);
           line-height: 1;
         }
 
         p {
           font-size: $font-sm;
           font-weight: 600;
-          color: $color-text;
+          color: var(--color-text);
           line-height: 1;
           text-wrap: nowrap;
         }

@@ -73,16 +73,16 @@ defineProps<{
 
   &:hover {
     &.blue {
-      background-color: rgba($color-primary, 0.8);
+      background-color: color-mix(in srgb, var(--color-primary) 80%, transparent);
     }
 
     &.gray {
-      background-color: rgba($color-gray-background, 0.1);
+      background-color: color-mix(in srgb, var(--color-gray) 10%, transparent);
     }
   }
 
   &:focus-visible {
-    outline: 2px solid $color-primary;
+    outline: 2px solid var(--color-primary);
     outline-offset: -2px;
   }
 
@@ -92,17 +92,17 @@ defineProps<{
   }
 
   &.blue {
-    background-color: $color-primary;
-    color: $color-title;
+    background-color: var(--color-primary);
+    color: var(--color-white);
 
     &:focus-visible {
-      outline: 2px solid $color-red;
+      outline: 2px solid var(--color-red);
     }
   }
 
   &.gray {
-    background-color: $color-gray-background;
-    color: $color-text;
+    background-color: var(--color-gray-background);
+    color: var(--color-text);
   }
 
   span {

@@ -130,14 +130,14 @@ onUnmounted(() => {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    border: 2px dashed $color-border;
+    border: 2px dashed var(--color-border);
     border-radius: 8px;
     padding: $space-xl;
     cursor: pointer;
     transition: border-color 0.2s;
 
     &:hover {
-      border-color: $color-blue;
+      border-color: var(--color-blue);
     }
 
     .input {
@@ -149,11 +149,11 @@ onUnmounted(() => {
       flex-direction: column;
       align-items: center;
       gap: $space-md;
-      color: $color-description;
+      color: var(--color-description);
       font-size: $font-md;
 
       .count {
-        color: $color-blue;
+        color: var(--color-blue);
         font-weight: 600;
         font-size: $font-sm;
       }
@@ -168,13 +168,13 @@ onUnmounted(() => {
     .progress-line {
       flex: 1;
       height: 5px;
-      background-color: $color-border;
+      background-color: var(--color-border);
       border-radius: 10px;
       overflow: hidden;
 
       .progress-fill {
         height: 100%;
-        background-color: $color-blue;
+        background-color: var(--color-blue);
         border-radius: 2px;
         transition: width 0.2s ease;
       }
@@ -182,7 +182,7 @@ onUnmounted(() => {
 
     .progress-label {
       font-size: $font-sm;
-      color: $color-description;
+      color: var(--color-description);
       min-width: 36px;
       text-align: right;
     }
