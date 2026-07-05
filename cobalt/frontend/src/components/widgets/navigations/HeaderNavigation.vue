@@ -149,16 +149,16 @@ const hasSettingsSystemAccess = computed((): boolean =>
       font-weight: 600;
 
       &.root {
-        color: $color-text;
+        color: var(--color-text);
       }
 
       &.current {
-        color: $color-title;
+        color: var(--color-title);
       }
     }
 
     .separator {
-      color: $color-text;
+      color: var(--color-text);
       font-size: $font-sm;
     }
   }
@@ -196,7 +196,7 @@ const hasSettingsSystemAccess = computed((): boolean =>
         h2 {
           font-size: $font-lg;
           font-weight: 700;
-          color: $color-title;
+          color: var(--color-title);
           line-height: 1;
         }
       }

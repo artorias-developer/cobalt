@@ -28,7 +28,7 @@ defineProps<{
   .icon {
     width: 20px;
     height: 20px;
-    color: $color-text;
+    color: var(--color-text);
     margin-bottom: 2px;
 
     svg {
@@ -40,7 +40,7 @@ defineProps<{
   p {
     font-size: $font-md;
     font-weight: 600;
-    color: $color-text;
+    color: var(--color-text);
   }
 }
 

@@ -125,6 +125,7 @@ function createOption(data: Array<ChartPoint>): EChartsOption {
   const textColor = documentHelper.getRootStyle("--color-text")
   const blockColor = documentHelper.getRootStyle("--color-block-alt")
   const borderColor = documentHelper.getRootStyle("--color-border-alt")
+  const shadowEasy = documentHelper.getRootStyle("--shadow-easy")
 
   const paddedData = padData(data)
   const chartHeight = chartRef.value?.clientHeight || 220
@@ -145,6 +146,7 @@ function createOption(data: Array<ChartPoint>): EChartsOption {
       borderColor: borderColor,
       borderWidth: 1,
       padding: 10,
+      extraCssText: `box-shadow: ${shadowEasy};`,
       axisPointer: {
         type: "line",
         lineStyle: {

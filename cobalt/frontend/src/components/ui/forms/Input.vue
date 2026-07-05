@@ -83,23 +83,23 @@ onUnmounted(() => {
     width: 100%;
     height: 40px;
     padding: 0 $space-lg;
-    color: $color-text;
+    color: var(--color-text);
     background-color: transparent;
     font-size: $font-md;
     font-weight: 600;
     font-family: "Montserrat", sans-serif;
-    border: 2px solid $color-border;
+    border: 2px solid var(--color-border);
     border-radius: 8px;
     outline: none;
     box-sizing: border-box;
     transition: border-color 0.3s ease;
 
     &:focus {
-      border: 2px solid $color-primary;
+      border: 2px solid var(--color-primary);
     }
 
     &::placeholder {
-      color: $color-description;
+      color: var(--color-description);
       opacity: 1;
     }
   }

@@ -220,6 +220,10 @@ const themeOptions = computed((): SelectOption[] => [
   {
     value: "dark",
     label: t("settings.general.theme.options.dark")
+  },
+  {
+    value: "light",
+    label: t("settings.general.theme.options.light")
   }
 ])
 
@@ -564,7 +568,7 @@ onMounted(() => {
       align-items: center;
       gap: $space-xl;
       padding: $space-xl 0;
-      border-bottom: 1px solid $color-border-alt;
+      border-bottom: 1px solid var(--color-border-alt);
 
       .label {
         flex-shrink: 0;
@@ -589,7 +593,7 @@ onMounted(() => {
 
   .footer {
     padding: $space-xl;
-    border-top: 1px solid $color-border-alt;
+    border-top: 1px solid var(--color-border-alt);
   }
 }
 

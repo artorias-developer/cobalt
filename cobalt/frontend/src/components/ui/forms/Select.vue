@@ -310,7 +310,7 @@ onUnmounted(() => {
 
     &.open {
       .trigger {
-        border-color: $color-primary;
+        border-color: var(--color-primary);
       }
 
       .arrow {
@@ -327,7 +327,7 @@ onUnmounted(() => {
       justify-content: space-between;
       gap: $space-md;
       background-color: transparent;
-      border: 2px solid $color-border;
+      border: 2px solid var(--color-border);
       border-radius: 8px;
       cursor: pointer;
       box-sizing: border-box;
@@ -335,7 +335,7 @@ onUnmounted(() => {
 
       &:focus {
         outline: none;
-        border-color: $color-primary;
+        border-color: var(--color-primary);
       }
 
       .content {
@@ -358,14 +358,14 @@ onUnmounted(() => {
         .value {
           font-size: $font-md;
           font-weight: 600;
-          color: $color-text;
+          color: var(--color-text);
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
           line-height: normal;
 
           &.placeholder {
-            color: $color-text;
+            color: var(--color-text);
           }
         }
       }
@@ -374,7 +374,7 @@ onUnmounted(() => {
         width: 24px;
         height: 24px;
         flex-shrink: 0;
-        background-color: $color-text;
+        background-color: var(--color-text);
         -webkit-mask-image: url("@/assets/images/svg/angle-down.svg");
         mask-image: url("@/assets/images/svg/angle-down.svg");
         mask-repeat: no-repeat;
@@ -409,13 +409,13 @@ onUnmounted(() => {
 
 <style lang="scss">
 .select-dropdown {
-  background-color: $color-block-alt;
+  background-color: var(--color-block-alt);
   border-radius: 8px;
   overflow-y: auto;
   overscroll-behavior: none;
   @include scrollbar();
-  border: 1px solid $color-border-alt;
-  box-shadow: $shadow-easy;
+  border: 1px solid var(--color-border-alt);
+  box-shadow: var(--shadow-easy);
 
   .option {
     padding: $space-md $space-lg;
@@ -426,7 +426,7 @@ onUnmounted(() => {
     transition: background-color 0.3s ease, color 0.3s ease;
 
     &:hover {
-      background-color: $color-block;
+      background-color: var(--color-block);
     }
 
     .icon {
@@ -443,10 +443,10 @@ onUnmounted(() => {
     .value {
       font-size: $font-md;
       font-weight: 600;
-      color: $color-text;
+      color: var(--color-text);
 
       &.selected {
-        color: $color-title;
+        color: var(--color-title);
       }
     }
   }

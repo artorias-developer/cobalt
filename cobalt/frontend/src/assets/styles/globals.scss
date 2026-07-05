@@ -7,7 +7,7 @@
 body, html {
   margin: 0;
   padding: 0;
-  background-color: $color-background;
+  background-color: var(--color-background);
   font-family: "Montserrat", sans-serif;
 }
 
@@ -15,6 +15,13 @@ body {
   @include background-image(
     $image: "@/assets/images/background.jpg"
   );
+
+  [data-theme="light"] & {
+    @include background-image(
+      $opacity: 0.90,
+      $image: "@/assets/images/background.jpg"
+    );
+  }
 }
 
 h1, h2, h3, h4, h5, h6, p, span {
@@ -52,18 +59,18 @@ a {
     border-left: none;
 
     &.success {
-      background-color: $color-notification-success-background;
-      color: $color-title;
+      background-color: var(--color-notification-success-background);
+      color: var(--color-title);
     }
 
     &.error {
-      background-color: $color-notification-error-background;
-      color: $color-title;
+      background-color: var(--color-notification-error-background);
+      color: var(--color-title);
     }
 
     &.warn {
-      background-color: $color-notification-warning-background;
-      color: $color-title;
+      background-color: var(--color-notification-warning-background);
+      color: var(--color-title);
     }
 
     .icon {

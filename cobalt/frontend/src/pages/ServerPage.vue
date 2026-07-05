@@ -237,7 +237,7 @@ onMounted(async (): Promise<void> => {
       gap: $space-xl;
 
       h1 {
-        color: $color-title;
+        color: var(--color-title);
         font-size: $font-xxxl;
         font-weight: 700;
       }
@@ -248,21 +248,21 @@ onMounted(async (): Promise<void> => {
         gap: $space-md;
 
         .tag {
-          color: $color-text;
-          background-color: $color-tag-background;
+          color: var(--color-text);
+          background-color: var(--color-tag-background);
           font-size: $font-md;
           font-weight: 600;
           padding: $space-sm $space-md;
           border-radius: 50px;
 
           &.green {
-            color: $color-green;
-            background-color: $color-green-background;
+            color: var(--color-green);
+            background-color: var(--color-green-background);
           }
 
           &.red {
-            color: $color-red;
-            background-color: $color-red-background;
+            color: var(--color-red);
+            background-color: var(--color-red-background);
           }
         }
       }
