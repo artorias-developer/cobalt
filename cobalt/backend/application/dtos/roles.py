@@ -8,14 +8,14 @@ from typing import Optional, List, Literal
 
 from pydantic import Field
 
-from domain.enums import PermissionsEnum
+from domain.enums import PermissionEnum
 from application.dtos.base import BaseDto
 
 
 class RoleDto(BaseDto):
     id: int
     name: str
-    permissions: List[PermissionsEnum]
+    permissions: List[PermissionEnum]
     created_at: datetime
     updated_at: datetime
 
@@ -34,8 +34,8 @@ class RolesGetPageDto(BaseDto):
 
 class RoleCreateDto(BaseDto):
     name: str
-    permissions: List[PermissionsEnum]
+    permissions: List[PermissionEnum]
 
 class RoleUpdateDto(BaseDto):
     name: Optional[str] = None
-    permissions: List[PermissionsEnum] = Field(default_factory=list)
+    permissions: List[PermissionEnum] = Field(default_factory=list)

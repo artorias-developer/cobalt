@@ -5,7 +5,7 @@
 
 from fastapi import APIRouter, Response, status, Depends, Body
 
-from domain.enums import PermissionsEnum
+from domain.enums import PermissionEnum
 from application.contracts.managers import AbstractI18nManager
 from application.contracts.services import (
     AbstractRolesService,
@@ -72,7 +72,7 @@ class HttpRolesRouter(AbstractHttpRolesRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.ROLES_DELETE
+                        PermissionEnum.ROLES_DELETE
                     ]
                 ))
             ]
@@ -86,9 +86,9 @@ class HttpRolesRouter(AbstractHttpRolesRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.ROLES_VIEW,
-                        PermissionsEnum.USERS_CREATE,
-                        PermissionsEnum.USERS_UPDATE
+                        PermissionEnum.ROLES_VIEW,
+                        PermissionEnum.USERS_CREATE,
+                        PermissionEnum.USERS_UPDATE
                     ]
                 ))
             ]
@@ -102,7 +102,7 @@ class HttpRolesRouter(AbstractHttpRolesRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.ROLES_VIEW
+                        PermissionEnum.ROLES_VIEW
                     ]
                 ))
             ]
@@ -116,7 +116,7 @@ class HttpRolesRouter(AbstractHttpRolesRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.ROLES_CREATE
+                        PermissionEnum.ROLES_CREATE
                     ]
                 ))
             ]
@@ -130,7 +130,7 @@ class HttpRolesRouter(AbstractHttpRolesRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.ROLES_UPDATE
+                        PermissionEnum.ROLES_UPDATE
                     ]
                 ))
             ]
@@ -144,7 +144,7 @@ class HttpRolesRouter(AbstractHttpRolesRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.ROLES_DELETE
+                        PermissionEnum.ROLES_DELETE
                     ]
                 ))
             ]

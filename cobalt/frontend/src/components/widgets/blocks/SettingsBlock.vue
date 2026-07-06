@@ -163,7 +163,7 @@ import { useNotification } from "@kyvg/vue3-notification"
 
 import { HTTP_SETTINGS_API_SERVICE_KEY, HTTP_AUTH_API_SERVICE_KEY } from "@/utils"
 import { useUserStore } from "@/stores"
-import { LanguageEnum, PermissionsEnum, RoutesEnum } from "@/types"
+import { LanguageEnum, PermissionEnum, RouteEnum, ThemeEnum, TimezoneEnum } from "@/types"
 import type { AuthChangeCredentialsRequest, SelectOption } from "@/types"
 
 import Block from "@/components/ui/Block.vue"
@@ -216,134 +216,26 @@ const securitySettings = ref({
   new_password: ""
 })
 
-const themeOptions = computed((): SelectOption[] => [
-  {
-    value: "dark",
-    label: t("settings.general.theme.options.dark")
-  },
-  {
-    value: "light",
-    label: t("settings.general.theme.options.light")
-  }
-])
+const themeOptions = computed((): SelectOption[] =>
+  Object.values(ThemeEnum).map((theme) => ({
+    value: theme,
+    label: t(`settings.general.theme.options.${theme}`)
+  }))
+)
 
-const timezoneOptions: SelectOption[] = [
-  {
-    value: "UTC-12",
-    label: "UTC-12"
-  },
-  {
-    value: "UTC-11",
-    label: "UTC-11"
-  },
-  {
-    value: "UTC-10",
-    label: "UTC-10"
-  },
-  {
-    value: "UTC-9",
-    label: "UTC-9"
-  },
-  {
-    value: "UTC-8",
-    label: "UTC-8"
-  },
-  {
-    value: "UTC-7",
-    label: "UTC-7"
-  },
-  {
-    value: "UTC-6",
-    label: "UTC-6"
-  },
-  {
-    value: "UTC-5",
-    label: "UTC-5"
-  },
-  {
-    value: "UTC-4",
-    label: "UTC-4"
-  },
-  {
-    value: "UTC-3",
-    label: "UTC-3"
-  },
-  {
-    value: "UTC-2",
-    label: "UTC-2"
-  },
-  {
-    value: "UTC-1",
-    label: "UTC-1"
-  },
-  {
-    value: "UTC",
-    label: "UTC"
-  },
-  {
-    value: "UTC+1",
-    label: "UTC+1"
-  },
-  {
-    value: "UTC+2",
-    label: "UTC+2"
-  },
-  {
-    value: "UTC+3",
-    label: "UTC+3"
-  },
-  {
-    value: "UTC+4",
-    label: "UTC+4"
-  },
-  {
-    value: "UTC+5",
-    label: "UTC+5"
-  },
-  {
-    value: "UTC+6",
-    label: "UTC+6"
-  },
-  {
-    value: "UTC+7",
-    label: "UTC+7"
-  },
-  {
-    value: "UTC+8",
-    label: "UTC+8"
-  },
-  {
-    value: "UTC+9",
-    label: "UTC+9"
-  },
-  {
-    value: "UTC+10",
-    label: "UTC+10"
-  },
-  {
-    value: "UTC+11",
-    label: "UTC+11"
-  },
-  {
-    value: "UTC+12",
-    label: "UTC+12"
-  }
-]
+const timezoneOptions: SelectOption[] = Object.values(TimezoneEnum).map(
+  (timezone) => ({
+    value: timezone,
+    label: timezone
+  })
+)
 
-const languageOptions: SelectOption[] = [
-  {
-    value: LanguageEnum.EN,
-    label: t("settings.general.language.options.en")
-  },
-  {
-    value: LanguageEnum.RU,
-    label: t("settings.general.language.options.ru")
-  },
-  {
-    value: LanguageEnum.UK,
-    label: t("settings.general.language.options.uk")
-  }
-]
+const languageOptions: SelectOption[] = Object.values(LanguageEnum).map(
+  (language) => ({
+    value: language,
+    label: t(`settings.general.language.options.${language}`)
+  })
+)
 
 /**
  * Loads settings from the user store into the form.
@@ -461,7 +353,7 @@ async function handleClearCache(): Promise<void> {
     userStore.clearUser()
 
     await router.push({
-      name: RoutesEnum.LOGIN
+      name: RouteEnum.LOGIN
     })
 
     notify({
@@ -512,8 +404,8 @@ async function handleClearContainers(): Promise<void> {
  */
 const hasSettingsSystemAccess = computed((): boolean =>
   userStore.hasAnyPermission([
-    PermissionsEnum.SETTINGS_CACHE_CLEAR,
-    PermissionsEnum.SETTINGS_CONTAINERS_CLEAR
+    PermissionEnum.SETTINGS_CACHE_CLEAR,
+    PermissionEnum.SETTINGS_CONTAINERS_CLEAR
   ])
 )
 
@@ -527,7 +419,7 @@ const hasSettingsSystemAccess = computed((): boolean =>
  * - boolean: `true` if the user has the required permission, `false` otherwise.
  */
 const hasSettingsCacheClearAccess = computed((): boolean =>
-  userStore.hasPermission(PermissionsEnum.SETTINGS_CACHE_CLEAR)
+  userStore.hasPermission(PermissionEnum.SETTINGS_CACHE_CLEAR)
 )
 
 /**
@@ -540,7 +432,7 @@ const hasSettingsCacheClearAccess = computed((): boolean =>
  * - boolean: `true` if the user has the required permission, `false` otherwise.
  */
 const hasSettingsContainersClearAccess = computed((): boolean =>
-  userStore.hasPermission(PermissionsEnum.SETTINGS_CONTAINERS_CLEAR)
+  userStore.hasPermission(PermissionEnum.SETTINGS_CONTAINERS_CLEAR)
 )
 
 onMounted(() => {

@@ -5,7 +5,7 @@
 
 from fastapi import APIRouter, Response, status, Depends, Body
 
-from domain.enums import PermissionsEnum
+from domain.enums import PermissionEnum
 from application.contracts.managers import AbstractI18nManager
 from application.contracts.services import (
     AbstractServersService,
@@ -74,7 +74,7 @@ class HttpServersRouter(AbstractHttpServersRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVERS_DELETE
+                        PermissionEnum.SERVERS_DELETE
                     ]
                 ))
             ]
@@ -88,7 +88,7 @@ class HttpServersRouter(AbstractHttpServersRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVERS_VIEW
+                        PermissionEnum.SERVERS_VIEW
                     ]
                 ))
             ]
@@ -102,7 +102,7 @@ class HttpServersRouter(AbstractHttpServersRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVERS_VIEW
+                        PermissionEnum.SERVERS_VIEW
                     ]
                 ))
             ]
@@ -116,7 +116,7 @@ class HttpServersRouter(AbstractHttpServersRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVERS_CREATE
+                        PermissionEnum.SERVERS_CREATE
                     ]
                 ))
             ]
@@ -130,7 +130,7 @@ class HttpServersRouter(AbstractHttpServersRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_UPDATE
+                        PermissionEnum.SERVER_UPDATE
                     ]
                 ))
             ]
@@ -144,7 +144,7 @@ class HttpServersRouter(AbstractHttpServersRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVERS_DELETE
+                        PermissionEnum.SERVERS_DELETE
                     ]
                 ))
             ]
@@ -158,7 +158,7 @@ class HttpServersRouter(AbstractHttpServersRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_START
+                        PermissionEnum.SERVER_START
                     ]
                 ))
             ]
@@ -172,7 +172,7 @@ class HttpServersRouter(AbstractHttpServersRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_STOP
+                        PermissionEnum.SERVER_STOP
                     ]
                 ))
             ]
@@ -186,7 +186,7 @@ class HttpServersRouter(AbstractHttpServersRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_START
+                        PermissionEnum.SERVER_START
                     ]
                 ))
             ]
@@ -200,7 +200,7 @@ class HttpServersRouter(AbstractHttpServersRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_CONSOLE_EXECUTE
+                        PermissionEnum.SERVER_CONSOLE_EXECUTE
                     ]
                 ))
             ]
@@ -214,7 +214,7 @@ class HttpServersRouter(AbstractHttpServersRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_VIEW
+                        PermissionEnum.SERVER_VIEW
                     ]
                 ))
             ]

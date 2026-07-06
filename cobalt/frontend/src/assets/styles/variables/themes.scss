@@ -47,7 +47,7 @@
   --shadow-soft: #{map.get($variables, shadow-soft)};
 }
 
-$dark: (
+$cobalt-dark: (
   primary: #3384FF,
 
   blue: #5498FF,
@@ -86,7 +86,7 @@ $dark: (
   shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.1),
 );
 
-$light: (
+$cobalt-light: (
   primary: #3f85f1,
 
   blue: #407cd8,
@@ -126,10 +126,10 @@ $light: (
 );
 
 :root,
-[data-theme="dark"] {
-  @include generate-theme($dark);
+[data-theme="cobalt_dark"] {
+  @include generate-theme($cobalt-dark);
 }
 
-[data-theme="light"] {
-  @include generate-theme($light);
+[data-theme="cobalt_light"] {
+  @include generate-theme($cobalt-light);
 }

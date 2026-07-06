@@ -529,8 +529,8 @@
         "description": "Цветовая схема и визуальный стиль",
         "placeholder": "Выберите тему...",
         "options": {
-          "dark": "Тёмная",
-          "light": "Светлая"
+          "cobalt_dark": "Cobalt - Тёмная",
+          "cobalt_light": "Cobalt - Светлая"
         }
       },
       "timezone": {

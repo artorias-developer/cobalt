@@ -7,7 +7,7 @@ from typing import List
 
 from fastapi import APIRouter, Response, status, Depends, Body
 
-from domain.enums import PermissionsEnum
+from domain.enums import PermissionEnum
 from application.contracts.managers import AbstractI18nManager
 from application.contracts.services import (
     AbstractAttributesService,
@@ -75,7 +75,7 @@ class HttpAttributesRouter(AbstractHttpAttributesRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_SETTINGS_UPDATE
+                        PermissionEnum.SERVER_SETTINGS_UPDATE
                     ]
                 ))
             ]
@@ -89,7 +89,7 @@ class HttpAttributesRouter(AbstractHttpAttributesRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_SETTINGS_UPDATE
+                        PermissionEnum.SERVER_SETTINGS_UPDATE
                     ]
                 ))
             ]
@@ -103,7 +103,7 @@ class HttpAttributesRouter(AbstractHttpAttributesRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_SETTINGS_UPDATE
+                        PermissionEnum.SERVER_SETTINGS_UPDATE
                     ]
                 ))
             ]
@@ -117,7 +117,7 @@ class HttpAttributesRouter(AbstractHttpAttributesRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_SETTINGS_VIEW
+                        PermissionEnum.SERVER_SETTINGS_VIEW
                     ]
                 ))
             ]
@@ -131,7 +131,7 @@ class HttpAttributesRouter(AbstractHttpAttributesRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_SETTINGS_VIEW
+                        PermissionEnum.SERVER_SETTINGS_VIEW
                     ]
                 ))
             ]
@@ -145,7 +145,7 @@ class HttpAttributesRouter(AbstractHttpAttributesRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_SETTINGS_UPDATE
+                        PermissionEnum.SERVER_SETTINGS_UPDATE
                     ]
                 ))
             ]
@@ -159,7 +159,7 @@ class HttpAttributesRouter(AbstractHttpAttributesRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_SETTINGS_UPDATE
+                        PermissionEnum.SERVER_SETTINGS_UPDATE
                     ]
                 ))
             ]
@@ -173,7 +173,7 @@ class HttpAttributesRouter(AbstractHttpAttributesRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_SETTINGS_UPDATE
+                        PermissionEnum.SERVER_SETTINGS_UPDATE
                     ]
                 ))
             ]

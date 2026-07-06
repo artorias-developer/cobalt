@@ -4,7 +4,7 @@ export default defineConfig({
   title: "Cobalt",
   description: "Documentation for the Cobalt dashboard",
   head: [
-    ["link", { rel: "icon", href: "/cobalt/assets/images/svg/logo.svg" }],
+    ["link", { rel: "icon", href: "/assets/images/svg/logo.svg" }],
     ["meta", { name: "google-site-verification", content: "RtxZJ237LBxMmW3QHsFhSu8rIBtkiPpK1JiDNfBG6yg" }],
     ["meta", { name: "google-adsense-account", content: "ca-pub-2553125098165337" }]
   ],
@@ -60,8 +60,9 @@ export default defineConfig({
         text: "Development",
         items: [
           { text: "Local installation", link: "/docs/development/local-installation" },
+          { text: "Adding a game", link: "/docs/development/adding-a-game" },
           { text: "Adding a language", link: "/docs/development/adding-a-language" },
-          { text: "Adding a game", link: "/docs/development/adding-a-game" }
+          { text: "Adding a theme", link: "/docs/development/adding-a-theme" }
         ]
       }
     ],

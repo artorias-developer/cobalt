@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-export enum LogsEventsEnum {
+export enum LogsEventEnum {
   SUBSCRIBE_HOST = "logs_subscribe_host",
   SUBSCRIBE_SERVER = "logs_subscribe_server",
   UNSUBSCRIBE_HOST = "logs_unsubscribe_host",
@@ -14,7 +14,7 @@ export enum LogsEventsEnum {
   SERVER_LOG = "server_log"
 }
 
-export enum MetricsEventsEnum {
+export enum MetricsEventEnum {
   SUBSCRIBE_HOST_CPU = "metrics_subscribe_host_cpu",
   UNSUBSCRIBE_HOST_CPU = "metrics_unsubscribe_host_cpu",
   SUBSCRIBE_HOST_RAM = "metrics_subscribe_host_ram",
@@ -29,12 +29,12 @@ export enum MetricsEventsEnum {
   SERVER_RAM_METRIC = "server_ram_metric"
 }
 
-export enum ServersEventsEnum {
+export enum ServersEventEnum {
   SUBSCRIBE_STATES = "servers_subscribe_states",
   UNSUBSCRIBE_STATES = "servers_unsubscribe_states",
   SERVER_STATE = "server_state"
 }
 
-export enum RolesEventsEnum {
+export enum RolesEventEnum {
   ROLE_UPDATE = "role_update"
 }

@@ -6,7 +6,7 @@
 from sqlalchemy import Column, Integer, String, Enum, ARRAY
 from sqlalchemy.orm import relationship
 
-from domain.enums import PermissionsEnum
+from domain.enums import PermissionEnum
 from infrastructure.databases.postgres.models import BaseModel
 
 
@@ -15,7 +15,7 @@ class RoleModel(BaseModel):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(32), unique=True, nullable=False)
-    permissions = Column(ARRAY(Enum(PermissionsEnum)), nullable=False, default=list)
+    permissions = Column(ARRAY(Enum(PermissionEnum)), nullable=False, default=list)
 
     users = relationship(
         "UserModel",

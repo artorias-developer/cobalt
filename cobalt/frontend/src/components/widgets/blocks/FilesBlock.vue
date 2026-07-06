@@ -323,7 +323,7 @@ import { useNotification } from "@kyvg/vue3-notification"
 
 import { HTTP_FILES_API_SERVICE_KEY, LOCALE_HELPER_KEY } from "@/utils"
 import { useTableStore, useUserStore } from "@/stores"
-import { PermissionsEnum } from "@/types"
+import { PermissionEnum } from "@/types"
 import type {
   FileContentEntity,
   FilesListEntity,
@@ -1303,7 +1303,7 @@ const selectedPaths = computed((): string[] =>
  * - boolean: `true` if the user has the required permission, `false` otherwise.
  */
 const hasServerFilesViewAccess = computed((): boolean =>
-  userStore.hasPermission(PermissionsEnum.SERVER_FILES_VIEW)
+  userStore.hasPermission(PermissionEnum.SERVER_FILES_VIEW)
 )
 
 /**
@@ -1316,7 +1316,7 @@ const hasServerFilesViewAccess = computed((): boolean =>
  * - boolean: `true` if the user has the required permission, `false` otherwise.
  */
 const hasServerFilesUpdateAccess = computed((): boolean =>
-  userStore.hasPermission(PermissionsEnum.SERVER_FILES_UPDATE)
+  userStore.hasPermission(PermissionEnum.SERVER_FILES_UPDATE)
 )
 
 /**
@@ -1329,7 +1329,7 @@ const hasServerFilesUpdateAccess = computed((): boolean =>
  * - boolean: `true` if the user has the required permission, `false` otherwise.
  */
 const hasServerFilesDownloadAccess = computed((): boolean =>
-  userStore.hasPermission(PermissionsEnum.SERVER_FILES_DOWNLOAD)
+  userStore.hasPermission(PermissionEnum.SERVER_FILES_DOWNLOAD)
 )
 
 onMounted(() => {

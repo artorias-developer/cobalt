@@ -10,7 +10,7 @@ import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios"
 import type { Router } from "vue-router"
 import { notify } from "@kyvg/vue3-notification"
 
-import { RoutesEnum } from "@/types"
+import { RouteEnum } from "@/types"
 import type { IHttpClient } from "@/contracts"
 
 /**
@@ -88,13 +88,13 @@ export class HttpAxiosClient implements IHttpClient {
     const status = error.response.status
 
     if (status === 401) {
-      if (this.router.currentRoute.value.name !== RoutesEnum.LOGIN && !this.isRedirecting) {
+      if (this.router.currentRoute.value.name !== RouteEnum.LOGIN && !this.isRedirecting) {
         this.isRedirecting = true
         notify({
           type: "error",
           text: (error.response.data as any)?.message ?? "Invalid session"
         })
-        this.router.push({ name: RoutesEnum.LOGIN }).finally(() => {
+        this.router.push({ name: RouteEnum.LOGIN }).finally(() => {
           this.isRedirecting = false
         })
       }
