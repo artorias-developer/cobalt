@@ -64,7 +64,8 @@ Cobalt ships with everything you need to run and manage game servers without lea
 - Creating multiple users and roles with the ability to control access to virtually every section of the dashboard.
 - A convenient file manager and editor for managing files and editing configuration files.
 - Automatic fetching of the latest available game versions.
-- Multilingual support (English, Russian, Ukrainian).
+- Translation into several languages (English, Russian, Ukrainian).
+- Several color themes (Dark, Light).
 - Full mobile devices support.
 
 ## FAQ
