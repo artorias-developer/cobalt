@@ -1,7 +1,6 @@
 import { defineConfig } from "vitepress"
 
 export default defineConfig({
-  base: "/cobalt/",
   title: "Cobalt",
   description: "Documentation for the Cobalt dashboard",
   head: [
