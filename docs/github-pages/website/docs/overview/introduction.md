@@ -71,4 +71,4 @@ Cobalt ships with everything you need to run and manage game servers without lea
 
 | Name         | Role                         | Links                                     |
 |--------------|------------------------------|-------------------------------------------|
-| Artorias | Founder & Project Maintainer | [GitHub](https://github.com/Artorias) |
+| Artorias | Founder & Project Maintainer | [GitHub](https://github.com/artorias-developer) |
