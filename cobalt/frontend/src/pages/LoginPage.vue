@@ -61,7 +61,7 @@ import { useNotification } from "@kyvg/vue3-notification"
 
 import { HTTP_AUTH_API_SERVICE_KEY, HTTP_USERS_API_SERVICE_KEY, WS_CLIENT_KEY } from "@/utils"
 import { useUserStore } from "@/stores"
-import { RoutesEnum } from "@/types"
+import { RouteEnum } from "@/types"
 
 import Block from "@/components/ui/Block.vue"
 import Input from "@/components/ui/forms/Input.vue"
@@ -106,7 +106,7 @@ async function handleLogin(): Promise<void> {
     }
 
     await router.push({
-      name: RoutesEnum.DASHBOARD
+      name: RouteEnum.DASHBOARD
     })
   } catch (error: any) {
     notify({

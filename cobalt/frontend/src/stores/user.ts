@@ -7,7 +7,7 @@ import { defineStore } from "pinia"
 import { ref } from "vue"
 
 import type {
-  PermissionsEnum,
+  PermissionEnum,
   RoleEntity,
   UserEntity,
   UserMeEntity,
@@ -95,7 +95,7 @@ export const useUserStore = defineStore("user", () => {
    * Returns:
    * - boolean: `true` if the user has the permission, `false` otherwise.
    */
-  function hasPermission(permission: PermissionsEnum): boolean {
+  function hasPermission(permission: PermissionEnum): boolean {
     if (!user.value) return false
     return user.value.role.permissions.includes(permission)
   }
@@ -109,7 +109,7 @@ export const useUserStore = defineStore("user", () => {
    * Returns:
    * - boolean: `true` if the user has at least one of the permissions, `false` otherwise.
    */
-  function hasAnyPermission(permissions: PermissionsEnum[]): boolean {
+  function hasAnyPermission(permissions: PermissionEnum[]): boolean {
     const currentUser = user.value
     if (!currentUser) return false
     return permissions.some(permission => currentUser.role.permissions.includes(permission))

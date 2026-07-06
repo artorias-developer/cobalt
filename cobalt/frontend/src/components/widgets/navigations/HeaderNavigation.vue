@@ -56,7 +56,7 @@ import { useI18n } from "vue-i18n"
 import { useRoute } from "vue-router"
 
 import { useUserStore } from "@/stores"
-import { PermissionsEnum } from "@/types"
+import { PermissionEnum } from "@/types"
 import type { MenuButton } from "@/types"
 
 import Block from "@/components/ui/Block.vue"
@@ -121,8 +121,8 @@ const currentRoute = computed((): string => {
  */
 const hasSettingsSystemAccess = computed((): boolean =>
   userStore.hasAnyPermission([
-    PermissionsEnum.SETTINGS_CACHE_CLEAR,
-    PermissionsEnum.SETTINGS_CONTAINERS_CLEAR
+    PermissionEnum.SETTINGS_CACHE_CLEAR,
+    PermissionEnum.SETTINGS_CONTAINERS_CLEAR
   ])
 )
 </script>

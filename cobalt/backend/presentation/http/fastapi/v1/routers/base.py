@@ -11,7 +11,7 @@ from domain.exceptions import (
     AuthenticationError,
     PermissionsError
 )
-from domain.enums import PermissionsEnum
+from domain.enums import PermissionEnum
 from application.contracts.managers import AbstractI18nManager
 from application.contracts.services import AbstractAuthService
 from application.dtos import UserDto
@@ -61,7 +61,7 @@ class HttpBaseRouter:
 
     def http_permission_required(
         self,
-        permissions: List[PermissionsEnum]
+        permissions: List[PermissionEnum]
     ) -> Callable:
         """
         Checks if user has at least one of the required permissions.

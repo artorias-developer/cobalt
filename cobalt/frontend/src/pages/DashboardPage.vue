@@ -34,7 +34,7 @@
 import { computed } from "vue"
 
 import { useUserStore } from "@/stores"
-import { PermissionsEnum } from "@/types"
+import { PermissionEnum } from "@/types"
 
 import CpuUsageChart from "@/components/widgets/charts/CpuUsageChart.vue"
 import DiskUsageChart from "@/components/widgets/charts/DiskUsageChart.vue"
@@ -58,7 +58,7 @@ const labelsToShow = 4
  * - boolean: `true` if the user has the required permission, `false` otherwise.
  */
 const hasDashboardViewAccess = computed((): boolean =>
-  userStore.hasPermission(PermissionsEnum.DASHBOARD_VIEW)
+  userStore.hasPermission(PermissionEnum.DASHBOARD_VIEW)
 )
 </script>
 

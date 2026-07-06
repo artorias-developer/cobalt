@@ -5,7 +5,7 @@
 
 from fastapi import APIRouter, Depends
 
-from domain.enums import PermissionsEnum
+from domain.enums import PermissionEnum
 from application.contracts.managers import (
     AbstractEventsManager,
     AbstractI18nManager
@@ -57,7 +57,7 @@ class WsServersEvents(AbstractWsServersEvents, BaseWsRouter):
             dependencies=[
                 Depends(self.ws_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVERS_VIEW
+                        PermissionEnum.SERVERS_VIEW
                     ]
                 ))
             ]
@@ -69,7 +69,7 @@ class WsServersEvents(AbstractWsServersEvents, BaseWsRouter):
             dependencies=[
                 Depends(self.ws_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVERS_VIEW
+                        PermissionEnum.SERVERS_VIEW
                     ]
                 ))
             ]

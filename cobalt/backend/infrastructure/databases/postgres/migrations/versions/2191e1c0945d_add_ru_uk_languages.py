@@ -1,4 +1,4 @@
-"""add ru uk languages
+"""Add ru and uk locales
 
 Revision ID: 2191e1c0945d
 Revises: ddb37cbe47f9

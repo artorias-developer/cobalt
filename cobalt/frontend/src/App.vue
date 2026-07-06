@@ -6,7 +6,7 @@
   -->
 
 <template>
-  <template v-if="route.name !== RoutesEnum.LOGIN">
+  <template v-if="route.name !== RouteEnum.LOGIN">
     <MenuNavigation
       :open="menuOpen"
       @close="menuOpen = false"
@@ -14,7 +14,7 @@
     <main>
       <HeaderNavigation
         :class="{
-          'mobile-only': route.name == RoutesEnum.SERVER
+          'mobile-only': route.name == RouteEnum.SERVER
         }"
         @toggle-menu="menuOpen = !menuOpen"
       />
@@ -49,7 +49,7 @@ import { ref } from "vue"
 import { useRoute } from "vue-router"
 import { Notifications } from "@kyvg/vue3-notification"
 
-import { RoutesEnum } from "@/types"
+import { RouteEnum } from "@/types"
 
 import MenuNavigation from "@/components/widgets/navigations/MenuNavigation.vue"
 import HeaderNavigation from "@/components/widgets/navigations/HeaderNavigation.vue"

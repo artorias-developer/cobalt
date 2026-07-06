@@ -88,6 +88,12 @@ ENABLED_GAME_MODULES = [
 ]
 ```
 
+13. Restart the backend container:
+
+```bash
+docker restart cobalt-backend
+```
+
 ## Frontend
 
 1. Create a new game directory in `cobalt/frontend/src/assets/images/games/`, e.g. `new-game`. Add the following assets to it:

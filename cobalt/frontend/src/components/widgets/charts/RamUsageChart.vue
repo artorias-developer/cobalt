@@ -42,7 +42,7 @@ import { useNotification } from "@kyvg/vue3-notification"
 
 import { LOCALE_HELPER_KEY, HTTP_METRICS_API_SERVICE_KEY, WS_METRICS_API_SERVICE_KEY } from "@/utils"
 import { useUserStore } from "@/stores"
-import { PermissionsEnum } from "@/types"
+import { PermissionEnum } from "@/types"
 import type { UniversalBlockMode, Color, BlockHeaderSize } from "@/types"
 
 import Block from "@/components/ui/Block.vue"
@@ -144,8 +144,8 @@ function handleMetricUpdate(metric: any): void {
  */
 const hasRamViewAccess = computed((): boolean =>
   props.mode === "server"
-    ? userStore.hasPermission(PermissionsEnum.SERVER_RAM_VIEW)
-    : userStore.hasPermission(PermissionsEnum.DASHBOARD_RAM_VIEW)
+    ? userStore.hasPermission(PermissionEnum.SERVER_RAM_VIEW)
+    : userStore.hasPermission(PermissionEnum.DASHBOARD_RAM_VIEW)
 )
 
 onMounted(() => {

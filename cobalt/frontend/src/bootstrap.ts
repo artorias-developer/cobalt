@@ -15,7 +15,7 @@ import type { App } from "vue"
 import type { Composer } from "vue-i18n"
 
 import { useUserStore } from "@/stores"
-import { LanguageEnum, RoutesEnum, RolesEventsEnum } from "@/types"
+import { LanguageEnum, RouteEnum, RolesEventEnum } from "@/types"
 import type { RoleEntity } from "@/types"
 
 import LoginPage from "@/pages/LoginPage.vue"
@@ -76,42 +76,42 @@ type MessageSchema = typeof en
 const routes = [
   {
     path: "/login",
-    name: RoutesEnum.LOGIN,
+    name: RouteEnum.LOGIN,
     component: LoginPage
   },
   {
     path: "/",
-    name: RoutesEnum.DASHBOARD,
+    name: RouteEnum.DASHBOARD,
     component: DashboardPage
   },
   {
     path: "/servers",
-    name: RoutesEnum.SERVERS,
+    name: RouteEnum.SERVERS,
     component: ServersPage
   },
   {
     path: "/servers/:game/:server_id",
-    name: RoutesEnum.SERVER,
+    name: RouteEnum.SERVER,
     component: ServerPage
   },
   {
     path: "/users",
-    name: RoutesEnum.USERS,
+    name: RouteEnum.USERS,
     component: UsersPage
   },
   {
     path: "/roles",
-    name: RoutesEnum.ROLES,
+    name: RouteEnum.ROLES,
     component: RolesPage
   },
   {
     path: "/settings",
-    name: RoutesEnum.SETTINGS,
+    name: RouteEnum.SETTINGS,
     component: SettingsPage
   },
   {
     path: "/:pathMatch(.*)*",
-    name: RoutesEnum.NOT_FOUND,
+    name: RouteEnum.NOT_FOUND,
     component: NotFoundPage
   }
 ]
@@ -307,7 +307,7 @@ function setupRouterGuard(
     const userStore = useUserStore()
     const { notify } = useNotification()
 
-    if (!userStore.user && to.name !== RoutesEnum.LOGIN) {
+    if (!userStore.user && to.name !== RouteEnum.LOGIN) {
       try {
         const user = await httpUsersApiService.getMe()
         userStore.setUser(user)
@@ -337,7 +337,7 @@ function setupRouterGuard(
 function setupRoleUpdateListener(wsClient: ReturnType<typeof createWebSocketClient>): void {
   const userStore = useUserStore()
 
-  wsClient.listen(RolesEventsEnum.ROLE_UPDATE, (event: any) => {
+  wsClient.listen(RolesEventEnum.ROLE_UPDATE, (event: any) => {
     const role: RoleEntity = event.data
     if (userStore.user?.role?.id !== role.id) return
     userStore.setUserRole(role)

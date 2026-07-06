@@ -8,7 +8,7 @@ from typing import List
 from fastapi import APIRouter, Response, status, Depends, Body, Query, File, UploadFile
 from fastapi.responses import StreamingResponse
 
-from domain.enums import PermissionsEnum
+from domain.enums import PermissionEnum
 from application.contracts.managers import AbstractI18nManager
 from application.contracts.services import (
     AbstractFilesService,
@@ -81,7 +81,7 @@ class HttpFilesRouter(AbstractHttpFilesRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_FILES_VIEW
+                        PermissionEnum.SERVER_FILES_VIEW
                     ]
                 ))
             ]
@@ -95,7 +95,7 @@ class HttpFilesRouter(AbstractHttpFilesRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_FILES_VIEW
+                        PermissionEnum.SERVER_FILES_VIEW
                     ]
                 ))
             ]
@@ -109,7 +109,7 @@ class HttpFilesRouter(AbstractHttpFilesRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_FILES_UPDATE
+                        PermissionEnum.SERVER_FILES_UPDATE
                     ]
                 ))
             ]
@@ -123,7 +123,7 @@ class HttpFilesRouter(AbstractHttpFilesRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_FILES_UPDATE
+                        PermissionEnum.SERVER_FILES_UPDATE
                     ]
                 ))
             ]
@@ -137,7 +137,7 @@ class HttpFilesRouter(AbstractHttpFilesRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_FILES_UPDATE
+                        PermissionEnum.SERVER_FILES_UPDATE
                     ]
                 ))
             ]
@@ -151,7 +151,7 @@ class HttpFilesRouter(AbstractHttpFilesRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_FILES_DOWNLOAD
+                        PermissionEnum.SERVER_FILES_DOWNLOAD
                     ]
                 ))
             ]
@@ -165,7 +165,7 @@ class HttpFilesRouter(AbstractHttpFilesRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_FILES_UPDATE
+                        PermissionEnum.SERVER_FILES_UPDATE
                     ]
                 ))
             ]
@@ -179,7 +179,7 @@ class HttpFilesRouter(AbstractHttpFilesRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_FILES_UPDATE
+                        PermissionEnum.SERVER_FILES_UPDATE
                     ]
                 ))
             ]
@@ -193,7 +193,7 @@ class HttpFilesRouter(AbstractHttpFilesRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_FILES_UPDATE
+                        PermissionEnum.SERVER_FILES_UPDATE
                     ]
                 ))
             ]
@@ -207,7 +207,7 @@ class HttpFilesRouter(AbstractHttpFilesRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_FILES_UPDATE
+                        PermissionEnum.SERVER_FILES_UPDATE
                     ]
                 ))
             ]
@@ -221,7 +221,7 @@ class HttpFilesRouter(AbstractHttpFilesRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_FILES_UPDATE
+                        PermissionEnum.SERVER_FILES_UPDATE
                     ]
                 ))
             ]

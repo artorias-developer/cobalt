@@ -5,7 +5,7 @@
 
 from fastapi import APIRouter, Depends
 
-from domain.enums import PermissionsEnum
+from domain.enums import PermissionEnum
 from application.contracts.services import (
     AbstractAuthService,
     AbstractMetricsService
@@ -61,7 +61,7 @@ class WsMetricsEvents(AbstractWsMetricsEvents, BaseWsRouter):
             dependencies=[
                 Depends(self.ws_permission_required(
                     permissions=[
-                        PermissionsEnum.DASHBOARD_CPU_VIEW
+                        PermissionEnum.DASHBOARD_CPU_VIEW
                     ]
                 ))
             ]
@@ -73,7 +73,7 @@ class WsMetricsEvents(AbstractWsMetricsEvents, BaseWsRouter):
             dependencies=[
                 Depends(self.ws_permission_required(
                     permissions=[
-                        PermissionsEnum.DASHBOARD_CPU_VIEW
+                        PermissionEnum.DASHBOARD_CPU_VIEW
                     ]
                 ))
             ]
@@ -85,7 +85,7 @@ class WsMetricsEvents(AbstractWsMetricsEvents, BaseWsRouter):
             dependencies=[
                 Depends(self.ws_permission_required(
                     permissions=[
-                        PermissionsEnum.DASHBOARD_RAM_VIEW
+                        PermissionEnum.DASHBOARD_RAM_VIEW
                     ]
                 ))
             ]
@@ -97,7 +97,7 @@ class WsMetricsEvents(AbstractWsMetricsEvents, BaseWsRouter):
             dependencies=[
                 Depends(self.ws_permission_required(
                     permissions=[
-                        PermissionsEnum.DASHBOARD_RAM_VIEW
+                        PermissionEnum.DASHBOARD_RAM_VIEW
                     ]
                 ))
             ]
@@ -109,7 +109,7 @@ class WsMetricsEvents(AbstractWsMetricsEvents, BaseWsRouter):
             dependencies=[
                 Depends(self.ws_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_CPU_VIEW
+                        PermissionEnum.SERVER_CPU_VIEW
                     ]
                 ))
             ]
@@ -121,7 +121,7 @@ class WsMetricsEvents(AbstractWsMetricsEvents, BaseWsRouter):
             dependencies=[
                 Depends(self.ws_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_CPU_VIEW
+                        PermissionEnum.SERVER_CPU_VIEW
                     ]
                 ))
             ]
@@ -133,7 +133,7 @@ class WsMetricsEvents(AbstractWsMetricsEvents, BaseWsRouter):
             dependencies=[
                 Depends(self.ws_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_RAM_VIEW
+                        PermissionEnum.SERVER_RAM_VIEW
                     ]
                 ))
             ]
@@ -145,7 +145,7 @@ class WsMetricsEvents(AbstractWsMetricsEvents, BaseWsRouter):
             dependencies=[
                 Depends(self.ws_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_RAM_VIEW
+                        PermissionEnum.SERVER_RAM_VIEW
                     ]
                 ))
             ]

@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-export enum PermissionsEnum {
+export enum PermissionEnum {
   DASHBOARD_VIEW = "dashboard_view",
   DASHBOARD_CPU_VIEW = "dashboard_cpu_view",
   DASHBOARD_RAM_VIEW = "dashboard_ram_view",

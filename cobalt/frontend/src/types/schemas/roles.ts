@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-import { PermissionsEnum, type SortDirection } from "@/types"
+import { PermissionEnum, type SortDirection } from "@/types"
 
 /**
  * Represents a paginated roles list request.
@@ -23,7 +23,7 @@ export interface RolesPageRequest {
  */
 export interface RoleCreateRequest {
   name: string
-  permissions: PermissionsEnum[]
+  permissions: PermissionEnum[]
 }
 
 /**
@@ -31,5 +31,5 @@ export interface RoleCreateRequest {
  */
 export interface RoleUpdateRequest {
   name?: string
-  permissions?: PermissionsEnum[]
+  permissions?: PermissionEnum[]
 }

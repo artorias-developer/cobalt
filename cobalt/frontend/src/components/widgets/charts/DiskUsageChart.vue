@@ -76,7 +76,7 @@ import { useNotification } from "@kyvg/vue3-notification"
 
 import { LOCALE_HELPER_KEY, HTTP_METRICS_API_SERVICE_KEY } from "@/utils"
 import { useUserStore } from "@/stores"
-import { PermissionsEnum } from "@/types"
+import { PermissionEnum } from "@/types"
 import type { Color, BlockHeaderSize } from "@/types"
 
 import Block from "@/components/ui/Block.vue"
@@ -240,7 +240,7 @@ const usedGB = computed((): number =>
  * - boolean: `true` if the user has the required permission, `false` otherwise.
  */
 const hasViewAccess = computed((): boolean =>
-  userStore.hasPermission(PermissionsEnum.DASHBOARD_DISK_VIEW)
+  userStore.hasPermission(PermissionEnum.DASHBOARD_DISK_VIEW)
 )
 
 onMounted(() => {

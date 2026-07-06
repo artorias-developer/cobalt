@@ -8,14 +8,14 @@ from typing import List, Optional, Literal
 from dataclasses import dataclass, field
 
 from domain.value_objects import RoleName
-from domain.enums import PermissionsEnum
+from domain.enums import PermissionEnum
 
 
 @dataclass(slots=True)
 class RoleEntity:
     id: int
     name: RoleName
-    permissions: List[PermissionsEnum]
+    permissions: List[PermissionEnum]
     created_at: datetime
     updated_at: datetime
 
@@ -37,10 +37,10 @@ class RolesGetPageEntity:
 @dataclass(slots=True)
 class RoleCreateEntity:
     name: RoleName
-    permissions: List[PermissionsEnum]
+    permissions: List[PermissionEnum]
 
 @dataclass(slots=True)
 class RoleUpdateEntity:
     id: int
     name: Optional[RoleName] = None
-    permissions: List[PermissionsEnum] = field(default_factory=list)
+    permissions: List[PermissionEnum] = field(default_factory=list)

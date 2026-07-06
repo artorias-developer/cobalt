@@ -5,7 +5,7 @@
 
 from fastapi import APIRouter, Request, Response, Depends, Body, status
 
-from domain.enums import PermissionsEnum
+from domain.enums import PermissionEnum
 from application.contracts.managers import AbstractI18nManager
 from application.contracts.services import (
     AbstractSettingsService,
@@ -75,7 +75,7 @@ class HttpSettingsRouter(AbstractHttpSettingsRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SETTINGS_CACHE_CLEAR
+                        PermissionEnum.SETTINGS_CACHE_CLEAR
                     ]
                 ))
             ]
@@ -89,7 +89,7 @@ class HttpSettingsRouter(AbstractHttpSettingsRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SETTINGS_CONTAINERS_CLEAR
+                        PermissionEnum.SETTINGS_CONTAINERS_CLEAR
                     ]
                 ))
             ]

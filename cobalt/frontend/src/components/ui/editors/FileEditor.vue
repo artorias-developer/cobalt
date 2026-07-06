@@ -67,10 +67,6 @@ const propertiesHighlight = HighlightStyle.define(
   }
 )
 
-const isLightTheme = computed((): boolean =>
-  userStore.user?.settings?.theme === "light"
-)
-
 /**
  * Resolves CodeMirror language mode.
  *
@@ -111,6 +107,19 @@ function resolveLanguage(language: string): Extension {
 function resolveTheme(light: boolean): Extension {
   return light ? githubLight : githubDark
 }
+
+/**
+ * Determines whether the light theme is selected.
+ *
+ * Parameters:
+ * - null.
+ *
+ * Returns:
+ * - boolean: True if the user's theme setting is "light".
+ */
+const isLightTheme = computed((): boolean =>
+  Boolean(userStore.user?.settings?.theme?.toLowerCase().includes("light"))
+)
 
 /**
  * Watches for language prop changes and updates editor mode via Compartment.

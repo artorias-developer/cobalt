@@ -209,7 +209,7 @@ import { useNotification } from "@kyvg/vue3-notification"
 
 import { LOCALE_HELPER_KEY, HTTP_ROLES_API_SERVICE_KEY } from "@/utils"
 import { useTableStore, useUserStore } from "@/stores"
-import { PermissionsEnum } from "@/types"
+import { PermissionEnum } from "@/types"
 import type {
   BlockHeaderSize,
   Color,
@@ -263,13 +263,13 @@ const tableStoreId = "roles"
 const createRoleForm = ref<InstanceType<typeof Form> | null>(null)
 const createRolePopup = ref<InstanceType<typeof Popup> | null>(null)
 const roleName = ref<string>("")
-const selectedPermissions = ref<PermissionsEnum[]>([])
+const selectedPermissions = ref<PermissionEnum[]>([])
 
 const editRoleForm = ref<InstanceType<typeof Form> | null>(null)
 const editRolePopup = ref<InstanceType<typeof Popup> | null>(null)
 const editRoleId = ref<number | null>(null)
 const editRoleName = ref<string>("")
-const editSelectedPermissions = ref<PermissionsEnum[]>([])
+const editSelectedPermissions = ref<PermissionEnum[]>([])
 
 const confirmPopup = ref<InstanceType<typeof ConfirmPopup> | null>(null)
 
@@ -277,68 +277,68 @@ const permissionGroups = computed((): PermissionGroup[] => [
   {
     label: t("roles.list.permissions.groups.dashboard"),
     permissions: [
-      { value: PermissionsEnum.DASHBOARD_VIEW, label: t("roles.list.permissions.dashboard.view") },
-      { value: PermissionsEnum.DASHBOARD_CPU_VIEW, label: t("roles.list.permissions.dashboard.cpuView") },
-      { value: PermissionsEnum.DASHBOARD_RAM_VIEW, label: t("roles.list.permissions.dashboard.ramView") },
-      { value: PermissionsEnum.DASHBOARD_DISK_VIEW, label: t("roles.list.permissions.dashboard.diskView") },
-      { value: PermissionsEnum.DASHBOARD_LOGS_VIEW, label: t("roles.list.permissions.dashboard.logsView") }
+      { value: PermissionEnum.DASHBOARD_VIEW, label: t("roles.list.permissions.dashboard.view") },
+      { value: PermissionEnum.DASHBOARD_CPU_VIEW, label: t("roles.list.permissions.dashboard.cpuView") },
+      { value: PermissionEnum.DASHBOARD_RAM_VIEW, label: t("roles.list.permissions.dashboard.ramView") },
+      { value: PermissionEnum.DASHBOARD_DISK_VIEW, label: t("roles.list.permissions.dashboard.diskView") },
+      { value: PermissionEnum.DASHBOARD_LOGS_VIEW, label: t("roles.list.permissions.dashboard.logsView") }
     ]
   },
   {
     label: t("roles.list.permissions.groups.servers"),
     permissions: [
-      { value: PermissionsEnum.SERVERS_VIEW, label: t("roles.list.permissions.servers.view") },
-      { value: PermissionsEnum.SERVERS_CREATE, label: t("roles.list.permissions.servers.create") },
-      { value: PermissionsEnum.SERVERS_DELETE, label: t("roles.list.permissions.servers.delete") }
+      { value: PermissionEnum.SERVERS_VIEW, label: t("roles.list.permissions.servers.view") },
+      { value: PermissionEnum.SERVERS_CREATE, label: t("roles.list.permissions.servers.create") },
+      { value: PermissionEnum.SERVERS_DELETE, label: t("roles.list.permissions.servers.delete") }
     ]
   },
   {
     label: t("roles.list.permissions.groups.server"),
     permissions: [
-      { value: PermissionsEnum.SERVER_VIEW, label: t("roles.list.permissions.server.view") },
-      { value: PermissionsEnum.SERVER_UPDATE, label: t("roles.list.permissions.server.update") },
-      { value: PermissionsEnum.SERVER_START, label: t("roles.list.permissions.server.start") },
-      { value: PermissionsEnum.SERVER_STOP, label: t("roles.list.permissions.server.stop") },
-      { value: PermissionsEnum.SERVER_CPU_VIEW, label: t("roles.list.permissions.server.cpuView") },
-      { value: PermissionsEnum.SERVER_RAM_VIEW, label: t("roles.list.permissions.server.ramView") },
-      { value: PermissionsEnum.SERVER_LOGS_VIEW, label: t("roles.list.permissions.server.logsView") },
-      { value: PermissionsEnum.SERVER_CONSOLE_EXECUTE, label: t("roles.list.permissions.server.consoleExecute") },
-      { value: PermissionsEnum.SERVER_FILES_VIEW, label: t("roles.list.permissions.server.files.view") },
-      { value: PermissionsEnum.SERVER_FILES_UPDATE, label: t("roles.list.permissions.server.files.update") },
-      { value: PermissionsEnum.SERVER_FILES_DOWNLOAD, label: t("roles.list.permissions.server.files.download") },
-      { value: PermissionsEnum.SERVER_SETTINGS_VIEW, label: t("roles.list.permissions.server.settings.view") },
-      { value: PermissionsEnum.SERVER_SETTINGS_UPDATE, label: t("roles.list.permissions.server.settings.update") }
+      { value: PermissionEnum.SERVER_VIEW, label: t("roles.list.permissions.server.view") },
+      { value: PermissionEnum.SERVER_UPDATE, label: t("roles.list.permissions.server.update") },
+      { value: PermissionEnum.SERVER_START, label: t("roles.list.permissions.server.start") },
+      { value: PermissionEnum.SERVER_STOP, label: t("roles.list.permissions.server.stop") },
+      { value: PermissionEnum.SERVER_CPU_VIEW, label: t("roles.list.permissions.server.cpuView") },
+      { value: PermissionEnum.SERVER_RAM_VIEW, label: t("roles.list.permissions.server.ramView") },
+      { value: PermissionEnum.SERVER_LOGS_VIEW, label: t("roles.list.permissions.server.logsView") },
+      { value: PermissionEnum.SERVER_CONSOLE_EXECUTE, label: t("roles.list.permissions.server.consoleExecute") },
+      { value: PermissionEnum.SERVER_FILES_VIEW, label: t("roles.list.permissions.server.files.view") },
+      { value: PermissionEnum.SERVER_FILES_UPDATE, label: t("roles.list.permissions.server.files.update") },
+      { value: PermissionEnum.SERVER_FILES_DOWNLOAD, label: t("roles.list.permissions.server.files.download") },
+      { value: PermissionEnum.SERVER_SETTINGS_VIEW, label: t("roles.list.permissions.server.settings.view") },
+      { value: PermissionEnum.SERVER_SETTINGS_UPDATE, label: t("roles.list.permissions.server.settings.update") }
     ]
   },
   {
     label: t("roles.list.permissions.groups.users"),
     permissions: [
-      { value: PermissionsEnum.USERS_VIEW, label: t("roles.list.permissions.users.view") },
-      { value: PermissionsEnum.USERS_CREATE, label: t("roles.list.permissions.users.create") },
-      { value: PermissionsEnum.USERS_UPDATE, label: t("roles.list.permissions.users.update") },
-      { value: PermissionsEnum.USERS_DELETE, label: t("roles.list.permissions.users.delete") }
+      { value: PermissionEnum.USERS_VIEW, label: t("roles.list.permissions.users.view") },
+      { value: PermissionEnum.USERS_CREATE, label: t("roles.list.permissions.users.create") },
+      { value: PermissionEnum.USERS_UPDATE, label: t("roles.list.permissions.users.update") },
+      { value: PermissionEnum.USERS_DELETE, label: t("roles.list.permissions.users.delete") }
     ]
   },
   {
     label: t("roles.list.permissions.groups.roles"),
     permissions: [
-      { value: PermissionsEnum.ROLES_VIEW, label: t("roles.list.permissions.roles.view") },
-      { value: PermissionsEnum.ROLES_CREATE, label: t("roles.list.permissions.roles.create") },
-      { value: PermissionsEnum.ROLES_UPDATE, label: t("roles.list.permissions.roles.update") },
-      { value: PermissionsEnum.ROLES_DELETE, label: t("roles.list.permissions.roles.delete") }
+      { value: PermissionEnum.ROLES_VIEW, label: t("roles.list.permissions.roles.view") },
+      { value: PermissionEnum.ROLES_CREATE, label: t("roles.list.permissions.roles.create") },
+      { value: PermissionEnum.ROLES_UPDATE, label: t("roles.list.permissions.roles.update") },
+      { value: PermissionEnum.ROLES_DELETE, label: t("roles.list.permissions.roles.delete") }
     ]
   },
   {
     label: t("roles.list.permissions.groups.games"),
     permissions: [
-      { value: PermissionsEnum.GAMES_VIEW, label: t("roles.list.permissions.games.view") }
+      { value: PermissionEnum.GAMES_VIEW, label: t("roles.list.permissions.games.view") }
     ]
   },
   {
     label: t("roles.list.permissions.groups.settings"),
     permissions: [
-      { value: PermissionsEnum.SETTINGS_CACHE_CLEAR, label: t("roles.list.permissions.settings.cache.clear") },
-      { value: PermissionsEnum.SETTINGS_CONTAINERS_CLEAR, label: t("roles.list.permissions.settings.containers.clear") }
+      { value: PermissionEnum.SETTINGS_CACHE_CLEAR, label: t("roles.list.permissions.settings.cache.clear") },
+      { value: PermissionEnum.SETTINGS_CONTAINERS_CLEAR, label: t("roles.list.permissions.settings.containers.clear") }
     ]
   }
 ])
@@ -461,7 +461,7 @@ function handleSearchChange(): void {
  * Returns:
  * - void.
  */
-function togglePermission(permissions: PermissionsEnum[], value: PermissionsEnum, checked: boolean): void {
+function togglePermission(permissions: PermissionEnum[], value: PermissionEnum, checked: boolean): void {
   if (checked) {
     permissions.push(value)
   } else {
@@ -480,7 +480,7 @@ function togglePermission(permissions: PermissionsEnum[], value: PermissionsEnum
  * Returns:
  * - void.
  */
-function toggleGroup(group: PermissionGroup, permissions: PermissionsEnum[]): void {
+function toggleGroup(group: PermissionGroup, permissions: PermissionEnum[]): void {
   const allSelected = group.permissions.every(permission => permissions.includes(permission.value))
   const values = group.permissions.map(permission => permission.value)
 
@@ -748,7 +748,7 @@ const hasSelected = computed((): boolean => {
  * - boolean: `true` if the user has the required permission, `false` otherwise.
  */
 const hasRolesViewAccess = computed((): boolean =>
-  userStore.hasPermission(PermissionsEnum.ROLES_VIEW)
+  userStore.hasPermission(PermissionEnum.ROLES_VIEW)
 )
 
 /**
@@ -761,7 +761,7 @@ const hasRolesViewAccess = computed((): boolean =>
  * - boolean: `true` if the user has the required permission, `false` otherwise.
  */
 const hasRolesCreateAccess = computed((): boolean =>
-  userStore.hasPermission(PermissionsEnum.ROLES_CREATE)
+  userStore.hasPermission(PermissionEnum.ROLES_CREATE)
 )
 
 /**
@@ -774,7 +774,7 @@ const hasRolesCreateAccess = computed((): boolean =>
  * - boolean: `true` if the user has the required permission, `false` otherwise.
  */
 const hasRolesUpdateAccess = computed((): boolean =>
-  userStore.hasPermission(PermissionsEnum.ROLES_UPDATE)
+  userStore.hasPermission(PermissionEnum.ROLES_UPDATE)
 )
 
 /**
@@ -787,7 +787,7 @@ const hasRolesUpdateAccess = computed((): boolean =>
  * - boolean: `true` if the user has the required permission, `false` otherwise.
  */
 const hasRolesDeleteAccess = computed((): boolean =>
-  userStore.hasPermission(PermissionsEnum.ROLES_DELETE)
+  userStore.hasPermission(PermissionEnum.ROLES_DELETE)
 )
 
 onMounted(() => {

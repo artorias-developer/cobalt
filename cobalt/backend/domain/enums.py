@@ -6,7 +6,7 @@
 from enum import StrEnum
 
 
-class PermissionsEnum(StrEnum):
+class PermissionEnum(StrEnum):
     """
     User permissions enum.
     """
@@ -56,7 +56,7 @@ class ServerStatusEnum(StrEnum):
 
 class LanguageEnum(StrEnum):
     """
-    Language enum.
+    User language enum.
     """
     EN = "en"
     UK = "uk"
@@ -64,14 +64,14 @@ class LanguageEnum(StrEnum):
 
 class ThemeEnum(StrEnum):
     """
-    Theme enum.
+    User theme enum.
     """
-    DARK = "dark"
-    LIGHT = "light"
+    COBALT_DARK = "cobalt_dark"
+    COBALT_LIGHT = "cobalt_light"
 
 class TimezoneEnum(StrEnum):
     """
-    Timezone enum.
+    User timezone enum.
     """
     UTC_MINUS_12 = "UTC-12"
     UTC_MINUS_11 = "UTC-11"

@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-import { PermissionsEnum } from "@/types"
+import { PermissionEnum } from "@/types"
 
 /**
  * Represents a role object.
@@ -13,7 +13,7 @@ import { PermissionsEnum } from "@/types"
 export interface RoleEntity {
   id: number
   name: string
-  permissions: PermissionsEnum[]
+  permissions: PermissionEnum[]
   created_at: string
   updated_at: string
 }

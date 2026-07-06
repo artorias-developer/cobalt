@@ -7,7 +7,7 @@ from domain.exceptions import (
     NotFoundError,
     AuthenticationError
 )
-from domain.enums import PermissionsEnum
+from domain.enums import PermissionEnum
 from application.dtos import (
     RoleDto,
     RolesGetPageDto,
@@ -116,7 +116,7 @@ async def _get_or_create_admin_role(
     if not admin_role:
         role_dto = RoleCreateDto(
             name=role_name,
-            permissions=list(PermissionsEnum)
+            permissions=list(PermissionEnum)
         )
 
         admin_role = await roles_service.create_one(
@@ -129,7 +129,7 @@ async def _get_or_create_admin_role(
 
         if not required_permissions.issubset(role_permissions):
             role_dto = RoleUpdateDto(
-                permissions=list(PermissionsEnum)
+                permissions=list(PermissionEnum)
             )
 
             admin_role = await roles_service.update_one(
@@ -215,14 +215,14 @@ async def check_default_user(
     password = "admin"
 
     required_permissions = {
-        PermissionsEnum.ROLES_VIEW,
-        PermissionsEnum.ROLES_CREATE,
-        PermissionsEnum.ROLES_UPDATE,
-        PermissionsEnum.ROLES_DELETE,
-        PermissionsEnum.USERS_VIEW,
-        PermissionsEnum.USERS_CREATE,
-        PermissionsEnum.USERS_UPDATE,
-        PermissionsEnum.USERS_DELETE
+        PermissionEnum.ROLES_VIEW,
+        PermissionEnum.ROLES_CREATE,
+        PermissionEnum.ROLES_UPDATE,
+        PermissionEnum.ROLES_DELETE,
+        PermissionEnum.USERS_VIEW,
+        PermissionEnum.USERS_CREATE,
+        PermissionEnum.USERS_UPDATE,
+        PermissionEnum.USERS_DELETE
     }
 
     if await _has_admin_user(users_service, required_permissions):
