@@ -1,6 +1,6 @@
 {
   "name": "Cobalt",
-  "description": "Launched with Cobalt - https://github.com/ArtoriasCode/cobalt",
+  "description": "Launched with Cobalt - https://github.com/artorias-developer/cobalt",
   "tags": [ "cobalt" ],
 
   "_comment_max_players": "Maximum number of players allowed, admins can join even a full server. 0 means unlimited.",

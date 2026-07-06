@@ -1,7 +1,7 @@
 <!--
-  - Copyright (C) 2026 ArtoriasCode
-  - Author: ArtoriasCode
-  - Repository: https://github.com/ArtoriasCode/cobalt
+  - Copyright (C) 2026 Artorias
+  - Author: Artorias
+  - Repository: https://github.com/artorias-developer/cobalt
   - SPDX-License-Identifier: AGPL-3.0-or-later
   -->
 
@@ -38,7 +38,7 @@ import githubIcon from "@/assets/images/svg/github.svg?raw"
  * - void.
  */
 function openGithub(): void {
-  window.open("https://github.com/ArtoriasCode/cobalt", "_blank", "noopener,noreferrer")
+  window.open("https://github.com/artorias-developer/cobalt", "_blank", "noopener,noreferrer")
 }
 </script>
 

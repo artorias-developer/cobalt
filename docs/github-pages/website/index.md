@@ -11,7 +11,7 @@ hero:
       link: /docs/getting-started/installation
     - theme: alt
       text: View on GitHub
-      link: https://github.com/ArtoriasCode/cobalt
+      link: https://github.com/artorias-developer/cobalt
 
 features:
   - icon: 🎮

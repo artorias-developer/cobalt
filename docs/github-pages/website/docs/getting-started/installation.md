@@ -33,7 +33,7 @@ The letters won't appear as you type, but that's normal.
 4. Clone the repository:
 
 ```bash
-git clone https://github.com/ArtoriasCode/cobalt
+git clone https://github.com/artorias-developer/cobalt
 ```
 
 5. Navigate to the project directory:

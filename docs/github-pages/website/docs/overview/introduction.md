@@ -18,37 +18,37 @@ The following games are currently supported:
   </thead>
   <tbody>
     <tr>
-      <td style="display: flex;justify-content: center;"><img src="https://raw.githubusercontent.com/ArtoriasCode/cobalt/main/cobalt/frontend/src/assets/images/games/minecraft/icon.png" style="height: 30px"></td>
+      <td style="display: flex;justify-content: center;"><img src="https://raw.githubusercontent.com/artorias-developer/cobalt/main/cobalt/frontend/src/assets/images/games/minecraft/icon.png" style="height: 30px"></td>
       <td>Minecraft</td>
       <td>Paper, Forge, Fabric</td>
     </tr>
     <tr>
-      <td style="display: flex;justify-content: center;"><img src="https://raw.githubusercontent.com/ArtoriasCode/cobalt/main/cobalt/frontend/src/assets/images/games/terraria/icon.png" style="height: 30px"></td>
+      <td style="display: flex;justify-content: center;"><img src="https://raw.githubusercontent.com/artorias-developer/cobalt/main/cobalt/frontend/src/assets/images/games/terraria/icon.png" style="height: 30px"></td>
       <td>Terraria</td>
       <td>Vanilla, tModLoader</td>
     </tr>
     <tr>
-      <td style="display: flex;justify-content: center;"><img src="https://raw.githubusercontent.com/ArtoriasCode/cobalt/main/cobalt/frontend/src/assets/images/games/dont-starve-together/icon.png" style="height: 30px"></td>
+      <td style="display: flex;justify-content: center;"><img src="https://raw.githubusercontent.com/artorias-developer/cobalt/main/cobalt/frontend/src/assets/images/games/dont-starve-together/icon.png" style="height: 30px"></td>
       <td>Don't Starve Together</td>
       <td>Vanilla</td>
     </tr>
     <tr>
-      <td style="display: flex;justify-content: center;"><img src="https://raw.githubusercontent.com/ArtoriasCode/cobalt/main/cobalt/frontend/src/assets/images/games/factorio/icon.png" style="height: 30px"></td>
+      <td style="display: flex;justify-content: center;"><img src="https://raw.githubusercontent.com/artorias-developer/cobalt/main/cobalt/frontend/src/assets/images/games/factorio/icon.png" style="height: 30px"></td>
       <td>Factorio</td>
       <td>Vanilla</td>
     </tr>
     <tr>
-      <td style="display: flex;justify-content: center;"><img src="https://raw.githubusercontent.com/ArtoriasCode/cobalt/main/cobalt/frontend/src/assets/images/games/rim-world/icon.png" style="height: 30px"></td>
+      <td style="display: flex;justify-content: center;"><img src="https://raw.githubusercontent.com/artorias-developer/cobalt/main/cobalt/frontend/src/assets/images/games/rim-world/icon.png" style="height: 30px"></td>
       <td>RimWorld</td>
       <td>Together</td>
     </tr>
     <tr>
-      <td style="display: flex;justify-content: center;"><img src="https://raw.githubusercontent.com/ArtoriasCode/cobalt/main/cobalt/frontend/src/assets/images/games/seven-days-to-die/icon.png" style="height: 30px"></td>
+      <td style="display: flex;justify-content: center;"><img src="https://raw.githubusercontent.com/artorias-developer/cobalt/main/cobalt/frontend/src/assets/images/games/seven-days-to-die/icon.png" style="height: 30px"></td>
       <td>7 Days to Die</td>
       <td>Vanilla</td>
     </tr>
     <tr>
-      <td style="display: flex;justify-content: center;"><img src="https://raw.githubusercontent.com/ArtoriasCode/cobalt/main/cobalt/frontend/src/assets/images/games/project-zomboid/icon.png" style="width: 30px"></td>
+      <td style="display: flex;justify-content: center;"><img src="https://raw.githubusercontent.com/artorias-developer/cobalt/main/cobalt/frontend/src/assets/images/games/project-zomboid/icon.png" style="width: 30px"></td>
       <td>Project Zomboid</td>
       <td>Vanilla</td>
     </tr>
@@ -71,4 +71,4 @@ Cobalt ships with everything you need to run and manage game servers without lea
 
 | Name         | Role                         | Links                                     |
 |--------------|------------------------------|-------------------------------------------|
-| ArtoriasCode | Founder & Project Maintainer | [GitHub](https://github.com/ArtoriasCode) |
+| Artorias | Founder & Project Maintainer | [GitHub](https://github.com/Artorias) |

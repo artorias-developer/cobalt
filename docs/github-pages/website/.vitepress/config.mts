@@ -66,7 +66,7 @@ export default defineConfig({
       }
     ],
     socialLinks: [
-      { icon: "github", link: "https://github.com/ArtoriasCode/cobalt" }
+      { icon: "github", link: "https://github.com/artorias-developer/cobalt" }
     ]
   }
 })
