@@ -22,7 +22,7 @@
         v-if="isPassword"
         type="button"
         class="toggle-visibility"
-        :aria-label="isPasswordVisible ? 'Hide password' : 'Show password'"
+        :aria-label="isPasswordVisible ? 'hide-password' : 'show-password'"
         tabindex="-1"
         @click="isPasswordVisible = !isPasswordVisible"
         v-html="isPasswordVisible ? eyeIcon : eyeSlashIcon"
