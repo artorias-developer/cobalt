@@ -102,7 +102,7 @@ async function handleLogin(): Promise<void> {
     userStore.setUser(user)
 
     if (!wsClient.isConnected()) {
-      wsClient.connect(`wss://${window.location.hostname}/api/v1/ws`)
+      wsClient.connect(`wss://${window.location.host}/api/v1/ws`)
     }
 
     await router.push({
