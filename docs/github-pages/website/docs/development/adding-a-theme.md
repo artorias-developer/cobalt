@@ -52,7 +52,25 @@ docker restart cobalt-backend
 
 1. Make sure you start from the project root.
 
-6. Add the new language to the `ThemeEnum` type in the `cobalt/frontend/src/types/enums/theme.ts` file:
+2. Add the colors for the new theme to the `cobalt/frontend/src/assets/styles/variables/themes.scss` file:
+
+```scss
+$new-theme-dark: (
+  primary: #3f85f1,
+  ...
+  shadow-soft: 0 1px 6px rgba(0, 0, 0, 0.1),
+);
+```
+
+3. In the same file, register a new theme:
+
+```scss
+[data-theme="new_theme_dark"] {
+  @include generate-theme($new-theme-dark);
+}
+```
+
+4. Add the new language to the `ThemeEnum` type in the `cobalt/frontend/src/types/enums/theme.ts` file:
 
 ```typescript
 export enum ThemeEnum {
