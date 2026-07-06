@@ -1,6 +1,6 @@
-#  Copyright (C) 2026 ArtoriasCode
-#  Author: ArtoriasCode
-#  Repository: https://github.com/ArtoriasCode/cobalt
+#  Copyright (C) 2026 Artorias
+#  Author: Artorias
+#  Repository: https://github.com/artorias-developer/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from os import path
@@ -32,6 +32,7 @@ class AbstractServersService(ABC):
     """
     _CONTAINER_INSTALLER_FILE = "Container.installer"
     _CONTAINER_RUNTIME_FILE = "Container.runtime"
+    _CONTAINER_UPDATER_FILE = "Container.updater"
     _STEAM_BUILD_ID_PATTERN = compile(r'"buildid"\s+"(\d+)"')
 
     build_dir: Path
@@ -189,122 +190,6 @@ class AbstractServersService(ABC):
             for offset in range(count)
         )
 
-    def get_available_port(
-        self,
-        max_attempts: int = 1000
-    ) -> int:
-        """
-        Gets a random available port that is free on both TCP and UDP.
-
-        Parameters:
-        - max_attempts: Maximum number of candidate ports to try before giving up.
-
-        Returns:
-        - int: Available port number.
-        """
-        for _ in range(max_attempts):
-            with socket(AF_INET, SOCK_STREAM) as sock:
-                sock.bind(('', 0))
-                sock.listen(1)
-                port: int = sock.getsockname()[1]
-
-            if self._is_port_free(port):
-                return port
-
-        raise RuntimeError(f"Could not find an available port free on both TCP and UDP after {max_attempts} attempts")
-
-    def get_available_port_range(
-        self,
-        count: int,
-        max_attempts: int = 1000
-    ) -> int:
-        """
-        Gets a starting port of a contiguous range of available ports.
-
-        Parameters:
-        - count: Number of consecutive ports required.
-        - max_attempts: Maximum number of candidate ports to try before giving up.
-
-        Returns:
-        - int: The first port of a free contiguous range of size `count`.
-        """
-        for _ in range(max_attempts):
-            with socket(AF_INET, SOCK_STREAM) as sock:
-                sock.bind(('', 0))
-                sock.listen(1)
-                candidate: int = sock.getsockname()[1]
-
-            if candidate + count - 1 > 65535:
-                continue
-
-            if self._is_port_range_free(candidate, count):
-                return candidate
-
-        raise RuntimeError(f"Could not find {count} consecutive available ports after {max_attempts} attempts")
-
-    @staticmethod
-    def generate_random_key(
-        length: int = 32
-    ) -> str:
-        """
-        Generates a random key.
-
-        Parameters:
-        - length: Length of the key. Defaults to 32.
-
-        Returns:
-        - str: Random cluster key string.
-        """
-        alphabet = ascii_letters + digits
-        return ''.join(choice(alphabet) for _ in range(length))
-
-    @abstractmethod
-    async def create(
-        self,
-        server_id: int,
-        container_name: str,
-        version: str,
-        download_link: str
-    ) -> None:
-        """
-        Creates a new server container.
-
-        Parameters:
-        - server_id: Server ID.
-        - container_name: Container name.
-        - version: Game version.
-        - download_link: Download link for Vanilla Terraria.
-
-        Returns:
-        - None.
-        """
-        ...
-
-    async def delete(
-        self,
-        container_name: str
-    ) -> None:
-        """
-        Deletes an existing server container.
-
-        Parameters:
-        - container_name: Container name.
-
-        Returns:
-        - None.
-        """
-        await self._remove_container(
-            container_name=container_name
-        )
-
-        await self._remove_image(
-            image_name=container_name
-        )
-
-        await self._remove_container_dir(
-            container_name=container_name
-        )
-
     async def _create_container_dir(
         self,
         container_name: str
@@ -446,25 +331,105 @@ class AbstractServersService(ABC):
                     image_name=installer_name
                 )
 
-    async def _verify_installation(
+    async def _create_updater_container(
         self,
+        container_file: str,
         container_name: str,
-        install_marker: str
+        installation_dir: str,
+        image_build_args: Optional[Dict[str, Any]] = None,
+        image_labels: Optional[Dict[str, str]] = None,
+        container_environment: Optional[Dict[str, str]] = None,
+        container_labels: Optional[Dict[str, str]] = None,
+        image_kwargs: Optional[Dict[str, Any]] = None,
+        container_kwargs: Optional[Dict[str, Any]] = None
     ) -> None:
         """
-        Verifies that the installation was completed successfully.
+        Creates an updater container that updates existing server files in place.
 
         Parameters:
-        - container_name: Container name.
-        - install_marker: File or directory that indicates a successful installation.
+        - container_file: Container file to build.
+        - container_name: Container name (used as image name).
+        - installation_dir: Host path with existing server files.
+        - image_build_args: Image build arguments.
+        - image_labels: Image labels.
+        - container_environment: Container environment variables.
+        - container_labels: Container labels.
+        - image_kwargs: Additional keyword arguments for image build.
+        - container_kwargs: Additional keyword arguments for container create.
 
         Returns:
         - None.
         """
-        app_container_dir = path.join(self.app_containers_dir, container_name)
+        updater_name = f"{container_name}_updater"
+        image_created = False
+        container_created = False
 
-        if not await os.path.exists(path.join(app_container_dir, install_marker)):
-            raise Exception(f'Installation failed: "{install_marker}" not found in "{app_container_dir}"')
+        prepared_image_build_args = {
+            "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
+            **(image_build_args or {})
+        }
+
+        prepared_image_labels = {
+            "managed_by": ContainersConstants.MANAGED_BY,
+            **(image_labels or {})
+        }
+
+        prepared_container_environment = {
+            "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
+            **(container_environment or {})
+        }
+
+        prepared_container_labels = {
+            "cobalt_server": "true",
+            "managed_by": ContainersConstants.MANAGED_BY,
+            **(container_labels or {})
+        }
+
+        try:
+            await self.containers_client.image_build(
+                context_path=self.build_dir,
+                container_file=container_file,
+                tag=updater_name,
+                build_args=prepared_image_build_args,
+                labels=prepared_image_labels,
+                **(image_kwargs or {})
+            )
+
+            image_created = True
+
+            await self.containers_client.container_create(
+                image=updater_name,
+                name=updater_name,
+                volumes={
+                    installation_dir: {
+                        "bind": ContainersConstants.SERVER_ROOT,
+                        "mode": "rw"
+                    }
+                },
+                environment=prepared_container_environment,
+                labels=prepared_container_labels,
+                **(container_kwargs or {})
+            )
+
+            container_created = True
+
+            await self.containers_client.container_start(
+                container_name=updater_name
+            )
+
+            await self.containers_client.container_wait(
+                container_name=updater_name
+            )
+        finally:
+            if container_created:
+                await self._remove_container(
+                    container_name=updater_name
+                )
+
+            if image_created:
+                await self._remove_image(
+                    image_name=updater_name
+                )
 
     async def _create_runtime_container(
         self,
@@ -545,6 +510,26 @@ class AbstractServersService(ABC):
             container_name=container_name
         )
 
+    async def _verify_installation(
+        self,
+        container_name: str,
+        install_marker: str
+    ) -> None:
+        """
+        Verifies that the installation was completed successfully.
+
+        Parameters:
+        - container_name: Container name.
+        - install_marker: File or directory that indicates a successful installation.
+
+        Returns:
+        - None.
+        """
+        app_container_dir = path.join(self.app_containers_dir, container_name)
+
+        if not await os.path.exists(path.join(app_container_dir, install_marker)):
+            raise Exception(f'Installation failed: "{install_marker}" not found in "{app_container_dir}"')
+
     async def _read_steam_version(
         self,
         container_name: str,
@@ -576,3 +561,141 @@ class AbstractServersService(ABC):
             return "Unknown"
 
         return match.group(1)
+
+    def get_available_port(
+        self,
+        max_attempts: int = 1000
+    ) -> int:
+        """
+        Gets a random available port that is free on both TCP and UDP.
+
+        Parameters:
+        - max_attempts: Maximum number of candidate ports to try before giving up.
+
+        Returns:
+        - int: Available port number.
+        """
+        for _ in range(max_attempts):
+            with socket(AF_INET, SOCK_STREAM) as sock:
+                sock.bind(('', 0))
+                sock.listen(1)
+                port: int = sock.getsockname()[1]
+
+            if self._is_port_free(port):
+                return port
+
+        raise RuntimeError(f"Could not find an available port free on both TCP and UDP after {max_attempts} attempts")
+
+    def get_available_port_range(
+        self,
+        count: int,
+        max_attempts: int = 1000
+    ) -> int:
+        """
+        Gets a starting port of a contiguous range of available ports.
+
+        Parameters:
+        - count: Number of consecutive ports required.
+        - max_attempts: Maximum number of candidate ports to try before giving up.
+
+        Returns:
+        - int: The first port of a free contiguous range of size `count`.
+        """
+        for _ in range(max_attempts):
+            with socket(AF_INET, SOCK_STREAM) as sock:
+                sock.bind(('', 0))
+                sock.listen(1)
+                candidate: int = sock.getsockname()[1]
+
+            if candidate + count - 1 > 65535:
+                continue
+
+            if self._is_port_range_free(candidate, count):
+                return candidate
+
+        raise RuntimeError(f"Could not find {count} consecutive available ports after {max_attempts} attempts")
+
+    @staticmethod
+    def generate_random_key(
+        length: int = 32
+    ) -> str:
+        """
+        Generates a random key.
+
+        Parameters:
+        - length: Length of the key. Defaults to 32.
+
+        Returns:
+        - str: Random cluster key string.
+        """
+        alphabet = ascii_letters + digits
+        return ''.join(choice(alphabet) for _ in range(length))
+
+    @abstractmethod
+    async def create(
+        self,
+        server_id: int,
+        container_name: str,
+        version: str,
+        download_link: Optional[str]
+    ) -> None:
+        """
+        Creates a new server container.
+
+        Parameters:
+        - server_id: Server ID.
+        - container_name: Container name.
+        - version: Game version.
+        - download_link: Download link.
+
+        Returns:
+        - None.
+        """
+        ...
+
+    # @abstractmethod
+    # async def upgrade(
+    #     self,
+    #     server_id: int,
+    #     container_name: str,
+    #     version: str,
+    #     download_link: Optional[str]
+    # ) -> None:
+    #     """
+    #     Upgrades an existing server container to the latest version.
+    #
+    #     Parameters:
+    #     - server_id: Server ID.
+    #     - container_name: Container name.
+    #     - version: Game version.
+    #     - download_link: Download link.
+    #
+    #     Returns:
+    #     - None.
+    #     """
+    #     ...
+
+    async def delete(
+        self,
+        container_name: str
+    ) -> None:
+        """
+        Deletes an existing server container.
+
+        Parameters:
+        - container_name: Container name.
+
+        Returns:
+        - None.
+        """
+        await self._remove_container(
+            container_name=container_name
+        )
+
+        await self._remove_image(
+            image_name=container_name
+        )
+
+        await self._remove_container_dir(
+            container_name=container_name
+        )

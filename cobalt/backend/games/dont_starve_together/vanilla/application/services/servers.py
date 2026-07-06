@@ -1,10 +1,11 @@
-#  Copyright (C) 2026 ArtoriasCode
-#  Author: ArtoriasCode
-#  Repository: https://github.com/ArtoriasCode/cobalt
+#  Copyright (C) 2026 Artorias
+#  Author: Artorias
+#  Repository: https://github.com/artorias-developer/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from os import path
 from pathlib import Path
+from typing import Optional
 
 from domain.enums import ServerStatusEnum
 from application.contracts.managers import AbstractConnectionsManager
@@ -51,7 +52,7 @@ class VanillaServersService(AbstractServersService):
         server_id: int,
         container_name: str,
         version: str,
-        download_link: str
+        download_link: Optional[str]
     ) -> None:
         """
         Creates a new server container.
@@ -139,3 +140,82 @@ class VanillaServersService(AbstractServersService):
                 server_id=server_id,
                 status=ServerStatusEnum.FAILED
             )
+
+    async def upgrade(
+        self,
+        server_id: int,
+        container_name: str,
+        version: str,
+        download_link: Optional[str]
+    ) -> None:
+        """
+        Upgrades an existing server container to the latest version.
+
+        Parameters:
+        - server_id: Server ID.
+        - container_name: Container name.
+        - version: Game version.
+        - download_link: Download link for Vanilla Don't Starve Together.
+
+        Returns:
+        - None.
+        """
+        await self._update_server_state(
+            server_id=server_id,
+            status=ServerStatusEnum.UPGRADING
+        )
+
+        host_container_dir = path.join(self.host_containers_dir, container_name)
+
+        status = await self.containers_client.container_status(
+            container_name=container_name
+        )
+
+        try:
+            if status.running:
+                await self.containers_client.container_stop(
+                    container_name=container_name
+                )
+
+            await self._create_updater_container(
+                container_file=self._CONTAINER_UPDATER_FILE,
+                container_name=container_name,
+                installation_dir=host_container_dir,
+                container_kwargs={
+                    "security_opt": ["seccomp=unconfined"]
+                },
+                image_build_args={
+                    "APP_ID": str(self._STEAM_APP_ID)
+                }
+            )
+
+            if status.running:
+                await self.containers_client.container_start(
+                    container_name=container_name
+                )
+
+            steam_version = await self._read_steam_version(
+                container_name=container_name,
+                app_id=self._STEAM_APP_ID
+            )
+
+            await self._update_server_state(
+                server_id=server_id,
+                status=ServerStatusEnum.CREATED,
+                version=steam_version
+            )
+        except Exception:
+            self.logger.exception(f'Error while updating container "{container_name}":')
+
+            await self._update_server_state(
+                server_id=server_id,
+                status=ServerStatusEnum.UPGRADE_FAILED
+            )
+
+            if status.running:
+                try:
+                    await self.containers_client.container_start(
+                        container_name=container_name
+                    )
+                except Exception:
+                    self.logger.exception(f'Error while restarting container "{container_name}" after failed update:')

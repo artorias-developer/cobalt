@@ -23,7 +23,7 @@ The installer is officially tested on **Ubuntu 22.04+**. Other operating systems
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/ArtoriasCode/cobalt
+git clone https://github.com/artorias-developer/cobalt
 ```
 
 2. Navigate to the project directory:
@@ -58,7 +58,7 @@ If a domain is provided, the dashboard will be available at `https://<domain>`. 
 
 ## Makefile commands
 
-If you've already installed Cobalt before, you can manage the development environment directly using the [Makefile](https://github.com/ArtoriasCode/cobalt/blob/main/Makefile) commands:
+If you've already installed Cobalt before, you can manage the development environment directly using the [Makefile](https://github.com/artorias-developer/cobalt/blob/main/Makefile) commands:
 
 ```bash
 # Start the dev containers

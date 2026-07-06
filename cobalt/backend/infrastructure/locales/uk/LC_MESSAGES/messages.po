@@ -1,5 +1,5 @@
 # Ukrainian translations for Cobalt.
-# Copyright (C) 2026 ArtoriasCode
+# Copyright (C) 2026 Artorias
 # This file is distributed under the same license as the Cobalt project.
 # FIRST AUTHOR artorias.code@gmail.com, 2026.
 #
@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2026-06-17 17:14+0300\n"
 "PO-Revision-Date: 2026-06-17 11:40+0300\n"
-"Last-Translator: ArtoriasCode artorias.code@gmail.com\n"
+"Last-Translator: Artorias artorias.code@gmail.com\n"
 "Language: uk\n"
 "Language-Team: uk <LL@li.org>\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
