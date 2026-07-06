@@ -1,7 +1,7 @@
 <!--
-  - Copyright (C) 2026 ArtoriasCode
-  - Author: ArtoriasCode
-  - Repository: https://github.com/ArtoriasCode/cobalt
+  - Copyright (C) 2026 Artorias
+  - Author: Artorias
+  - Repository: https://github.com/artorias-developer/cobalt
   - SPDX-License-Identifier: AGPL-3.0-or-later
   -->
 
@@ -15,7 +15,7 @@
       </li>
       <li class="text">
         <h2>Cobalt</h2>
-        <p>created by ArtoriasCode</p>
+        <p>created by Artorias</p>
       </li>
     </ul>
     <div class="group general-menu">
@@ -157,7 +157,7 @@ const otherButtons = computed((): Array<MenuButton> => [
   {
     type: "a",
     text: t("nav.menu.help"),
-    url: "https://github.com/ArtoriasCode/cobalt/discussions/categories/help",
+    url: "https://github.com/artorias-developer/cobalt/discussions/categories/help",
     icon: helpIcon,
     baseColor: "gray",
     hoverColor: "blue",

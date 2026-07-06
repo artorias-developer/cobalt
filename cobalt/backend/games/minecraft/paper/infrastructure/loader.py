@@ -1,6 +1,6 @@
-#  Copyright (C) 2026 ArtoriasCode
-#  Author: ArtoriasCode
-#  Repository: https://github.com/ArtoriasCode/cobalt
+#  Copyright (C) 2026 Artorias
+#  Author: Artorias
+#  Repository: https://github.com/artorias-developer/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from typing import List, Optional
@@ -19,7 +19,7 @@ class PaperLoader(AbstractLoader, HttpClientMixin):
     Minecraft Paper loader.
     """
     PAPER_API: str = "https://fill.papermc.io/v3"
-    USER_AGENT: str = "cobalt (https://github.com/ArtoriasCode/cobalt)"
+    USER_AGENT: str = "cobalt (https://github.com/artorias-developer/cobalt)"
 
     def __init__(
         self,
