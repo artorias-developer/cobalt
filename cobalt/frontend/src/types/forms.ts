@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-import { PermissionsEnum } from "@/types"
+import { PermissionEnum } from "@/types"
 
 export type FormContext = {
   register: (id: symbol, field: FormField) => void
@@ -31,7 +31,7 @@ export type SelectOption = {
 }
 
 export type PermissionOption = {
-  value: PermissionsEnum
+  value: PermissionEnum
   label: string
 }
 

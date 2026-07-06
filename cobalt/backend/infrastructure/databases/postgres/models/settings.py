@@ -20,7 +20,7 @@ class SettingsModel(BaseModel):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, unique=True)
     language = Column(Enum(LanguageEnum), nullable=False, default=LanguageEnum.EN)
-    theme = Column(Enum(ThemeEnum), nullable=False, default=ThemeEnum.DARK)
+    theme = Column(Enum(ThemeEnum), nullable=False, default=ThemeEnum.COBALT_DARK)
     timezone = Column(Enum(TimezoneEnum), nullable=False, default=TimezoneEnum.UTC)
 
     user = relationship(

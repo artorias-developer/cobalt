@@ -529,8 +529,8 @@
         "description": "Color scheme and visual style",
         "placeholder": "Select theme...",
         "options": {
-          "dark": "Dark",
-          "light": "Light"
+          "cobalt_dark": "Cobalt - Dark",
+          "cobalt_light": "Cobalt - Light"
         }
       },
       "timezone": {

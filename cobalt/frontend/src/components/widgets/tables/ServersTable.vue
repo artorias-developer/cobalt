@@ -234,7 +234,7 @@ import {
   GameModules
 } from "@/utils"
 import { useTableStore, useUserStore } from "@/stores"
-import { PermissionsEnum, ServerStatusEnum } from "@/types"
+import { PermissionEnum, ServerStatusEnum } from "@/types"
 import type {
   ServersPageEntity,
   GameEntity,
@@ -825,7 +825,7 @@ const versionOptions = computed((): SelectOption[] => {
  * - boolean: `true` if the user has the required permission, `false` otherwise.
  */
 const hasServersViewAccess = computed((): boolean =>
-  userStore.hasPermission(PermissionsEnum.SERVERS_VIEW)
+  userStore.hasPermission(PermissionEnum.SERVERS_VIEW)
 )
 
 /**
@@ -838,7 +838,7 @@ const hasServersViewAccess = computed((): boolean =>
  * - boolean: `true` if the user has the required permission, `false` otherwise.
  */
 const hasServersCreateAccess = computed((): boolean =>
-  userStore.hasPermission(PermissionsEnum.SERVERS_CREATE)
+  userStore.hasPermission(PermissionEnum.SERVERS_CREATE)
 )
 
 /**
@@ -851,7 +851,7 @@ const hasServersCreateAccess = computed((): boolean =>
  * - boolean: `true` if the user has the required permission, `false` otherwise.
  */
 const hasServersDeleteAccess = computed((): boolean =>
-  userStore.hasPermission(PermissionsEnum.SERVERS_DELETE)
+  userStore.hasPermission(PermissionEnum.SERVERS_DELETE)
 )
 
 /**
@@ -864,7 +864,7 @@ const hasServersDeleteAccess = computed((): boolean =>
  * - boolean: `true` if the user has the required permission, `false` otherwise.
  */
 const hasServerViewAccess = computed((): boolean =>
-  userStore.hasPermission(PermissionsEnum.SERVER_VIEW)
+  userStore.hasPermission(PermissionEnum.SERVER_VIEW)
 )
 
 onMounted(() => {

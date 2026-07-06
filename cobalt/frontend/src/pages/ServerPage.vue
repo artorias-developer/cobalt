@@ -43,7 +43,7 @@ import type { Component } from "vue"
 
 import { useUserStore, useServerStore } from "@/stores"
 import { GameModules, HTTP_SERVERS_API_SERVICE_KEY } from "@/utils"
-import { PermissionsEnum } from "@/types"
+import { PermissionEnum } from "@/types"
 import type { Tag, ServerEntity, ServerStatusEntity } from "@/types"
 
 import NotFound from "@/components/widgets/NotFound.vue"
@@ -209,7 +209,7 @@ const tags = computed((): Tag[] => {
  * - boolean: `true` if the user has the required permission, `false` otherwise.
  */
 const hasServerViewAccess = computed((): boolean =>
-  userStore.hasPermission(PermissionsEnum.SERVER_VIEW)
+  userStore.hasPermission(PermissionEnum.SERVER_VIEW)
 )
 
 onMounted(async (): Promise<void> => {

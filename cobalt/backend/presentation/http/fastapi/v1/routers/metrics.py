@@ -7,7 +7,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends
 
-from domain.enums import PermissionsEnum
+from domain.enums import PermissionEnum
 from application.contracts.managers import AbstractI18nManager
 from application.contracts.services import (
     AbstractAuthService,
@@ -70,7 +70,7 @@ class HttpMetricsRouter(AbstractHttpMetricsRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.DASHBOARD_DISK_VIEW
+                        PermissionEnum.DASHBOARD_DISK_VIEW
                     ]
                 ))
             ]
@@ -84,7 +84,7 @@ class HttpMetricsRouter(AbstractHttpMetricsRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.DASHBOARD_CPU_VIEW
+                        PermissionEnum.DASHBOARD_CPU_VIEW
                     ]
                 ))
             ]
@@ -98,7 +98,7 @@ class HttpMetricsRouter(AbstractHttpMetricsRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.DASHBOARD_RAM_VIEW
+                        PermissionEnum.DASHBOARD_RAM_VIEW
                     ]
                 ))
             ]
@@ -112,7 +112,7 @@ class HttpMetricsRouter(AbstractHttpMetricsRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.DASHBOARD_CPU_VIEW
+                        PermissionEnum.DASHBOARD_CPU_VIEW
                     ]
                 ))
             ]
@@ -126,7 +126,7 @@ class HttpMetricsRouter(AbstractHttpMetricsRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.DASHBOARD_RAM_VIEW
+                        PermissionEnum.DASHBOARD_RAM_VIEW
                     ]
                 ))
             ]
@@ -140,7 +140,7 @@ class HttpMetricsRouter(AbstractHttpMetricsRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_CPU_VIEW
+                        PermissionEnum.SERVER_CPU_VIEW
                     ]
                 ))
             ]
@@ -154,7 +154,7 @@ class HttpMetricsRouter(AbstractHttpMetricsRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_RAM_VIEW
+                        PermissionEnum.SERVER_RAM_VIEW
                     ]
                 ))
             ]
@@ -168,7 +168,7 @@ class HttpMetricsRouter(AbstractHttpMetricsRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_CPU_VIEW
+                        PermissionEnum.SERVER_CPU_VIEW
                     ]
                 ))
             ]
@@ -182,7 +182,7 @@ class HttpMetricsRouter(AbstractHttpMetricsRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_RAM_VIEW
+                        PermissionEnum.SERVER_RAM_VIEW
                     ]
                 ))
             ]

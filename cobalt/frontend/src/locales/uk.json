@@ -529,8 +529,8 @@
         "description": "Кольорова схема та візуальний стиль",
         "placeholder": "Оберіть тему...",
         "options": {
-          "dark": "Темна",
-          "light": "Світла"
+          "cobalt_dark": "Cobalt - Темна",
+          "cobalt_light": "Cobalt - Світла"
         }
       },
       "timezone": {

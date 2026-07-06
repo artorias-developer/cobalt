@@ -83,7 +83,7 @@ import { useNotification } from "@kyvg/vue3-notification"
 
 import { useUserStore, useServerStore } from "@/stores"
 import { HTTP_SERVERS_API_SERVICE_KEY } from "@/utils"
-import { PermissionsEnum } from "@/types"
+import { PermissionEnum } from "@/types"
 import type { InfoField } from "@/types"
 
 import Block from "@/components/ui/Block.vue"
@@ -309,7 +309,7 @@ const hostname = computed((): string | null =>
  * - boolean: `true` if the user has the required permission, `false` otherwise.
  */
 const hasServerStartAccess = computed((): boolean =>
-  userStore.hasPermission(PermissionsEnum.SERVER_START)
+  userStore.hasPermission(PermissionEnum.SERVER_START)
 )
 
 /**
@@ -322,7 +322,7 @@ const hasServerStartAccess = computed((): boolean =>
  * - boolean: `true` if the user has the required permission, `false` otherwise.
  */
 const hasServerStopAccess = computed((): boolean =>
-  userStore.hasPermission(PermissionsEnum.SERVER_STOP)
+  userStore.hasPermission(PermissionEnum.SERVER_STOP)
 )
 </script>
 

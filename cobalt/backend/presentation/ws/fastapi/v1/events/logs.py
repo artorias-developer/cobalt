@@ -5,7 +5,7 @@
 
 from fastapi import APIRouter, Depends
 
-from domain.enums import PermissionsEnum
+from domain.enums import PermissionEnum
 from application.contracts.services import (
     AbstractAuthService,
     AbstractLogsService
@@ -61,7 +61,7 @@ class WsLogsEvents(AbstractWsLogsEvents, BaseWsRouter):
             dependencies=[
                 Depends(self.ws_permission_required(
                     permissions=[
-                        PermissionsEnum.DASHBOARD_LOGS_VIEW
+                        PermissionEnum.DASHBOARD_LOGS_VIEW
                     ]
                 ))
             ]
@@ -73,7 +73,7 @@ class WsLogsEvents(AbstractWsLogsEvents, BaseWsRouter):
             dependencies=[
                 Depends(self.ws_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_LOGS_VIEW
+                        PermissionEnum.SERVER_LOGS_VIEW
                     ]
                 ))
             ]
@@ -85,7 +85,7 @@ class WsLogsEvents(AbstractWsLogsEvents, BaseWsRouter):
             dependencies=[
                 Depends(self.ws_permission_required(
                     permissions=[
-                        PermissionsEnum.DASHBOARD_LOGS_VIEW
+                        PermissionEnum.DASHBOARD_LOGS_VIEW
                     ]
                 ))
             ]
@@ -97,7 +97,7 @@ class WsLogsEvents(AbstractWsLogsEvents, BaseWsRouter):
             dependencies=[
                 Depends(self.ws_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_LOGS_VIEW
+                        PermissionEnum.SERVER_LOGS_VIEW
                     ]
                 ))
             ]

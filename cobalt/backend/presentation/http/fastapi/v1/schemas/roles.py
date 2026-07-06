@@ -8,7 +8,7 @@ from typing import Optional, List, Literal, Annotated
 
 from pydantic import BaseModel, Field, ConfigDict, RootModel
 
-from domain.enums import PermissionsEnum
+from domain.enums import PermissionEnum
 
 
 class RoleSchema(BaseModel):
@@ -24,7 +24,7 @@ class RoleSchema(BaseModel):
         description="Role name"
     )
 
-    permissions: List[PermissionsEnum] = Field(
+    permissions: List[PermissionEnum] = Field(
         ...,
         title="Permissions",
         description="List of permissions"
@@ -167,7 +167,7 @@ class RoleCreateSchema(BaseModel):
         description="Role name"
     )
 
-    permissions: List[PermissionsEnum] = Field(
+    permissions: List[PermissionEnum] = Field(
         ...,
         title="Permissions",
         description="List of permissions"
@@ -196,7 +196,7 @@ class RoleUpdateSchema(BaseModel):
         description="Role name"
     )
 
-    permissions: Optional[List[PermissionsEnum]] = Field(
+    permissions: Optional[List[PermissionEnum]] = Field(
         None,
         title="Permissions",
         description="List of permissions"

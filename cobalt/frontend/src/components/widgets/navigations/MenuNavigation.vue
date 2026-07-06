@@ -71,7 +71,7 @@ import { useNotification } from "@kyvg/vue3-notification"
 
 import { useUserStore } from "@/stores"
 import { HTTP_AUTH_API_SERVICE_KEY, WS_CLIENT_KEY } from "@/utils"
-import { type MenuButton, PermissionsEnum, RoutesEnum } from "@/types"
+import { type MenuButton, PermissionEnum, RouteEnum } from "@/types"
 
 import GhostButton from "@/components/ui/forms/buttons/GhostButton.vue"
 import SourcesBanner from "@/components/widgets/banners/SourcesBanner.vue"
@@ -192,7 +192,7 @@ async function handleLogout(): Promise<void> {
     wsClient.disconnect()
 
     await router.push({
-      name: RoutesEnum.LOGIN
+      name: RouteEnum.LOGIN
     })
   } catch (error: any) {
     notify({
@@ -212,7 +212,7 @@ async function handleLogout(): Promise<void> {
  * - boolean: `true` if the user has the required permission, `false` otherwise.
  */
 const hasDashboardViewAccess = computed((): boolean =>
-  userStore.hasPermission(PermissionsEnum.DASHBOARD_VIEW)
+  userStore.hasPermission(PermissionEnum.DASHBOARD_VIEW)
 )
 
 /**
@@ -225,7 +225,7 @@ const hasDashboardViewAccess = computed((): boolean =>
  * - boolean: `true` if the user has the required permission, `false` otherwise.
  */
 const hasServersViewAccess = computed((): boolean =>
-  userStore.hasPermission(PermissionsEnum.SERVERS_VIEW)
+  userStore.hasPermission(PermissionEnum.SERVERS_VIEW)
 )
 
 /**
@@ -238,7 +238,7 @@ const hasServersViewAccess = computed((): boolean =>
  * - boolean: `true` if the user has the required permission, `false` otherwise.
  */
 const hasUsersViewAccess = computed((): boolean =>
-  userStore.hasPermission(PermissionsEnum.USERS_VIEW)
+  userStore.hasPermission(PermissionEnum.USERS_VIEW)
 )
 
 /**
@@ -251,7 +251,7 @@ const hasUsersViewAccess = computed((): boolean =>
  * - boolean: `true` if the user has the required permission, `false` otherwise.
  */
 const hasRolesViewAccess = computed((): boolean =>
-  userStore.hasPermission(PermissionsEnum.ROLES_VIEW)
+  userStore.hasPermission(PermissionEnum.ROLES_VIEW)
 )
 </script>
 

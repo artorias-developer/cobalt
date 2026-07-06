@@ -5,7 +5,7 @@
 
 from fastapi import APIRouter, Depends
 
-from domain.enums import PermissionsEnum
+from domain.enums import PermissionEnum
 from application.contracts.managers import AbstractI18nManager
 from application.contracts.services import (
     AbstractGamesService,
@@ -69,8 +69,8 @@ class HttpGamesRouter(AbstractHttpGamesRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.GAMES_VIEW,
-                        PermissionsEnum.SERVERS_CREATE
+                        PermissionEnum.GAMES_VIEW,
+                        PermissionEnum.SERVERS_CREATE
                     ]
                 ))
             ]
@@ -84,7 +84,7 @@ class HttpGamesRouter(AbstractHttpGamesRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVERS_CREATE
+                        PermissionEnum.SERVERS_CREATE
                     ]
                 ))
             ]

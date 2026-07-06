@@ -68,7 +68,7 @@ import { useNotification } from "@kyvg/vue3-notification"
 
 import { LOCALE_HELPER_KEY, HTTP_LOGS_API_SERVICE_KEY, HTTP_SERVERS_API_SERVICE_KEY, WS_LOGS_API_SERVICE_KEY } from "@/utils"
 import { useUserStore } from "@/stores"
-import { PermissionsEnum } from "@/types"
+import { PermissionEnum } from "@/types"
 import type { UniversalBlockMode, ParsedLog } from "@/types"
 
 import Block from "@/components/ui/Block.vue"
@@ -426,8 +426,8 @@ const activeRegex = computed((): RegExp =>
  */
 const hasLogsViewAccess = computed((): boolean =>
   props.mode === "server"
-    ? userStore.hasPermission(PermissionsEnum.SERVER_LOGS_VIEW)
-    : userStore.hasPermission(PermissionsEnum.DASHBOARD_LOGS_VIEW)
+    ? userStore.hasPermission(PermissionEnum.SERVER_LOGS_VIEW)
+    : userStore.hasPermission(PermissionEnum.DASHBOARD_LOGS_VIEW)
 )
 
 /**
@@ -440,7 +440,7 @@ const hasLogsViewAccess = computed((): boolean =>
  * - boolean: `true` if the user has the required permission, `false` otherwise.
  */
 const hasConsoleExecuteAccess = computed((): boolean =>
-  userStore.hasPermission(PermissionsEnum.SERVER_CONSOLE_EXECUTE)
+  userStore.hasPermission(PermissionEnum.SERVER_CONSOLE_EXECUTE)
 )
 
 watch(parsedLogs, async () => {

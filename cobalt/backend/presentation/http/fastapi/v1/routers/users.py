@@ -5,7 +5,7 @@
 
 from fastapi import APIRouter, Request, Response, status, Depends, Body
 
-from domain.enums import PermissionsEnum
+from domain.enums import PermissionEnum
 from application.contracts.managers import AbstractI18nManager
 from application.contracts.services import (
     AbstractUsersService,
@@ -73,7 +73,7 @@ class HttpUsersRouter(AbstractHttpUsersRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.USERS_DELETE
+                        PermissionEnum.USERS_DELETE
                     ]
                 ))
             ]
@@ -87,7 +87,7 @@ class HttpUsersRouter(AbstractHttpUsersRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.USERS_VIEW
+                        PermissionEnum.USERS_VIEW
                     ]
                 ))
             ]
@@ -108,7 +108,7 @@ class HttpUsersRouter(AbstractHttpUsersRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.USERS_VIEW
+                        PermissionEnum.USERS_VIEW
                     ]
                 ))
             ]
@@ -122,7 +122,7 @@ class HttpUsersRouter(AbstractHttpUsersRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.USERS_CREATE
+                        PermissionEnum.USERS_CREATE
                     ]
                 ))
             ]
@@ -136,7 +136,7 @@ class HttpUsersRouter(AbstractHttpUsersRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.USERS_UPDATE
+                        PermissionEnum.USERS_UPDATE
                     ]
                 ))
             ]
@@ -150,7 +150,7 @@ class HttpUsersRouter(AbstractHttpUsersRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.USERS_DELETE
+                        PermissionEnum.USERS_DELETE
                     ]
                 ))
             ]

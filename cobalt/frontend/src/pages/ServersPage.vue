@@ -18,7 +18,7 @@
 import { computed } from "vue"
 
 import { useUserStore } from "@/stores"
-import { PermissionsEnum } from "@/types"
+import { PermissionEnum } from "@/types"
 
 import ServersTable from "@/components/widgets/tables/ServersTable.vue"
 import NotFound from "@/components/widgets/NotFound.vue"
@@ -35,7 +35,7 @@ const userStore = useUserStore()
  * - boolean: `true` if the user has the required permission, `false` otherwise.
  */
 const hasServersViewAccess = computed((): boolean =>
-  userStore.hasPermission(PermissionsEnum.SERVERS_VIEW)
+  userStore.hasPermission(PermissionEnum.SERVERS_VIEW)
 )
 </script>
 

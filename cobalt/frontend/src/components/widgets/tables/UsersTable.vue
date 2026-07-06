@@ -211,7 +211,7 @@ import { useNotification } from "@kyvg/vue3-notification"
 
 import { LOCALE_HELPER_KEY, HTTP_USERS_API_SERVICE_KEY, HTTP_ROLES_API_SERVICE_KEY } from "@/utils"
 import { useTableStore, useUserStore } from "@/stores"
-import { PermissionsEnum } from "@/types"
+import { PermissionEnum } from "@/types"
 import type {
   UsersPageEntity,
   RoleEntity,
@@ -715,7 +715,7 @@ const roleOptions = computed((): SelectOption[] =>
  * - boolean: `true` if the user has the required permission, `false` otherwise.
  */
 const hasUsersViewAccess = computed((): boolean =>
-  userStore.hasPermission(PermissionsEnum.USERS_VIEW)
+  userStore.hasPermission(PermissionEnum.USERS_VIEW)
 )
 
 /**
@@ -728,7 +728,7 @@ const hasUsersViewAccess = computed((): boolean =>
  * - boolean: `true` if the user has the required permission, `false` otherwise.
  */
 const hasUsersCreateAccess = computed((): boolean =>
-  userStore.hasPermission(PermissionsEnum.USERS_CREATE)
+  userStore.hasPermission(PermissionEnum.USERS_CREATE)
 )
 
 /**
@@ -741,7 +741,7 @@ const hasUsersCreateAccess = computed((): boolean =>
  * - boolean: `true` if the user has the required permission, `false` otherwise.
  */
 const hasUsersUpdateAccess = computed((): boolean =>
-  userStore.hasPermission(PermissionsEnum.USERS_UPDATE)
+  userStore.hasPermission(PermissionEnum.USERS_UPDATE)
 )
 
 /**
@@ -754,7 +754,7 @@ const hasUsersUpdateAccess = computed((): boolean =>
  * - boolean: `true` if the user has the required permission, `false` otherwise.
  */
 const hasUsersDeleteAccess = computed((): boolean =>
-  userStore.hasPermission(PermissionsEnum.USERS_DELETE)
+  userStore.hasPermission(PermissionEnum.USERS_DELETE)
 )
 
 onMounted(() => {

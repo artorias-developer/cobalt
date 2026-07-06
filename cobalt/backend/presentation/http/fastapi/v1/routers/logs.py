@@ -7,7 +7,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends
 
-from domain.enums import PermissionsEnum
+from domain.enums import PermissionEnum
 from application.contracts.managers import AbstractI18nManager
 from application.contracts.services import (
     AbstractAuthService,
@@ -67,7 +67,7 @@ class HttpLogsRouter(AbstractHttpLogsRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.DASHBOARD_LOGS_VIEW
+                        PermissionEnum.DASHBOARD_LOGS_VIEW
                     ]
                 ))
             ]
@@ -81,7 +81,7 @@ class HttpLogsRouter(AbstractHttpLogsRouter, HttpBaseRouter):
             dependencies=[
                 Depends(self.http_permission_required(
                     permissions=[
-                        PermissionsEnum.SERVER_LOGS_VIEW
+                        PermissionEnum.SERVER_LOGS_VIEW
                     ]
                 ))
             ]

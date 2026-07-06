@@ -98,29 +98,6 @@ export enum LanguageEnum {
 }
 ```
 
-7. Add the new language to the language switcher in `cobalt/frontend/src/components/widgets/blocks/SettingsBlock.vue`, so users can actually select it:
-
-```typescript
-const languageOptions: SelectOption[] = [
-  {
-    value: LanguageEnum.EN,
-    label: t("settings.general.language.options.en")
-  },
-  {
-    value: LanguageEnum.RU,
-    label: t("settings.general.language.options.ru")
-  },
-  {
-    value: LanguageEnum.UK,
-    label: t("settings.general.language.options.uk")
-  },
-  { // [!code ++]
-    value: LanguageEnum.DE, // [!code ++]
-    label: t("settings.general.language.options.de") // [!code ++]
-  } // [!code ++]
-]
-```
-
 ::: tip
 Don't forget to add the `settings.general.language.options.de` translation key to all locale files, including the new one.
 :::
