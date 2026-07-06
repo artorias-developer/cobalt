@@ -5,7 +5,7 @@ export default defineConfig({
   description: "Documentation for the Cobalt dashboard",
   head: [
     ["link", { rel: "icon", href: "/cobalt/assets/images/svg/logo.svg" }],
-    ["meta", { name: "google-site-verification", content: "QUz6nt-D4lJmxq22pEz18eAWg02FWJsUqG4K41MvqEI" }],
+    ["meta", { name: "google-site-verification", content: "RtxZJ237LBxMmW3QHsFhSu8rIBtkiPpK1JiDNfBG6yg" }],
     ["meta", { name: "google-adsense-account", content: "ca-pub-2553125098165337" }]
   ],
   themeConfig: {
