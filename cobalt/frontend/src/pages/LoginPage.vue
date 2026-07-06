@@ -37,6 +37,7 @@
           :label="$t('login.password.label')"
           :placeholder="$t('login.password.placeholder')"
           name="password"
+          type="password"
           :required="true"
         />
       </Form>
