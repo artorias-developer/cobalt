@@ -1,10 +1,3 @@
-<!--
-  - Copyright (C) 2026 Artorias
-  - Author: Artorias
-  - Repository: https://github.com/artorias-developer/cobalt
-  - SPDX-License-Identifier: AGPL-3.0-or-later
-  -->
-
 <template>
   <div class="input-wrapper">
     <FieldLabel
@@ -32,40 +25,8 @@
         :aria-label="isPasswordVisible ? 'Hide password' : 'Show password'"
         tabindex="-1"
         @click="isPasswordVisible = !isPasswordVisible"
-      >
-        <svg
-          v-if="isPasswordVisible"
-          xmlns="http://www.w3.org/2000/svg"
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z" />
-          <circle cx="12" cy="12" r="3" />
-        </svg>
-        <svg
-          v-else
-          xmlns="http://www.w3.org/2000/svg"
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" />
-          <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 11 8 11 8a13.16 13.16 0 0 1-1.67 2.68" />
-          <path d="M6.61 6.61A13.526 13.526 0 0 0 1 12s4 8 11 8a9.74 9.74 0 0 0 5.39-1.61" />
-          <line x1="2" y1="2" x2="22" y2="22" />
-        </svg>
-      </button>
+        v-html="isPasswordVisible ? eyeIcon : eyeSlashIcon"
+      />
     </div>
   </div>
 </template>
@@ -77,6 +38,9 @@ import { FORM_KEY } from "@/utils"
 import type { FormContext } from "@/types"
 
 import FieldLabel from "@/components/ui/forms/FieldLabel.vue"
+
+import eyeIcon from "@/assets/images/svg/eye.svg?raw"
+import eyeSlashIcon from "@/assets/images/svg/eye-slash.svg?raw"
 
 defineOptions({
   inheritAttrs: false
@@ -176,7 +140,7 @@ onUnmounted(() => {
     transition: border-color 0.3s ease;
 
     &.input--with-icon {
-      padding-right: 40px;
+      padding-right: 48px;
     }
 
     &:focus {
@@ -192,19 +156,24 @@ onUnmounted(() => {
   .toggle-visibility {
     position: absolute;
     top: 50%;
-    right: $space-md;
+    right: $space-lg;
     transform: translateY(-50%);
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
     padding: 0;
     color: var(--color-description-muted);
     background: transparent;
     border: none;
     cursor: pointer;
     transition: color 0.3s ease;
+
+    :deep(svg) {
+      width: 100%;
+      height: 100%;
+    }
 
     &:hover {
       color: var(--color-description);
