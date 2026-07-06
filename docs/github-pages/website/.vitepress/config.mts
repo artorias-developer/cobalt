@@ -5,7 +5,8 @@ export default defineConfig({
   title: "Cobalt",
   description: "Documentation for the Cobalt dashboard",
   head: [
-    ["link", { rel: "icon", href: "/cobalt/assets/images/svg/logo.svg" }]
+    ["link", { rel: "icon", href: "/cobalt/assets/images/svg/logo.svg" }],
+    ["meta", { name: "google-site-verification", content: "QUz6nt-D4lJmxq22pEz18eAWg02FWJsUqG4K41MvqEI" }]
   ],
   themeConfig: {
     logo: "/assets/images/svg/logo.svg",
