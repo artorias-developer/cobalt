@@ -49,8 +49,10 @@ class ServerStatusEnum(StrEnum):
     """
     PENDING = "pending"
     PROCESSING = "processing"
+    UPGRADING = "upgrading"
     CREATED = "created"
     FAILED = "failed"
+    UPGRADE_FAILED = "upgrade_failed"
 
 class LanguageEnum(StrEnum):
     """
@@ -65,6 +67,7 @@ class ThemeEnum(StrEnum):
     Theme enum.
     """
     DARK = "dark"
+    LIGHT = "light"
 
 class TimezoneEnum(StrEnum):
     """

@@ -51,12 +51,12 @@ defineProps<{
 
     h3 {
       font-weight: 700;
-      color: $color-title;
+      color: var(--color-title);
     }
 
     p {
       font-weight: 600;
-      color: $color-text;
+      color: var(--color-description);
     }
 
     &.small {

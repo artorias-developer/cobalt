@@ -77,7 +77,7 @@ class LoadersRepositoryMapper(AbstractLoadersRepositoryMapper):
         """
         return LoaderModel(
             game_id=game_id,
-            name=entity.name,
+            name=entity.name.value,
             versions=entity.versions
         )
 
@@ -97,7 +97,7 @@ class LoadersRepositoryMapper(AbstractLoadersRepositoryMapper):
         - LoaderModel: LoaderModel object.
         """
         if entity.name is not None:
-            model.name = entity.name
+            model.name = entity.name.value
 
         if entity.versions is not None:
             model.versions = entity.versions

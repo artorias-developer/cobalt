@@ -1,14 +1,14 @@
-@use "@/assets/styles/variables/colors" as *;
+@use "@/assets/styles/variables/themes" as *;
 
 @mixin scrollbar(
   $width: 6px,
   $height: 4px,
   $border-radius: 10px,
-  $foreground-color: $color-gray-background,
+  $foreground-color: var(--color-gray-background),
   $background-color: transparent,
   $border-width: 0,
-  $context-hover-background-color: lighten($foreground-color, 5%),
-  $hover-background-color: lighten($foreground-color, 10%),
+  $context-hover-background-color: color-mix(in srgb, var(--color-gray-background) 95%, white 5%),
+  $hover-background-color: color-mix(in srgb, var(--color-gray-background) 90%, white 10%),
 ) {
   &::-webkit-scrollbar {
     width: $width;
@@ -67,8 +67,8 @@
   height: 100dvh;
   background-image: linear-gradient(
       to bottom,
-      rgba(31, 35, 51, $opacity) 0%,
-      rgba(31, 35, 51, 1) 40%
+      color-mix(in srgb, var(--color-background) #{$opacity * 100%}, transparent) 0%,
+      var(--color-background) 40%
   ),
   url($image);
   background-size: cover;

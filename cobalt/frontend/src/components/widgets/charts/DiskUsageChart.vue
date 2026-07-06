@@ -285,23 +285,23 @@ onMounted(() => {
         box-sizing: border-box;
 
         &.gray {
-          border-color: $color-gray;
+          border-color: var(--color-gray);
         }
 
         &.red {
-          border-color: $color-red;
+          border-color: var(--color-red);
         }
 
         &.blue {
-          border-color: $color-blue;
+          border-color: var(--color-blue);
         }
 
         &.green {
-          border-color: $color-green;
+          border-color: var(--color-green);
         }
 
         &.yellow {
-          border-color: $color-yellow;
+          border-color: var(--color-yellow-soft);
         }
 
         p, span {
@@ -310,13 +310,13 @@ onMounted(() => {
 
         p {
           font-size: $font-xxl;
-          color: $color-title;
+          color: var(--color-title);
           font-weight: 700;
         }
 
         span {
           font-size: $font-md;
-          color: $color-text;
+          color: var(--color-description);
           font-weight: 600;
         }
       }
@@ -334,14 +334,14 @@ onMounted(() => {
 
           p {
             font-size: $font-xxl;
-            color: $color-title;
+            color: var(--color-title);
             font-weight: 700;
             line-height: 1;
           }
 
           span {
             font-size: $font-md;
-            color: $color-text;
+            color: var(--color-description);
             font-weight: 600;
           }
         }
@@ -349,7 +349,7 @@ onMounted(() => {
         .free {
           p {
             font-size: $font-md;
-            color: $color-text;
+            color: var(--color-description);
             font-weight: 600;
           }
         }
@@ -374,42 +374,42 @@ onMounted(() => {
           border-radius: 100%;
 
           &.gray {
-            background-color: $color-gray;
+            background-color: var(--color-gray);
           }
 
           &.red {
-            background-color: $color-red;
+            background-color: var(--color-red);
           }
 
           &.blue {
-            background-color: $color-blue;
+            background-color: var(--color-blue);
           }
 
           &.green {
-            background-color: $color-green;
+            background-color: var(--color-green);
           }
 
           &.yellow {
-            background-color: $color-yellow;
+            background-color: var(--color-yellow-soft);
           }
         }
 
         .label {
           font-size: $font-md;
-          color: $color-title;
+          color: var(--color-title);
           font-weight: 600;
           white-space: nowrap;
         }
 
         .separator {
           font-size: $font-md;
-          color: $color-text;
+          color: var(--color-description);
           font-weight: 600;
         }
 
         .size {
           font-size: $font-md;
-          color: $color-text;
+          color: var(--color-description);
           font-weight: 600;
         }
       }

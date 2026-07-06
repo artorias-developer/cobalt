@@ -91,13 +91,13 @@ class HttpErrorsMiddleware:
 
         response_started = False
 
-        async def send_wrapper(message) -> None:
+        async def send_wrapper(event) -> None:
             nonlocal response_started
 
-            if message["type"] == "http.response.start":
+            if event["type"] == "http.response.start":
                 response_started = True
 
-            await send(message)
+            await send(event)
 
         try:
             await self.app(scope, receive, send_wrapper)

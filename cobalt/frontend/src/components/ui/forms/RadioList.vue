@@ -231,7 +231,7 @@ onUnmounted(() => {
       outline: none;
 
       .option.selected {
-        outline: 2px solid $color-red;
+        outline: 2px solid var(--color-red);
         outline-offset: -2px;
       }
     }
@@ -242,17 +242,17 @@ onUnmounted(() => {
       gap: $space-xl;
       padding: $space-xl;
       border-radius: 12px;
-      border: 2px solid $color-block-alt;
-      background-color: $color-block-alt;
+      border: 2px solid var(--color-block-alt);
+      background-color: var(--color-block-alt);
       cursor: pointer;
       transition: border-color 0.3s ease;
 
       &.selected {
-        border-color: $color-primary;
+        border-color: var(--color-primary);
 
         .radio {
-          border-color: $color-primary;
-          background-color: $color-primary;
+          border-color: var(--color-primary);
+          background-color: var(--color-primary);
 
           .dot {
             opacity: 1;
@@ -281,13 +281,13 @@ onUnmounted(() => {
         h3 {
           font-size: $font-md;
           font-weight: 600;
-          color: $color-title;
+          color: var(--color-title);
         }
 
         p {
           font-size: $font-sm;
           font-weight: 600;
-          color: $color-text;
+          color: var(--color-description);
           line-height: unset;
         }
       }
@@ -300,7 +300,7 @@ onUnmounted(() => {
         justify-content: center;
         margin-left: auto;
         border-radius: 50%;
-        border: 2px solid $color-border;
+        border: 2px solid var(--color-border);
         transition: background-color 0.3s ease, border-color 0.3s ease;
         box-sizing: border-box;
         flex-shrink: 0;
@@ -309,7 +309,7 @@ onUnmounted(() => {
           width: 8px;
           height: 8px;
           border-radius: 50%;
-          background-color: $color-title;
+          background-color: var(--color-white);
           opacity: 0;
           transform: scale(0);
           transition: opacity 0.3s ease, transform 0.3s ease;

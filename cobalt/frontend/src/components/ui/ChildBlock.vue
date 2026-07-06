@@ -24,7 +24,7 @@ defineProps<{
   width: 100%;
   display: flex;
   flex-direction: column;
-  background-color: $color-block;
+  background-color: var(--color-block);
   border-radius: 12px;
   box-sizing: border-box;
   outline: none;
@@ -32,12 +32,12 @@ defineProps<{
   transition: border-color 0.3s;
 
   &.hoverable:focus-visible {
-    outline: 2px solid $color-primary;
+    outline: 2px solid var(--color-primary);
     outline-offset: -2px;
   }
 
   &.hoverable:hover {
-    border: 2px solid $color-primary;
+    border: 2px solid var(--color-primary);
   }
 
   &.padded {

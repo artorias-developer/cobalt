@@ -145,7 +145,7 @@ watch(
   .nav {
     width: 100%;
     padding: $space-md $space-xl;
-    background-color: $color-block-alt;
+    background-color: var(--color-block-alt);
     box-sizing: border-box;
     display: flex;
     flex-wrap: nowrap;

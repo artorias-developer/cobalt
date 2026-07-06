@@ -499,11 +499,11 @@ onUnmounted(() => {
 
   .console-input {
     width: 100%;
-    background-color: $color-block-alt;
+    background-color: var(--color-block-alt);
     padding: $space-xl;
     border-radius: 0 0 12px 12px;
     border: none;
-    color: $color-text;
+    color: var(--color-description);
     font-size: $font-md;
     font-weight: 600;
     font-family: "Montserrat", sans-serif;
@@ -512,7 +512,7 @@ onUnmounted(() => {
 
     &::placeholder {
       opacity: 1;
-      color: $color-text;
+      color: var(--color-description);
     }
   }
 
@@ -527,14 +527,14 @@ onUnmounted(() => {
 
       .line {
         .message {
-          color: $color-text;
+          color: var(--color-description);
           font-size: $font-sm;
           word-break: break-word;
           line-height: 1.8;
           white-space: pre-wrap;
 
           .date {
-            color: $color-title;
+            color: var(--color-title);
             white-space: nowrap;
             flex-shrink: 0;
             margin-right: $space-sm;
@@ -547,21 +547,21 @@ onUnmounted(() => {
             margin-right: $space-sm;
 
             &.info {
-              color: $color-blue;
+              color: var(--color-blue);
             }
 
             &.error,
             &.critical,
             &.fatal {
-              color: $color-red;
+              color: var(--color-red);
             }
 
             &.warn {
-              color: $color-yellow;
+              color: var(--color-yellow);
             }
 
             &.debug {
-              color: $color-green;
+              color: var(--color-green);
             }
           }
         }

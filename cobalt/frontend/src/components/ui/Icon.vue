@@ -52,87 +52,87 @@ defineProps<{
   }
 
   &.gray {
-    color: $color-text;
+    color: var(--color-description);
 
     &.background {
-      background-color: $color-gray-background;
+      background-color: var(--color-gray-background);
     }
   }
 
   *:hover > &.hover-gray,
   &.active.hover-gray {
-    color: $color-text;
+    color: var(--color-description);
 
     &.background {
-      background-color: $color-gray-background;
+      background-color: var(--color-gray-background);
     }
   }
 
   &.red {
-    color: $color-red;
+    color: var(--color-red);
 
     &.background {
-      background-color: $color-red-background;
+      background-color: var(--color-red-background);
     }
   }
 
   *:hover > &.hover-red,
   &.active.hover-red {
-    color: $color-red;
+    color: var(--color-red);
 
     &.background {
-      background-color: $color-red-background;
+      background-color: var(--color-red-background);
     }
   }
 
   &.blue {
-    color: $color-blue;
+    color: var(--color-blue);
 
     &.background {
-      background-color: $color-blue-background;
+      background-color: var(--color-blue-background);
     }
   }
 
   *:hover > &.hover-blue,
   &.active.hover-blue {
-    color: $color-blue;
+    color: var(--color-blue);
 
     &.background {
-      background-color: $color-blue-background;
+      background-color: var(--color-blue-background);
     }
   }
 
   &.green {
-    color: $color-green;
+    color: var(--color-green);
 
     &.background {
-      background-color: $color-green-background;
+      background-color: var(--color-green-background);
     }
   }
 
   *:hover > &.hover-green,
   &.active.hover-green {
-    color: $color-green;
+    color: var(--color-green);
 
     &.background {
-      background-color: $color-green-background;
+      background-color: var(--color-green-background);
     }
   }
 
   &.yellow {
-    color: $color-yellow;
+    color: var(--color-yellow);
 
     &.background {
-      background-color: $color-yellow-background;
+      background-color: var(--color-yellow-background);
     }
   }
 
   *:hover > &.hover-yellow,
   &.active.hover-yellow {
-    color: $color-yellow;
+    color: var(--color-yellow);
 
     &.background {
-      background-color: $color-yellow-background;
+      background-color: var(--color-yellow-background);
     }
   }
 }

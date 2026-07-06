@@ -40,7 +40,7 @@ class LoadersServiceMapper(AbstractLoadersServiceMapper):
         return LoaderDto(
             id=entity.id,
             game_id=entity.game_id,
-            name=entity.name,
+            name=entity.name.value,
             versions=entity.versions,
             created_at=entity.created_at,
             updated_at=entity.updated_at

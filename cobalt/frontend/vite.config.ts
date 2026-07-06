@@ -33,7 +33,7 @@ export default defineConfig({
           const chunks: Record<string, string[]> = {
             vue: ["vue", "vue-router", "vue-i18n", "pinia"],
             echarts: ["echarts"],
-            codemirror: ["codemirror", "@codemirror", "@lezer"],
+            editor: ["codemirror", "@codemirror", "@lezer", "@uiw/codemirror-theme-github", "@babel/runtime"],
             qrcode: ["qr-code-styling"],
           }
 
@@ -52,7 +52,8 @@ export default defineConfig({
       "vue-router",
       "vue-i18n",
       "@kyvg/vue3-notification",
-      "qr-code-styling"
+      "qr-code-styling",
+      "@uiw/codemirror-theme-github"
     ]
   },
   resolve: {
@@ -64,7 +65,7 @@ export default defineConfig({
     preprocessorOptions: {
       scss: {
         additionalData: `
-        @use "@/assets/styles/variables/colors" as *;
+        @use "@/assets/styles/variables/themes" as *;
         @use "@/assets/styles/variables/spacing" as *;
         @use "@/assets/styles/variables/fonts" as *;
         @use "@/assets/styles/globals" as *;

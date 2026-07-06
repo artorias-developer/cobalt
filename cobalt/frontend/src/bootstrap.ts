@@ -184,7 +184,7 @@ function setupProviders(app: App, router: ReturnType<typeof setupRouterInstance>
   app.provide(WS_LOGS_API_SERVICE_KEY, wsLogsApiService)
   app.provide(WS_SERVERS_API_SERVICE_KEY, wsServersApiService)
 
-  wsClient.connect(`wss://${window.location.hostname}/api/v1/ws`)
+  wsClient.connect(`wss://${window.location.host}/api/v1/ws`)
 
   return { httpUsersApiService, localeHelper, wsClient }
 }
@@ -220,6 +220,28 @@ function setupI18n() {
     },
     messages: { en, uk, ru },
   })
+}
+
+/**
+ * Watches for changes in user theme settings and syncs
+ * the active theme on the document root element.
+ *
+ * Parameters:
+ * - null.
+ *
+ * Returns:
+ * - void.
+ */
+function setupThemeWatch(): void {
+  const userStore = useUserStore()
+
+  watch(
+    () => userStore.user?.settings?.theme,
+    (theme) => {
+      if (theme) document.documentElement.setAttribute("data-theme", theme)
+    },
+    { immediate: true }
+  )
 }
 
 /**
@@ -341,6 +363,7 @@ export function bootstrap(app: App): void {
   app.use(i18n)
   setupRouterGuard(router, httpUsersApiService)
   app.use(router)
+  setupThemeWatch()
   setupLanguageWatch(i18n)
   setupTimezoneWatch(localeHelper)
   setupRoleUpdateListener(wsClient)

@@ -198,13 +198,13 @@ watch(selectedWalletName, (): void => {
     .name {
       font-size: $font-lg;
       font-weight: 700;
-      color: $color-title;
+      color: var(--color-title);
     }
 
     .network {
       font-size: $font-lg;
       font-weight: 600;
-      color: $color-text;
+      color: var(--color-description);
     }
   }
 
@@ -212,15 +212,15 @@ watch(selectedWalletName, (): void => {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: $color-block-alt;
+    background-color: var(--color-block-alt);
     border-radius: 12px;
   }
 
   .address {
     font-size: $font-sm;
     font-weight: 500;
-    color: $color-text;
-    background-color: $color-block-alt;
+    color: var(--color-description);
+    background-color: var(--color-block-alt);
     padding: $space-md;
     border-radius: 6px;
     word-break: break-all;
@@ -229,7 +229,7 @@ watch(selectedWalletName, (): void => {
     transition: color 0.3s ease;
 
     &:hover {
-      color: $color-title;
+      color: var(--color-title);
     }
   }
 

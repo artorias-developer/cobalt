@@ -66,8 +66,8 @@ class ServersServiceMapper(AbstractServersServiceMapper):
         """
         return ServerDto(
             id=entity.id,
-            name=entity.name,
-            version=entity.version,
+            name=entity.name.value,
+            version=entity.version.value,
             game=self.games_mapper.entity_to_dto(
                 entity=entity.game
             ),

@@ -91,12 +91,12 @@ class ServersService(AbstractServersService):
         Returns:
         - Tuple: AbstractGameModule and AbstractLoader objects.
         """
-        game_module = self.game_modules.get(server.game.name)
+        game_module = self.game_modules.get(server.game.name.value)
 
         if not game_module:
             raise NotFoundError(self._('Game "{name}" not found').format(name=server.game.name))
 
-        loader = game_module.loaders.get(server.loader.name)
+        loader = game_module.loaders.get(server.loader.name.value)
 
         if not loader:
             raise NotFoundError(self._('Loader "{name}" not found').format(name=server.loader.name))
@@ -270,7 +270,7 @@ class ServersService(AbstractServersService):
 
         try:
             download_link = await loader.get_download_link(
-                version=created_entity.version
+                version=created_entity.version.value
             )
         except NotImplementedError:
             download_link = None
@@ -450,13 +450,13 @@ class ServersService(AbstractServersService):
         )
 
         for entity in received_entities:
-            game_module = self.game_modules.get(entity.game.name)
+            game_module = self.game_modules.get(entity.game.name.value)
 
             if not game_module:
                 self.logger.warning(f'Game "{entity.game.name}" not found')
                 continue
 
-            loader = game_module.loaders.get(entity.loader.name)
+            loader = game_module.loaders.get(entity.loader.name.value)
 
             if not loader:
                 self.logger.warning(f'Loader "{entity.loader.name}" not found')

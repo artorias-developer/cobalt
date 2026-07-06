@@ -1376,12 +1376,12 @@ onUnmounted(() => {
       display: flex;
       align-items: center;
       padding: $space-md $space-xl;
-      background-color: $color-block-alt;
+      background-color: var(--color-block-alt);
 
       .filename {
         font-size: $font-sm;
         font-weight: 600;
-        color: $color-text;
+        color: var(--color-description);
       }
     }
 
@@ -1394,7 +1394,7 @@ onUnmounted(() => {
       display: flex;
       gap: $space-md;
       padding: $space-xl;
-      border-top: 1px solid $color-border;
+      border-top: 1px solid var(--color-border);
     }
   }
 

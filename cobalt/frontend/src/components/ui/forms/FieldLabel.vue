@@ -32,22 +32,22 @@ defineProps<{
   .text {
     font-size: $font-md;
     font-weight: 600;
-    color: $color-text;
+    color: var(--color-description);
     transition: color 0.3s ease;
 
     &.titled {
-      color: $color-title;
+      color: var(--color-title);
     }
 
     .required {
-      color: $color-red;
+      color: var(--color-red);
     }
   }
 
   .description {
     font-size: $font-md;
     font-weight: 600;
-    color: $color-text;
+    color: var(--color-description);
     line-height: unset;
     transition: color 0.3s ease;
   }

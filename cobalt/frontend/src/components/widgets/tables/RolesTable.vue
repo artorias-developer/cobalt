@@ -850,13 +850,13 @@ onUnmounted(() => {
         .title {
           font-size: $font-md;
           font-weight: 600;
-          color: $color-text;
+          color: var(--color-description);
           cursor: pointer;
           user-select: none;
           transition: color 0.3s ease;
 
           &:hover {
-            color: $color-title;
+            color: var(--color-title);
           }
         }
       }

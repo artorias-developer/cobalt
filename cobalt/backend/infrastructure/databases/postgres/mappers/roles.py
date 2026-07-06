@@ -73,7 +73,7 @@ class RolesRepositoryMapper(AbstractRolesRepositoryMapper):
         - RoleModel: RoleModel object.
         """
         return RoleModel(
-            name=entity.name,
+            name=entity.name.value,
             permissions=entity.permissions
         )
 
@@ -93,7 +93,7 @@ class RolesRepositoryMapper(AbstractRolesRepositoryMapper):
         - RoleModel: RoleModel object.
         """
         if entity.name is not None:
-            model.name = entity.name
+            model.name = entity.name.value
 
         if entity.permissions is not None:
             model.permissions = entity.permissions

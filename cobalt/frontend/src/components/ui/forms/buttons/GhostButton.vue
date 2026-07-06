@@ -159,14 +159,14 @@ const isActiveRoute = computed((): boolean => {
   text-decoration: none;
   gap: $space-md;
   padding: $space-md;
-  color: $color-text;
+  color: var(--color-description);
   background-color: transparent;
   border-radius: 6px;
   transition: background-color 0.3s ease, color 0.3s ease;
   box-sizing: border-box;
 
   &:focus-visible {
-    outline: 2px solid $color-primary;
+    outline: 2px solid var(--color-primary);
     outline-offset: -2px;
   }
 
@@ -204,113 +204,113 @@ const isActiveRoute = computed((): boolean => {
   }
 
   &.gray {
-    color: $color-text;
+    color: var(--color-description);
 
     &.background {
-      background-color: $color-gray-background;
+      background-color: var(--color-gray-background);
     }
 
     &.background-text {
-      background-color: $color-gray-background;
+      background-color: var(--color-gray-background);
     }
   }
 
   &.hover-gray:hover,
   &.active.hover-gray {
-    color: $color-text;
-    background-color: $color-gray-background;
+    color: var(--color-description);
+    background-color: var(--color-gray-background);
   }
 
   &.same-color.hover-gray:hover {
-    background-color: rgba($color-gray-background, 0.1);
+    background-color: color-mix(in srgb, var(--color-gray) 10%, transparent);
   }
 
   &.red {
-    color: $color-red;
+    color: var(--color-red);
 
     &.background {
-      background-color: $color-red-background;
+      background-color: var(--color-red-background);
     }
 
     &.background-text {
-      background-color: $color-red-background;
+      background-color: var(--color-red-background);
     }
   }
 
   &.hover-red:hover,
   &.active.hover-red {
-    color: $color-red;
-    background-color: $color-red-background;
+    color: var(--color-red);
+    background-color: var(--color-red-background);
   }
 
   &.same-color.hover-red:hover {
-    background-color: rgba($color-red-background, 0.1);
+    background-color: color-mix(in srgb, var(--color-red) 10%, transparent);
   }
 
   &.blue {
-    color: $color-blue;
+    color: var(--color-blue);
 
     &.background {
-      background-color: $color-blue-background;
+      background-color: var(--color-blue-background);
     }
 
     &.background-text {
-      background-color: $color-blue-background;
+      background-color: var(--color-blue-background);
     }
   }
 
   &.hover-blue:hover,
   &.active.hover-blue {
-    color: $color-blue;
-    background-color: $color-blue-background;
+    color: var(--color-blue);
+    background-color: var(--color-blue-background);
   }
 
   &.same-color.hover-blue:hover {
-    background-color: rgba($color-blue-background, 0.1);
+    background-color: color-mix(in srgb, var(--color-blue) 10%, transparent);
   }
 
   &.green {
-    color: $color-green;
+    color: var(--color-green);
 
     &.background {
-      background-color: $color-green-background;
+      background-color: var(--color-green-background);
     }
 
     &.background-text {
-      background-color: $color-green-background;
+      background-color: var(--color-green-background);
     }
   }
 
   &.hover-green:hover,
   &.active.hover-green {
-    color: $color-green;
-    background-color: $color-green-background;
+    color: var(--color-green);
+    background-color: var(--color-green-background);
   }
 
   &.same-color.hover-green:hover {
-    background-color: rgba($color-green-background, 0.1);
+    background-color: color-mix(in srgb, var(--color-green) 10%, transparent);
   }
 
   &.yellow {
-    color: $color-yellow;
+    color: var(--color-yellow);
 
     &.background {
-      background-color: $color-yellow-background;
+      background-color: var(--color-yellow-background);
     }
 
     &.background-text {
-      background-color: $color-yellow-background;
+      background-color: var(--color-yellow-background);
     }
   }
 
   &.hover-yellow:hover,
   &.active.hover-yellow {
-    color: $color-yellow;
-    background-color: $color-yellow-background;
+    color: var(--color-yellow);
+    background-color: var(--color-yellow-background);
   }
 
   &.same-color.hover-yellow:hover {
-    background-color: rgba($color-yellow-background, 0.1);
+    background-color: color-mix(in srgb, var(--color-yellow) 10%, transparent);
   }
 }
 

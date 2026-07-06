@@ -44,7 +44,7 @@ class AttributesServiceMapper(AbstractAttributesServiceMapper):
         return AttributeDto(
             id=entity.id,
             server_id=entity.server_id,
-            key=entity.key,
+            key=entity.key.value,
             value=entity.value,
             created_at=entity.created_at,
             updated_at=entity.updated_at
