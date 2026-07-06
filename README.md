@@ -6,7 +6,7 @@
   [![License](https://img.shields.io/badge/License-AGPL--3.0-blue)](https://github.com/artorias-developer/cobalt/blob/main/LICENSE)
   [![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
   [![Vue](https://img.shields.io/badge/Vue-4FC08D?logo=vuedotjs&logoColor=white)](https://vuejs.org/)
-  [![Wiki](https://img.shields.io/badge/Wiki-grey?logo=gitbook&logoColor=white)](https://artoriascode.github.io/cobalt/)
+  [![Wiki](https://img.shields.io/badge/Wiki-grey?logo=gitbook&logoColor=white)](https://artorias-developer.github.io/cobalt/)
 </div>
 
 ---
@@ -32,7 +32,7 @@ Cobalt is a web dashboard for running game servers on your own VPS / VDS. It cut
 
 Whether you're setting up Cobalt for the first time or looking to contribute, the links below cover everything you need - from installation guides to community discussions where you can share ideas and vote on new game support.
 
-- [Documentation](https://artoriascode.github.io/cobalt/) - installation, testing and more.
+- [Documentation](https://artorias-developer.github.io/cobalt/) - installation, testing and more.
 - [Issues](https://github.com/artorias-developer/cobalt/issues) - report bugs and problems.
 - [Ideas](https://github.com/artorias-developer/cobalt/discussions/categories/ideas) - share your ideas and suggest new games.
 - [Help](https://github.com/artorias-developer/cobalt/discussions/categories/help) - ask your questions.
