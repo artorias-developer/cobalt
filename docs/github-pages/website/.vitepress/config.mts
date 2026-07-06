@@ -60,8 +60,9 @@ export default defineConfig({
         text: "Development",
         items: [
           { text: "Local installation", link: "/docs/development/local-installation" },
+          { text: "Adding a game", link: "/docs/development/adding-a-game" },
           { text: "Adding a language", link: "/docs/development/adding-a-language" },
-          { text: "Adding a game", link: "/docs/development/adding-a-game" }
+          { text: "Adding a theme", link: "/docs/development/adding-a-theme" }
         ]
       }
     ],
