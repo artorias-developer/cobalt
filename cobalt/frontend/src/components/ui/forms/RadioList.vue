@@ -242,7 +242,7 @@ onUnmounted(() => {
       gap: $space-xl;
       padding: $space-xl;
       border-radius: 12px;
-      border: 2px solid var(--color-block-alt);
+      border: 2px solid transparent;
       background-color: var(--color-block-alt);
       cursor: pointer;
       transition: border-color 0.3s ease;

@@ -204,7 +204,7 @@ const isActiveRoute = computed((): boolean => {
   }
 
   &.gray {
-    color: var(--color-description);
+    color: var(--color-gray);
 
     &.background {
       background-color: var(--color-gray-background);
@@ -217,12 +217,12 @@ const isActiveRoute = computed((): boolean => {
 
   &.hover-gray:hover,
   &.active.hover-gray {
-    color: var(--color-description);
+    color: var(--color-gray);
     background-color: var(--color-gray-background);
   }
 
   &.same-color.hover-gray:hover {
-    background-color: color-mix(in srgb, var(--color-gray) 10%, transparent);
+    background-color: color-mix(in srgb, var(--color-gray-background) 65%, transparent);
   }
 
   &.red {
@@ -244,7 +244,7 @@ const isActiveRoute = computed((): boolean => {
   }
 
   &.same-color.hover-red:hover {
-    background-color: color-mix(in srgb, var(--color-red) 10%, transparent);
+    background-color: color-mix(in srgb, var(--color-red-background) 65%, transparent);
   }
 
   &.blue {
@@ -266,7 +266,7 @@ const isActiveRoute = computed((): boolean => {
   }
 
   &.same-color.hover-blue:hover {
-    background-color: color-mix(in srgb, var(--color-blue) 10%, transparent);
+    background-color: color-mix(in srgb, var(--color-blue-background) 65%, transparent);
   }
 
   &.green {
@@ -288,7 +288,7 @@ const isActiveRoute = computed((): boolean => {
   }
 
   &.same-color.hover-green:hover {
-    background-color: color-mix(in srgb, var(--color-green) 10%, transparent);
+    background-color: color-mix(in srgb, var(--color-green-background) 65%, transparent);
   }
 
   &.yellow {
@@ -310,7 +310,7 @@ const isActiveRoute = computed((): boolean => {
   }
 
   &.same-color.hover-yellow:hover {
-    background-color: color-mix(in srgb, var(--color-yellow) 10%, transparent);
+    background-color: color-mix(in srgb, var(--color-yellow-background) 65%, transparent);
   }
 }
 
