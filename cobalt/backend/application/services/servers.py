@@ -288,7 +288,7 @@ class ServersService(AbstractServersService):
             loader.servers_service.create,
             server_id=created_entity.id,
             container_name=container_name,
-            version=created_entity.version,
+            version=created_entity.version.value,
             download_link=download_link
         )
 

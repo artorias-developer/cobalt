@@ -392,7 +392,7 @@ table {
           }
 
           &.gray {
-            color: var(--color-description);
+            color: var(--color-gray);
             background-color: var(--color-gray-background);
           }
         }
