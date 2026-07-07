@@ -52,7 +52,7 @@ defineProps<{
   }
 
   &.gray {
-    color: var(--color-description);
+    color: var(--color-gray);
 
     &.background {
       background-color: var(--color-gray-background);
@@ -61,7 +61,7 @@ defineProps<{
 
   *:hover > &.hover-gray,
   &.active.hover-gray {
-    color: var(--color-description);
+    color: var(--color-gray);
 
     &.background {
       background-color: var(--color-gray-background);

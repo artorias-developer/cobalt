@@ -77,7 +77,7 @@ defineProps<{
     }
 
     &.gray {
-      background-color: color-mix(in srgb, var(--color-gray) 10%, transparent);
+      background-color: color-mix(in srgb, var(--color-gray-background) 65%, transparent);
     }
   }
 
@@ -102,7 +102,7 @@ defineProps<{
 
   &.gray {
     background-color: var(--color-gray-background);
-    color: var(--color-description);
+    color: var(--color-gray);
   }
 
   span {
