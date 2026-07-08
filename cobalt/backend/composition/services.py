@@ -5,6 +5,7 @@
 
 from typing import Dict
 
+from application.contracts.databases import AbstractTransactionsManager
 from application.contracts.queues import AbstractQueue
 from application.services.files import FilesService
 from composition import DatabaseContainer
@@ -339,6 +340,7 @@ def create_servers_service(
     connections_manager: AbstractConnectionsManager,
     servers_repository: AbstractServersRepository,
     servers_mapper: AbstractServersServiceMapper,
+    transactions_manager: AbstractTransactionsManager,
     queue: AbstractQueue,
     logger: AbstractLogger,
     game_modules: Dict[str, AbstractGameModule]
@@ -352,6 +354,7 @@ def create_servers_service(
     - connections_manager: AbstractConnectionsManager object.
     - servers_repository: AbstractServersRepository object.
     - servers_mapper: AbstractServersServiceMapper object.
+    - transactions_manager: AbstractTransaction object.
     - queue: AbstractQueue object.
     - logger: AbstractLogger object.
     - game_modules: Game modules dictionary.
@@ -365,6 +368,7 @@ def create_servers_service(
         connections_manager=connections_manager,
         servers_repository=servers_repository,
         servers_mapper=servers_mapper,
+        transactions_manager=transactions_manager,
         queue=queue,
         logger=logger,
         game_modules=game_modules
@@ -461,6 +465,7 @@ def create_services_container(
         connections_manager=managers.connections,
         servers_repository=database.repositories.servers,
         servers_mapper=mappers.services.servers,
+        transactions_manager=database.transactions_manager,
         queue=queue,
         logger=logger,
         game_modules=game_modules

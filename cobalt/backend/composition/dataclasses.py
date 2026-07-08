@@ -6,7 +6,7 @@
 from dataclasses import dataclass
 from typing import Any
 
-from application.contracts.databases import AbstractTransaction
+from application.contracts.databases import AbstractTransactionsManager
 from domain.repositories import (
     AbstractAttributesRepository,
     AbstractGamesRepository,
@@ -169,7 +169,7 @@ class RepositoriesContainer:
 @dataclass(slots=True)
 class DatabaseContainer:
     repositories: RepositoriesContainer
-    transactions_manager: AbstractTransaction
+    transactions_manager: AbstractTransactionsManager
 
 @dataclass(slots=True)
 class ApplicationContainer:
