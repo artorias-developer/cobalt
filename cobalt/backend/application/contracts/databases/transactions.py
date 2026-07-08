@@ -12,9 +12,9 @@ from application.contracts.loggers import AbstractLogger
 AbstractRepository = TypeVar("AbstractRepository")
 
 
-class AbstractTransaction(ABC):
+class AbstractTransactionsManager(ABC):
     """
-    Abstract class for database transaction.
+    Abstract class for database transactions manager.
     """
     session: Any
 
@@ -29,7 +29,7 @@ class AbstractTransaction(ABC):
         self.session = None
 
     @abstractmethod
-    async def __aenter__(self) -> "AbstractTransaction":
+    async def __aenter__(self) -> "AbstractTransactionsManager":
         """
         Starts the transaction.
 

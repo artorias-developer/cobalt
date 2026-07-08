@@ -32,7 +32,7 @@ class AbstractServersService(ABC):
     """
     _CONTAINER_INSTALLER_FILE = "Container.installer"
     _CONTAINER_RUNTIME_FILE = "Container.runtime"
-    _CONTAINER_UPDATER_FILE = "Container.updater"
+    _CONTAINER_UPGRADER_FILE = "Container.upgrader"
     _STEAM_BUILD_ID_PATTERN = compile(r'"buildid"\s+"(\d+)"')
 
     build_dir: Path
@@ -331,7 +331,7 @@ class AbstractServersService(ABC):
                     image_name=installer_name
                 )
 
-    async def _create_updater_container(
+    async def _create_upgrader_container(
         self,
         container_file: str,
         container_name: str,
@@ -344,7 +344,7 @@ class AbstractServersService(ABC):
         container_kwargs: Optional[Dict[str, Any]] = None
     ) -> None:
         """
-        Creates an updater container that updates existing server files in place.
+        Creates an upgrader container that upgrades existing server.
 
         Parameters:
         - container_file: Container file to build.
@@ -386,6 +386,10 @@ class AbstractServersService(ABC):
         }
 
         try:
+            await self.containers_client.container_stop(
+                container_name=container_name
+            )
+
             await self.containers_client.image_build(
                 context_path=self.build_dir,
                 container_file=container_file,
@@ -653,27 +657,27 @@ class AbstractServersService(ABC):
         """
         ...
 
-    # @abstractmethod
-    # async def upgrade(
-    #     self,
-    #     server_id: int,
-    #     container_name: str,
-    #     version: str,
-    #     download_link: Optional[str]
-    # ) -> None:
-    #     """
-    #     Upgrades an existing server container to the latest version.
-    #
-    #     Parameters:
-    #     - server_id: Server ID.
-    #     - container_name: Container name.
-    #     - version: Game version.
-    #     - download_link: Download link.
-    #
-    #     Returns:
-    #     - None.
-    #     """
-    #     ...
+    @abstractmethod
+    async def upgrade(
+        self,
+        server_id: int,
+        container_name: str,
+        version: str,
+        download_link: Optional[str]
+    ) -> None:
+        """
+        Upgrades an existing server container.
+
+        Parameters:
+        - server_id: Server ID.
+        - container_name: Container name.
+        - version: Game version.
+        - download_link: Download link.
+
+        Returns:
+        - None.
+        """
+        ...
 
     async def delete(
         self,

@@ -69,17 +69,17 @@ class AuthService(AbstractAuthService):
         Returns:
         - AuthSessionDto: AuthSessionDto object.
         """
-        received_entity = await self.users_service.get_one_by_login(
+        received_dto = await self.users_service.get_one_by_login(
             login=dto.login
         )
 
-        if not received_entity:
+        if not received_dto:
             raise AuthenticationError(self._("Invalid login or password"))
 
         if not self.passwords_service.verify_password(
             plain_password=dto.password,
-            hashed_password=received_entity.hashed_password,
-            local_salt=received_entity.salt
+            hashed_password=received_dto.hashed_password,
+            local_salt=received_dto.salt
         ):
             raise AuthenticationError(self._("Invalid login or password"))
 
@@ -102,7 +102,7 @@ class AuthService(AbstractAuthService):
 
         await self.caches_client.set(
             key=key,
-            value=str(received_entity.id),
+            value=str(received_dto.id),
             expire=CacheConstants.LONG_TTL_SECONDS,
             raise_on_error=True
         )
@@ -148,11 +148,11 @@ class AuthService(AbstractAuthService):
         Returns:
         - None.
         """
-        received_entity = await self.users_service.get_one_by_id(
+        received_dto = await self.users_service.get_one_by_id(
             user_id=user_id
         )
 
-        if not received_entity:
+        if not received_dto:
             raise NotFoundError(self._("User not found"))
 
         if dto.new_password:
@@ -161,8 +161,8 @@ class AuthService(AbstractAuthService):
 
             is_valid = self.passwords_service.verify_password(
                 plain_password=dto.old_password,
-                hashed_password=received_entity.hashed_password,
-                local_salt=received_entity.salt
+                hashed_password=received_dto.hashed_password,
+                local_salt=received_dto.salt
             )
 
             if not is_valid:

@@ -5,6 +5,7 @@
 
 from os import path
 from pathlib import Path
+from typing import Optional
 
 from domain.enums import ServerStatusEnum
 from application.contracts.managers import AbstractConnectionsManager
@@ -126,3 +127,24 @@ class PaperServersService(AbstractServersService):
                 server_id=server_id,
                 status=ServerStatusEnum.FAILED
             )
+
+    async def upgrade(
+        self,
+        server_id: int,
+        container_name: str,
+        version: str,
+        download_link: Optional[str]
+    ) -> None:
+        """
+        Upgrades an existing server container.
+
+        Parameters:
+        - server_id: Server ID.
+        - container_name: Container name.
+        - version: Game version.
+        - download_link: Download link.
+
+        Returns:
+        - None.
+        """
+        ...

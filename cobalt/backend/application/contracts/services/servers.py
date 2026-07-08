@@ -71,6 +71,24 @@ class AbstractServersService(ABC):
         ...
 
     @abstractmethod
+    async def upgrade_one(
+        self,
+        server_id: int,
+        dto: ServerUpdateDto
+    ) -> None:
+        """
+        Upgrades an existing server.
+
+        Parameters:
+        - server_id: Server ID.
+        - dto: ServerUpdateDto object.
+
+        Returns:
+        - None.
+        """
+        ...
+
+    @abstractmethod
     async def update_one(
         self,
         server_id: int,

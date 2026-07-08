@@ -91,7 +91,7 @@ class LoadersService(AbstractLoadersService):
         key = self.caches_client.format_pattern(
             pattern=CacheConstants.LOADERS_ITEM_KEY,
             loader_id=received_entity.id,
-            name=received_entity.name,
+            name=received_entity.name.value,
             game_id=received_entity.game_id
         )
 
