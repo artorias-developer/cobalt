@@ -7,13 +7,13 @@ from typing import Optional
 
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
-from application.contracts.databases import AbstractTransaction
+from application.contracts.databases import AbstractTransactionsManager
 from application.contracts.loggers import AbstractLogger
 
 
-class Transaction(AbstractTransaction):
+class TransactionsManager(AbstractTransactionsManager):
     """
-    Transaction for Postgres repositories.
+    Transactions manager for Postgres repositories.
     """
     session: Optional[AsyncSession]
 
@@ -40,7 +40,9 @@ class Transaction(AbstractTransaction):
         self.session_factory = session_factory
         self.logger = logger
 
-    async def __aenter__(self) -> "Transaction":
+        self.session = None
+
+    async def __aenter__(self) -> "TransactionsManager":
         """
         Starts a new database transaction.
 
@@ -50,7 +52,7 @@ class Transaction(AbstractTransaction):
         Returns:
         - Transaction: Current transaction instance.
         """
-        self._session = self.session_factory()
+        self.session = self.session_factory()
 
         return self
 
@@ -71,14 +73,14 @@ class Transaction(AbstractTransaction):
         Returns:
         - None.
         """
-        if self._session is None:
+        if self.session is None:
             return
 
         try:
             if exc_type is not None:
-                await self._session.rollback()
+                await self.session.rollback()
             else:
-                await self._session.commit()
+                await self.session.commit()
 
         except Exception:
             self.logger.exception("Transaction finalization failed:")
@@ -86,5 +88,5 @@ class Transaction(AbstractTransaction):
             raise
 
         finally:
-            await self._session.close()
-            self._session = None
+            await self.session.close()
+            self.session = None

@@ -5,15 +5,15 @@
 
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
-from application.contracts.databases import AbstractTransaction
+from application.contracts.databases import AbstractTransactionsManager
 from application.contracts.loggers import AbstractLogger
-from infrastructure.databases.postgres.transactions import Transaction
+from infrastructure.databases.postgres.transactions import TransactionsManager
 
 
 def create_postgres_transactions_manager(
     session_factory: async_sessionmaker,
     logger: AbstractLogger
-) -> AbstractTransaction:
+) -> AbstractTransactionsManager:
     """
     Creates a Postgres transactions manager.
 
@@ -24,7 +24,7 @@ def create_postgres_transactions_manager(
     Returns:
     - Transaction: Transaction object.
     """
-    return Transaction(
+    return TransactionsManager(
         session_factory=session_factory,
         logger=logger
     )
