@@ -3,8 +3,8 @@
 #  Repository: https://github.com/artorias-developer/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-from .transactions import AbstractTransaction
+from .transactions import AbstractTransactionsManager
 
 __all__ = [
-    "AbstractTransaction"
+    "AbstractTransactionsManager"
 ]

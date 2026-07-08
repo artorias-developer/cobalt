@@ -153,7 +153,7 @@ class AttributesService(AbstractAttributesService):
         key = self.caches_client.format_pattern(
             pattern=CacheConstants.ATTRIBUTES_ITEM_KEY,
             attribute_id=received_entity.id,
-            key=received_entity.key,
+            key=received_entity.key.value,
             server_id=received_entity.server_id
         )
 

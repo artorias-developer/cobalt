@@ -23,6 +23,7 @@ from application.contracts.managers import (
 )
 from application.contracts.services import AbstractServersService
 from application.contracts.mappers import AbstractServersServiceMapper
+from application.contracts.databases import AbstractTransactionsManager
 from application.contracts.games import (
     AbstractGameModule,
     AbstractLoader
@@ -50,6 +51,7 @@ class ServersService(AbstractServersService):
     servers_repository: AbstractServersRepository
     servers_mapper: AbstractServersServiceMapper
     i18n_manager: AbstractI18nManager
+    transactions_manager: AbstractTransactionsManager
     queue: AbstractQueue
     logger: AbstractLogger
     game_modules: Dict[str, AbstractGameModule]
@@ -63,6 +65,7 @@ class ServersService(AbstractServersService):
         servers_repository: AbstractServersRepository,
         servers_mapper: AbstractServersServiceMapper,
         i18n_manager: AbstractI18nManager,
+        transactions_manager: AbstractTransactionsManager,
         queue: AbstractQueue,
         logger: AbstractLogger,
         game_modules: Dict[str, AbstractGameModule]
@@ -72,6 +75,7 @@ class ServersService(AbstractServersService):
         self.servers_repository = servers_repository
         self.servers_mapper = servers_mapper
         self.i18n_manager = i18n_manager
+        self.transactions_manager = transactions_manager
         self.queue = queue
         self.logger = logger
         self.game_modules = game_modules
@@ -94,12 +98,12 @@ class ServersService(AbstractServersService):
         game_module = self.game_modules.get(server.game.name.value)
 
         if not game_module:
-            raise NotFoundError(self._('Game "{name}" not found').format(name=server.game.name))
+            raise NotFoundError(self._('Game "{name}" not found').format(name=server.game.name.value))
 
         loader = game_module.loaders.get(server.loader.name.value)
 
         if not loader:
-            raise NotFoundError(self._('Loader "{name}" not found').format(name=server.loader.name))
+            raise NotFoundError(self._('Loader "{name}" not found').format(name=server.loader.name.value))
 
         return game_module, loader
 
@@ -252,9 +256,24 @@ class ServersService(AbstractServersService):
             dto=dto
         )
 
-        created_entity = await self.servers_repository.create_one(
-            entity=mapped_entity
-        )
+        async with self.transactions_manager as transaction:
+            created_entity = await self.servers_repository.create_one(
+                entity=mapped_entity,
+                session=transaction.session
+            )
+
+            game_module, loader = await self._get_server_data(
+                server=created_entity
+            )
+
+            try:
+                download_link = await loader.get_download_link(
+                    version=created_entity.version.value
+                )
+            except NotImplementedError:
+                download_link = None
+            except Exception:
+                raise
 
         await self.caches_client.delete(
             patterns=[
@@ -263,22 +282,6 @@ class ServersService(AbstractServersService):
                 )
             ]
         )
-
-        game_module, loader = await self._get_server_data(
-            server=created_entity
-        )
-
-        try:
-            download_link = await loader.get_download_link(
-                version=created_entity.version.value
-            )
-        except NotImplementedError:
-            download_link = None
-        except Exception:
-            await self.servers_repository.delete_one(
-                server_id=created_entity.id
-            )
-            raise
 
         container_name = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
             server_id=created_entity.id
@@ -294,6 +297,69 @@ class ServersService(AbstractServersService):
 
         return self.servers_mapper.entity_to_dto(
             entity=created_entity
+        )
+
+    async def upgrade_one(
+        self,
+        server_id: int,
+        dto: ServerUpdateDto
+    ) -> None:
+        """
+        Upgrades an existing server.
+
+        Parameters:
+        - server_id: Server ID.
+        - dto: ServerUpdateDto object.
+
+        Returns:
+        - None.
+        """
+        mapped_entity = self.servers_mapper.update_dto_to_entity(
+            server_id=server_id,
+            dto=dto
+        )
+
+        async with self.transactions_manager as transaction:
+            updated_entity = await self.servers_repository.update_one(
+                entity=mapped_entity,
+                session=transaction.session
+            )
+
+            game_module, loader = await self._get_server_data(
+                server=updated_entity
+            )
+
+            try:
+                download_link = await loader.get_download_link(
+                    version=updated_entity.version.value
+                )
+            except NotImplementedError:
+                download_link = None
+            except Exception:
+                raise
+
+        await self.caches_client.delete(
+            patterns=[
+                self.caches_client.format_pattern(
+                    pattern=CacheConstants.SERVERS_ITEM_KEY,
+                    server_id=server_id
+                ),
+                self.caches_client.format_pattern(
+                    pattern=CacheConstants.SERVERS_PAGE_KEY
+                )
+            ]
+        )
+
+        container_name = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
+            server_id=updated_entity.id
+        )
+
+        await self.queue.enqueue(
+            loader.servers_service.create,
+            server_id=updated_entity.id,
+            container_name=container_name,
+            version=updated_entity.version.value,
+            download_link=download_link
         )
 
     async def update_one(
@@ -450,16 +516,18 @@ class ServersService(AbstractServersService):
         )
 
         for entity in received_entities:
-            game_module = self.game_modules.get(entity.game.name.value)
+            game_name = entity.game.name.value
+            game_module = self.game_modules.get(game_name)
 
             if not game_module:
-                self.logger.warning(f'Game "{entity.game.name}" not found')
+                self.logger.warning(f'Game "{game_name}" not found')
                 continue
 
-            loader = game_module.loaders.get(entity.loader.name.value)
+            loader_name = entity.loader.name.value
+            loader = game_module.loaders.get(loader_name)
 
             if not loader:
-                self.logger.warning(f'Loader "{entity.loader.name}" not found')
+                self.logger.warning(f'Loader "{loader_name}" not found')
                 continue
 
             container_name = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(

@@ -137,7 +137,7 @@ class GamesService(AbstractGamesService):
         key = self.caches_client.format_pattern(
             pattern=CacheConstants.GAMES_ITEM_KEY,
             game_id=received_entity.id,
-            name=received_entity.name
+            name=received_entity.name.value
         )
 
         mapped_dto = self.games_mapper.entity_to_dto(

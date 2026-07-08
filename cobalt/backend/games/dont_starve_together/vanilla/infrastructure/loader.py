@@ -3,7 +3,7 @@
 #  Repository: https://github.com/artorias-developer/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-from typing import List, Optional
+from typing import List
 
 from application.contracts.games import (
     AbstractLoader,

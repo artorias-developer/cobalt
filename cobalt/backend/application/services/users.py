@@ -178,7 +178,7 @@ class UsersService(AbstractUsersService):
         key = self.caches_client.format_pattern(
             pattern=CacheConstants.USERS_ITEM_KEY,
             user_id=received_entity.id,
-            login=received_entity.login,
+            login=received_entity.login.value,
             role_id=received_entity.role.id
         )
 
@@ -230,7 +230,7 @@ class UsersService(AbstractUsersService):
         key = self.caches_client.format_pattern(
             pattern=CacheConstants.USERS_ITEM_KEY,
             user_id=received_entity.id,
-            login=received_entity.login,
+            login=received_entity.login.value,
             role_id=received_entity.role.id
         )
 

@@ -149,7 +149,7 @@ class VanillaServersService(AbstractServersService):
         download_link: Optional[str]
     ) -> None:
         """
-        Upgrades an existing server container to the latest version.
+        Upgrades an existing server container.
 
         Parameters:
         - server_id: Server ID.
@@ -167,18 +167,9 @@ class VanillaServersService(AbstractServersService):
 
         host_container_dir = path.join(self.host_containers_dir, container_name)
 
-        status = await self.containers_client.container_status(
-            container_name=container_name
-        )
-
         try:
-            if status.running:
-                await self.containers_client.container_stop(
-                    container_name=container_name
-                )
-
-            await self._create_updater_container(
-                container_file=self._CONTAINER_UPDATER_FILE,
+            await self._create_upgrader_container(
+                container_file=self._CONTAINER_UPGRADER_FILE,
                 container_name=container_name,
                 installation_dir=host_container_dir,
                 container_kwargs={
@@ -188,11 +179,6 @@ class VanillaServersService(AbstractServersService):
                     "APP_ID": str(self._STEAM_APP_ID)
                 }
             )
-
-            if status.running:
-                await self.containers_client.container_start(
-                    container_name=container_name
-                )
 
             steam_version = await self._read_steam_version(
                 container_name=container_name,
@@ -205,17 +191,13 @@ class VanillaServersService(AbstractServersService):
                 version=steam_version
             )
         except Exception:
-            self.logger.exception(f'Error while updating container "{container_name}":')
+            self.logger.exception(f'Error while upgrading container "{container_name}":')
 
             await self._update_server_state(
                 server_id=server_id,
                 status=ServerStatusEnum.UPGRADE_FAILED
             )
 
-            if status.running:
-                try:
-                    await self.containers_client.container_start(
-                        container_name=container_name
-                    )
-                except Exception:
-                    self.logger.exception(f'Error while restarting container "{container_name}" after failed update:')
+            await self.containers_client.container_start(
+                container_name=container_name
+            )

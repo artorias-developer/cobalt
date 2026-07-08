@@ -232,7 +232,7 @@ class SettingsService(AbstractSettingsService):
             ]
         )
 
-        if current_user.settings.language != updated_entity.language:
+        if current_user.settings.language.value != updated_entity.language.value:
             await self.connections_manager.disconnect(
                 connection_id=current_user.id
             )
