@@ -52,5 +52,8 @@ class ServerUpdateDto(BaseDto):
     version: Optional[str] = None
     status: Optional[ServerStatusEnum] = None
 
+class ServerUpgradeDto(BaseDto):
+    version: str
+
 class ServerExecuteDto(BaseDto):
     command: str

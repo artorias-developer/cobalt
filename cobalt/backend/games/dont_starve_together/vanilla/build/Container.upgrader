@@ -14,18 +14,21 @@ RUN apt-get update && \
 WORKDIR ${SERVER_ROOT}
 ENV APP_ID=${APP_ID}
 
-
 CMD for i in 1 2 3; do \
     steamcmd.sh +@ShutdownOnFailedCommand 1 \
                 +@sSteamCmdForcePlatformType linux \
-                +force_install_dir ${SERVER_ROOT} \
+                +force_install_dir "${SERVER_ROOT}" \
                 +login anonymous \
-                +app_update ${APP_ID} validate \
-                +quit; \
-    if [ $? -eq 0 ]; then \
-        echo "Update successful."; \
-        break; \
+                +app_update "${APP_ID}" validate \
+                +quit 2>&1 | tee /tmp/steamcmd_output.log; \
+    if grep -q "Success! App '${APP_ID}' fully installed." /tmp/steamcmd_output.log; then \
+        echo "Upgrade successful."; \
+        rm -f /tmp/steamcmd_output.log; \
+        exit 0; \
     fi; \
     echo "Attempt $i failed, retrying..."; \
-    [ $i -eq 3 ] && exit 1; \
-done
+    sleep 5; \
+done; \
+rm -f /tmp/steamcmd_output.log; \
+echo "All attempts failed."; \
+exit 1

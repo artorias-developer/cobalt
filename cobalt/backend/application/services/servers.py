@@ -37,6 +37,7 @@ from application.dtos import (
     ServersPageDto,
     ServerCreateDto,
     ServerUpdateDto,
+    ServerUpgradeDto,
     ServerExecuteDto,
     ServerStatusDto
 )
@@ -302,19 +303,19 @@ class ServersService(AbstractServersService):
     async def upgrade_one(
         self,
         server_id: int,
-        dto: ServerUpdateDto
+        dto: ServerUpgradeDto
     ) -> None:
         """
         Upgrades an existing server.
 
         Parameters:
         - server_id: Server ID.
-        - dto: ServerUpdateDto object.
+        - dto: ServerUpgradeDto object.
 
         Returns:
         - None.
         """
-        mapped_entity = self.servers_mapper.update_dto_to_entity(
+        mapped_entity = self.servers_mapper.upgrade_dto_to_update_entity(
             server_id=server_id,
             dto=dto
         )
@@ -355,7 +356,7 @@ class ServersService(AbstractServersService):
         )
 
         await self.queue.enqueue(
-            loader.servers_service.create,
+            loader.servers_service.upgrade,
             server_id=updated_entity.id,
             container_name=container_name,
             version=updated_entity.version.value,

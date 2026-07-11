@@ -12,6 +12,7 @@ from application.dtos import (
     ServersPageDto,
     ServerCreateDto,
     ServerUpdateDto,
+    ServerUpgradeDto,
     ServerExecuteDto,
     ServerStatusDto
 )
@@ -74,14 +75,14 @@ class AbstractServersService(ABC):
     async def upgrade_one(
         self,
         server_id: int,
-        dto: ServerUpdateDto
+        dto: ServerUpgradeDto
     ) -> None:
         """
         Upgrades an existing server.
 
         Parameters:
         - server_id: Server ID.
-        - dto: ServerUpdateDto object.
+        - dto: ServerUpgradeDto object.
 
         Returns:
         - None.

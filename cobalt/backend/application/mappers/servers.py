@@ -29,6 +29,7 @@ from application.dtos import (
     ServersGetPageDto,
     ServerCreateDto,
     ServerUpdateDto,
+    ServerUpgradeDto,
     ServerStatusDto
 )
 
@@ -201,4 +202,24 @@ class ServersServiceMapper(AbstractServersServiceMapper):
             name=ServerName(dto.name) if dto.name is not None else None,
             version=ServerVersion(dto.version) if dto.version is not None else None,
             status=dto.status
+        )
+
+    def upgrade_dto_to_update_entity(
+        self,
+        server_id: int,
+        dto: ServerUpgradeDto
+    ) -> ServerUpdateEntity:
+        """
+        Converts ServerUpgradeDto object to ServerUpdateEntity object.
+
+        Parameters:
+        - server_id: Server ID.
+        - dto: ServerUpdateDto object.
+
+        Returns:
+        - ServerUpdateEntity: ServerUpdateEntity object.
+        """
+        return ServerUpdateEntity(
+            id=server_id,
+            version=ServerVersion(dto.version)
         )
