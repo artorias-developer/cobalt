@@ -11,6 +11,7 @@ from application.dtos import (
     ServersPageDto,
     ServerCreateDto,
     ServerUpdateDto,
+    ServerUpgradeDto,
     ServerExecuteDto,
     ServerStatusDto
 )
@@ -26,6 +27,7 @@ from presentation.http.fastapi.v1.schemas import (
     ServersPageSchema,
     ServerCreateSchema,
     ServerUpdateSchema,
+    ServerUpgradeSchema,
     ServerExecuteSchema,
     ServerStatusSchema
 )
@@ -194,6 +196,23 @@ class ServersRouterMapper(AbstractServersRouterMapper):
         """
         return ServerUpdateDto(
             name=schema.name
+        )
+
+    def upgrade_schema_to_dto(
+        self,
+        schema: ServerUpgradeSchema
+    ) -> ServerUpgradeDto:
+        """
+        Converts ServerUpgradeSchema object to ServerUpgradeDto object.
+
+        Parameters:
+        - schema: ServerUpgradeSchema object.
+
+        Returns:
+        - ServerUpgradeDto: ServerUpgradeDto object.
+        """
+        return ServerUpgradeDto(
+            version=schema.version
         )
 
     def execute_schema_to_dto(

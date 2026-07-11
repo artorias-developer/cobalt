@@ -13,6 +13,7 @@ import type {
   ServersPageRequest,
   ServerCreateRequest,
   ServerUpdateRequest,
+  ServerUpgradeRequest,
   ServerExecuteRequest
 } from "@/types"
 
@@ -78,6 +79,20 @@ export class HttpServersApiService implements IHttpServersApiService {
    */
   async updateOne(serverId: number, data: ServerUpdateRequest): Promise<ServerEntity> {
     return this.client.patch<ServerEntity>(`${this.prefix}/${serverId}`, data)
+  }
+
+  /**
+   * Upgrades an existing server to a specified version.
+   *
+   * Parameters:
+   * - serverId: Server ID.
+   * - data: ServerUpgradeRequest object.
+   *
+   * Returns:
+   * - Promise<void>.
+   */
+  async upgradeOne(serverId: number, data: ServerUpgradeRequest): Promise<void> {
+    return this.client.patch<void>(`${this.prefix}/${serverId}/upgrade`, data)
   }
 
   /**

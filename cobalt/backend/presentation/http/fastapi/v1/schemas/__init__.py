@@ -61,6 +61,7 @@ from .servers import (
     ServersPageSchema,
     ServerCreateSchema,
     ServerUpdateSchema,
+    ServerUpgradeSchema,
     ServersDeleteSchema,
     ServerExecuteSchema,
     ServerStatusSchema
@@ -122,6 +123,7 @@ __all__ = [
     "ServersPageSchema",
     "ServerCreateSchema",
     "ServerUpdateSchema",
+    "ServerUpgradeSchema",
     "ServersDeleteSchema",
     "ServerExecuteSchema",
     "ServerStatusSchema",

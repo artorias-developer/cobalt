@@ -310,6 +310,24 @@ class ServerUpdateSchema(BaseModel):
         }
     )
 
+class ServerUpgradeSchema(BaseModel):
+    version: str = Field(
+        ...,
+        min_length=1,
+        max_length=16,
+        title="Server version",
+        description="Server version"
+    )
+
+    model_config = ConfigDict(
+        extra="ignore",
+        json_schema_extra={
+            "example": {
+                "version": "1.4.5.6"
+            }
+        }
+    )
+
 class ServersDeleteSchema(RootModel):
     root: List[Annotated[int, Field(gt=0)]] = Field(
         ...,

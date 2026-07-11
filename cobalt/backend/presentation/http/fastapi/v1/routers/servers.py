@@ -20,6 +20,7 @@ from presentation.http.fastapi.v1.schemas import (
     ServersPageSchema,
     ServerCreateSchema,
     ServerUpdateSchema,
+    ServerUpgradeSchema,
     ServersDeleteSchema,
     ServerExecuteSchema,
     ServerStatusSchema
@@ -131,6 +132,20 @@ class HttpServersRouter(AbstractHttpServersRouter, HttpBaseRouter):
                 Depends(self.http_permission_required(
                     permissions=[
                         PermissionEnum.SERVER_UPDATE
+                    ]
+                ))
+            ]
+        )
+
+        router.add_api_route(
+            path="/{server_id}/upgrade",
+            endpoint=self.upgrade_one,
+            methods=["PATCH"],
+            operation_id="servers_upgrade_one",
+            dependencies=[
+                Depends(self.http_permission_required(
+                    permissions=[
+                        PermissionEnum.SERVER_SETTINGS_UPDATE
                     ]
                 ))
             ]
@@ -319,6 +334,34 @@ class HttpServersRouter(AbstractHttpServersRouter, HttpBaseRouter):
 
         return self.servers_mapper.dto_to_schema(
             dto=response_dto
+        )
+
+    async def upgrade_one(
+        self,
+        server_id: int,
+        schema: ServerUpgradeSchema = Body(...)
+    ) -> Response:
+        """
+        Upgrades an existing server.
+
+        Parameters:
+        - server_id: Server ID.
+        - schema: ServerUpgradeSchema object.
+
+        Returns:
+        - Response: Response object.
+        """
+        request_dto = self.servers_mapper.upgrade_schema_to_dto(
+            schema=schema
+        )
+
+        await self.servers_service.upgrade_one(
+            server_id=server_id,
+            dto=request_dto
+        )
+
+        return Response(
+            status_code=status.HTTP_204_NO_CONTENT
         )
 
     async def delete_one(

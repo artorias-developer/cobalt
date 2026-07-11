@@ -36,6 +36,13 @@ export interface ServerUpdateRequest {
 }
 
 /**
+ * Represents a server upgrade request.
+ */
+export interface ServerUpgradeRequest {
+  version: string
+}
+
+/**
  * Represents a server execute request.
  */
 export interface ServerExecuteRequest {
