@@ -7,13 +7,11 @@ from os import path
 from pathlib import Path
 from typing import Optional
 
-from domain.enums import ServerStatusEnum
 from application.contracts.managers import AbstractConnectionsManager
 from application.contracts.clients import AbstractContainersClient
 from application.contracts.loggers import AbstractLogger
 from application.contracts.services import AbstractServersService as CoreServersService
 from application.contracts.games import AbstractServersService
-from application.clients.containers.shared import ContainersConstants
 
 
 class VanillaServersService(AbstractServersService):
@@ -21,7 +19,7 @@ class VanillaServersService(AbstractServersService):
     Factorio Vanilla servers service.
     """
     _INTERNAL_PORT = 34197
-    _INSTALL_MARKER = "bin/x64/factorio"
+    _INSTALLATION_MARKER = "bin/x64/factorio"
 
     host_containers_dir: Path
 
@@ -205,11 +203,6 @@ class VanillaServersService(AbstractServersService):
         Returns:
         - None.
         """
-        await self._update_server_state(
-            server_id=server_id,
-            status=ServerStatusEnum.PROCESSING
-        )
-
         host_container_dir = path.join(self.host_containers_dir, container_name)
         has_admin_list = self._has_admin_list_option(version)
         has_use_whitelist = self._has_use_whitelist_option(version)
@@ -221,14 +214,11 @@ class VanillaServersService(AbstractServersService):
         try:
             port = self.get_available_port()
 
-            await self._create_container_dir(
-                container_name=container_name
-            )
-
             await self._create_installer_container(
-                container_file=self._CONTAINER_INSTALLER_FILE,
+                server_id=server_id,
                 container_name=container_name,
                 installation_dir=host_container_dir,
+                installation_marker=self._INSTALLATION_MARKER,
                 image_build_args={
                     "FACTORIO_LINK": download_link,
                     "HAS_ADMIN_LIST_OPTION": str(has_admin_list).lower(),
@@ -238,22 +228,12 @@ class VanillaServersService(AbstractServersService):
                 }
             )
 
-            await self._verify_installation(
-                container_name=container_name,
-                install_marker=self._INSTALL_MARKER
-            )
-
             await self._create_runtime_container(
-                container_file=self._CONTAINER_RUNTIME_FILE,
+                server_id=server_id,
                 container_name=container_name,
+                installation_dir=host_container_dir,
                 ports={
                     f"{self._INTERNAL_PORT}/udp": port
-                },
-                volumes={
-                    host_container_dir: {
-                        "bind": ContainersConstants.SERVER_ROOT,
-                        "mode": "rw"
-                    }
                 },
                 container_environment={
                     "HAS_ADMIN_LIST_OPTION": str(has_admin_list).lower(),
@@ -264,22 +244,8 @@ class VanillaServersService(AbstractServersService):
                     "HAS_RELATIVE_CREATE_PATH": str(has_relative_create_path).lower()
                 }
             )
-
-            await self._update_server_state(
-                server_id=server_id,
-                status=ServerStatusEnum.CREATED
-            )
         except Exception:
             self.logger.exception(f'Error while creating container "{container_name}":')
-
-            await self._remove_container_dir(
-                container_name=container_name
-            )
-
-            await self._update_server_state(
-                server_id=server_id,
-                status=ServerStatusEnum.FAILED
-            )
 
     async def upgrade(
         self,
