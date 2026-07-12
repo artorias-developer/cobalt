@@ -426,8 +426,11 @@ class ServersService(AbstractServersService):
         if not received_entity:
             raise NotFoundError(self._("Server {server_id} not found").format(server_id=server_id))
 
-        if received_entity.state not in (ServerStateEnum.CREATED, ServerStateEnum.FAILED):
+        if received_entity.state in (ServerStateEnum.PENDING, ServerStateEnum.PROCESSING):
             raise ConflictError(self._("Server {server_id} is still being installed").format(server_id=server_id))
+
+        if received_entity.state == ServerStateEnum.UPGRADING:
+            raise ConflictError(self._("Server {server_id} is still being upgraded").format(server_id=server_id))
 
         await self.servers_repository.delete_one(
             server_id=server_id
@@ -484,11 +487,19 @@ class ServersService(AbstractServersService):
 
         installing = [
             server for server in received_entities
-            if server.state not in (ServerStateEnum.CREATED, ServerStateEnum.FAILED)
+            if server.state in (ServerStateEnum.PENDING, ServerStateEnum.PROCESSING)
         ]
 
         if installing:
             raise ConflictError(self._("Some servers are still being installed"))
+
+        upgrading = [
+            server for server in received_entities
+            if server.state == ServerStateEnum.UPGRADING
+        ]
+
+        if upgrading:
+            raise ConflictError(self._("Some servers are still being upgraded"))
 
         await self.servers_repository.delete_many(
             server_ids=server_ids
@@ -689,7 +700,7 @@ class ServersService(AbstractServersService):
         """
         await self.connections_manager.join_room(
             connection_id=connection_id,
-            room_name=RoomsConstants.SERVERS_STATUSES_KEY
+            room_name=RoomsConstants.SERVERS_STATES_KEY
         )
 
     async def unsubscribe_states(
@@ -707,5 +718,5 @@ class ServersService(AbstractServersService):
         """
         await self.connections_manager.leave_room(
             connection_id=connection_id,
-            room_name=RoomsConstants.SERVERS_STATUSES_KEY
+            room_name=RoomsConstants.SERVERS_STATES_KEY
         )

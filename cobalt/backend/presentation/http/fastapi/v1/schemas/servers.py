@@ -99,7 +99,7 @@ class ServerSchema(BaseModel):
                         "updated_at": "2024-01-02T12:00:00"
                     }
                 ],
-                "status": "created",
+                "state": "created",
                 "created_at": "2024-01-01T12:00:00",
                 "updated_at": "2024-01-02T12:00:00"
             }
@@ -163,7 +163,7 @@ class ServersPageSchema(BaseModel):
                                 "updated_at": "2024-01-02T12:00:00"
                             }
                         ],
-                        "status": "created",
+                        "state": "created",
                         "created_at": "2024-01-01T12:00:00",
                         "updated_at": "2024-01-02T12:00:00"
                     }

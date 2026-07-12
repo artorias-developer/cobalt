@@ -31,7 +31,7 @@ class StartupServersCheckerJob(BaseApschedulerJob):
 
     async def execute(self) -> None:
         """
-        Changes the status of servers to FAILED if the container was not created.
+        Changes the state of servers to FAILED if the container was not created.
 
         Parameters:
         - None.

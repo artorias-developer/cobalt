@@ -68,7 +68,7 @@ class ServersRepositoryMapper(AbstractServersRepositoryMapper):
             attributes=self.attributes_mapper.models_to_entities(
                 models=model.attributes
             ),
-            state=model.status,
+            state=model.state,
             created_at=model.created_at,
             updated_at=model.updated_at
         )
@@ -109,7 +109,7 @@ class ServersRepositoryMapper(AbstractServersRepositoryMapper):
             game_id=entity.game_id,
             loader_id=entity.loader_id,
             version=entity.version.value,
-            status=ServerStateEnum.PENDING
+            state=ServerStateEnum.PENDING
         )
 
     def update_entity_to_model(
@@ -134,6 +134,6 @@ class ServersRepositoryMapper(AbstractServersRepositoryMapper):
             model.version = entity.version.value
 
         if entity.state is not None:
-            model.status = entity.state
+            model.state = entity.state
 
         return model

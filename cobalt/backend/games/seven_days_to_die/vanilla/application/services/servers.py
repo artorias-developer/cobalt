@@ -112,9 +112,21 @@ class VanillaServersService(AbstractServersService):
         - server_id: Server ID.
         - container_name: Container name.
         - version: Game version.
-        - download_link: Download link.
+        - download_link: Download link for Vanilla 7 Days to Die.
 
         Returns:
         - None.
         """
-        ...
+        host_container_dir = path.join(self.host_containers_dir, container_name)
+
+        try:
+            await self._create_upgrader_container(
+                server_id=server_id,
+                version=version,
+                is_steam_server=True,
+                steam_app_id=self._STEAM_APP_ID,
+                container_name=container_name,
+                installation_dir=host_container_dir
+            )
+        except Exception:
+            self.logger.exception(f'Error while upgrading container "{container_name}":')

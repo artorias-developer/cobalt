@@ -18,7 +18,7 @@ class ServerModel(BaseModel):
     game_id = Column(Integer, ForeignKey("games.id", ondelete="CASCADE"), nullable=False)
     loader_id = Column(Integer, ForeignKey("games_loaders.id", ondelete="RESTRICT"), nullable=False)
     version = Column(String(16), nullable=False)
-    status = Column(Enum(ServerStateEnum), nullable=False, default=ServerStateEnum.PENDING)
+    state = Column(Enum(ServerStateEnum), nullable=False, default=ServerStateEnum.PENDING)
 
     game = relationship(
         "GameModel",

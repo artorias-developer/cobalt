@@ -1,0 +1,34 @@
+FROM debian:bookworm-slim
+
+ARG SERVER_ROOT
+ARG APP_ID
+
+RUN apt-get update && \
+    apt-get install -y \
+        wget \
+        lib32gcc-s1 && \
+    rm -rf /var/lib/apt/lists/* && \
+    wget -qO- "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz" | tar zxf - -C /usr/local/bin && \
+    mkdir -p /installer_src
+
+WORKDIR ${SERVER_ROOT}
+ENV APP_ID=${APP_ID}
+
+CMD for i in 1 2 3; do \
+    steamcmd.sh +@ShutdownOnFailedCommand 1 \
+                +@sSteamCmdForcePlatformType linux \
+                +force_install_dir "${SERVER_ROOT}" \
+                +login anonymous \
+                +app_update "${APP_ID}" validate \
+                +quit 2>&1 | tee /tmp/steamcmd_output.log; \
+    if grep -q "Success! App '${APP_ID}' fully installed." /tmp/steamcmd_output.log; then \
+        echo "Upgrade successful."; \
+        rm -f /tmp/steamcmd_output.log; \
+        exit 0; \
+    fi; \
+    echo "Attempt $i failed, retrying..."; \
+    sleep 5; \
+done; \
+rm -f /tmp/steamcmd_output.log; \
+echo "All attempts failed."; \
+exit 1

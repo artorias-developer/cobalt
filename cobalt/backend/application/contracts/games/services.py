@@ -178,7 +178,7 @@ class AbstractServersService(ABC):
                 server_data["running"] = status.running
 
         await self.connections_manager.send_to_room(
-            room_name=RoomsConstants.SERVERS_STATUSES_KEY,
+            room_name=RoomsConstants.SERVERS_STATES_KEY,
             data={
                 "type": "message",
                 "event": ServersEventsEnum.SERVER_STATE,
