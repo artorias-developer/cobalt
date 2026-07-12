@@ -340,6 +340,7 @@ def create_servers_service(
     connections_manager: AbstractConnectionsManager,
     servers_repository: AbstractServersRepository,
     servers_mapper: AbstractServersServiceMapper,
+    loaders_service: AbstractLoadersService,
     transactions_manager: AbstractTransactionsManager,
     queue: AbstractQueue,
     logger: AbstractLogger,
@@ -354,6 +355,7 @@ def create_servers_service(
     - connections_manager: AbstractConnectionsManager object.
     - servers_repository: AbstractServersRepository object.
     - servers_mapper: AbstractServersServiceMapper object.
+    - loaders_service: AbstractLoadersService object.
     - transactions_manager: AbstractTransaction object.
     - queue: AbstractQueue object.
     - logger: AbstractLogger object.
@@ -368,6 +370,7 @@ def create_servers_service(
         connections_manager=connections_manager,
         servers_repository=servers_repository,
         servers_mapper=servers_mapper,
+        loaders_service=loaders_service,
         transactions_manager=transactions_manager,
         queue=queue,
         logger=logger,
@@ -459,12 +462,20 @@ def create_services_container(
         connections_manager=managers.connections
     )
 
+    loaders_service = create_loaders_service(
+        i18n_manager=managers.i18n,
+        caches_client=clients.caches,
+        loaders_repository=database.repositories.loaders,
+        loaders_mapper=mappers.services.loaders
+    )
+
     servers_service = create_servers_service(
         i18n_manager=managers.i18n,
         caches_client=clients.caches,
         connections_manager=managers.connections,
         servers_repository=database.repositories.servers,
         servers_mapper=mappers.services.servers,
+        loaders_service=loaders_service,
         transactions_manager=database.transactions_manager,
         queue=queue,
         logger=logger,
@@ -506,13 +517,6 @@ def create_services_container(
         caches_client=clients.caches,
         games_repository=database.repositories.games,
         games_mapper=mappers.services.games
-    )
-
-    loaders_service = create_loaders_service(
-        i18n_manager=managers.i18n,
-        caches_client=clients.caches,
-        loaders_repository=database.repositories.loaders,
-        loaders_mapper=mappers.services.loaders
     )
 
     logs_service = create_logs_service(

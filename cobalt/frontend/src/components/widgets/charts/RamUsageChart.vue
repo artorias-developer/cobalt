@@ -178,6 +178,10 @@ onUnmounted(() => {
     flex: 1;
   }
 
+  .chart {
+    min-height: 0;
+  }
+
   .message {
     justify-content: center;
   }

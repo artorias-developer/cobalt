@@ -83,7 +83,7 @@ import { useNotification } from "@kyvg/vue3-notification"
 
 import { useUserStore, useServerStore } from "@/stores"
 import { HTTP_SERVERS_API_SERVICE_KEY } from "@/utils"
-import { PermissionEnum } from "@/types"
+import { PermissionEnum, ServerStateEnum } from "@/types"
 import type { InfoField } from "@/types"
 
 import Block from "@/components/ui/Block.vue"
@@ -267,6 +267,7 @@ const fields = computed((): InfoField[] => {
  * - boolean: `true` if any button (start, stop, or restart) is visible, `false` otherwise.
  */
 const hasAnyVisibleButton = computed((): boolean => {
+  if (isUpgrading.value) return false
   if (!status?.value?.running && hasServerStartAccess.value) return true
   if (status?.value?.running && hasServerStopAccess.value) return true
   if (hasServerStartAccess.value) return true
@@ -297,6 +298,19 @@ const status = computed(() =>
  */
 const hostname = computed((): string | null =>
   serverStore.getHostname(props.serverId)
+)
+
+/**
+ * Checks whether the server is currently in the upgrading state.
+ *
+ * Parameters:
+ * - null.
+ *
+ * Returns:
+ * - boolean: `true` if the server is upgrading, `false` otherwise.
+ */
+const isUpgrading = computed((): boolean =>
+  serverStore.getState(props.serverId) === ServerStateEnum.UPGRADING
 )
 
 /**

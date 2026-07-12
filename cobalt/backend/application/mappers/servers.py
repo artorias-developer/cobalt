@@ -5,6 +5,7 @@
 
 from typing import List
 
+from domain.enums import ServerStateEnum
 from domain.value_objects import (
     ServerName,
     ServerVersion
@@ -221,5 +222,6 @@ class ServersServiceMapper(AbstractServersServiceMapper):
         """
         return ServerUpdateEntity(
             id=server_id,
-            version=ServerVersion(dto.version)
+            version=ServerVersion(dto.version),
+            state=ServerStateEnum.UPGRADING
         )

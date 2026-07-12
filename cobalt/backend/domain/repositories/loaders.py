@@ -39,6 +39,26 @@ class AbstractLoadersRepository(ABC):
         ...
 
     @abstractmethod
+    async def get_one_by_id(
+        self,
+        loader_id: int,
+        game_id: int,
+        session: Optional[Any] = None
+    ) -> Optional[LoaderEntity]:
+        """
+        Gets an existing loader by ID.
+
+        Parameters:
+        - loader_id: Loader ID.
+        - game_id: Game ID.
+        - session: Session object.
+
+        Returns:
+        - LoaderEntity: LoaderEntity object.
+        """
+        ...
+
+    @abstractmethod
     async def create_one(
         self,
         game_id: int,

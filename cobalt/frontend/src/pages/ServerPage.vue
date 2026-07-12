@@ -10,6 +10,7 @@
     v-if="hasServerViewAccess"
     class="page"
     :class="server?.game.name"
+    data-id="813b82c9a543e133113b5ddfe6bfd09037718b49d8"
   >
     <div class="heading">
       <div class="info">
@@ -36,14 +37,20 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, inject } from "vue"
+import { useI18n } from "vue-i18n"
+import { computed, onMounted, inject, onUnmounted } from "vue"
 import { useRoute } from "vue-router"
 import { useNotification } from "@kyvg/vue3-notification"
 import type { Component } from "vue"
 
 import { useUserStore, useServerStore } from "@/stores"
-import { GameModules, HTTP_SERVERS_API_SERVICE_KEY } from "@/utils"
-import { PermissionEnum } from "@/types"
+import {
+  GameModules,
+  HTTP_SERVERS_API_SERVICE_KEY,
+  HTTP_GAMES_API_SERVICE_KEY,
+  WS_SERVERS_API_SERVICE_KEY
+} from "@/utils"
+import { PermissionEnum, ServerStateEnum } from "@/types"
 import type { Tag, ServerEntity, ServerStatusEntity } from "@/types"
 
 import NotFound from "@/components/widgets/NotFound.vue"
@@ -66,10 +73,13 @@ const gameComponents: Record<string, Component> = {
   terraria: TerrariaServerPage
 }
 
+const httpGamesApiService = inject(HTTP_GAMES_API_SERVICE_KEY)!
 const httpServersApiService = inject(HTTP_SERVERS_API_SERVICE_KEY)!
+const wsServersApiService = inject(WS_SERVERS_API_SERVICE_KEY)!
 const userStore = useUserStore()
 const serverStore = useServerStore()
 const { notify } = useNotification()
+const { t } = useI18n()
 const route = useRoute()
 
 /**
@@ -94,7 +104,7 @@ async function fetchServer(): Promise<void> {
 }
 
 /**
- * Fetches the server container status from the API and saves it to the store.
+ * Fetches the server container status and IP.
  *
  * Parameters:
  * - null.
@@ -102,7 +112,7 @@ async function fetchServer(): Promise<void> {
  * Returns:
  * - Promise<void>.
  */
-async function fetchServerStatus(): Promise<void> {
+async function fetchServerControls(): Promise<void> {
   try {
     const data = await httpServersApiService.status(serverId.value)
     serverStore.setStatus(serverId.value, data)
@@ -110,8 +120,63 @@ async function fetchServerStatus(): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to fetch server status"
+      text: error?.response?.data?.message ?? "Failed to fetch server controls"
     })
+  }
+}
+
+/**
+ * Fetches the game's loaders and saves the matching loader's versions to the store.
+ * Requires the server entity to already be present in the store.
+ *
+ * Parameters:
+ * - null.
+ *
+ * Returns:
+ * - Promise<void>.
+ */
+async function fetchLoaderVersions(): Promise<void> {
+  const currentServer = server.value
+  if (!currentServer) return
+
+  try {
+    const game = await httpGamesApiService.getOne(currentServer.game.id)
+    const loader = game.loaders.find(loader => loader.id === currentServer.loader.id)
+
+    serverStore.setLoaderVersions(serverId.value, loader?.versions ?? [])
+  } catch (error: any) {
+    notify({
+      type: "error",
+      text: error?.response?.data?.message ?? "Failed to fetch loader versions"
+    })
+  }
+}
+
+/**
+ * Handles servers state updates received from WebSocket.
+ *
+ * Parameters:
+ * - event: Event with updated server state.
+ *
+ * Returns:
+ * - Promise<void>.
+ */
+async function handleStateUpdate(event: any): Promise<void> {
+  const currentServer = server.value
+
+  if (!currentServer) return
+  if (currentServer.id !== event.data.server_id) return
+
+  if (event.data.version !== undefined) {
+    serverStore.setVersion(serverId.value, event.data.version)
+  }
+
+  if (event.data.running !== undefined) {
+    serverStore.setRunning(serverId.value, event.data.running)
+  }
+
+  if (event.data.state !== undefined) {
+    serverStore.setState(serverId.value, event.data.state)
   }
 }
 
@@ -180,11 +245,15 @@ const tags = computed((): Tag[] => {
   const gameName = server.value?.game.name ?? ""
   const loaderName = server.value?.loader.name ?? ""
 
-  return [
-    {
-      label: status.value?.running ? "Online" : "Offline",
+  const statusTag: Tag = server.value?.state === ServerStateEnum.UPGRADING
+    ? { label: t("servers.server.status.upgrading"), class: "yellow" }
+    : {
+      label: status.value?.running ? t("servers.server.status.online") : t("servers.server.status.offline"),
       class: status.value?.running ? "green" : "red"
-    },
+    }
+
+  return [
+    statusTag,
     {
       label: GameModules[gameName]?.displayName
     },
@@ -214,11 +283,26 @@ const hasServerViewAccess = computed((): boolean =>
 
 onMounted(async (): Promise<void> => {
   if (hasServerViewAccess.value) {
+    await fetchServer()
+
+    if (server.value?.state === ServerStateEnum.UPGRADE_FAILED) {
+      notify({
+        type: "error",
+        text: t("servers.server.oneTime.upgrade.error")
+      })
+    }
+
     await Promise.all([
-      fetchServer(),
-      fetchServerStatus()
+      fetchServerControls(),
+      fetchLoaderVersions()
     ])
+
+    wsServersApiService.subscribeStates(handleStateUpdate)
   }
+})
+
+onUnmounted(() => {
+  wsServersApiService.unsubscribeStates(handleStateUpdate)
 })
 </script>
 
@@ -258,6 +342,11 @@ onMounted(async (): Promise<void> => {
           &.green {
             color: var(--color-green);
             background-color: var(--color-green-background);
+          }
+
+          &.yellow {
+            color: var(--color-yellow);
+            background-color: var(--color-yellow-background);
           }
 
           &.red {

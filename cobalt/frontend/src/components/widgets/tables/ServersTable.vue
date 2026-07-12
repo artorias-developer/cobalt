@@ -30,18 +30,18 @@
       @sort-change="handleSortChange"
     >
       <template #tableRowActions="{ row }">
-        <template v-if="row.status !== ServerStatusEnum.CREATED">
+        <template v-if="isTransientState(row.state)">
           <div class="status-icon">
             <Icon
-              :icon="row.status === ServerStatusEnum.FAILED ? errorIcon : clockIcon"
-              :base-color="row.status === ServerStatusEnum.FAILED ? 'red' : 'yellow'"
+              :icon="isErrorState(row.state) ? errorIcon : clockIcon"
+              :base-color="isErrorState(row.state) ? 'red' : 'yellow'"
               :filled="true"
             />
-            <span class="hint">{{ statusMessages[row.status as ServerStatusEnum] }}</span>
+            <span class="hint">{{ statusMessages[row.state as ServerStateEnum] }}</span>
           </div>
         </template>
         <GhostButton
-          v-if="row.status === ServerStatusEnum.CREATED && hasServerViewAccess"
+          v-if="isServerAccessible(row.state) && hasServerViewAccess"
           type="router-link"
           :icon="settingsIcon"
           base-color="gray"
@@ -52,7 +52,7 @@
           :to="`/servers/${row.gameName}/${row.id}`"
         />
         <GhostButton
-          v-if="(row.status === ServerStatusEnum.CREATED || row.status === ServerStatusEnum.FAILED) && hasServersDeleteAccess"
+          v-if="isDeletable(row.state) && hasServersDeleteAccess"
           type="button"
           :icon="trashIcon"
           base-color="red"
@@ -234,7 +234,7 @@ import {
   GameModules
 } from "@/utils"
 import { useTableStore, useUserStore } from "@/stores"
-import { PermissionEnum, ServerStatusEnum } from "@/types"
+import { PermissionEnum, ServerStateEnum } from "@/types"
 import type {
   ServersPageEntity,
   GameEntity,
@@ -307,11 +307,13 @@ const serverName = ref<string>("")
 
 const confirmPopup = ref<InstanceType<typeof ConfirmPopup> | null>(null)
 
-const statusMessages: Record<ServerStatusEnum, string> = {
-  [ServerStatusEnum.PENDING]: t("servers.list.status.pending"),
-  [ServerStatusEnum.PROCESSING]: t("servers.list.status.processing"),
-  [ServerStatusEnum.FAILED]: t("servers.list.status.failed"),
-  [ServerStatusEnum.CREATED]: ""
+const statusMessages: Record<ServerStateEnum, string> = {
+  [ServerStateEnum.PENDING]: t("servers.list.state.pending"),
+  [ServerStateEnum.PROCESSING]: t("servers.list.state.processing"),
+  [ServerStateEnum.UPGRADING]: t("servers.list.state.upgrading"),
+  [ServerStateEnum.FAILED]: t("servers.list.state.failed"),
+  [ServerStateEnum.UPGRADE_FAILED]: t("servers.list.state.upgradeFailed"),
+  [ServerStateEnum.CREATED]: ""
 }
 
 const columns: TableColumn[] = [
@@ -655,23 +657,87 @@ function openCreateServer(): void {
  * Handles servers state updates received from WebSocket.
  *
  * Parameters:
- * - state: Updated server state.
+ * - event: Event with updated server state.
  *
  * Returns:
  * - void.
  */
-function handleStateUpdate(state: any): void {
+function handleStateUpdate(event: any): void {
   if (!pageData.value) return
 
-  const server = pageData.value.servers.find(server => server.id === state.data.server_id)
+  const server = pageData.value.servers.find(server => server.id === event.data.server_id)
 
   if (server) {
-    server.status = state.data.status
+    if (event.data.state !== undefined) {
+      server.state = event.data.state
+    }
 
-    if (state.data.version !== undefined) {
-      server.version = state.data.version
+    if (event.data.version !== undefined) {
+      server.version = event.data.version
     }
   }
+}
+
+/**
+ * Checks whether the server state should show the transient state icon (spinner/error).
+ *
+ * Parameters:
+ * - state: ServerStateEnum value.
+ *
+ * Returns:
+ * - boolean: `true` for any non-"created" state.
+ */
+function isTransientState(state: ServerStateEnum): boolean {
+  return state !== ServerStateEnum.CREATED
+}
+
+/**
+ * Checks whether the given state represents an error state (red icon).
+ *
+ * Parameters:
+ * - state: ServerStateEnum value.
+ *
+ * Returns:
+ * - boolean: `true` for FAILED or UPGRADE_FAILED.
+ */
+function isErrorState(state: ServerStateEnum): boolean {
+  return state === ServerStateEnum.FAILED || state === ServerStateEnum.UPGRADE_FAILED
+}
+
+/**
+ * Checks whether the server is in a usable state (settings/view accessible).
+ * A server remains accessible during an upgrade and after a failed upgrade,
+ * since it still exists and runs on its previous working version.
+ *
+ * Parameters:
+ * - state: ServerStateEnum value.
+ *
+ * Returns:
+ * - boolean: `true` for CREATED, UPGRADING, or UPGRADE_FAILED.
+ */
+function isServerAccessible(state: ServerStateEnum): boolean {
+  return (
+    state === ServerStateEnum.CREATED ||
+    state === ServerStateEnum.UPGRADING ||
+    state === ServerStateEnum.UPGRADE_FAILED
+  )
+}
+
+/**
+ * Checks whether the server can be deleted in its current state.
+ *
+ * Parameters:
+ * - state: ServerStateEnum value.
+ *
+ * Returns:
+ * - boolean: `true` for CREATED, FAILED, or UPGRADE_FAILED.
+ */
+function isDeletable(state: ServerStateEnum): boolean {
+  return (
+    state === ServerStateEnum.CREATED ||
+    state === ServerStateEnum.FAILED ||
+    state === ServerStateEnum.UPGRADE_FAILED
+  )
 }
 
 /**
@@ -698,7 +764,7 @@ const rows = computed((): Array<Record<string, any>> =>
       version: server.version,
       loader: loaderModule?.displayName,
       name: server.name,
-      status: server.status,
+      state: server.state,
       created_at: localeHelper.formatDateTime(server.created_at)
     }
   }) ?? [])
