@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-07-12 14:47+0300\n"
+"POT-Creation-Date: 2026-07-12 19:21+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -117,17 +117,21 @@ msgid "Game {game_id} not found"
 msgstr ""
 
 #: cobalt/backend/application/services/games.py:186
-#: cobalt/backend/application/services/servers.py:102
-#: cobalt/backend/application/services/servers.py:134
+#: cobalt/backend/application/services/servers.py:108
+#: cobalt/backend/application/services/servers.py:140
 msgid "Game \"{name}\" not found"
 msgstr ""
 
 #: cobalt/backend/application/services/loaders.py:85
+msgid "Loader {loader_id} for game {game_id} not found"
+msgstr ""
+
+#: cobalt/backend/application/services/loaders.py:146
 msgid "Loader \"{name}\" for game {game_id} not found"
 msgstr ""
 
-#: cobalt/backend/application/services/loaders.py:175
-#: cobalt/backend/application/services/loaders.py:225
+#: cobalt/backend/application/services/loaders.py:236
+#: cobalt/backend/application/services/loaders.py:286
 msgid "Loader {loader_id} not found"
 msgstr ""
 
@@ -183,36 +187,54 @@ msgstr ""
 msgid "Role {role_id} not found"
 msgstr ""
 
-#: cobalt/backend/application/services/servers.py:107
+#: cobalt/backend/application/services/servers.py:113
 msgid "Loader \"{name}\" not found"
 msgstr ""
 
-#: cobalt/backend/application/services/servers.py:129
-#: cobalt/backend/application/services/servers.py:222
-#: cobalt/backend/application/services/servers.py:391
-#: cobalt/backend/application/services/servers.py:427
+#: cobalt/backend/application/services/servers.py:135
+#: cobalt/backend/application/services/servers.py:228
+#: cobalt/backend/application/services/servers.py:439
+#: cobalt/backend/application/services/servers.py:475
 #: cobalt/backend/infrastructure/databases/postgres/repositories/attributes.py:83
 msgid "Server {server_id} not found"
 msgstr ""
 
-#: cobalt/backend/application/services/servers.py:177
-#: cobalt/backend/application/services/servers.py:486
+#: cobalt/backend/application/services/servers.py:183
+#: cobalt/backend/application/services/servers.py:534
 msgid "Servers not found"
 msgstr ""
 
-#: cobalt/backend/application/services/servers.py:430
+#: cobalt/backend/application/services/servers.py:268
+#: cobalt/backend/application/services/servers.py:346
+msgid "Version \"{version}\" not found"
+msgstr ""
+
+#: cobalt/backend/application/services/servers.py:337
+#: cobalt/backend/application/services/servers.py:478
 msgid "Server {server_id} is still being installed"
 msgstr ""
 
-#: cobalt/backend/application/services/servers.py:433
+#: cobalt/backend/application/services/servers.py:340
+msgid "Server {server_id} is already being upgraded"
+msgstr ""
+
+#: cobalt/backend/application/services/servers.py:349
+msgid "Server is already on version \"{version}\""
+msgstr ""
+
+#: cobalt/backend/application/services/servers.py:360
+msgid "Version \"{version}\" is not newer than the current version \"{current_version}\""
+msgstr ""
+
+#: cobalt/backend/application/services/servers.py:481
 msgid "Server {server_id} is still being upgraded"
 msgstr ""
 
-#: cobalt/backend/application/services/servers.py:494
+#: cobalt/backend/application/services/servers.py:542
 msgid "Some servers are still being installed"
 msgstr ""
 
-#: cobalt/backend/application/services/servers.py:502
+#: cobalt/backend/application/services/servers.py:550
 msgid "Some servers are still being upgraded"
 msgstr ""
 
