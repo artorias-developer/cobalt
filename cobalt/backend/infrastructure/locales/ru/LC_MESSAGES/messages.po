@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  1.1.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-17 17:14+0300\n"
+"POT-Creation-Date: 2026-07-12 14:37+0300\n"
 "PO-Revision-Date: 2026-06-17 11:40+0300\n"
 "Last-Translator: Artorias artorias.code@gmail.com\n"
 "Language: ru\n"
@@ -118,8 +118,8 @@ msgid "Game {game_id} not found"
 msgstr "Игра {game_id} не найдена"
 
 #: cobalt/backend/application/services/games.py:186
-#: cobalt/backend/application/services/servers.py:97
-#: cobalt/backend/application/services/servers.py:129
+#: cobalt/backend/application/services/servers.py:102
+#: cobalt/backend/application/services/servers.py:134
 msgid "Game \"{name}\" not found"
 msgstr "Игра \"{name}\" не найдена"
 
@@ -172,48 +172,56 @@ msgstr "Метрики CPU серверов не найдены"
 msgid "Servers RAM metrics not found"
 msgstr "Метрики RAM серверов не найдены"
 
-#: cobalt/backend/application/services/roles.py:96
-#: cobalt/backend/application/services/roles.py:303
+#: cobalt/backend/application/services/roles.py:97
+#: cobalt/backend/application/services/roles.py:316
 msgid "Roles not found"
 msgstr "Роли не найдены"
 
-#: cobalt/backend/application/services/roles.py:141
-#: cobalt/backend/application/services/roles.py:211
-#: cobalt/backend/application/services/roles.py:264
+#: cobalt/backend/application/services/roles.py:142
+#: cobalt/backend/application/services/roles.py:212
+#: cobalt/backend/application/services/roles.py:277
 #: cobalt/backend/infrastructure/databases/postgres/repositories/users.py:91
 msgid "Role {role_id} not found"
 msgstr "Роль {role_id} не найдена"
 
-#: cobalt/backend/application/services/servers.py:102
+#: cobalt/backend/application/services/servers.py:107
 msgid "Loader \"{name}\" not found"
 msgstr "Загрузчик \"{name}\" не найден"
 
-#: cobalt/backend/application/services/servers.py:124
-#: cobalt/backend/application/services/servers.py:217
-#: cobalt/backend/application/services/servers.py:319
-#: cobalt/backend/application/services/servers.py:355
+#: cobalt/backend/application/services/servers.py:129
+#: cobalt/backend/application/services/servers.py:222
+#: cobalt/backend/application/services/servers.py:391
+#: cobalt/backend/application/services/servers.py:427
 #: cobalt/backend/infrastructure/databases/postgres/repositories/attributes.py:83
 msgid "Server {server_id} not found"
 msgstr "Сервер {server_id} не найден"
 
-#: cobalt/backend/application/services/servers.py:172
-#: cobalt/backend/application/services/servers.py:411
+#: cobalt/backend/application/services/servers.py:177
+#: cobalt/backend/application/services/servers.py:486
 msgid "Servers not found"
 msgstr "Серверы не найдены"
 
-#: cobalt/backend/application/services/servers.py:358
+#: cobalt/backend/application/services/servers.py:430
 msgid "Server {server_id} is still being installed"
 msgstr "Сервер {server_id} ещё устанавливается"
 
-#: cobalt/backend/application/services/servers.py:419
+#: cobalt/backend/application/services/servers.py:433
+msgid "Server {server_id} is still being upgraded"
+msgstr "Сервер {server_id} ещё обновляется"
+
+#: cobalt/backend/application/services/servers.py:494
 msgid "Some servers are still being installed"
 msgstr "Некоторые серверы ещё устанавливаются"
 
-#: cobalt/backend/application/services/settings.py:208
+#: cobalt/backend/application/services/servers.py:502
+msgid "Some servers are still being upgraded"
+msgstr "Некоторые серверы ещё обновляются"
+
+#: cobalt/backend/application/services/settings.py:217
 msgid "Settings for user with ID {user_id} not found"
 msgstr "Настройки пользователя с ID {user_id} не найдены"
 
-#: cobalt/backend/application/services/settings.py:280
+#: cobalt/backend/application/services/settings.py:294
 msgid "Cannot clear containers while servers are being created"
 msgstr "Невозможно очистить контейнеры во время создания серверов"
 
@@ -260,63 +268,67 @@ msgstr "Контейнер \"{name}\" не найден"
 msgid "Error while building image \"{tag}\""
 msgstr "Ошибка при сборке образа \"{tag}\""
 
-#: cobalt/backend/infrastructure/clients/containers/docker.py:183
+#: cobalt/backend/infrastructure/clients/containers/docker.py:184
+msgid "Image \"{image}\" not found"
+msgstr "Образ \"{image}\" не найден"
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:186
 msgid "Error while removing image \"{image}\""
 msgstr "Ошибка при удалении образа \"{image}\""
 
-#: cobalt/backend/infrastructure/clients/containers/docker.py:203
+#: cobalt/backend/infrastructure/clients/containers/docker.py:206
 msgid "Error while pruning images"
 msgstr "Ошибка при очистке образов"
 
-#: cobalt/backend/infrastructure/clients/containers/docker.py:226
+#: cobalt/backend/infrastructure/clients/containers/docker.py:229
 msgid "Error while listing containers"
 msgstr "Ошибка при получении списка контейнеров"
 
-#: cobalt/backend/infrastructure/clients/containers/docker.py:327
+#: cobalt/backend/infrastructure/clients/containers/docker.py:330
 msgid "Error while creating container \"{name}\""
 msgstr "Ошибка при создании контейнера \"{name}\""
 
-#: cobalt/backend/infrastructure/clients/containers/docker.py:348
+#: cobalt/backend/infrastructure/clients/containers/docker.py:351
 msgid "Error while starting container \"{name}\""
 msgstr "Ошибка при запуске контейнера \"{name}\""
 
-#: cobalt/backend/infrastructure/clients/containers/docker.py:371
+#: cobalt/backend/infrastructure/clients/containers/docker.py:374
 msgid "Error while stopping container \"{name}\""
 msgstr "Ошибка при остановке контейнера \"{name}\""
 
-#: cobalt/backend/infrastructure/clients/containers/docker.py:396
+#: cobalt/backend/infrastructure/clients/containers/docker.py:399
 msgid "Error while removing container \"{name}\""
 msgstr "Ошибка при удалении контейнера \"{name}\""
 
-#: cobalt/backend/infrastructure/clients/containers/docker.py:419
+#: cobalt/backend/infrastructure/clients/containers/docker.py:422
 msgid "Error while restarting container \"{name}\""
 msgstr "Ошибка при перезапуске контейнера \"{name}\""
 
-#: cobalt/backend/infrastructure/clients/containers/docker.py:440
+#: cobalt/backend/infrastructure/clients/containers/docker.py:443
 msgid "Error while waiting for container \"{name}\""
 msgstr "Ошибка при ожидании контейнера \"{name}\""
 
-#: cobalt/backend/infrastructure/clients/containers/docker.py:477
+#: cobalt/backend/infrastructure/clients/containers/docker.py:480
 msgid "Error while getting logs for container \"{name}\""
 msgstr "Ошибка при получении логов контейнера \"{name}\""
 
-#: cobalt/backend/infrastructure/clients/containers/docker.py:512
+#: cobalt/backend/infrastructure/clients/containers/docker.py:515
 msgid "Error while streaming logs for container \"{name}\""
 msgstr "Ошибка при потоковой передаче логов контейнера \"{name}\""
 
-#: cobalt/backend/infrastructure/clients/containers/docker.py:548
+#: cobalt/backend/infrastructure/clients/containers/docker.py:551
 msgid "Error while getting status for container \"{name}\""
 msgstr "Ошибка при получении статуса контейнера \"{name}\""
 
-#: cobalt/backend/infrastructure/clients/containers/docker.py:580
+#: cobalt/backend/infrastructure/clients/containers/docker.py:583
 msgid "Error while executing command in container \"{name}\""
 msgstr "Ошибка при выполнении команды в контейнере \"{name}\""
 
-#: cobalt/backend/infrastructure/clients/containers/docker.py:600
+#: cobalt/backend/infrastructure/clients/containers/docker.py:603
 msgid "Error while pruning volumes"
 msgstr "Ошибка при очистке томов"
 
-#: cobalt/backend/infrastructure/clients/containers/docker.py:647
+#: cobalt/backend/infrastructure/clients/containers/docker.py:650
 msgid "Error while pruning builder cache"
 msgstr "Ошибка при очистке кэша сборщика"
 

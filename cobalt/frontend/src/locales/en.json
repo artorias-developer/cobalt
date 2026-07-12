@@ -8,6 +8,7 @@
     "back": "Back",
     "delete": "Delete",
     "create": "Create",
+    "upgrade": "Upgrade",
     "save": "Save",
     "clear": "Clear",
     "download": "Download",
@@ -162,10 +163,12 @@
         "success": "Server added to queue",
         "error": "Failed to create server"
       },
-      "status": {
+      "state": {
         "pending": "Server is in queue",
         "processing": "Server is being created",
-        "failed": "Error while creating server"
+        "upgrading": "Server is being upgraded",
+        "failed": "Error while creating server",
+        "upgradeFailed": "Error while upgrading server"
       },
       "columns": {
         "game": "Game",
@@ -203,7 +206,13 @@
     "server": {
       "tabs": {
         "overview": "Overview",
-        "files": "Files"
+        "files": "Files",
+        "settings": "Settings"
+      },
+      "status": {
+        "online": "Online",
+        "offline": "Offline",
+        "upgrading": "Upgrading"
       },
       "overview": {
         "console": {
@@ -341,6 +350,29 @@
         "counter": {
           "folders": "0 directories | {n} directory | {n} directories",
           "files": "0 files | {n} file | {n} files"
+        }
+      },
+      "settings": {
+        "upgrade": {
+          "success": "Server upgrade added to the queue",
+          "failed": "Failed to upgrade the server"
+        },
+        "block": {
+          "upgrade": {
+            "title": "Upgrade",
+            "description": "Server version upgrade",
+            "version": {
+              "label": "Version",
+              "placeholder": "Select version..."
+            },
+            "upToDate": "The server is already up to date",
+            "inProgress": "The server is already upgrading"
+          }
+        }
+      },
+      "oneTime": {
+        "upgrade": {
+          "error": "An error occurred during the last server update, please try again"
         }
       }
     }
