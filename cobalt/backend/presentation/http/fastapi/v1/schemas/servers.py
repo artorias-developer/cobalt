@@ -8,7 +8,7 @@ from typing import Optional, List, Literal, Annotated
 
 from pydantic import BaseModel, Field, ConfigDict, RootModel
 
-from domain.enums import ServerStatusEnum
+from domain.enums import ServerStateEnum
 from presentation.http.fastapi.v1.schemas.games import GameShortSchema
 from presentation.http.fastapi.v1.schemas.loaders import LoaderShortSchema
 from presentation.http.fastapi.v1.schemas.attributes import AttributeSchema
@@ -51,10 +51,10 @@ class ServerSchema(BaseModel):
         description="List of server attributes"
     )
 
-    status: ServerStatusEnum = Field(
+    state: ServerStateEnum = Field(
         ...,
-        title="Server status",
-        description="Server status"
+        title="Server state",
+        description="Server state"
     )
 
     created_at: datetime = Field(

@@ -4,7 +4,7 @@
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from domain.exceptions import NotFoundError
-from domain.enums import ServerStatusEnum
+from domain.enums import ServerStateEnum
 from application.contracts.services import AbstractServersService
 from application.contracts.loggers import AbstractLogger
 from application.dtos import (
@@ -61,14 +61,14 @@ class StartupServersCheckerJob(BaseApschedulerJob):
             current_page += 1
 
         for server in all_servers:
-            if server.status not in [
-                ServerStatusEnum.PENDING,
-                ServerStatusEnum.PROCESSING
+            if server.state not in [
+                ServerStateEnum.PENDING,
+                ServerStateEnum.PROCESSING
             ]:
                 continue
 
             update_dto = ServerUpdateDto(
-                status=ServerStatusEnum.FAILED
+                state=ServerStateEnum.FAILED
             )
 
             await self.servers_service.update_one(

@@ -8,7 +8,7 @@ from typing import Dict, List, Tuple, Callable
 from orjson import loads
 
 from domain.entities import ServerEntity
-from domain.enums import ServerStatusEnum
+from domain.enums import ServerStateEnum
 from domain.exceptions import (
     NotFoundError,
     ConflictError
@@ -426,7 +426,7 @@ class ServersService(AbstractServersService):
         if not received_entity:
             raise NotFoundError(self._("Server {server_id} not found").format(server_id=server_id))
 
-        if received_entity.status not in (ServerStatusEnum.CREATED, ServerStatusEnum.FAILED):
+        if received_entity.state not in (ServerStateEnum.CREATED, ServerStateEnum.FAILED):
             raise ConflictError(self._("Server {server_id} is still being installed").format(server_id=server_id))
 
         await self.servers_repository.delete_one(
@@ -484,7 +484,7 @@ class ServersService(AbstractServersService):
 
         installing = [
             server for server in received_entities
-            if server.status not in (ServerStatusEnum.CREATED, ServerStatusEnum.FAILED)
+            if server.state not in (ServerStateEnum.CREATED, ServerStateEnum.FAILED)
         ]
 
         if installing:

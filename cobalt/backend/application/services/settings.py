@@ -14,7 +14,7 @@ from domain.exceptions import (
     NotFoundError,
     ConflictError
 )
-from domain.enums import ServerStatusEnum
+from domain.enums import ServerStateEnum
 from domain.repositories import AbstractSettingsRepository
 from application.contracts.loggers import AbstractLogger
 from application.contracts.queues import AbstractQueue
@@ -286,7 +286,7 @@ class SettingsService(AbstractSettingsService):
             current_page += 1
 
         has_pending = any(
-            server.status in (ServerStatusEnum.PENDING, ServerStatusEnum.PROCESSING)
+            server.state in (ServerStateEnum.PENDING, ServerStateEnum.PROCESSING)
             for server in servers
         )
 

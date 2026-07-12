@@ -14,7 +14,7 @@ from domain.entities import (
     ServerCreateEntity,
     ServerUpdateEntity
 )
-from domain.enums import ServerStatusEnum
+from domain.enums import ServerStateEnum
 from infrastructure.contracts.databases.mappers import (
     AbstractServersRepositoryMapper,
     AbstractAttributesRepositoryMapper,
@@ -68,7 +68,7 @@ class ServersRepositoryMapper(AbstractServersRepositoryMapper):
             attributes=self.attributes_mapper.models_to_entities(
                 models=model.attributes
             ),
-            status=model.status,
+            state=model.status,
             created_at=model.created_at,
             updated_at=model.updated_at
         )
@@ -109,7 +109,7 @@ class ServersRepositoryMapper(AbstractServersRepositoryMapper):
             game_id=entity.game_id,
             loader_id=entity.loader_id,
             version=entity.version.value,
-            status=ServerStatusEnum.PENDING
+            status=ServerStateEnum.PENDING
         )
 
     def update_entity_to_model(
@@ -133,7 +133,7 @@ class ServersRepositoryMapper(AbstractServersRepositoryMapper):
         if entity.version is not None:
             model.version = entity.version.value
 
-        if entity.status is not None:
-            model.status = entity.status
+        if entity.state is not None:
+            model.status = entity.state
 
         return model

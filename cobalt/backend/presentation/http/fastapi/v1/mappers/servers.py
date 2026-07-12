@@ -77,7 +77,7 @@ class ServersRouterMapper(AbstractServersRouterMapper):
             attributes=self.attributes_mapper.dtos_to_schemas(
                 dtos=dto.attributes
             ),
-            status=dto.status,
+            state=dto.state,
             created_at=dto.created_at,
             updated_at=dto.updated_at
         )

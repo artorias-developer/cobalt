@@ -5,9 +5,11 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-export enum ServerStatusEnum {
+export enum ServerStateEnum {
   PENDING = "pending",
   PROCESSING = "processing",
+  UPGRADING = "upgrading",
   CREATED = "created",
-  FAILED = "failed"
+  FAILED = "failed",
+  UPGRADE_FAILED = "upgrade_failed",
 }

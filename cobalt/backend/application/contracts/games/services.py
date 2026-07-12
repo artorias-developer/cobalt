@@ -15,7 +15,7 @@ from typing import Optional, Dict, Any, Union
 from aiofiles import os, open
 from aioshutil import rmtree
 
-from domain.enums import ServerStatusEnum
+from domain.enums import ServerStateEnum
 from domain.exceptions import NotFoundError
 from application.contracts.managers import AbstractConnectionsManager
 from application.contracts.clients import AbstractContainersClient
@@ -130,7 +130,7 @@ class AbstractServersService(ABC):
     async def _update_server_state(
         self,
         server_id: int,
-        status: Optional[ServerStatusEnum] = None,
+        state: Optional[ServerStateEnum] = None,
         version: Optional[str] = None,
         with_container_status: bool = False
     ) -> None:
@@ -139,11 +139,11 @@ class AbstractServersService(ABC):
 
         Parameters:
         - server_id: Server ID.
-        - status: Server status.
+        - state: Server state.
         - version: Server version.
         """
         request_dto = ServerUpdateDto(
-            status=status,
+            state=state,
             version=version
         )
 
@@ -156,8 +156,8 @@ class AbstractServersService(ABC):
             "server_id": server_id
         }
 
-        if status is not None:
-            server_data["status"] = status
+        if state is not None:
+            server_data["state"] = state
 
         if version is not None:
             server_data["version"] = version
@@ -422,7 +422,7 @@ class AbstractServersService(ABC):
         try:
             await self._update_server_state(
                 server_id=server_id,
-                status=ServerStatusEnum.PROCESSING
+                state=ServerStateEnum.PROCESSING
             )
 
             await self._create_container_dir(
@@ -479,7 +479,7 @@ class AbstractServersService(ABC):
 
             await self._update_server_state(
                 server_id=server_id,
-                status=ServerStatusEnum.FAILED
+                state=ServerStateEnum.FAILED
             )
             raise
         finally:
@@ -586,7 +586,7 @@ class AbstractServersService(ABC):
 
             await self._update_server_state(
                 server_id=server_id,
-                status=ServerStatusEnum.UPGRADING,
+                state=ServerStateEnum.UPGRADING,
                 version=version,
                 with_container_status=True
             )
@@ -631,14 +631,14 @@ class AbstractServersService(ABC):
 
             await self._update_server_state(
                 server_id=server_id,
-                status=ServerStatusEnum.CREATED,
+                state=ServerStateEnum.CREATED,
                 version=version,
                 with_container_status=True
             )
         except Exception:
             await self._update_server_state(
                 server_id=server_id,
-                status=ServerStatusEnum.UPGRADE_FAILED
+                state=ServerStateEnum.UPGRADE_FAILED
             )
             raise
         finally:
@@ -761,7 +761,7 @@ class AbstractServersService(ABC):
 
             await self._update_server_state(
                 server_id=server_id,
-                status=ServerStatusEnum.CREATED
+                state=ServerStateEnum.CREATED
             )
         except Exception:
             await self._cleanup_container_resources(
@@ -774,7 +774,7 @@ class AbstractServersService(ABC):
 
             await self._update_server_state(
                 server_id=server_id,
-                status=ServerStatusEnum.FAILED
+                state=ServerStateEnum.FAILED
             )
             raise
 

@@ -78,7 +78,7 @@ class ServersServiceMapper(AbstractServersServiceMapper):
             attributes=self.attributes_mapper.entities_to_dtos(
                 entities=entity.attributes
             ),
-            status=entity.status,
+            state=entity.state,
             created_at=entity.created_at,
             updated_at=entity.updated_at
         )
@@ -201,7 +201,7 @@ class ServersServiceMapper(AbstractServersServiceMapper):
             id=server_id,
             name=ServerName(dto.name) if dto.name is not None else None,
             version=ServerVersion(dto.version) if dto.version is not None else None,
-            status=dto.status
+            state=dto.state
         )
 
     def upgrade_dto_to_update_entity(
