@@ -85,6 +85,41 @@ class LoadersRepository(AbstractLoadersRepository, BaseRepository):
         self.logger.exception(f"Unhandled DB integrity error during {operation}:")
         raise UnexpectedError(self._("Internal server error")) from e
 
+    async def get_one_by_id(
+        self,
+        loader_id: int,
+        game_id: int,
+        session: Optional[AsyncSession] = None
+    ) -> Optional[LoaderEntity]:
+        """
+        Gets an existing loader by ID.
+
+        Parameters:
+        - loader_id: Loader ID.
+        - game_id: Game ID.
+        - session: AsyncSession object.
+
+        Returns:
+        - LoaderEntity: LoaderEntity object.
+        """
+        async with self._get_session(session) as session:
+            stmt = select(
+                LoaderModel
+            ).filter(
+                LoaderModel.id == loader_id,
+                LoaderModel.game_id == game_id
+            )
+
+            result = await session.execute(stmt)
+            record = result.scalars().first()
+
+            if not record:
+                return None
+
+            return self.loaders_mapper.model_to_entity(
+                model=record
+            )
+
     async def get_one_by_name(
         self,
         name: str,

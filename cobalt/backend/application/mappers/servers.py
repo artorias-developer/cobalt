@@ -5,6 +5,7 @@
 
 from typing import List
 
+from domain.enums import ServerStateEnum
 from domain.value_objects import (
     ServerName,
     ServerVersion
@@ -29,6 +30,7 @@ from application.dtos import (
     ServersGetPageDto,
     ServerCreateDto,
     ServerUpdateDto,
+    ServerUpgradeDto,
     ServerStatusDto
 )
 
@@ -77,7 +79,7 @@ class ServersServiceMapper(AbstractServersServiceMapper):
             attributes=self.attributes_mapper.entities_to_dtos(
                 entities=entity.attributes
             ),
-            status=entity.status,
+            state=entity.state,
             created_at=entity.created_at,
             updated_at=entity.updated_at
         )
@@ -200,5 +202,26 @@ class ServersServiceMapper(AbstractServersServiceMapper):
             id=server_id,
             name=ServerName(dto.name) if dto.name is not None else None,
             version=ServerVersion(dto.version) if dto.version is not None else None,
-            status=dto.status
+            state=dto.state
+        )
+
+    def upgrade_dto_to_update_entity(
+        self,
+        server_id: int,
+        dto: ServerUpgradeDto
+    ) -> ServerUpdateEntity:
+        """
+        Converts ServerUpgradeDto object to ServerUpdateEntity object.
+
+        Parameters:
+        - server_id: Server ID.
+        - dto: ServerUpdateDto object.
+
+        Returns:
+        - ServerUpdateEntity: ServerUpdateEntity object.
+        """
+        return ServerUpdateEntity(
+            id=server_id,
+            version=ServerVersion(dto.version),
+            state=ServerStateEnum.UPGRADING
         )

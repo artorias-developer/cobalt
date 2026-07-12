@@ -15,13 +15,14 @@ from typing import Optional, Dict, Any, Union
 from aiofiles import os, open
 from aioshutil import rmtree
 
-from application.managers.events.shared import ServersEventsEnum
-from domain.enums import ServerStatusEnum
+from domain.enums import ServerStateEnum
+from domain.exceptions import NotFoundError
 from application.contracts.managers import AbstractConnectionsManager
 from application.contracts.clients import AbstractContainersClient
 from application.contracts.services import AbstractServersService as CoreServersService
 from application.contracts.loggers import AbstractLogger
 from application.clients.containers.shared import ContainersConstants
+from application.managers.events.shared import ServersEventsEnum
 from application.managers.connections.shared import RoomsConstants
 from application.dtos import ServerUpdateDto
 
@@ -77,6 +78,8 @@ class AbstractServersService(ABC):
                 force=True,
                 volumes=True
             )
+        except NotFoundError:
+            pass
         except Exception:
             self.logger.exception(f'Error while removing container "{container_name}":')
 
@@ -98,25 +101,49 @@ class AbstractServersService(ABC):
                 image=image_name,
                 force=True
             )
+        except NotFoundError:
+            pass
         except Exception:
             self.logger.exception(f'Error while removing image "{image_name}":')
+
+    async def _cleanup_container_resources(
+        self,
+        container_name: str
+    ) -> None:
+        """
+        Removes a container and its associated image.
+
+        Parameters:
+        - container_name: Container name (also used as image name).
+
+        Returns:
+        - None.
+        """
+        await self._remove_container(
+            container_name=container_name
+        )
+
+        await self._remove_image(
+            image_name=container_name
+        )
 
     async def _update_server_state(
         self,
         server_id: int,
-        status: ServerStatusEnum,
-        version: Optional[str] = None
+        state: Optional[ServerStateEnum] = None,
+        version: Optional[str] = None,
+        with_container_status: bool = False
     ) -> None:
         """
         Updates server and sends new data to all subscribers.
 
         Parameters:
         - server_id: Server ID.
-        - status: Server status.
+        - state: Server state.
         - version: Server version.
         """
         request_dto = ServerUpdateDto(
-            status=status,
+            state=state,
             version=version
         )
 
@@ -126,15 +153,32 @@ class AbstractServersService(ABC):
         )
 
         server_data = {
-            "server_id": server_id,
-            "status": status
+            "server_id": server_id
         }
+
+        if state is not None:
+            server_data["state"] = state
 
         if version is not None:
             server_data["version"] = version
 
+        if with_container_status:
+            container_name = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
+                server_id=server_id
+            )
+
+            try:
+                status = await self.containers_client.container_status(
+                    container_name=container_name
+                )
+            except Exception:
+                status = None
+
+            if status is not None:
+                server_data["running"] = status.running
+
         await self.connections_manager.send_to_room(
-            room_name=RoomsConstants.SERVERS_STATUSES_KEY,
+            room_name=RoomsConstants.SERVERS_STATES_KEY,
             data={
                 "type": "message",
                 "event": ServersEventsEnum.SERVER_STATE,
@@ -231,308 +275,25 @@ class AbstractServersService(ABC):
             except Exception:
                 self.logger.exception(f'Error while removing files "{container_name}":')
 
-    async def _create_installer_container(
-        self,
-        container_file: str,
-        container_name: str,
-        installation_dir: str,
-        image_build_args: Optional[Dict[str, Any]] = None,
-        image_labels: Optional[Dict[str, str]] = None,
-        container_environment: Optional[Dict[str, str]] = None,
-        container_labels: Optional[Dict[str, str]] = None,
-        image_kwargs: Optional[Dict[str, Any]] = None,
-        container_kwargs: Optional[Dict[str, Any]] = None
-    ) -> None:
-        """
-        Creates an installer container that downloads all the necessary server files.
-
-        Parameters:
-        - container_file: Container file to build.
-        - container_name: Container name (used as image name).
-        - installation_dir: Host path to install server files into.
-        - image_build_args: Image build arguments.
-        - image_labels: Image labels.
-        - container_environment: Container environment variables.
-        - container_labels: Container labels.
-        - image_kwargs: Additional keyword arguments for image build.
-        - container_kwargs: Additional keyword arguments for container create.
-
-        Returns:
-        - None.
-        """
-        installer_name = f"{container_name}_installer"
-        image_created = False
-        container_created = False
-
-        prepared_image_build_args = {
-            "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
-            **(image_build_args or {})
-        }
-
-        prepared_image_labels = {
-            "managed_by": ContainersConstants.MANAGED_BY,
-            **(image_labels or {})
-        }
-
-        prepared_container_environment = {
-            "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
-            **(container_environment or {})
-        }
-
-        prepared_container_labels = {
-            "cobalt_server": "true",
-            "managed_by": ContainersConstants.MANAGED_BY,
-            **(container_labels or {})
-        }
-
-        try:
-            await self.containers_client.image_build(
-                context_path=self.build_dir,
-                container_file=container_file,
-                tag=installer_name,
-                build_args=prepared_image_build_args,
-                labels=prepared_image_labels,
-                **(image_kwargs or {})
-            )
-
-            image_created = True
-
-            await self.containers_client.container_create(
-                image=installer_name,
-                name=installer_name,
-                volumes={
-                    installation_dir: {
-                        "bind": ContainersConstants.SERVER_ROOT,
-                        "mode": "rw"
-                    }
-                },
-                environment=prepared_container_environment,
-                labels=prepared_container_labels,
-                **(container_kwargs or {})
-            )
-
-            container_created = True
-
-            await self.containers_client.container_start(
-                container_name=installer_name
-            )
-
-            await self.containers_client.container_wait(
-                container_name=installer_name
-            )
-        finally:
-            if container_created:
-                await self._remove_container(
-                    container_name=installer_name
-                )
-
-            if image_created:
-                await self._remove_image(
-                    image_name=installer_name
-                )
-
-    async def _create_upgrader_container(
-        self,
-        container_file: str,
-        container_name: str,
-        installation_dir: str,
-        image_build_args: Optional[Dict[str, Any]] = None,
-        image_labels: Optional[Dict[str, str]] = None,
-        container_environment: Optional[Dict[str, str]] = None,
-        container_labels: Optional[Dict[str, str]] = None,
-        image_kwargs: Optional[Dict[str, Any]] = None,
-        container_kwargs: Optional[Dict[str, Any]] = None
-    ) -> None:
-        """
-        Creates an upgrader container that upgrades existing server.
-
-        Parameters:
-        - container_file: Container file to build.
-        - container_name: Container name (used as image name).
-        - installation_dir: Host path with existing server files.
-        - image_build_args: Image build arguments.
-        - image_labels: Image labels.
-        - container_environment: Container environment variables.
-        - container_labels: Container labels.
-        - image_kwargs: Additional keyword arguments for image build.
-        - container_kwargs: Additional keyword arguments for container create.
-
-        Returns:
-        - None.
-        """
-        updater_name = f"{container_name}_updater"
-        image_created = False
-        container_created = False
-
-        prepared_image_build_args = {
-            "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
-            **(image_build_args or {})
-        }
-
-        prepared_image_labels = {
-            "managed_by": ContainersConstants.MANAGED_BY,
-            **(image_labels or {})
-        }
-
-        prepared_container_environment = {
-            "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
-            **(container_environment or {})
-        }
-
-        prepared_container_labels = {
-            "cobalt_server": "true",
-            "managed_by": ContainersConstants.MANAGED_BY,
-            **(container_labels or {})
-        }
-
-        try:
-            await self.containers_client.container_stop(
-                container_name=container_name
-            )
-
-            await self.containers_client.image_build(
-                context_path=self.build_dir,
-                container_file=container_file,
-                tag=updater_name,
-                build_args=prepared_image_build_args,
-                labels=prepared_image_labels,
-                **(image_kwargs or {})
-            )
-
-            image_created = True
-
-            await self.containers_client.container_create(
-                image=updater_name,
-                name=updater_name,
-                volumes={
-                    installation_dir: {
-                        "bind": ContainersConstants.SERVER_ROOT,
-                        "mode": "rw"
-                    }
-                },
-                environment=prepared_container_environment,
-                labels=prepared_container_labels,
-                **(container_kwargs or {})
-            )
-
-            container_created = True
-
-            await self.containers_client.container_start(
-                container_name=updater_name
-            )
-
-            await self.containers_client.container_wait(
-                container_name=updater_name
-            )
-        finally:
-            if container_created:
-                await self._remove_container(
-                    container_name=updater_name
-                )
-
-            if image_created:
-                await self._remove_image(
-                    image_name=updater_name
-                )
-
-    async def _create_runtime_container(
-        self,
-        container_file: str,
-        container_name: str,
-        ports: Dict[Union[int, str], Union[int, str]],
-        volumes: Optional[Dict[str, Dict[str, str]]] = None,
-        image_build_args: Optional[Dict[str, Any]] = None,
-        image_labels: Optional[Dict[str, str]] = None,
-        container_environment: Optional[Dict[str, str]] = None,
-        container_labels: Optional[Dict[str, str]] = None,
-        image_kwargs: Optional[Dict[str, Any]] = None,
-        container_kwargs: Optional[Dict[str, Any]] = None
-    ) -> None:
-        """
-        Creates a runtime container that starts the server.
-
-        Parameters:
-        - container_file: Container file to build.
-        - container_name: Container name.
-        - ports: Container ports.
-        - volumes: Volume mappings {host_path: {'bind': container_path, 'mode': 'rw'}}.
-        - image_build_args: Image build arguments.
-        - image_labels: Image labels.
-        - container_environment: Container environment variables.
-        - container_labels: Container labels.
-        - image_kwargs: Additional keyword arguments for image build.
-        - container_kwargs: Additional keyword arguments for container create.
-
-        Returns:
-        - None.
-        """
-        prepared_image_build_args = {
-            "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
-            **(image_build_args or {})
-        }
-
-        prepared_image_labels = {
-            "managed_by": ContainersConstants.MANAGED_BY,
-            **(image_labels or {})
-        }
-
-        prepared_container_environment = {
-            "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
-            "SERVER_FIFO": ContainersConstants.SERVER_FIFO,
-            **(container_environment or {})
-        }
-
-        prepared_container_labels = {
-            "cobalt_server": "true",
-            "managed_by": ContainersConstants.MANAGED_BY,
-            **(container_labels or {})
-        }
-
-        await self.containers_client.image_build(
-            container_file=container_file,
-            context_path=self.build_dir,
-            tag=container_name,
-            build_args=prepared_image_build_args,
-            labels=prepared_image_labels,
-            **(image_kwargs or {})
-        )
-
-        await self.containers_client.container_create(
-            image=container_name,
-            name=container_name,
-            ports=ports,
-            volumes=volumes,
-            environment=prepared_container_environment,
-            labels=prepared_container_labels,
-            stdin_open=True,
-            stop_grace_period=65,
-            restart_policy="unless-stopped",
-            **(container_kwargs or {})
-        )
-
-        await self.containers_client.container_start(
-            container_name=container_name
-        )
-
     async def _verify_installation(
         self,
         container_name: str,
-        install_marker: str
+        installation_marker: str
     ) -> None:
         """
         Verifies that the installation was completed successfully.
 
         Parameters:
         - container_name: Container name.
-        - install_marker: File or directory that indicates a successful installation.
+        - installation_marker: File or directory that indicates a successful installation.
 
         Returns:
         - None.
         """
         app_container_dir = path.join(self.app_containers_dir, container_name)
 
-        if not await os.path.exists(path.join(app_container_dir, install_marker)):
-            raise Exception(f'Installation failed: "{install_marker}" not found in "{app_container_dir}"')
+        if not await os.path.exists(path.join(app_container_dir, installation_marker)):
+            raise Exception(f'Installation failed: "{installation_marker}" not found in "{app_container_dir}"')
 
     async def _read_steam_version(
         self,
@@ -565,6 +326,457 @@ class AbstractServersService(ABC):
             return "Unknown"
 
         return match.group(1)
+
+    async def _create_installer_container(
+        self,
+        server_id: int,
+        container_name: str,
+        installation_dir: str,
+        installation_marker: str,
+        is_steam_server: bool = False,
+        steam_app_id: Optional[int] = None,
+        volumes: Optional[Dict[str, Dict[str, str]]] = None,
+        image_build_args: Optional[Dict[str, Any]] = None,
+        image_labels: Optional[Dict[str, str]] = None,
+        container_file: Optional[str] = None,
+        container_environment: Optional[Dict[str, str]] = None,
+        container_labels: Optional[Dict[str, str]] = None,
+        image_kwargs: Optional[Dict[str, Any]] = None,
+        container_kwargs: Optional[Dict[str, Any]] = None
+    ) -> None:
+        """
+        Creates an installer container that downloads all the necessary server files.
+
+        Parameters:
+        - server_id: Server ID.
+        - container_name: Container name (used as image name).
+        - installation_dir: Host path to install server files into.
+        - installation_marker: File or directory that indicates a successful installation.
+        - is_steam_server: Whether the server is installed via Steam.
+        - steam_app_id: Steam app ID, required if is_steam_server is True.
+        - volumes: Additional volume mappings {host_path: {'bind': container_path, 'mode': 'rw'}}.
+        - image_build_args: Image build arguments.
+        - image_labels: Image labels.
+        - container_file: Container file to build.
+        - container_environment: Container environment variables.
+        - container_labels: Container labels.
+        - image_kwargs: Additional keyword arguments for image build.
+        - container_kwargs: Additional keyword arguments for container create.
+
+        Returns:
+        - None.
+        """
+        if is_steam_server and steam_app_id is None:
+            raise ValueError('The "steam_app_id" parameter is required if the value of "is_steam_server" is "True"')
+
+        installer_name = f"{container_name}_installer"
+
+        prepared_image_build_args = {
+            "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
+            **({"APP_ID": str(steam_app_id)} if is_steam_server else {}),
+            **(image_build_args or {})
+        }
+
+        prepared_image_labels = {
+            "managed_by": ContainersConstants.MANAGED_BY,
+            **(image_labels or {})
+        }
+
+        prepared_image_kwargs = {
+            **(image_kwargs or {})
+        }
+
+        prepared_volumes = {
+            installation_dir: {
+                "bind": ContainersConstants.SERVER_ROOT,
+                "mode": "rw"
+            },
+            **(volumes or {})
+        }
+
+        if container_file is not None:
+            prepared_container_file = container_file
+        else:
+            prepared_container_file = self._CONTAINER_INSTALLER_FILE
+
+        prepared_container_environment = {
+            "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
+            **(container_environment or {})
+        }
+
+        prepared_container_labels = {
+            "cobalt_server": "true",
+            "managed_by": ContainersConstants.MANAGED_BY,
+            **(container_labels or {})
+        }
+
+        prepared_container_kwargs = {
+            **({"security_opt": ["seccomp=unconfined"]} if is_steam_server else {}),
+            **(container_kwargs or {})
+        }
+
+        await self._cleanup_container_resources(
+            container_name=installer_name
+        )
+
+        try:
+            await self._update_server_state(
+                server_id=server_id,
+                state=ServerStateEnum.PROCESSING
+            )
+
+            await self._create_container_dir(
+                container_name=container_name
+            )
+
+            await self.containers_client.image_build(
+                context_path=self.build_dir,
+                container_file=prepared_container_file,
+                tag=installer_name,
+                build_args=prepared_image_build_args,
+                labels=prepared_image_labels,
+                **prepared_image_kwargs
+            )
+
+            await self.containers_client.container_create(
+                image=installer_name,
+                name=installer_name,
+                volumes=prepared_volumes,
+                environment=prepared_container_environment,
+                labels=prepared_container_labels,
+                **prepared_container_kwargs
+            )
+
+            await self.containers_client.container_start(
+                container_name=installer_name
+            )
+
+            await self.containers_client.container_wait(
+                container_name=installer_name
+            )
+
+            await self._verify_installation(
+                container_name=container_name,
+                installation_marker=installation_marker
+            )
+
+            if is_steam_server:
+                version = await self._read_steam_version(
+                    container_name=container_name,
+                    app_id=steam_app_id
+                )
+            else:
+                version = None
+
+            await self._update_server_state(
+                server_id=server_id,
+                version=version
+            )
+        except Exception:
+            await self._remove_container_dir(
+                container_name=container_name
+            )
+
+            await self._update_server_state(
+                server_id=server_id,
+                state=ServerStateEnum.FAILED
+            )
+            raise
+        finally:
+            await self._cleanup_container_resources(
+                container_name=installer_name
+            )
+
+    async def _create_upgrader_container(
+        self,
+        server_id: int,
+        version: str,
+        container_name: str,
+        installation_dir: str,
+        is_steam_server: bool = False,
+        steam_app_id: Optional[int] = None,
+        volumes: Optional[Dict[str, Dict[str, str]]] = None,
+        image_build_args: Optional[Dict[str, Any]] = None,
+        image_labels: Optional[Dict[str, str]] = None,
+        container_file: Optional[str] = None,
+        container_environment: Optional[Dict[str, str]] = None,
+        container_labels: Optional[Dict[str, str]] = None,
+        image_kwargs: Optional[Dict[str, Any]] = None,
+        container_kwargs: Optional[Dict[str, Any]] = None
+    ) -> None:
+        """
+        Creates an upgrader container that upgrades existing server.
+
+        Parameters:
+        - server_id: Server ID.
+        - version: Server version.
+        - container_name: Container name (used as image name).
+        - installation_dir: Host path with existing server files.
+        - is_steam_server: Whether the server is installed via Steam.
+        - steam_app_id: Steam app ID, required if is_steam_server is True.
+        - volumes: Additional volume mappings {host_path: {'bind': container_path, 'mode': 'rw'}}.
+        - image_build_args: Image build arguments.
+        - image_labels: Image labels.
+        - container_file: Container file to build.
+        - container_environment: Container environment variables.
+        - container_labels: Container labels.
+        - image_kwargs: Additional keyword arguments for image build.
+        - container_kwargs: Additional keyword arguments for container create.
+
+        Returns:
+        - None.
+        """
+        if is_steam_server and steam_app_id is None:
+            raise ValueError('The "steam_app_id" parameter is required if the value of "is_steam_server" is "True"')
+
+        upgrader_name = f"{container_name}_upgrader"
+
+        prepared_image_build_args = {
+            "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
+            **({"APP_ID": str(steam_app_id)} if is_steam_server else {}),
+            **(image_build_args or {})
+        }
+
+        prepared_image_labels = {
+            "managed_by": ContainersConstants.MANAGED_BY,
+            **(image_labels or {})
+        }
+
+        prepared_image_kwargs = {
+            **(image_kwargs or {})
+        }
+
+        prepared_volumes = {
+            installation_dir: {
+                "bind": ContainersConstants.SERVER_ROOT,
+                "mode": "rw"
+            },
+            **(volumes or {})
+        }
+
+        if container_file is not None:
+            prepared_container_file = container_file
+        else:
+            prepared_container_file = self._CONTAINER_UPGRADER_FILE
+
+        prepared_container_environment = {
+            "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
+            **(container_environment or {})
+        }
+
+        prepared_container_labels = {
+            "cobalt_server": "true",
+            "managed_by": ContainersConstants.MANAGED_BY,
+            **(container_labels or {})
+        }
+
+        prepared_container_kwargs = {
+            **({"security_opt": ["seccomp=unconfined"]} if is_steam_server else {}),
+            **(container_kwargs or {})
+        }
+
+        await self._cleanup_container_resources(
+            container_name=upgrader_name
+        )
+
+        try:
+            await self.containers_client.container_stop(
+                container_name=container_name
+            )
+
+            await self._update_server_state(
+                server_id=server_id,
+                state=ServerStateEnum.UPGRADING,
+                version=version,
+                with_container_status=True
+            )
+
+            await self.containers_client.image_build(
+                context_path=self.build_dir,
+                container_file=prepared_container_file,
+                tag=upgrader_name,
+                build_args=prepared_image_build_args,
+                labels=prepared_image_labels,
+                **prepared_image_kwargs
+            )
+
+            await self.containers_client.container_create(
+                image=upgrader_name,
+                name=upgrader_name,
+                volumes=prepared_volumes,
+                environment=prepared_container_environment,
+                labels=prepared_container_labels,
+                **prepared_container_kwargs
+            )
+
+            await self.containers_client.container_start(
+                container_name=upgrader_name
+            )
+
+            await self.containers_client.container_wait(
+                container_name=upgrader_name
+            )
+
+            await self.containers_client.container_start(
+                container_name=container_name
+            )
+
+            if is_steam_server:
+                version = await self._read_steam_version(
+                    container_name=container_name,
+                    app_id=steam_app_id
+                )
+            else:
+                version = None
+
+            await self._update_server_state(
+                server_id=server_id,
+                state=ServerStateEnum.CREATED,
+                version=version,
+                with_container_status=True
+            )
+        except Exception:
+            await self._update_server_state(
+                server_id=server_id,
+                state=ServerStateEnum.UPGRADE_FAILED
+            )
+            raise
+        finally:
+            await self._cleanup_container_resources(
+                container_name=upgrader_name
+            )
+
+    async def _create_runtime_container(
+        self,
+        server_id: int,
+        container_name: str,
+        installation_dir: str,
+        ports: Dict[Union[int, str], Union[int, str]],
+        is_steam_server: bool = False,
+        volumes: Optional[Dict[str, Dict[str, str]]] = None,
+        image_build_args: Optional[Dict[str, Any]] = None,
+        image_labels: Optional[Dict[str, str]] = None,
+        container_file: Optional[str] = None,
+        container_environment: Optional[Dict[str, str]] = None,
+        container_labels: Optional[Dict[str, str]] = None,
+        image_kwargs: Optional[Dict[str, Any]] = None,
+        container_kwargs: Optional[Dict[str, Any]] = None
+    ) -> None:
+        """
+        Creates a runtime container that starts the server.
+
+        Parameters:
+        - server_id: Server ID.
+        - container_name: Container name.
+        - installation_dir: Host path with existing server files.
+        - ports: Container ports.
+        - is_steam_server: Whether the server is installed via Steam.
+        - volumes: Additional volume mappings {host_path: {'bind': container_path, 'mode': 'rw'}}.
+        - image_build_args: Image build arguments.
+        - image_labels: Image labels.
+        - container_file: Container file to build.
+        - container_environment: Container environment variables.
+        - container_labels: Container labels.
+        - image_kwargs: Additional keyword arguments for image build.
+        - container_kwargs: Additional keyword arguments for container create.
+
+        Returns:
+        - None.
+        """
+        prepared_image_build_args = {
+            "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
+            **(image_build_args or {})
+        }
+
+        prepared_image_labels = {
+            "managed_by": ContainersConstants.MANAGED_BY,
+            **(image_labels or {})
+        }
+
+        prepared_image_kwargs = {
+            **(image_kwargs or {})
+        }
+
+        prepared_volumes = {
+            installation_dir: {
+                "bind": ContainersConstants.SERVER_ROOT,
+                "mode": "rw"
+            },
+            **(volumes or {})
+        }
+
+        if container_file is not None:
+            prepared_container_file = container_file
+        else:
+            prepared_container_file = self._CONTAINER_RUNTIME_FILE
+
+        prepared_container_environment = {
+            "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
+            "SERVER_FIFO": ContainersConstants.SERVER_FIFO,
+            **(container_environment or {})
+        }
+
+        prepared_container_labels = {
+            "cobalt_server": "true",
+            "managed_by": ContainersConstants.MANAGED_BY,
+            **(container_labels or {})
+        }
+
+        prepared_container_kwargs = {
+            "network_mode": ContainersConstants.NETWORK_MODE,
+            **({"security_opt": ["seccomp=unconfined"]} if is_steam_server else {}),
+            **(container_kwargs or {})
+        }
+
+        await self._cleanup_container_resources(
+            container_name=container_name
+        )
+
+        try:
+            await self.containers_client.image_build(
+                container_file=prepared_container_file,
+                context_path=self.build_dir,
+                tag=container_name,
+                build_args=prepared_image_build_args,
+                labels=prepared_image_labels,
+                **prepared_image_kwargs
+            )
+
+            await self.containers_client.container_create(
+                image=container_name,
+                name=container_name,
+                ports=ports,
+                volumes=prepared_volumes,
+                environment=prepared_container_environment,
+                labels=prepared_container_labels,
+                stdin_open=True,
+                stop_grace_period=65,
+                restart_policy="unless-stopped",
+                **prepared_container_kwargs
+            )
+
+            await self.containers_client.container_start(
+                container_name=container_name
+            )
+
+            await self._update_server_state(
+                server_id=server_id,
+                state=ServerStateEnum.CREATED
+            )
+        except Exception:
+            await self._cleanup_container_resources(
+                container_name=container_name
+            )
+
+            await self._remove_container_dir(
+                container_name=container_name
+            )
+
+            await self._update_server_state(
+                server_id=server_id,
+                state=ServerStateEnum.FAILED
+            )
+            raise
 
     def get_available_port(
         self,

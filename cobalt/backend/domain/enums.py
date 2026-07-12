@@ -43,9 +43,9 @@ class PermissionEnum(StrEnum):
     SETTINGS_CACHE_CLEAR = "settings_cache_clear"
     SETTINGS_CONTAINERS_CLEAR = "settings_containers_clear"
 
-class ServerStatusEnum(StrEnum):
+class ServerStateEnum(StrEnum):
     """
-    Server status enum.
+    Server state enum.
     """
     PENDING = "pending"
     PROCESSING = "processing"

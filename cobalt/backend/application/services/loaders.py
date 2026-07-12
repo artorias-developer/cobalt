@@ -46,6 +46,67 @@ class LoadersService(AbstractLoadersService):
 
         self._ = i18n_manager.gettext
 
+    async def get_one_by_id(
+            self,
+            game_id: int,
+            loader_id: int
+    ) -> LoaderDto:
+        """
+        Gets an existing loader by ID.
+
+        Parameters:
+        - game_id: Game ID.
+        - loader_id: Loader ID.
+
+        Returns:
+        - LoaderDto: LoaderDto object.
+        """
+        key = self.caches_client.format_pattern(
+            pattern=CacheConstants.LOADERS_ITEM_KEY,
+            loader_id=loader_id,
+            game_id=game_id
+        )
+
+        cached = await self.caches_client.get(
+            key=key
+        )
+
+        if cached:
+            data = loads(cached)
+            return LoaderDto.from_dict(data)
+
+        received_entity = await self.loaders_repository.get_one_by_id(
+            loader_id=loader_id,
+            game_id=game_id
+        )
+
+        if not received_entity:
+            raise NotFoundError(
+                self._('Loader {loader_id} for game {game_id} not found').format(
+                    loader_id=loader_id,
+                    game_id=game_id
+                )
+            )
+
+        key = self.caches_client.format_pattern(
+            pattern=CacheConstants.LOADERS_ITEM_KEY,
+            loader_id=received_entity.id,
+            name=received_entity.name.value,
+            game_id=received_entity.game_id
+        )
+
+        mapped_dto = self.loaders_mapper.entity_to_dto(
+            entity=received_entity
+        )
+
+        await self.caches_client.set(
+            key=key,
+            value=mapped_dto.model_dump_json(),
+            expire=CacheConstants.NORMAL_TTL_SECONDS
+        )
+
+        return mapped_dto
+
     async def get_one_by_name(
         self,
         game_id: int,

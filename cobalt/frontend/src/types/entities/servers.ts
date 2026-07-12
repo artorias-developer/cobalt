@@ -9,7 +9,7 @@ import type {
   GameEntity,
   LoaderEntity,
   AttributeEntity,
-  ServerStatusEnum
+  ServerStateEnum
 } from "@/types"
 
 /**
@@ -22,7 +22,7 @@ export interface ServerEntity {
   game: GameEntity
   loader: LoaderEntity
   attributes: AttributeEntity[]
-  status: ServerStatusEnum
+  state: ServerStateEnum
   created_at: string
   updated_at: string
 }

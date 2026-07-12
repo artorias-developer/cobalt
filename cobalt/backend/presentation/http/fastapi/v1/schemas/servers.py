@@ -8,7 +8,7 @@ from typing import Optional, List, Literal, Annotated
 
 from pydantic import BaseModel, Field, ConfigDict, RootModel
 
-from domain.enums import ServerStatusEnum
+from domain.enums import ServerStateEnum
 from presentation.http.fastapi.v1.schemas.games import GameShortSchema
 from presentation.http.fastapi.v1.schemas.loaders import LoaderShortSchema
 from presentation.http.fastapi.v1.schemas.attributes import AttributeSchema
@@ -51,10 +51,10 @@ class ServerSchema(BaseModel):
         description="List of server attributes"
     )
 
-    status: ServerStatusEnum = Field(
+    state: ServerStateEnum = Field(
         ...,
-        title="Server status",
-        description="Server status"
+        title="Server state",
+        description="Server state"
     )
 
     created_at: datetime = Field(
@@ -99,7 +99,7 @@ class ServerSchema(BaseModel):
                         "updated_at": "2024-01-02T12:00:00"
                     }
                 ],
-                "status": "created",
+                "state": "created",
                 "created_at": "2024-01-01T12:00:00",
                 "updated_at": "2024-01-02T12:00:00"
             }
@@ -163,7 +163,7 @@ class ServersPageSchema(BaseModel):
                                 "updated_at": "2024-01-02T12:00:00"
                             }
                         ],
-                        "status": "created",
+                        "state": "created",
                         "created_at": "2024-01-01T12:00:00",
                         "updated_at": "2024-01-02T12:00:00"
                     }
@@ -306,6 +306,24 @@ class ServerUpdateSchema(BaseModel):
         json_schema_extra={
             "example": {
                 "name": "Terraria Survival Updated"
+            }
+        }
+    )
+
+class ServerUpgradeSchema(BaseModel):
+    version: str = Field(
+        ...,
+        min_length=1,
+        max_length=16,
+        title="Server version",
+        description="Server version"
+    )
+
+    model_config = ConfigDict(
+        extra="ignore",
+        json_schema_extra={
+            "example": {
+                "version": "1.4.5.6"
             }
         }
     )

@@ -6,12 +6,13 @@
 import { defineStore } from "pinia"
 import { ref } from "vue"
 
-import type { ServerEntity, ServerStatusEntity } from "@/types"
+import { type ServerEntity, ServerStateEnum, type ServerStatusEntity } from "@/types"
 
 interface ServerState {
   server: ServerEntity | null
   status: ServerStatusEntity | null
   hostname: string | null
+  loaderVersions: string[]
 }
 
 export const useServerStore = defineStore("server", () => {
@@ -31,7 +32,8 @@ export const useServerStore = defineStore("server", () => {
       servers.value.set(serverId, {
         server: null,
         status: null,
-        hostname: null
+        hostname: null,
+        loaderVersions: []
       })
     }
     return servers.value.get(serverId)!
@@ -89,6 +91,64 @@ export const useServerStore = defineStore("server", () => {
    */
   function setStatus(serverId: number, status: ServerStatusEntity | null): void {
     ensure(serverId).status = status
+  }
+
+  /**
+   * Returns the state of the server entity for a given server ID.
+   *
+   * Parameters:
+   * - serverId: number - unique identifier of the server.
+   *
+   * Returns:
+   * - ServerStateEnum | undefined.
+   */
+  function getState(serverId: number): ServerStateEnum | undefined {
+    return ensure(serverId).server?.state
+  }
+
+  /**
+   * Updates the state field of the server entity for a given server ID.
+   *
+   * Parameters:
+   * - serverId: number - unique identifier of the server.
+   * - state: ServerStateEnum - state value to set.
+   *
+   * Returns:
+   * - void.
+   */
+  function setState(serverId: number, state: ServerStateEnum): void {
+    const s = ensure(serverId)
+    if (!s.server) return
+    s.server = { ...s.server, state }
+  }
+
+  /**
+   * Returns the version of the server entity for a given server ID.
+   *
+   * Parameters:
+   * - serverId: number - unique identifier of the server.
+   *
+   * Returns:
+   * - string | undefined.
+   */
+  function getVersion(serverId: number): string | undefined {
+    return ensure(serverId).server?.version
+  }
+
+  /**
+   * Updates the version field of the server entity for a given server ID.
+   *
+   * Parameters:
+   * - serverId: number - unique identifier of the server.
+   * - version: string - version value to set.
+   *
+   * Returns:
+   * - void.
+   */
+  function setVersion(serverId: number, version: string): void {
+    const state = ensure(serverId)
+    if (!state.server) return
+    state.server = { ...state.server, version }
   }
 
   /**
@@ -151,6 +211,33 @@ export const useServerStore = defineStore("server", () => {
   }
 
   /**
+   * Returns the loader versions list for a given server ID.
+   *
+   * Parameters:
+   * - serverId: number - unique identifier of the server.
+   *
+   * Returns:
+   * - string[].
+   */
+  function getLoaderVersions(serverId: number): string[] {
+    return ensure(serverId).loaderVersions
+  }
+
+  /**
+   * Sets the loader versions list for a given server ID.
+   *
+   * Parameters:
+   * - serverId: number - unique identifier of the server.
+   * - versions: string[] - loader versions to set.
+   *
+   * Returns:
+   * - void.
+   */
+  function setLoaderVersions(serverId: number, versions: string[]): void {
+    ensure(serverId).loaderVersions = versions
+  }
+
+  /**
    * Removes all state for a given server ID.
    *
    * Parameters:
@@ -169,10 +256,16 @@ export const useServerStore = defineStore("server", () => {
     setServer,
     getStatus,
     setStatus,
+    getState,
+    setState,
+    getVersion,
+    setVersion,
     setRunning,
     setPort,
     getHostname,
     setHostname,
+    getLoaderVersions,
+    setLoaderVersions,
     clear
   }
 })

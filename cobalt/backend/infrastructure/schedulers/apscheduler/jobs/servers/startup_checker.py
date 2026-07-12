@@ -4,7 +4,7 @@
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from domain.exceptions import NotFoundError
-from domain.enums import ServerStatusEnum
+from domain.enums import ServerStateEnum
 from application.contracts.services import AbstractServersService
 from application.contracts.loggers import AbstractLogger
 from application.dtos import (
@@ -31,7 +31,7 @@ class StartupServersCheckerJob(BaseApschedulerJob):
 
     async def execute(self) -> None:
         """
-        Changes the status of servers to FAILED if the container was not created.
+        Changes the state of servers to FAILED (or UPGRADE_FAILED) if the container was not created or upgraded.
 
         Parameters:
         - None.
@@ -61,14 +61,20 @@ class StartupServersCheckerJob(BaseApschedulerJob):
             current_page += 1
 
         for server in all_servers:
-            if server.status not in [
-                ServerStatusEnum.PENDING,
-                ServerStatusEnum.PROCESSING
+            if server.state not in [
+                ServerStateEnum.PENDING,
+                ServerStateEnum.PROCESSING,
+                ServerStateEnum.UPGRADING
             ]:
                 continue
 
+            if server.state == ServerStateEnum.UPGRADING:
+                target_state = ServerStateEnum.UPGRADE_FAILED
+            else:
+                target_state = ServerStateEnum.FAILED
+
             update_dto = ServerUpdateDto(
-                status=ServerStatusEnum.FAILED
+                state=target_state
             )
 
             await self.servers_service.update_one(

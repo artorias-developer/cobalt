@@ -20,6 +20,7 @@ from application.dtos import (
     ServersGetPageDto,
     ServerCreateDto,
     ServerUpdateDto,
+    ServerUpgradeDto,
     ServerStatusDto
 )
 
@@ -78,6 +79,22 @@ class AbstractServersServiceMapper(ABC):
         ...
 
     @abstractmethod
+    def status_dataclass_to_dto(
+        self,
+        dataclass: ContainerStatus
+    ) -> ServerStatusDto:
+        """
+        Converts ContainerStatus object to ServerStatusDto object.
+
+        Parameters:
+        - dataclass: ContainerStatus object.
+
+        Returns:
+        - ServerStatusDto: ServerStatusDto object.
+        """
+        ...
+
+    @abstractmethod
     def get_page_dto_to_entity(
         self,
         dto: ServersGetPageDto
@@ -128,17 +145,19 @@ class AbstractServersServiceMapper(ABC):
         ...
 
     @abstractmethod
-    def status_dataclass_to_dto(
+    def upgrade_dto_to_update_entity(
         self,
-        dataclass: ContainerStatus
-    ) -> ServerStatusDto:
+        server_id: int,
+        dto: ServerUpgradeDto
+    ) -> ServerUpdateEntity:
         """
-        Converts ContainerStatus object to ServerStatusDto object.
+        Converts ServerUpgradeDto object to ServerUpdateEntity object.
 
         Parameters:
-        - dataclass: ContainerStatus object.
+        - server_id: Server ID.
+        - dto: ServerUpdateDto object.
 
         Returns:
-        - ServerStatusDto: ServerStatusDto object.
+        - ServerUpdateEntity: ServerUpdateEntity object.
         """
         ...

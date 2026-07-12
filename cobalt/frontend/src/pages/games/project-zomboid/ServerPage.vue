@@ -22,6 +22,11 @@
         :server-id="serverId"
       />
     </template>
+    <template #settings>
+      <SettingsTab
+        :server-id="serverId"
+      />
+    </template>
   </PageTabs>
 </template>
 
@@ -32,6 +37,7 @@ import { useI18n } from "vue-i18n"
 import PageTabs from "@/components/ui/tabs/PageTabs.vue"
 import OverviewTab from "@/components/widgets/server/OverviewTab.vue"
 import FilesTab from "@/components/widgets/server/FilesTab.vue"
+import SettingsTab from "@/components/games/dont-starve-together/tabs/SettingsTab.vue"
 
 defineProps<{
   serverId: number
@@ -50,6 +56,10 @@ const tabs = [
   {
     label: t("servers.server.tabs.files"),
     value: "files"
+  },
+  {
+    label: t("servers.server.tabs.settings"),
+    value: "settings"
   }
 ]
 </script>

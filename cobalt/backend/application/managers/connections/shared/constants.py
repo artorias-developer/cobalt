@@ -15,4 +15,4 @@ class RoomsConstants:
     HOST_LOGS_KEY: str = "logs:host"
     SERVER_LOGS_KEY: str = "logs:server:{server_id}"
 
-    SERVERS_STATUSES_KEY: str = "servers:statuses"
+    SERVERS_STATES_KEY: str = "servers:states"

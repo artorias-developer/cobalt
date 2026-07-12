@@ -6,7 +6,7 @@
   -->
 
 <template>
-  <div class="page" v-if="hasDashboardViewAccess">
+  <div class="page" v-if="hasDashboardViewAccess" data-id="cbc8ade746f56b6a385d97a58f08ccb77ce606e643f">
     <section class="metrics">
       <CpuUsageChart
         mode="host"

@@ -8,7 +8,7 @@ from typing import Dict, List, Tuple, Callable
 from orjson import loads
 
 from domain.entities import ServerEntity
-from domain.enums import ServerStatusEnum
+from domain.enums import ServerStateEnum
 from domain.exceptions import (
     NotFoundError,
     ConflictError
@@ -21,7 +21,10 @@ from application.contracts.managers import (
     AbstractConnectionsManager,
     AbstractI18nManager
 )
-from application.contracts.services import AbstractServersService
+from application.contracts.services import (
+    AbstractServersService,
+    AbstractLoadersService
+)
 from application.contracts.mappers import AbstractServersServiceMapper
 from application.contracts.databases import AbstractTransactionsManager
 from application.contracts.games import (
@@ -37,6 +40,7 @@ from application.dtos import (
     ServersPageDto,
     ServerCreateDto,
     ServerUpdateDto,
+    ServerUpgradeDto,
     ServerExecuteDto,
     ServerStatusDto
 )
@@ -50,6 +54,7 @@ class ServersService(AbstractServersService):
     connections_manager: AbstractConnectionsManager
     servers_repository: AbstractServersRepository
     servers_mapper: AbstractServersServiceMapper
+    loaders_service: AbstractLoadersService
     i18n_manager: AbstractI18nManager
     transactions_manager: AbstractTransactionsManager
     queue: AbstractQueue
@@ -64,6 +69,7 @@ class ServersService(AbstractServersService):
         connections_manager: AbstractConnectionsManager,
         servers_repository: AbstractServersRepository,
         servers_mapper: AbstractServersServiceMapper,
+        loaders_service: AbstractLoadersService,
         i18n_manager: AbstractI18nManager,
         transactions_manager: AbstractTransactionsManager,
         queue: AbstractQueue,
@@ -74,6 +80,7 @@ class ServersService(AbstractServersService):
         self.connections_manager = connections_manager
         self.servers_repository = servers_repository
         self.servers_mapper = servers_mapper
+        self.loaders_service = loaders_service
         self.i18n_manager = i18n_manager
         self.transactions_manager = transactions_manager
         self.queue = queue
@@ -188,8 +195,8 @@ class ServersService(AbstractServersService):
         return mapped_dto
 
     async def get_one_by_id(
-            self,
-            server_id: int
+        self,
+        server_id: int
     ) -> ServerDto:
         """
         Gets an existing server by ID.
@@ -252,6 +259,14 @@ class ServersService(AbstractServersService):
         Returns:
         - ServerDto: ServerDto object.
         """
+        received_entity = await self.loaders_service.get_one_by_id(
+            game_id=dto.game_id,
+            loader_id=dto.loader_id
+        )
+
+        if dto.version not in received_entity.versions:
+            raise NotFoundError(self._('Version "{version}" not found').format(version=dto.version))
+
         mapped_entity = self.servers_mapper.create_dto_to_entity(
             dto=dto
         )
@@ -302,19 +317,56 @@ class ServersService(AbstractServersService):
     async def upgrade_one(
         self,
         server_id: int,
-        dto: ServerUpdateDto
+        dto: ServerUpgradeDto
     ) -> None:
         """
         Upgrades an existing server.
 
         Parameters:
         - server_id: Server ID.
-        - dto: ServerUpdateDto object.
+        - dto: ServerUpgradeDto object.
 
         Returns:
         - None.
         """
-        mapped_entity = self.servers_mapper.update_dto_to_entity(
+        received_entity = await self.get_one_by_id(
+            server_id=server_id
+        )
+
+        if received_entity.state in (ServerStateEnum.PENDING, ServerStateEnum.PROCESSING):
+            raise ConflictError(self._("Server {server_id} is still being installed").format(server_id=server_id))
+
+        if received_entity.state == ServerStateEnum.UPGRADING:
+            raise ConflictError(self._("Server {server_id} is already being upgraded").format(server_id=server_id))
+
+        available_versions = received_entity.loader.versions
+
+        if len(available_versions) == 1 and available_versions[0].lower() == "latest":
+            if dto.version != available_versions[0]:
+                raise NotFoundError(self._('Version "{version}" not found').format(version=dto.version))
+        else:
+            if dto.version not in available_versions:
+                raise NotFoundError(self._('Version "{version}" not found').format(version=dto.version))
+
+            if dto.version == received_entity.version:
+                raise ConflictError(self._('Server is already on version "{version}"').format(version=received_entity.version))
+
+            if received_entity.version in available_versions:
+                current_index = available_versions.index(received_entity.version)
+            else:
+                current_index = len(available_versions)
+
+            new_index = available_versions.index(dto.version)
+
+            if new_index >= current_index:
+                raise ConflictError(
+                    self._('Version "{version}" is not newer than the current version "{current_version}"').format(
+                        version=dto.version,
+                        current_version=received_entity.version
+                    )
+                )
+
+        mapped_entity = self.servers_mapper.upgrade_dto_to_update_entity(
             server_id=server_id,
             dto=dto
         )
@@ -355,7 +407,7 @@ class ServersService(AbstractServersService):
         )
 
         await self.queue.enqueue(
-            loader.servers_service.create,
+            loader.servers_service.upgrade,
             server_id=updated_entity.id,
             container_name=container_name,
             version=updated_entity.version.value,
@@ -425,8 +477,11 @@ class ServersService(AbstractServersService):
         if not received_entity:
             raise NotFoundError(self._("Server {server_id} not found").format(server_id=server_id))
 
-        if received_entity.status not in (ServerStatusEnum.CREATED, ServerStatusEnum.FAILED):
+        if received_entity.state in (ServerStateEnum.PENDING, ServerStateEnum.PROCESSING):
             raise ConflictError(self._("Server {server_id} is still being installed").format(server_id=server_id))
+
+        if received_entity.state == ServerStateEnum.UPGRADING:
+            raise ConflictError(self._("Server {server_id} is still being upgraded").format(server_id=server_id))
 
         await self.servers_repository.delete_one(
             server_id=server_id
@@ -483,11 +538,19 @@ class ServersService(AbstractServersService):
 
         installing = [
             server for server in received_entities
-            if server.status not in (ServerStatusEnum.CREATED, ServerStatusEnum.FAILED)
+            if server.state in (ServerStateEnum.PENDING, ServerStateEnum.PROCESSING)
         ]
 
         if installing:
             raise ConflictError(self._("Some servers are still being installed"))
+
+        upgrading = [
+            server for server in received_entities
+            if server.state == ServerStateEnum.UPGRADING
+        ]
+
+        if upgrading:
+            raise ConflictError(self._("Some servers are still being upgraded"))
 
         await self.servers_repository.delete_many(
             server_ids=server_ids
@@ -688,7 +751,7 @@ class ServersService(AbstractServersService):
         """
         await self.connections_manager.join_room(
             connection_id=connection_id,
-            room_name=RoomsConstants.SERVERS_STATUSES_KEY
+            room_name=RoomsConstants.SERVERS_STATES_KEY
         )
 
     async def unsubscribe_states(
@@ -706,5 +769,5 @@ class ServersService(AbstractServersService):
         """
         await self.connections_manager.leave_room(
             connection_id=connection_id,
-            room_name=RoomsConstants.SERVERS_STATUSES_KEY
+            room_name=RoomsConstants.SERVERS_STATES_KEY
         )

@@ -8,7 +8,7 @@
 <template>
   <div class="overview tab">
     <section class="info">
-      <ServerInfoBlock
+      <ServerControlBlock
         :server-id="serverId"
       />
       <CpuUsageChart
@@ -44,7 +44,7 @@
 import RamUsageChart from "@/components/widgets/charts/RamUsageChart.vue"
 import CpuUsageChart from "@/components/widgets/charts/CpuUsageChart.vue"
 import LogsBlock from "@/components/widgets/blocks/LogsBlock.vue"
-import ServerInfoBlock from "@/components/widgets/blocks/ServerInfoBlock.vue"
+import ServerControlBlock from "@/components/widgets/blocks/server/ServerControlBlock.vue"
 
 defineProps<{
   serverId: number

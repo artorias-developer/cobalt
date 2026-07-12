@@ -6,7 +6,7 @@
 from datetime import datetime
 from typing import List, Optional, Literal
 
-from domain.enums import ServerStatusEnum
+from domain.enums import ServerStateEnum
 from application.dtos.base import BaseDto
 from application.dtos.games import GameDto
 from application.dtos.loaders import LoaderDto
@@ -20,7 +20,7 @@ class ServerDto(BaseDto):
     game: GameDto
     loader: LoaderDto
     attributes: List[AttributeDto]
-    status: ServerStatusEnum
+    state: ServerStateEnum
     created_at: datetime
     updated_at: datetime
 
@@ -50,7 +50,10 @@ class ServerCreateDto(BaseDto):
 class ServerUpdateDto(BaseDto):
     name: Optional[str] = None
     version: Optional[str] = None
-    status: Optional[ServerStatusEnum] = None
+    state: Optional[ServerStateEnum] = None
+
+class ServerUpgradeDto(BaseDto):
+    version: str
 
 class ServerExecuteDto(BaseDto):
     command: str
