@@ -33,7 +33,7 @@ class FailedServersCheckerJob(BaseApschedulerJob):
 
     async def execute(self) -> None:
         """
-        Changes the state of servers to FAILED if the container was not created.
+        Changes the state of servers to FAILED (or UPGRADE_FAILED) if the container was not created or upgraded.
 
         Parameters:
         - None.
@@ -67,15 +67,21 @@ class FailedServersCheckerJob(BaseApschedulerJob):
         for server in all_servers:
             if server.state not in [
                 ServerStateEnum.PENDING,
-                ServerStateEnum.PROCESSING
+                ServerStateEnum.PROCESSING,
+                ServerStateEnum.UPGRADING
             ]:
                 continue
 
             if now - server.updated_at <= timedelta(hours=3):
                 continue
 
+            if server.state == ServerStateEnum.UPGRADING:
+                target_state = ServerStateEnum.UPGRADE_FAILED
+            else:
+                target_state = ServerStateEnum.FAILED
+
             update_dto = ServerUpdateDto(
-                state=ServerStateEnum.FAILED
+                state=target_state
             )
 
             await self.servers_service.update_one(
