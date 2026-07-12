@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  1.1.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-07-12 14:37+0300\n"
+"POT-Creation-Date: 2026-07-12 14:47+0300\n"
 "PO-Revision-Date: 2026-06-17 11:40+0300\n"
 "Last-Translator: Artorias artorias.code@gmail.com\n"
 "Language: uk\n"
@@ -224,6 +224,10 @@ msgstr "Налаштування для користувача з ID {user_id} �
 #: cobalt/backend/application/services/settings.py:294
 msgid "Cannot clear containers while servers are being created"
 msgstr "Неможливо очистити контейнери під час створення серверів"
+
+#: cobalt/backend/application/services/settings.py:302
+msgid "Cannot clear containers while servers are being upgraded"
+msgstr "Неможливо очистити контейнери під час оновлення серверів"
 
 #: cobalt/backend/application/services/users.py:131
 #: cobalt/backend/application/services/users.py:389
