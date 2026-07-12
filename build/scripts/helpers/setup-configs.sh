@@ -50,7 +50,7 @@ fi
 TARGET="$SCRIPT_DIR/../../$ENV"
 ROOT="$SCRIPT_DIR/../../.."
 
-GLOBAL_SALT=$(openssl rand -hex 32)
+PEPPER=$(openssl rand -hex 32)
 POSTGRES_PASSWORD=$(openssl rand -hex 24)
 REDIS_PASSWORD=$(openssl rand -hex 24)
 
@@ -86,7 +86,7 @@ copy() {
 }
 
 generate "$TARGET/backend/.env" "$TARGET/backend/.env.example" \
-  -e "s/{{global_salt}}/$GLOBAL_SALT/" \
+  -e "s/{{pepper}}/$PEPPER/" \
   -e "s/{{postgres_password}}/$POSTGRES_PASSWORD/" \
   -e "s/{{redis_password}}/$REDIS_PASSWORD/" \
   -e "s/{{domain}}/$DOMAIN/"

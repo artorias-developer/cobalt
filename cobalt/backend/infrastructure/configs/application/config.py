@@ -84,7 +84,7 @@ def get_application_config() -> ApplicationConfig:
     )
 
     security = SecuritySettings(
-        global_salt=getenv("APP_GLOBAL_SALT"),
+        pepper=getenv("APP_PEPPER"),
         bcrypt_rounds=int(getenv("APP_BCRYPT_ROUNDS"))
     )
 

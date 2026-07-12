@@ -91,7 +91,7 @@ def create_passwords_service(
     """
     return PasswordsService(
         logger=logger,
-        global_salt=config.security.global_salt,
+        pepper=config.security.pepper,
         bcrypt_rounds=config.security.bcrypt_rounds
     )
 
