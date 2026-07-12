@@ -79,7 +79,7 @@ class AuthService(AbstractAuthService):
         if not self.passwords_service.verify_password(
             plain_password=dto.password,
             hashed_password=received_dto.hashed_password,
-            local_salt=received_dto.salt
+            salt=received_dto.salt
         ):
             raise AuthenticationError(self._("Invalid login or password"))
 
@@ -162,7 +162,7 @@ class AuthService(AbstractAuthService):
             is_valid = self.passwords_service.verify_password(
                 plain_password=dto.old_password,
                 hashed_password=received_dto.hashed_password,
-                local_salt=received_dto.salt
+                salt=received_dto.salt
             )
 
             if not is_valid:

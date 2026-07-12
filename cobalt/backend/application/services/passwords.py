@@ -17,36 +17,39 @@ class PasswordsService(AbstractPasswordsService):
     Passwords service.
     """
     logger: AbstractLogger
-    global_salt: str
+    pepper: str
     bcrypt_rounds: int
 
     def __init__(
         self,
         logger: AbstractLogger,
-        global_salt: str,
+        pepper: str,
         bcrypt_rounds: int = 12
     ):
         self.logger = logger
-        self.global_salt = global_salt
+        self.pepper = pepper
         self.bcrypt_rounds = bcrypt_rounds
 
     def _prepare_password(
         self,
         password: str,
-        local_salt: str
+        salt: str
     ) -> bytes:
         """
         Prepares a password for hashing or verification.
 
         Parameters:
         - password: Password to prepare.
-        - local_salt: Local salt.
+        - salt: User local salt.
 
         Returns:
-        - bytes: SHA256 hash of the salted password.
+        - bytes: SHA256 hash of the password with pepper and salt.
         """
-        salted_password = f"{local_salt}{password}{self.global_salt}".encode("utf-8")
-        return sha256(salted_password).hexdigest().encode("utf-8")
+        peppered_password = f"{password}{self.pepper}".encode("utf-8")
+        peppered_hash = sha256(peppered_password).hexdigest()
+
+        salted_hash = f"{salt}{peppered_hash}".encode("utf-8")
+        return sha256(salted_hash).hexdigest().encode("utf-8")
 
     def generate_salt(
         self,
@@ -66,21 +69,21 @@ class PasswordsService(AbstractPasswordsService):
     def hash_password(
         self,
         password: str,
-        local_salt: str
+        salt: str
     ) -> str:
         """
-        Hashes a password using local salt + global salt + SHA256 + bcrypt.
+        Hashes a password using salt + pepper + SHA256 + bcrypt.
 
         Parameters:
         - password: Password to hash.
-        - local_salt: Local salt.
+        - salt: User local salt.
 
         Returns:
         - str: Hashed password.
         """
         sha256_hash = self._prepare_password(
             password=password,
-            local_salt=local_salt
+            salt=salt
         )
 
         bcrypt_hash = hashpw(
@@ -93,7 +96,8 @@ class PasswordsService(AbstractPasswordsService):
     def verify_password(
         self,
         plain_password: str,
-        hashed_password: str, local_salt: str
+        hashed_password: str,
+        salt: str
     ) -> bool:
         """
         Verifies a password against the stored bcrypt hash.
@@ -101,14 +105,14 @@ class PasswordsService(AbstractPasswordsService):
         Parameters:
         - plain_password: Password to verify.
         - hashed_password: Hashed password.
-        - local_salt: Local salt.
+        - salt: User local salt.
 
         Returns:
         - bool: True if password matches stored bcrypt hash.
         """
         sha256_hash = self._prepare_password(
             password=plain_password,
-            local_salt=local_salt
+            salt=salt
         )
 
         return checkpw(
