@@ -6,7 +6,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Enum
 from sqlalchemy.orm import relationship
 
-from domain.enums import ServerStatusEnum
+from domain.enums import ServerStateEnum
 from infrastructure.databases.postgres.models import BaseModel
 
 
@@ -18,7 +18,7 @@ class ServerModel(BaseModel):
     game_id = Column(Integer, ForeignKey("games.id", ondelete="CASCADE"), nullable=False)
     loader_id = Column(Integer, ForeignKey("games_loaders.id", ondelete="RESTRICT"), nullable=False)
     version = Column(String(16), nullable=False)
-    status = Column(Enum(ServerStatusEnum), nullable=False, default=ServerStatusEnum.PENDING)
+    state = Column(Enum(ServerStateEnum), nullable=False, default=ServerStateEnum.PENDING)
 
     game = relationship(
         "GameModel",

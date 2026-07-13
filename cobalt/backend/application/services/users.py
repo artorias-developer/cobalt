@@ -78,16 +78,16 @@ class UsersService(AbstractUsersService):
         Returns:
         - Tuple: Hashed password and local salt.
         """
-        local_salt = self.passwords_service.generate_salt(
+        salt = self.passwords_service.generate_salt(
             length=32
         )
 
         hashed_password = self.passwords_service.hash_password(
             password=password,
-            local_salt=local_salt
+            salt=salt
         )
 
-        return hashed_password, local_salt
+        return hashed_password, salt
 
     async def get_page(
         self,

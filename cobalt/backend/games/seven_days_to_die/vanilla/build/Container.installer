@@ -24,12 +24,20 @@ CMD rsync -a /installer_src/. . && \
     for i in 1 2 3; do \
         steamcmd.sh +@ShutdownOnFailedCommand 1 \
                     +@sSteamCmdForcePlatformType linux \
-                    +force_install_dir ${SERVER_ROOT} \
+                    +force_install_dir "${SERVER_ROOT}" \
                     +login anonymous \
-                    +app_update ${APP_ID} validate \
-                    +quit && \
-        [ -f "${SERVER_ROOT}/7DaysToDieServer.x86_64" ] && break || \
-        { echo "Attempt $i failed, retrying..."; [ $i -eq 3 ] && exit 1; }; \
-    done && \
-    rm -f ${SERVER_ROOT}/serverconfig.xml && \
-    mv ${SERVER_ROOT}/serverconfig.example.xml ${SERVER_ROOT}/serverconfig.xml
+                    +app_update "${APP_ID}" validate \
+                    +quit 2>&1 | tee /tmp/steamcmd_output.log; \
+        if grep -q "Success! App '${APP_ID}' fully installed." /tmp/steamcmd_output.log; then \
+            echo "Install successful."; \
+            rm -f /tmp/steamcmd_output.log; \
+            rm -f "${SERVER_ROOT}/serverconfig.xml"; \
+            mv "${SERVER_ROOT}/serverconfig.example.xml" "${SERVER_ROOT}/serverconfig.xml"; \
+            exit 0; \
+        fi; \
+        echo "Attempt $i failed, retrying..."; \
+        sleep 5; \
+    done; \
+    rm -f /tmp/steamcmd_output.log; \
+    echo "All attempts failed."; \
+    exit 1

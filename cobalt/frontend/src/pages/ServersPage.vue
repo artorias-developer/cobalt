@@ -6,7 +6,7 @@
   -->
 
 <template>
-  <div class="page" v-if="hasServersViewAccess">
+  <div class="page" v-if="hasServersViewAccess" data-id="de97f626ab1b3c8e8c16b605ec79fc7f6dced8cf5b6">
     <section class="table">
       <ServersTable/>
     </section>

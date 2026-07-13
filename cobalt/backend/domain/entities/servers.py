@@ -14,7 +14,7 @@ from domain.value_objects import (
 from domain.entities.games import GameEntity
 from domain.entities.loaders import LoaderEntity
 from domain.entities.attributes import AttributeEntity
-from domain.enums import ServerStatusEnum
+from domain.enums import ServerStateEnum
 
 
 @dataclass(slots=True)
@@ -25,7 +25,7 @@ class ServerEntity:
     game: GameEntity
     loader: LoaderEntity
     attributes: List[AttributeEntity]
-    status: ServerStatusEnum
+    state: ServerStateEnum
     created_at: datetime
     updated_at: datetime
 
@@ -56,4 +56,4 @@ class ServerUpdateEntity:
     id: int
     name: Optional[ServerName] = None
     version: Optional[ServerVersion] = None
-    status: Optional[ServerStatusEnum] = None
+    state: Optional[ServerStateEnum] = None

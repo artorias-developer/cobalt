@@ -31,14 +31,14 @@ class AbstractPasswordsService(ABC):
     def hash_password(
         self,
         password: str,
-        local_salt: str
+        salt: str
     ) -> str:
         """
-        Hashes a password using local salt + global salt + SHA256 + bcrypt.
+        Hashes a password using salt + pepper + SHA256 + bcrypt.
 
         Parameters:
         - password: Password to hash.
-        - local_salt: Local salt.
+        - salt: User local salt.
 
         Returns:
         - str: Hashed password.
@@ -50,7 +50,7 @@ class AbstractPasswordsService(ABC):
         self,
         plain_password: str,
         hashed_password: str,
-        local_salt: str
+        salt: str
     ) -> bool:
         """
         Verifies a password against the stored bcrypt hash.
@@ -58,7 +58,7 @@ class AbstractPasswordsService(ABC):
         Parameters:
         - plain_password: Password to verify.
         - hashed_password: Hashed password.
-        - local_salt: Local salt.
+        - salt: User local salt.
 
         Returns:
         - bool: True if password matches stored bcrypt hash.

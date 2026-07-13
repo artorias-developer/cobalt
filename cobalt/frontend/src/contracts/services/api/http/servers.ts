@@ -12,6 +12,7 @@ import type {
   ServersPageRequest,
   ServerCreateRequest,
   ServerUpdateRequest,
+  ServerUpgradeRequest,
   ServerExecuteRequest
 } from "@/types"
 
@@ -65,6 +66,18 @@ export interface IHttpServersApiService {
    * - Promise<ServerEntity>: Updated server entity.
    */
   updateOne(serverId: number, data: ServerUpdateRequest): Promise<ServerEntity>
+
+  /**
+   * Upgrades an existing server to a specified version.
+   *
+   * Parameters:
+   * - serverId: Server ID.
+   * - data: ServerUpgradeRequest object.
+   *
+   * Returns:
+   * - Promise<void>.
+   */
+  upgradeOne(serverId: number, data: ServerUpgradeRequest): Promise<void>
 
   /**
    * Deletes an existing server.

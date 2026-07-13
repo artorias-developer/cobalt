@@ -180,6 +180,9 @@ class DockerClient(AbstractContainersClient):
                 noprune=no_prune
             )
         except DockerError as e:
+            if e.status == 404:
+                raise NotFoundError(self._('Image "{image}" not found').format(image=image)) from e
+
             raise UnexpectedError(self._('Error while removing image "{image}"').format(image=image)) from e
 
     async def image_prune(

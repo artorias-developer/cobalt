@@ -67,6 +67,7 @@ from .servers import (
     ServersGetPageDto,
     ServersPageDto,
     ServerCreateDto,
+    ServerUpgradeDto,
     ServerUpdateDto,
     ServerExecuteDto,
     ServerStatusDto
@@ -130,6 +131,7 @@ __all__ = [
     "ServersGetPageDto",
     "ServersPageDto",
     "ServerCreateDto",
+    "ServerUpgradeDto",
     "ServerUpdateDto",
     "ServerExecuteDto",
     "ServerStatusDto",

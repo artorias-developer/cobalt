@@ -90,8 +90,8 @@
       <Header
         :icon="usersIcon"
         icon-color="blue"
-        :title="$t('users.list.popup.create.title')"
-        :description="$t('users.list.popup.create.description')"
+        :title="$t('users.list.popups.create.title')"
+        :description="$t('users.list.popups.create.description')"
         size="large"
         :icon-filled="true"
       />
@@ -102,26 +102,26 @@
       >
         <Input
           v-model="userLogin"
-          :validationName="$t('users.list.popup.login.label')"
-          :label="$t('users.list.popup.login.label')"
-          :placeholder="$t('users.list.popup.login.placeholder')"
+          :validationName="$t('users.list.popups.login.label')"
+          :label="$t('users.list.popups.login.label')"
+          :placeholder="$t('users.list.popups.login.placeholder')"
           name="user-login"
           :required="true"
         />
         <Input
           v-model="userPassword"
-          :validationName="$t('users.list.popup.password.label')"
-          :label="$t('users.list.popup.password.label')"
-          :placeholder="$t('users.list.popup.password.placeholder')"
+          :validationName="$t('users.list.popups.password.label')"
+          :label="$t('users.list.popups.password.label')"
+          :placeholder="$t('users.list.popups.create.password.placeholder')"
           name="user-password"
           :required="true"
         />
         <Select
           v-model="selectedRole"
           :options="roleOptions"
-          :validationName="$t('users.list.popup.role.label')"
-          :label="$t('users.list.popup.role.label')"
-          :placeholder="$t('users.list.popup.role.placeholder')"
+          :validationName="$t('users.list.popups.role.label')"
+          :label="$t('users.list.popups.role.label')"
+          :placeholder="$t('users.list.popups.role.placeholder')"
           name="user-role"
           :required="true"
         />
@@ -148,8 +148,8 @@
       <Header
         :icon="usersIcon"
         icon-color="blue"
-        :title="$t('users.list.popup.edit.title')"
-        :description="$t('users.list.popup.edit.description')"
+        :title="$t('users.list.popups.edit.title')"
+        :description="$t('users.list.popups.edit.description')"
         size="large"
         :icon-filled="true"
       />
@@ -160,26 +160,26 @@
       >
         <Input
           v-model="editUserLogin"
-          :validationName="$t('users.list.popup.login.label')"
-          :label="$t('users.list.popup.login.label')"
-          :placeholder="$t('users.list.popup.login.placeholder')"
+          :validationName="$t('users.list.popups.login.label')"
+          :label="$t('users.list.popups.login.label')"
+          :placeholder="$t('users.list.popups.login.placeholder')"
           name="user-login"
           :required="false"
         />
         <Input
           v-model="editUserPassword"
-          :validationName="$t('users.list.popup.password.label')"
-          :label="$t('users.list.popup.password.label')"
-          :placeholder="$t('users.list.popup.password.newPlaceholder')"
+          :validationName="$t('users.list.popups.password.label')"
+          :label="$t('users.list.popups.password.label')"
+          :placeholder="$t('users.list.popups.edit.password.placeholder')"
           name="user-password"
           :required="false"
         />
         <Select
           v-model="editSelectedRole"
           :options="roleOptions"
-          :validationName="$t('users.list.popup.role.label')"
-          :label="$t('users.list.popup.role.label')"
-          :placeholder="$t('users.list.popup.role.placeholder')"
+          :validationName="$t('users.list.popups.role.label')"
+          :label="$t('users.list.popups.role.label')"
+          :placeholder="$t('users.list.popups.role.placeholder')"
           name="user-role"
           :required="false"
         />
@@ -388,7 +388,7 @@ async function fetchRoles(): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? t("users.list.fetchRoles.error")
+      text: error?.response?.data?.message ?? t("users.list.roles.fetch.error")
     })
   }
 }
@@ -652,7 +652,7 @@ async function openEditUser(userId: number): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? t("users.list.fetchUser.error")
+      text: error?.response?.data?.message ?? t("users.list.user.fetch.error")
     })
   }
 }

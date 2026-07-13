@@ -15,12 +15,12 @@ export interface IWsServersApiService {
    * Subscribes to servers states and registers a handler.
    *
    * Parameters:
-   * - handler: Callback function for incoming server status.
+   * - handler: Callback function for incoming server states.
    *
    * Returns:
    * - void.
    */
-  subscribeStates(handler: (status: any) => void): void
+  subscribeStates(handler: (states: any) => void): void
 
   /**
    * Unsubscribes from servers states and removes the handler.
@@ -31,5 +31,5 @@ export interface IWsServersApiService {
    * Returns:
    * - void.
    */
-  unsubscribeStates(handler: (status: any) => void): void
+  unsubscribeStates(handler: (states: any) => void): void
 }

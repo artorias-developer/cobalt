@@ -107,12 +107,12 @@ async function copyAddress(address: string): Promise<void> {
     await navigator.clipboard.writeText(address)
     notify({
       type: "success",
-      text: t("nav.walletPopup.copy.success")
+      text: t("common.copy.success")
     })
   } catch {
     notify({
       type: "error",
-      text: t("nav.walletPopup.copy.error")
+      text: t("common.copy.error")
     })
   }
 }

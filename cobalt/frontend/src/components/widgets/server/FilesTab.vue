@@ -8,7 +8,7 @@
 <template>
   <div class="files tab">
     <section class="explorer">
-      <FilesBlock
+      <ServerFilesBlock
         :key="server?.id ?? 'none'"
         :mode="server?.id ? 'server' : 'empty'"
         :server-id="server?.id"
@@ -22,7 +22,7 @@ import { computed } from "vue"
 
 import { useServerStore } from "@/stores"
 
-import FilesBlock from "@/components/widgets/blocks/FilesBlock.vue"
+import ServerFilesBlock from "@/components/widgets/blocks/server/ServerFilesBlock.vue"
 
 const props = defineProps<{
   serverId: number

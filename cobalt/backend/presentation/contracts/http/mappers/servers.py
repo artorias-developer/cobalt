@@ -12,6 +12,7 @@ from application.dtos import (
     ServersPageDto,
     ServerCreateDto,
     ServerUpdateDto,
+    ServerUpgradeDto,
     ServerExecuteDto,
     ServerStatusDto
 )
@@ -131,6 +132,22 @@ class AbstractServersRouterMapper(ABC):
 
         Returns:
         - ServerUpdateDto: ServerUpdateDto object.
+        """
+        ...
+
+    @abstractmethod
+    def upgrade_schema_to_dto(
+        self,
+        schema: Any
+    ) -> ServerUpgradeDto:
+        """
+        Converts schema object to ServerUpgradeDto object.
+
+        Parameters:
+        - schema: Schema object.
+
+        Returns:
+        - ServerUpgradeDto: ServerUpgradeDto object.
         """
         ...
 

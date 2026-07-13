@@ -50,7 +50,7 @@ class PrometheusSettings:
 
 @dataclass(slots=True)
 class SecuritySettings:
-    global_salt: str
+    pepper: str
     bcrypt_rounds: int
 
 @dataclass(slots=True)

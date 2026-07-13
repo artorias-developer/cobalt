@@ -71,6 +71,20 @@ class AbstractHttpServersRouter(AbstractHttpRouter, ABC):
         ...
 
     @abstractmethod
+    async def upgrade_one(self, *args: Any, **kwargs: Any) -> Any:
+        """
+        Upgrades an existing server.
+
+        Parameters:
+        - *args: Positional arguments.
+        - **kwargs: Keyword arguments.
+
+        Returns:
+        - Any: Response object.
+        """
+        ...
+
+    @abstractmethod
     async def delete_one(self, *args: Any, **kwargs: Any) -> Any:
         """
         Deletes an existing server.

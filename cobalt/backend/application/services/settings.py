@@ -14,7 +14,7 @@ from domain.exceptions import (
     NotFoundError,
     ConflictError
 )
-from domain.enums import ServerStatusEnum
+from domain.enums import ServerStateEnum
 from domain.repositories import AbstractSettingsRepository
 from application.contracts.loggers import AbstractLogger
 from application.contracts.queues import AbstractQueue
@@ -285,13 +285,21 @@ class SettingsService(AbstractSettingsService):
             total_pages = servers_page.pages
             current_page += 1
 
-        has_pending = any(
-            server.status in (ServerStatusEnum.PENDING, ServerStatusEnum.PROCESSING)
+        installing = any(
+            server.state in (ServerStateEnum.PENDING, ServerStateEnum.PROCESSING)
             for server in servers
         )
 
-        if has_pending:
+        if installing:
             raise ConflictError(self._("Cannot clear containers while servers are being created"))
+
+        upgrading = any(
+            server.state == ServerStateEnum.UPGRADING
+            for server in servers
+        )
+
+        if upgrading:
+            raise ConflictError(self._("Cannot clear containers while servers are being upgraded"))
 
         server_container_names = [
             ContainersConstants.GAME_CONTAINER_NAME_KEY.format(

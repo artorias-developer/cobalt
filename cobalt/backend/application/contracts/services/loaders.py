@@ -18,6 +18,24 @@ class AbstractLoadersService(ABC):
     """
 
     @abstractmethod
+    async def get_one_by_id(
+        self,
+        game_id: int,
+        loader_id: int
+    ) -> LoaderDto:
+        """
+        Gets an existing loader by ID.
+
+        Parameters:
+        - game_id: Game ID.
+        - loader_id: Loader ID.
+
+        Returns:
+        - LoaderDto: LoaderDto object.
+        """
+        ...
+
+    @abstractmethod
     async def get_one_by_name(
         self,
         game_id: int,
