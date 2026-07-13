@@ -140,12 +140,13 @@ function setupRouterInstance() {
  * Parameters:
  * - app: Vue application instance.
  * - router: Router instance, required by the HTTP client for auth redirects.
+ * - t: Translation function, required by the HTTP client for error notifications.
  *
  * Returns:
  * - object: Object containing selected initialized services.
  */
-function setupProviders(app: App, router: ReturnType<typeof setupRouterInstance>) {
-  const httpClient = createHttpAxiosClient(router)
+function setupProviders(app: App, router: ReturnType<typeof setupRouterInstance>, t: (key: string) => string) {
+  const httpClient = createHttpAxiosClient(router, t)
   const wsClient = createWebSocketClient()
 
   const documentHelper = createDocumentHelper()
@@ -301,7 +302,8 @@ function setupTimezoneWatch(localeHelper: ReturnType<typeof createLocaleHelper>)
  */
 function setupRouterGuard(
   router: ReturnType<typeof setupRouterInstance>,
-  httpUsersApiService: ReturnType<typeof createHttpUsersApiService>
+  httpUsersApiService: ReturnType<typeof createHttpUsersApiService>,
+  i18n: ReturnType<typeof setupI18n>
 ): void {
   router.beforeEach(async (to, from, next) => {
     const userStore = useUserStore()
@@ -314,7 +316,7 @@ function setupRouterGuard(
       } catch (error: any) {
         notify({
           type: "error",
-          text: error?.response?.data?.message ?? "Failed to get current user"
+          text: error?.response?.data?.message ?? i18n.global.t("common.fetchUser.error")
         })
       }
     }
@@ -357,11 +359,11 @@ export function bootstrap(app: App): void {
   const i18n = setupI18n()
   const router = setupRouterInstance()
 
-  const { httpUsersApiService, localeHelper, wsClient } = setupProviders(app, router)
+  const { httpUsersApiService, localeHelper, wsClient } = setupProviders(app, router, i18n.global.t)
   app.use(createPinia())
   app.use(Notifications)
   app.use(i18n)
-  setupRouterGuard(router, httpUsersApiService)
+  setupRouterGuard(router, httpUsersApiService, i18n)
   app.use(router)
   setupThemeWatch()
   setupLanguageWatch(i18n)

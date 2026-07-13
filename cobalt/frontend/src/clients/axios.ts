@@ -20,6 +20,7 @@ import type { IHttpClient } from "@/contracts"
 export class HttpAxiosClient implements IHttpClient {
   private client: AxiosInstance
   private router: Router
+  private t: (key: string) => string
   private isRedirecting = false
 
   /**
@@ -27,10 +28,12 @@ export class HttpAxiosClient implements IHttpClient {
    *
    * Parameters:
    * - router: Router instance used for auth redirects.
+   * - t: Translation function used for error notifications.
    * - baseURL: Base URL for all API requests (default: empty string)
    */
-  constructor(router: Router, baseURL?: string) {
+  constructor(router: Router, t: (key: string) => string, baseURL?: string) {
     this.router = router
+    this.t = t
 
     this.client = axios.create({
       baseURL,
@@ -92,7 +95,7 @@ export class HttpAxiosClient implements IHttpClient {
         this.isRedirecting = true
         notify({
           type: "error",
-          text: (error.response.data as any)?.message ?? "Invalid session"
+          text: (error.response.data as any)?.message ?? this.t("common.invalidSession.error")
         })
         this.router.push({ name: RouteEnum.LOGIN }).finally(() => {
           this.isRedirecting = false

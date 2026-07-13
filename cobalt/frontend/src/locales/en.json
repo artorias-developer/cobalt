@@ -28,6 +28,12 @@
       "success": "Copied to clipboard",
       "error": "Failed to copy"
     },
+    "fetchUser": {
+      "error": "Failed to get current user"
+    },
+    "invalidSession": {
+      "error": "Invalid session"
+    },
     "popups": {
       "delete": {
         "title": "Are you sure?",
@@ -204,6 +210,15 @@
       }
     },
     "server": {
+      "fetch": {
+        "error": "Failed to fetch server"
+      },
+      "fetchControls": {
+        "error": "Failed to fetch server controls"
+      },
+      "fetchLoaderVersions": {
+        "error": "Failed to fetch loader versions"
+      },
       "tabs": {
         "overview": "Overview",
         "files": "Files",
