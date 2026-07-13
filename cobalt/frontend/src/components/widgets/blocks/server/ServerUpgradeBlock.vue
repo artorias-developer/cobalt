@@ -10,19 +10,19 @@
     <Header
       :icon="updateIcon"
       icon-color="blue"
-      :title="$t('servers.server.settings.block.upgrade.title')"
-      :description="$t('servers.server.settings.block.upgrade.description')"
+      :title="$t('servers.server.settings.blocks.upgrade.title')"
+      :description="$t('servers.server.settings.blocks.upgrade.description')"
       :icon-filled="true"
     />
     <Message
       v-if="isUpgrading"
       :icon="listIcon"
-      :text="$t('servers.server.settings.block.upgrade.inProgress')"
+      :text="$t('servers.server.settings.blocks.upgrade.inProgress')"
     />
     <Message
       v-else-if="gameVersions.length === 0"
       :icon="listIcon"
-      :text="$t('servers.server.settings.block.upgrade.upToDate')"
+      :text="$t('servers.server.settings.blocks.upgrade.upToDate')"
     />
     <Form
       v-else
@@ -33,9 +33,9 @@
       <Select
         v-model="selectedVersion"
         :options="gameVersions"
-        :validationName="$t('servers.server.settings.block.upgrade.version.label')"
-        :label="$t('servers.server.settings.block.upgrade.version.label')"
-        :placeholder="$t('servers.server.settings.block.upgrade.version.placeholder')"
+        :validationName="$t('servers.server.settings.blocks.upgrade.version.label')"
+        :label="$t('servers.server.settings.blocks.upgrade.version.label')"
+        :placeholder="$t('servers.server.settings.blocks.upgrade.version.placeholder')"
         name="new-server-version"
         :required="true"
       />

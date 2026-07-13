@@ -98,7 +98,7 @@ async function fetchServer(): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to fetch server"
+      text: error?.response?.data?.message ?? t("servers.server.fetch.error")
     })
   }
 }
@@ -120,7 +120,7 @@ async function fetchServerControls(): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to fetch server controls"
+      text: error?.response?.data?.message ?? t("servers.server.overview.control.fetch.error")
     })
   }
 }
@@ -147,7 +147,7 @@ async function fetchLoaderVersions(): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? "Failed to fetch loader versions"
+      text: error?.response?.data?.message ?? t("servers.server.loader.versions.fetch.error")
     })
   }
 }

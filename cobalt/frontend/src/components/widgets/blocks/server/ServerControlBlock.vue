@@ -125,7 +125,7 @@ async function fetchServerStatus(): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? t("servers.server.overview.control.fetchStatus.error")
+      text: error?.response?.data?.message ?? t("servers.server.overview.control.fetch.error")
     })
   }
 }

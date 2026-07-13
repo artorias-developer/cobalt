@@ -101,8 +101,8 @@
         <Header
           :icon="serversIcon"
           icon-color="blue"
-          :title="$t('servers.list.popup.step1.title')"
-          :description="$t('servers.list.popup.step1.description')"
+          :title="$t('servers.list.popups.create.step1.title')"
+          :description="$t('servers.list.popups.create.step1.description')"
           size="large"
           :icon-filled="true"
         />
@@ -116,7 +116,7 @@
             :options="gameOptions"
             :searchable="true"
             :required="true"
-            :validationName="$t('servers.list.popup.step1.game.label')"
+            :validationName="$t('servers.list.popups.create.step1.game.label')"
             name="server-game"
           />
         </Form>
@@ -140,8 +140,8 @@
         <Header
           :icon="serversIcon"
           icon-color="blue"
-          :title="$t('servers.list.popup.step2.title')"
-          :description="$t('servers.list.popup.step2.description')"
+          :title="$t('servers.list.popups.create.step2.title')"
+          :description="$t('servers.list.popups.create.step2.description')"
           size="large"
           :icon-filled="true"
         />
@@ -163,18 +163,18 @@
           </div>
           <Input
             v-model="serverName"
-            :validationName="$t('servers.list.popup.step2.name.label')"
-            :label="$t('servers.list.popup.step2.name.label')"
-            :placeholder="$t('servers.list.popup.step2.name.placeholder')"
+            :validationName="$t('servers.list.popups.create.step2.name.label')"
+            :label="$t('servers.list.popups.create.step2.name.label')"
+            :placeholder="$t('servers.list.popups.create.step2.name.placeholder')"
             name="server-name"
             :required="true"
           />
           <Select
             v-model="selectedLoader"
             :options="loaderOptions"
-            :validationName="$t('servers.list.popup.step2.loader.label')"
-            :label="$t('servers.list.popup.step2.loader.label')"
-            :placeholder="$t('servers.list.popup.step2.loader.placeholder')"
+            :validationName="$t('servers.list.popups.create.step2.loader.label')"
+            :label="$t('servers.list.popups.create.step2.loader.label')"
+            :placeholder="$t('servers.list.popups.create.step2.loader.placeholder')"
             :required="true"
             name="server-loader"
             @update:model-value="selectedVersion = undefined"
@@ -182,9 +182,9 @@
           <Select
             v-model="selectedVersion"
             :options="versionOptions"
-            :validationName="$t('servers.list.popup.step2.version.label')"
-            :label="$t('servers.list.popup.step2.version.label')"
-            :placeholder="$t('servers.list.popup.step2.version.placeholder')"
+            :validationName="$t('servers.list.popups.create.step2.version.label')"
+            :label="$t('servers.list.popups.create.step2.version.label')"
+            :placeholder="$t('servers.list.popups.create.step2.version.placeholder')"
             :required="true"
             :disabled="!selectedLoader"
             name="server-version"
@@ -456,7 +456,7 @@ async function fetchGames(): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? t("servers.list.fetchGames.error")
+      text: error?.response?.data?.message ?? t("servers.list.games.fetch.error")
     })
   }
 }

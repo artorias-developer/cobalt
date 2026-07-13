@@ -14,11 +14,12 @@ import type { IHttpClient } from "@/contracts"
  * Creates a new instance of HttpAxiosClient.
  *
  * Parameters:
- * - baseURL: Base URL for all API requests (default: empty string).
+ * - router: Router instance used for auth redirects.
+ * - t: Translation function used for error notifications.
  *
  * Returns:
  * - IHttpClient: A new HttpAxiosClient instance.
  */
-export function createHttpAxiosClient(router: Router, baseURL?: string): IHttpClient {
-  return new HttpAxiosClient(router, baseURL)
+export function createHttpAxiosClient(router: Router, t: (key: string) => string): HttpAxiosClient {
+  return new HttpAxiosClient(router, t)
 }
