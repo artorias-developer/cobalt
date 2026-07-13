@@ -56,6 +56,8 @@
         :placeholder="$t('logs.placeholder')"
         name="server-console"
         @keydown.enter="handleExecute"
+        @keydown.up.prevent="handleHistoryUp"
+        @keydown.down.prevent="handleHistoryDown"
       />
     </template>
   </Block>
@@ -67,7 +69,7 @@ import { inject, onMounted, onUnmounted, ref, computed, nextTick, watch } from "
 import { useNotification } from "@kyvg/vue3-notification"
 
 import { LOCALE_HELPER_KEY, HTTP_LOGS_API_SERVICE_KEY, HTTP_SERVERS_API_SERVICE_KEY, WS_LOGS_API_SERVICE_KEY } from "@/utils"
-import { useUserStore } from "@/stores"
+import { useServerConsoleStore, useUserStore } from "@/stores"
 import { PermissionEnum } from "@/types"
 import type { UniversalBlockMode, ParsedLog } from "@/types"
 
@@ -95,6 +97,7 @@ const httpLogsApiService = inject(HTTP_LOGS_API_SERVICE_KEY)!
 const httpServersApiService = inject(HTTP_SERVERS_API_SERVICE_KEY)!
 const localeHelper = inject(LOCALE_HELPER_KEY)!
 const userStore = useUserStore()
+const serverConsoleStore = useServerConsoleStore()
 const { notify } = useNotification()
 const { t } = useI18n()
 
@@ -352,6 +355,9 @@ async function handleExecute(): Promise<void> {
     await httpServersApiService.execute(props.serverId!, {
       command: command.value
     })
+
+    serverConsoleStore.push(props.serverId!, command.value)
+    serverConsoleStore.resetNavigation(props.serverId!)
     command.value = ""
   } catch (error: any) {
     notify({
@@ -359,6 +365,38 @@ async function handleExecute(): Promise<void> {
       text: error?.response?.data?.message ?? t("logs.execute.error")
     })
   }
+}
+
+/**
+ * Navigates to the previous command in history for the current server.
+ *
+ * Parameters:
+ * - null.
+ *
+ * Returns:
+ * - void.
+ */
+function handleHistoryUp(): void {
+  if (props.mode !== "server" || props.serverId === undefined) return
+
+  const value = serverConsoleStore.navigateUp(props.serverId, command.value)
+  if (value !== null) command.value = value
+}
+
+/**
+ * Navigates to the next command in history for the current server.
+ *
+ * Parameters:
+ * - null.
+ *
+ * Returns:
+ * - void.
+ */
+function handleHistoryDown(): void {
+  if (props.mode !== "server" || props.serverId === undefined) return
+
+  const value = serverConsoleStore.navigateDown(props.serverId)
+  if (value !== null) command.value = value
 }
 
 /**
