@@ -90,8 +90,8 @@
       <Header
         :icon="rolesIcon"
         icon-color="blue"
-        :title="$t('roles.list.popup.create.title')"
-        :description="$t('roles.list.popup.create.description')"
+        :title="$t('roles.list.popups.create.title')"
+        :description="$t('roles.list.popups.create.description')"
         size="large"
         :icon-filled="true"
       />
@@ -102,9 +102,9 @@
       >
         <Input
           v-model="roleName"
-          :validationName="$t('roles.list.popup.name.label')"
-          :label="$t('roles.list.popup.name.label')"
-          :placeholder="$t('roles.list.popup.name.placeholder')"
+          :validationName="$t('roles.list.popups.name.label')"
+          :label="$t('roles.list.popups.name.label')"
+          :placeholder="$t('roles.list.popups.name.placeholder')"
           name="role-name"
           :required="true"
         />
@@ -147,8 +147,8 @@
       <Header
         :icon="rolesIcon"
         icon-color="blue"
-        :title="$t('roles.list.popup.edit.title')"
-        :description="$t('roles.list.popup.edit.description')"
+        :title="$t('roles.list.popups.edit.title')"
+        :description="$t('roles.list.popups.edit.description')"
         size="large"
         :icon-filled="true"
       />
@@ -159,9 +159,9 @@
       >
         <Input
           v-model="editRoleName"
-          :validationName="$t('roles.list.popup.name.label')"
-          :label="$t('roles.list.popup.name.label')"
-          :placeholder="$t('roles.list.popup.name.placeholder')"
+          :validationName="$t('roles.list.popups.name.label')"
+          :label="$t('roles.list.popups.name.label')"
+          :placeholder="$t('roles.list.popups.name.placeholder')"
           name="role-name"
           :required="false"
         />
@@ -702,7 +702,7 @@ async function openEditRole(roleId: number): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? t("roles.list.fetchRole.error")
+      text: error?.response?.data?.message ?? t("roles.list.role.fetch.error")
     })
   }
 }

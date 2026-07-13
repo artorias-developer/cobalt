@@ -27,9 +27,9 @@
         @change="handleChange"
       />
       <div class="placeholder">
-        <span>{{ placeholder ?? $t("servers.server.files.popup.upload.placeholder") }}</span>
+        <span>{{ placeholder ?? $t("servers.server.files.popups.upload.placeholder") }}</span>
         <span v-if="modelValue.length" class="count">
-          {{ $t('servers.server.files.popup.upload.selected', { n: modelValue.length }) }}
+          {{ $t('servers.server.files.popups.upload.selected', { n: modelValue.length }) }}
         </span>
       </div>
     </div>

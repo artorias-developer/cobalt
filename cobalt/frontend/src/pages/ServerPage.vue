@@ -120,7 +120,7 @@ async function fetchServerControls(): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? t("servers.server.fetchControls.error")
+      text: error?.response?.data?.message ?? t("servers.server.overview.control.fetch.error")
     })
   }
 }
@@ -147,7 +147,7 @@ async function fetchLoaderVersions(): Promise<void> {
   } catch (error: any) {
     notify({
       type: "error",
-      text: error?.response?.data?.message ?? t("servers.server.fetchLoaderVersions.error")
+      text: error?.response?.data?.message ?? t("servers.server.loader.versions.fetch.error")
     })
   }
 }

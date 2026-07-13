@@ -95,7 +95,7 @@ export class HttpAxiosClient implements IHttpClient {
         this.isRedirecting = true
         notify({
           type: "error",
-          text: (error.response.data as any)?.message ?? this.t("common.invalidSession.error")
+          text: (error.response.data as any)?.message ?? this.t("auth.session.fetch.error")
         })
         this.router.push({ name: RouteEnum.LOGIN }).finally(() => {
           this.isRedirecting = false

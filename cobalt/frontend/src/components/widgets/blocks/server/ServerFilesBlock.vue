@@ -147,8 +147,8 @@
       <Header
         :icon="filesIcon"
         icon-color="blue"
-        :title="$t('servers.server.files.popup.create.title')"
-        :description="$t('servers.server.files.popup.create.description')"
+        :title="$t('servers.server.files.popups.create.title')"
+        :description="$t('servers.server.files.popups.create.description')"
         size="large"
         :icon-filled="true"
       />
@@ -159,18 +159,18 @@
       >
         <Input
           v-model="createName"
-          :validationName="$t('servers.server.files.popup.name.label')"
-          :label="$t('servers.server.files.popup.name.label')"
-          :placeholder="$t('servers.server.files.popup.create.name.placeholder')"
+          :validationName="$t('servers.server.files.popups.create.name.label')"
+          :label="$t('servers.server.files.popups.create.name.label')"
+          :placeholder="$t('servers.server.files.popups.create.name.placeholder')"
           name="file-name"
           :required="true"
         />
         <Select
           v-model="createType"
           :options="createTypeOptions"
-          :validationName="$t('servers.server.files.popup.type.label')"
-          :label="$t('servers.server.files.popup.type.label')"
-          :placeholder="$t('servers.server.files.popup.type.placeholder')"
+          :validationName="$t('servers.server.files.popups.create.type.label')"
+          :label="$t('servers.server.files.popups.create.type.label')"
+          :placeholder="$t('servers.server.files.popups.create.type.placeholder')"
           name="file-type"
           :required="true"
         />
@@ -197,8 +197,8 @@
       <Header
         :icon="editIcon"
         icon-color="blue"
-        :title="$t('servers.server.files.popup.rename.title')"
-        :description="$t('servers.server.files.popup.rename.description')"
+        :title="$t('servers.server.files.popups.rename.title')"
+        :description="$t('servers.server.files.popups.rename.description')"
         size="large"
         :icon-filled="true"
       />
@@ -209,9 +209,9 @@
       >
         <Input
           v-model="renameName"
-          :validationName="$t('servers.server.files.popup.rename.name.label')"
-          :label="$t('servers.server.files.popup.rename.name.label')"
-          :placeholder="$t('servers.server.files.popup.rename.name.placeholder')"
+          :validationName="$t('servers.server.files.popups.rename.name.label')"
+          :label="$t('servers.server.files.popups.rename.name.label')"
+          :placeholder="$t('servers.server.files.popups.rename.name.placeholder')"
           name="file-name"
           :required="true"
         />
@@ -225,7 +225,7 @@
         />
         <SolidButton
           type="button"
-          :text="$t('servers.server.files.popup.rename.submit')"
+          :text="$t('servers.server.files.popups.rename.submit')"
           color="blue"
           name="file-rename"
           @click="renameForm?.validate() && handleRename(close)"
@@ -238,8 +238,8 @@
       <Header
         :icon="moveIcon"
         icon-color="blue"
-        :title="$t('servers.server.files.popup.move.title')"
-        :description="$t('servers.server.files.popup.move.description')"
+        :title="$t('servers.server.files.popups.move.title')"
+        :description="$t('servers.server.files.popups.move.description')"
         size="large"
         :icon-filled="true"
       />
@@ -250,9 +250,9 @@
       >
         <Input
           v-model="moveDestination"
-          :validationName="$t('servers.server.files.popup.move.destination.label')"
-          :label="$t('servers.server.files.popup.move.destination.label')"
-          :placeholder="$t('servers.server.files.popup.move.destination.placeholder')"
+          :validationName="$t('servers.server.files.popups.move.destination.label')"
+          :label="$t('servers.server.files.popups.move.destination.label')"
+          :placeholder="$t('servers.server.files.popups.move.destination.placeholder')"
           name="file-move-destination"
           :required="true"
         />
@@ -279,8 +279,8 @@
       <Header
         :icon="filesIcon"
         icon-color="blue"
-        :title="$t('servers.server.files.popup.upload.title')"
-        :description="$t('servers.server.files.popup.upload.description')"
+        :title="$t('servers.server.files.popups.upload.title')"
+        :description="$t('servers.server.files.popups.upload.description')"
         size="large"
         :icon-filled="true"
       />
@@ -291,7 +291,7 @@
       >
         <FileUpload
           v-model="uploadFiles"
-          :validationName="$t('servers.server.files.popup.upload.label')"
+          :validationName="$t('servers.server.files.popups.upload.label')"
           :upload-progress="uploadProgress"
           :required="true"
         />

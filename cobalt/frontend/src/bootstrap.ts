@@ -149,6 +149,8 @@ function setupProviders(app: App, router: ReturnType<typeof setupRouterInstance>
   const httpClient = createHttpAxiosClient(router, t)
   const wsClient = createWebSocketClient()
 
+  wsClient.connect(`wss://${window.location.host}/api/v1/ws`)
+
   const documentHelper = createDocumentHelper()
   const localeHelper = createLocaleHelper()
 
@@ -184,8 +186,6 @@ function setupProviders(app: App, router: ReturnType<typeof setupRouterInstance>
   app.provide(WS_METRICS_API_SERVICE_KEY, wsMetricsApiService)
   app.provide(WS_LOGS_API_SERVICE_KEY, wsLogsApiService)
   app.provide(WS_SERVERS_API_SERVICE_KEY, wsServersApiService)
-
-  wsClient.connect(`wss://${window.location.host}/api/v1/ws`)
 
   return { httpUsersApiService, localeHelper, wsClient }
 }
@@ -316,7 +316,7 @@ function setupRouterGuard(
       } catch (error: any) {
         notify({
           type: "error",
-          text: error?.response?.data?.message ?? i18n.global.t("common.fetchUser.error")
+          text: error?.response?.data?.message ?? i18n.global.t("auth.user.fetch.error")
         })
       }
     }
