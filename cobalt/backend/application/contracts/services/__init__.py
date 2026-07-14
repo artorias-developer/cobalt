@@ -10,7 +10,6 @@ from .games import AbstractGamesService
 from .loaders import AbstractLoadersService
 from .logs import AbstractLogsService
 from .metrics import AbstractMetricsService
-from .passwords import AbstractPasswordsService
 from .roles import AbstractRolesService
 from .servers import AbstractServersService
 from .settings import AbstractSettingsService
@@ -24,7 +23,6 @@ __all__ = [
     "AbstractLoadersService",
     "AbstractLogsService",
     "AbstractMetricsService",
-    "AbstractPasswordsService",
     "AbstractRolesService",
     "AbstractServersService",
     "AbstractSettingsService",

@@ -15,10 +15,10 @@ from domain.exceptions import (
 from application.contracts.managers import AbstractI18nManager
 from application.contracts.clients import AbstractCachesClient
 from application.contracts.services import (
-    AbstractPasswordsService,
     AbstractUsersService,
     AbstractAuthService
 )
+from application.contracts.hashers import AbstractHasher
 from application.clients.caches.shared import CacheConstants
 from application.dtos import (
     UserDto,
@@ -35,7 +35,7 @@ class AuthService(AbstractAuthService):
     """
     caches_client: AbstractCachesClient
     users_service: AbstractUsersService
-    passwords_service: AbstractPasswordsService
+    hasher: AbstractHasher
     i18n_manager: AbstractI18nManager
 
     _: Callable
@@ -44,12 +44,12 @@ class AuthService(AbstractAuthService):
         self,
         caches_client: AbstractCachesClient,
         users_service: AbstractUsersService,
-        passwords_service: AbstractPasswordsService,
+        hasher: AbstractHasher,
         i18n_manager: AbstractI18nManager
     ):
         self.caches_client = caches_client
         self.users_service = users_service
-        self.passwords_service = passwords_service
+        self.hasher = hasher
         self.i18n_manager = i18n_manager
 
         self._ = i18n_manager.gettext
@@ -76,9 +76,9 @@ class AuthService(AbstractAuthService):
         if not received_dto:
             raise AuthenticationError(self._("Invalid login or password"))
 
-        if not self.passwords_service.verify_password(
-            plain_password=dto.password,
-            hashed_password=received_dto.hashed_password,
+        if not self.hasher.verify(
+            plain=dto.password,
+            hashed=received_dto.hashed_password,
             salt=received_dto.salt
         ):
             raise AuthenticationError(self._("Invalid login or password"))
@@ -159,9 +159,9 @@ class AuthService(AbstractAuthService):
             if not dto.old_password:
                 raise ValidationError(self._("Current password is required"))
 
-            is_valid = self.passwords_service.verify_password(
-                plain_password=dto.old_password,
-                hashed_password=received_dto.hashed_password,
+            is_valid = self.hasher.verify(
+                plain=dto.old_password,
+                hashed=received_dto.hashed_password,
                 salt=received_dto.salt
             )
 

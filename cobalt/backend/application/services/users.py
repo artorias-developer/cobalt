@@ -15,11 +15,11 @@ from domain.repositories import AbstractUsersRepository
 from application.contracts.managers import AbstractI18nManager
 from application.contracts.clients import AbstractCachesClient
 from application.contracts.services import (
-    AbstractPasswordsService,
     AbstractUsersService,
     AbstractRolesService,
     AbstractSettingsService
 )
+from application.contracts.hashers import AbstractHasher
 from application.contracts.mappers import AbstractUsersServiceMapper
 from application.clients.caches.shared import CacheConstants
 from application.dtos import (
@@ -38,7 +38,7 @@ class UsersService(AbstractUsersService):
     caches_client: AbstractCachesClient
     users_repository: AbstractUsersRepository
     users_mapper: AbstractUsersServiceMapper
-    passwords_service: AbstractPasswordsService
+    hasher: AbstractHasher
     roles_service: AbstractRolesService
     settings_service: AbstractSettingsService
     i18n_manager: AbstractI18nManager
@@ -50,7 +50,7 @@ class UsersService(AbstractUsersService):
         caches_client: AbstractCachesClient,
         users_repository: AbstractUsersRepository,
         users_mapper: AbstractUsersServiceMapper,
-        passwords_service: AbstractPasswordsService,
+        hasher: AbstractHasher,
         roles_service: AbstractRolesService,
         settings_service: AbstractSettingsService,
         i18n_manager: AbstractI18nManager
@@ -58,7 +58,7 @@ class UsersService(AbstractUsersService):
         self.caches_client = caches_client
         self.users_repository = users_repository
         self.users_mapper = users_mapper
-        self.passwords_service = passwords_service
+        self.hasher = hasher
         self.roles_service = roles_service
         self.settings_service = settings_service
         self.i18n_manager = i18n_manager
@@ -78,12 +78,12 @@ class UsersService(AbstractUsersService):
         Returns:
         - Tuple: Hashed password and local salt.
         """
-        salt = self.passwords_service.generate_salt(
+        salt = self.hasher.generate_salt(
             length=32
         )
 
-        hashed_password = self.passwords_service.hash_password(
-            password=password,
+        hashed_password = self.hasher.hash(
+            plain=password,
             salt=salt
         )
 

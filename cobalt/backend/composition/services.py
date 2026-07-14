@@ -28,7 +28,6 @@ from application.contracts.clients import AbstractContainersClient
 from application.contracts.clients import AbstractMetricsClient
 from application.contracts.games import AbstractGameModule
 from application.contracts.services import (
-    AbstractPasswordsService,
     AbstractRolesService,
     AbstractSettingsService,
     AbstractUsersService,
@@ -41,6 +40,7 @@ from application.contracts.services import (
     AbstractAttributesService,
     AbstractFilesService
 )
+from application.contracts.hashers import AbstractHasher
 from application.contracts.mappers import (
     AbstractRolesServiceMapper,
     AbstractUsersServiceMapper,
@@ -60,7 +60,6 @@ from application.services import (
     LoadersService,
     LogsService,
     MetricsService,
-    PasswordsService,
     RolesService,
     ServersService,
     SettingsService,
@@ -74,26 +73,6 @@ from composition.dataclasses import (
     MappersContainer
 )
 
-
-def create_passwords_service(
-    config: ApplicationConfig,
-    logger: AbstractLogger
-) -> AbstractPasswordsService:
-    """
-    Creates the passwords service.
-
-    Parameters:
-    - config: ApplicationConfig object.
-    - logger: AbstractLogger object.
-
-    Returns:
-    - AbstractPasswordsService: AbstractPasswordsService object.
-    """
-    return PasswordsService(
-        logger=logger,
-        pepper=config.security.pepper,
-        bcrypt_rounds=config.security.bcrypt_rounds
-    )
 
 def create_roles_service(
     i18n_manager: AbstractI18nManager,
@@ -171,7 +150,7 @@ def create_users_service(
     caches_client: AbstractCachesClient,
     users_repository: AbstractUsersRepository,
     users_mapper: AbstractUsersServiceMapper,
-    passwords_service: AbstractPasswordsService,
+    hasher: AbstractHasher,
     roles_service: AbstractRolesService,
     settings_service: AbstractSettingsService
 ) -> AbstractUsersService:
@@ -183,7 +162,7 @@ def create_users_service(
     - caches_client: AbstractCachesClient.
     - users_repository: AbstractUsersRepository object.
     - users_mapper: AbstractUsersServiceMapper object.
-    - passwords_service: AbstractPasswordsService object.
+    - hasher: AbstractHasher object.
     - roles_service: AbstractRolesService object.
     - settings_service: AbstractSettingsService object.
 
@@ -195,7 +174,7 @@ def create_users_service(
         caches_client=caches_client,
         users_repository=users_repository,
         users_mapper=users_mapper,
-        passwords_service=passwords_service,
+        hasher=hasher,
         roles_service=roles_service,
         settings_service=settings_service
     )
@@ -204,7 +183,7 @@ def create_auth_service(
     i18n_manager: AbstractI18nManager,
     caches_client: AbstractCachesClient,
     users_service: AbstractUsersService,
-    passwords_service: AbstractPasswordsService
+    hasher: AbstractHasher
 ) -> AbstractAuthService:
     """
     Creates the auth service.
@@ -213,7 +192,7 @@ def create_auth_service(
     - i18n_manager: AbstractI18nManager object.
     - caches_client: AbstractCachesClient object.
     - users_service: AbstractUsersService object.
-    - passwords_service: AbstractPasswordsService object.
+    - hasher: AbstractHasher object.
 
     Returns:
     - AbstractAuthService: AbstractAuthService object.
@@ -222,7 +201,7 @@ def create_auth_service(
         i18n_manager=i18n_manager,
         caches_client=caches_client,
         users_service=users_service,
-        passwords_service=passwords_service
+        hasher=hasher
     )
 
 def create_games_service(
@@ -431,6 +410,7 @@ def create_services_container(
     mappers: MappersContainer,
     database: DatabaseContainer,
     logger: AbstractLogger,
+    hasher: AbstractHasher,
     queue: AbstractQueue,
     game_modules: Dict[str, AbstractGameModule]
 ) -> ServicesContainer:
@@ -443,17 +423,13 @@ def create_services_container(
     - mappers: MappersContainer object.
     - database: DatabaseContainer object.
     - logger: AbstractLogger object.
+    - hasher: AbstractHasher object.
     - queue: AbstractQueue object.
     - game_modules: Game modules dictionary.
 
     Returns:
     - ServicesContainer: ServicesContainer object.
     """
-    passwords_service = create_passwords_service(
-        config=config,
-        logger=logger
-    )
-
     roles_service = create_roles_service(
         i18n_manager=managers.i18n,
         caches_client=clients.caches,
@@ -500,7 +476,7 @@ def create_services_container(
         caches_client=clients.caches,
         users_repository=database.repositories.users,
         users_mapper=mappers.services.users,
-        passwords_service=passwords_service,
+        hasher=hasher,
         roles_service=roles_service,
         settings_service=settings_service
     )
@@ -509,7 +485,7 @@ def create_services_container(
         i18n_manager=managers.i18n,
         caches_client=clients.caches,
         users_service=users_service,
-        passwords_service=passwords_service
+        hasher=hasher
     )
 
     games_service = create_games_service(
@@ -557,7 +533,6 @@ def create_services_container(
         loaders=loaders_service,
         logs=logs_service,
         metrics=metrics_service,
-        passwords=passwords_service,
         roles=roles_service,
         servers=servers_service,
         settings=settings_service,

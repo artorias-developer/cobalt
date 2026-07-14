@@ -6,9 +6,9 @@
 from abc import ABC, abstractmethod
 
 
-class AbstractPasswordsService(ABC):
+class AbstractHasher(ABC):
     """
-    Abstract passwords service.
+    Abstract hasher.
     """
 
     @abstractmethod
@@ -28,39 +28,39 @@ class AbstractPasswordsService(ABC):
         ...
 
     @abstractmethod
-    def hash_password(
+    def hash(
         self,
-        password: str,
+        plain: str,
         salt: str
     ) -> str:
         """
-        Hashes a password using salt + pepper + SHA256 + bcrypt.
+        Hashes a plain text.
 
         Parameters:
-        - password: Password to hash.
-        - salt: User local salt.
+        - plain: Plain text to hash.
+        - salt: Secret salt.
 
         Returns:
-        - str: Hashed password.
+        - str: Hashed text.
         """
         ...
 
     @abstractmethod
-    def verify_password(
+    def verify(
         self,
-        plain_password: str,
-        hashed_password: str,
+        plain: str,
+        hashed: str,
         salt: str
     ) -> bool:
         """
-        Verifies a password against the stored bcrypt hash.
+        Verifies a plain text against the hash.
 
         Parameters:
-        - plain_password: Password to verify.
-        - hashed_password: Hashed password.
-        - salt: User local salt.
+        - plain: Plain text to verify.
+        - hashed: Hashed version of the plain text.
+        - salt: Secret salt.
 
         Returns:
-        - bool: True if password matches stored bcrypt hash.
+        - bool: True if plain text matches hash.
         """
         ...

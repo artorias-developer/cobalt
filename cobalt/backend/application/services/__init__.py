@@ -9,7 +9,6 @@ from .games import GamesService
 from .loaders import LoadersService
 from .logs import LogsService
 from .metrics import MetricsService
-from .passwords import PasswordsService
 from .roles import RolesService
 from .servers import ServersService
 from .settings import SettingsService
@@ -22,7 +21,6 @@ __all__ = [
     "LoadersService",
     "LogsService",
     "MetricsService",
-    "PasswordsService",
     "RolesService",
     "ServersService",
     "SettingsService",
