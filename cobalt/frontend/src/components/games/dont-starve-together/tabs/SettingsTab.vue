@@ -39,6 +39,12 @@ defineProps<{
   }
 }
 
+@media (max-width: 1280px) {
+  .settings {
+    flex-direction: column;
+  }
+}
+
 @media (max-width: 768px) {
   .settings {
     gap: $space-md;
