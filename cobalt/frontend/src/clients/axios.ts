@@ -91,12 +91,13 @@ export class HttpAxiosClient implements IHttpClient {
     const status = error.response.status
 
     if (status === 401) {
+      notify({
+        type: "error",
+        text: (error.response.data as any)?.message ?? this.t("auth.session.fetch.error")
+      })
+
       if (this.router.currentRoute.value.name !== RouteEnum.LOGIN && !this.isRedirecting) {
         this.isRedirecting = true
-        notify({
-          type: "error",
-          text: (error.response.data as any)?.message ?? this.t("auth.session.fetch.error")
-        })
         this.router.push({ name: RouteEnum.LOGIN }).finally(() => {
           this.isRedirecting = false
         })
