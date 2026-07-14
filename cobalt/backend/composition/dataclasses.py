@@ -36,13 +36,13 @@ from application.contracts.services import (
     AbstractLoadersService,
     AbstractLogsService,
     AbstractMetricsService,
-    AbstractPasswordsService,
     AbstractRolesService,
     AbstractServersService,
     AbstractSettingsService,
     AbstractUsersService,
     AbstractFilesService
 )
+from application.contracts.hashers import AbstractHasher
 from application.contracts.managers import (
     AbstractEventsManager,
     AbstractConnectionsManager,
@@ -150,7 +150,6 @@ class ServicesContainer:
     loaders: AbstractLoadersService
     logs: AbstractLogsService
     metrics: AbstractMetricsService
-    passwords: AbstractPasswordsService
     roles: AbstractRolesService
     servers: AbstractServersService
     settings: AbstractSettingsService
@@ -174,6 +173,7 @@ class DatabaseContainer:
 @dataclass(slots=True)
 class ApplicationContainer:
     logger: AbstractLogger
+    hasher: AbstractHasher
     scheduler: AbstractScheduler
     queue: AbstractQueue
     managers: ManagersContainer

@@ -21,6 +21,7 @@ from composition import (
     ApplicationContainer,
     SchedulerJob,
     create_structlog_logger,
+    create_bcrypt_hasher,
     create_apscheduler_scheduler,
     create_asyncio_queue,
     create_apscheduler_jobs,
@@ -191,6 +192,11 @@ class CobaltApplication:
             config=self.config
         )
 
+        hasher = create_bcrypt_hasher(
+            config=self.config,
+            logger=logger
+        )
+
         scheduler = create_apscheduler_scheduler(
             logger=logger
         )
@@ -226,6 +232,7 @@ class CobaltApplication:
             mappers=mappers_container,
             database=database_container,
             logger=logger,
+            hasher=hasher,
             queue=queue,
             game_modules=self.game_modules
         )
@@ -259,6 +266,7 @@ class CobaltApplication:
 
         self.dependencies = ApplicationContainer(
             logger=logger,
+            hasher=hasher,
             scheduler=scheduler,
             queue=queue,
             clients=clients_container,

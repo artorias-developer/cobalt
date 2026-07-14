@@ -8,7 +8,7 @@ from hashlib import sha256
 
 from bcrypt import hashpw, gensalt, checkpw
 
-from application.contracts.services import AbstractHasher
+from application.contracts.hashers import AbstractHasher
 from application.contracts.loggers import AbstractLogger
 
 
