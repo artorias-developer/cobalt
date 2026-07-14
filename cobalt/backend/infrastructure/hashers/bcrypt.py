@@ -8,13 +8,13 @@ from hashlib import sha256
 
 from bcrypt import hashpw, gensalt, checkpw
 
-from application.contracts.services import AbstractPasswordsService
+from application.contracts.hashers import AbstractHasher
 from application.contracts.loggers import AbstractLogger
 
 
-class PasswordsService(AbstractPasswordsService):
+class BcryptHasher(AbstractHasher):
     """
-    Passwords service.
+    Bcrypt hasher.
     """
     logger: AbstractLogger
     pepper: str
@@ -40,7 +40,7 @@ class PasswordsService(AbstractPasswordsService):
 
         Parameters:
         - password: Password to prepare.
-        - salt: User local salt.
+        - salt: Secret salt.
 
         Returns:
         - bytes: SHA256 hash of the password with pepper and salt.
@@ -66,23 +66,23 @@ class PasswordsService(AbstractPasswordsService):
         """
         return urandom(length).hex()
 
-    def hash_password(
+    def hash(
         self,
-        password: str,
+        plain: str,
         salt: str
     ) -> str:
         """
-        Hashes a password using salt + pepper + SHA256 + bcrypt.
+        Hashes a plain text using salt + pepper + SHA256 + bcrypt.
 
         Parameters:
-        - password: Password to hash.
-        - salt: User local salt.
+        - plain: Plain text to hash.
+        - salt: Secret salt.
 
         Returns:
-        - str: Hashed password.
+        - str: Hashed text.
         """
         sha256_hash = self._prepare_password(
-            password=password,
+            password=plain,
             salt=salt
         )
 
@@ -93,29 +93,29 @@ class PasswordsService(AbstractPasswordsService):
 
         return bcrypt_hash.decode("utf-8")
 
-    def verify_password(
+    def verify(
         self,
-        plain_password: str,
-        hashed_password: str,
+        plain: str,
+        hashed: str,
         salt: str
     ) -> bool:
         """
-        Verifies a password against the stored bcrypt hash.
+        Verifies a plain text against the hash.
 
         Parameters:
-        - plain_password: Password to verify.
-        - hashed_password: Hashed password.
-        - salt: User local salt.
+        - plain: Plain text to verify.
+        - hashed: Hashed version of the plain text.
+        - salt: Secret salt.
 
         Returns:
-        - bool: True if password matches stored bcrypt hash.
+        - bool: True if plain text matches hash.
         """
         sha256_hash = self._prepare_password(
-            password=plain_password,
+            password=plain,
             salt=salt
         )
 
         return checkpw(
             sha256_hash,
-            hashed_password.encode("utf-8")
+            hashed.encode("utf-8")
         )
