@@ -5,7 +5,7 @@
 
 from contextlib import asynccontextmanager
 from argparse import ArgumentParser
-from typing import AsyncGenerator, Any, Dict, List
+from typing import AsyncGenerator, Any, Dict
 
 from fastapi import FastAPI, APIRouter
 from uvicorn import run as uvicorn_run
@@ -19,20 +19,7 @@ from infrastructure.configs import (
 from games import ENABLED_GAME_MODULES
 from composition import (
     ApplicationContainer,
-    SchedulerJob,
-    create_structlog_logger,
-    create_bcrypt_hasher,
-    create_apscheduler_scheduler,
-    create_asyncio_queue,
-    create_apscheduler_jobs,
-    create_fastapi_managers_container,
-    create_redis_prometheus_docker_clients_container,
-    create_fastapi_postgres_mappers_container,
-    create_postgres_database_container,
-    create_services_container,
-    setup_fastapi_interceptors,
-    setup_fastapi_middlewares,
-    setup_fastapi_routers
+    create_fastapi_ioc_container
 )
 
 
@@ -44,7 +31,6 @@ class CobaltApplication:
     router: APIRouter
     config: ApplicationConfig
     dependencies: ApplicationContainer
-    jobs: List[SchedulerJob]
     game_modules: Dict[str, AbstractGameModule]
 
     def __init__(self):
@@ -127,7 +113,7 @@ class CobaltApplication:
         """
         scheduler = self.dependencies.scheduler
 
-        for job in self.jobs:
+        for job in self.dependencies.jobs:
             scheduler.add_job(
                 name=job.name,
                 job=job.instance,
@@ -188,92 +174,11 @@ class CobaltApplication:
             version="1.0.0"
         )
 
-        logger = create_structlog_logger(
-            config=self.config
-        )
-
-        hasher = create_bcrypt_hasher(
-            config=self.config,
-            logger=logger
-        )
-
-        scheduler = create_apscheduler_scheduler(
-            logger=logger
-        )
-
-        queue = create_asyncio_queue(
-            logger=logger
-        )
-
-        managers_container = create_fastapi_managers_container(
-            config=self.config,
-            logger=logger
-        )
-
-        clients_container = create_redis_prometheus_docker_clients_container(
-            config=self.config,
-            managers=managers_container,
-            logger=logger
-        )
-
-        mappers_container = create_fastapi_postgres_mappers_container()
-
-        database_container = create_postgres_database_container(
-            config=self.config,
-            managers=managers_container,
-            mappers=mappers_container,
-            logger=logger
-        )
-
-        services_container = create_services_container(
-            config=self.config,
-            managers=managers_container,
-            clients=clients_container,
-            mappers=mappers_container,
-            database=database_container,
-            logger=logger,
-            hasher=hasher,
-            queue=queue,
-            game_modules=self.game_modules
-        )
-
-        self.jobs = create_apscheduler_jobs(
-            services=services_container,
-            managers=managers_container,
-            logger=logger,
-            game_modules=self.game_modules
-        )
-
-        setup_fastapi_interceptors(
-            managers=managers_container,
-            logger=logger
-        )
-
-        setup_fastapi_middlewares(
+        self.dependencies = create_fastapi_ioc_container(
             app=self.app,
-            config=self.config,
-            managers=managers_container,
-            services=services_container,
-            logger=logger
-        )
-
-        setup_fastapi_routers(
             router=self.router,
-            managers=managers_container,
-            mappers=mappers_container,
-            services=services_container
-        )
-
-        self.dependencies = ApplicationContainer(
-            logger=logger,
-            hasher=hasher,
-            scheduler=scheduler,
-            queue=queue,
-            clients=clients_container,
-            managers=managers_container,
-            mappers=mappers_container,
-            services=services_container,
-            database=database_container
+            config=self.config,
+            game_modules=self.game_modules
         )
 
         self.app.include_router(self.router)
