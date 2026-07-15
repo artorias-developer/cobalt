@@ -3,6 +3,9 @@ import { defineConfig } from "vitepress"
 export default defineConfig({
   title: "Cobalt",
   description: "Documentation for the Cobalt dashboard",
+  sitemap: {
+    hostname: "https://cobalt.artorias.dev"
+  },
   head: [
     ["link", { rel: "icon", href: "/assets/images/svg/logo.svg" }],
     ["meta", { name: "google-site-verification", content: "RtxZJ237LBxMmW3QHsFhSu8rIBtkiPpK1JiDNfBG6yg" }],
