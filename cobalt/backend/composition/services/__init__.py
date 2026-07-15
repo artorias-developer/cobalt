@@ -3,8 +3,8 @@
 #  Repository: https://github.com/artorias-developer/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-from .bcrypt import BcryptHasher
+from .default import create_services_container
 
 __all__ = [
-    "BcryptHasher"
+    "create_services_container"
 ]

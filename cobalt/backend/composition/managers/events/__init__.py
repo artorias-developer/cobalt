@@ -3,8 +3,8 @@
 #  Repository: https://github.com/artorias-developer/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-from .bcrypt import BcryptHasher
+from .fastapi import create_fastapi_events_manager
 
 __all__ = [
-    "BcryptHasher"
+    "create_fastapi_events_manager"
 ]

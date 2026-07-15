@@ -5,10 +5,6 @@
 
 from typing import Dict
 
-from application.contracts.databases import AbstractTransactionsManager
-from application.contracts.queues import AbstractQueue
-from application.services.files import FilesService
-from composition import DatabaseContainer
 from domain.repositories import (
     AbstractRolesRepository,
     AbstractUsersRepository,
@@ -18,6 +14,9 @@ from domain.repositories import (
     AbstractSettingsRepository,
     AbstractAttributesRepository
 )
+from application.contracts.databases import AbstractTransactionsManager
+from application.contracts.queues import AbstractQueue
+from application.services.files import FilesService
 from application.contracts.clients import AbstractCachesClient
 from application.contracts.managers import (
     AbstractConnectionsManager,
@@ -70,7 +69,8 @@ from composition.dataclasses import (
     ServicesContainer,
     ManagersContainer,
     ClientsContainer,
-    MappersContainer
+    MappersContainer,
+    DatabaseContainer
 )
 
 

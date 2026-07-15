@@ -15,11 +15,11 @@ from .containers import create_docker_client
 from .metrics import create_prometheus_client
 
 __all__ = [
-    "create_redis_prometheus_docker_clients_container"
+    "create_clients_container"
 ]
 
 
-def create_redis_prometheus_docker_clients_container(
+def create_clients_container(
     config: ApplicationConfig,
     managers: ManagersContainer,
     logger: AbstractLogger
