@@ -129,6 +129,7 @@ const hasSettingsSystemAccess = computed((): boolean =>
 
 <style scoped lang="scss">
 .header {
+  height: 60px;
   display: flex;
   flex-direction: row;
   align-items: center;

@@ -271,10 +271,11 @@ const hasRolesViewAccess = computed((): boolean =>
   box-sizing: border-box;
 
   .header {
+    height: 60px;
     display: flex;
     align-items: center;
     gap: $space-md;
-    padding: $space-md;
+    padding: 0 $space-md;
 
     .image {
       .icon {
