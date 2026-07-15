@@ -27,14 +27,12 @@ from composition.schedulers import (
 )
 
 
-def create_fastapi_ioc_container(
-    app: FastAPI,
-    router: APIRouter,
+def setup_fastapi_ioc_container(
     config: ApplicationConfig,
     game_modules: Dict[str, AbstractGameModule]
 ) -> ApplicationContainer:
     """
-    Builds the FastAPI's IoC container.
+    Builds the application's dependency graph.
 
     Parameters:
     - config: Application configuration.
@@ -99,26 +97,6 @@ def create_fastapi_ioc_container(
         game_modules=game_modules
     )
 
-    setup_fastapi_interceptors(
-        managers=managers_container,
-        logger=logger
-    )
-
-    setup_fastapi_middlewares(
-        app=app,
-        config=config,
-        managers=managers_container,
-        services=services_container,
-        logger=logger
-    )
-
-    setup_fastapi_routers(
-        router=router,
-        managers=managers_container,
-        mappers=mappers_container,
-        services=services_container
-    )
-
     return ApplicationContainer(
         logger=logger,
         hasher=hasher,
@@ -130,4 +108,43 @@ def create_fastapi_ioc_container(
         services=services_container,
         database=database_container,
         jobs=jobs
+    )
+
+
+def setup_fastapi_app(
+    app: FastAPI,
+    router: APIRouter,
+    config: ApplicationConfig,
+    container: ApplicationContainer
+) -> None:
+    """
+    Wires the FastAPI app and router using an already-built dependency container.
+
+    Parameters:
+    - app: FastAPI application instance.
+    - router: FastAPI router instance.
+    - config: Application configuration.
+    - container: Already assembled ApplicationContainer.
+
+    Returns:
+    - None.
+    """
+    setup_fastapi_interceptors(
+        managers=container.managers,
+        logger=container.logger
+    )
+
+    setup_fastapi_middlewares(
+        app=app,
+        config=config,
+        managers=container.managers,
+        services=container.services,
+        logger=container.logger
+    )
+
+    setup_fastapi_routers(
+        router=router,
+        managers=container.managers,
+        mappers=container.mappers,
+        services=container.services
     )

@@ -623,7 +623,7 @@ class ServersService(AbstractServersService):
             server_id=server_id
         )
 
-        await game_module.dependencies.clients.containers.container_start(
+        await game_module.container.clients.containers.container_start(
             container_name=container
         )
 
@@ -648,7 +648,7 @@ class ServersService(AbstractServersService):
             server_id=server_id
         )
 
-        await game_module.dependencies.clients.containers.container_stop(
+        await game_module.container.clients.containers.container_stop(
             container_name=container
         )
 
@@ -673,7 +673,7 @@ class ServersService(AbstractServersService):
             server_id=server_id
         )
 
-        await game_module.dependencies.clients.containers.container_restart(
+        await game_module.container.clients.containers.container_restart(
             container_name=container
         )
 
@@ -702,7 +702,7 @@ class ServersService(AbstractServersService):
 
         command = ["sh", "-c", f"echo \"{dto.command}\" > {ContainersConstants.SERVER_FIFO}"]
 
-        await game_module.dependencies.clients.containers.container_execute(
+        await game_module.container.clients.containers.container_execute(
             container_name=container,
             command=command
         )
@@ -728,7 +728,7 @@ class ServersService(AbstractServersService):
             server_id=server_id
         )
 
-        status = await game_module.dependencies.clients.containers.container_status(
+        status = await game_module.container.clients.containers.container_status(
             container_name=container
         )
 
