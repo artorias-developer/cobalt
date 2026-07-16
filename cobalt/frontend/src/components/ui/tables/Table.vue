@@ -136,6 +136,7 @@ import { useTableStore } from "@/stores"
 import type { SortDirection, SortState, TableColumn } from "@/types"
 
 import Message from "@/components/ui/Message.vue"
+
 import padlockIcon from "@/assets/images/svg/padlock.svg?raw"
 import listIcon from "@/assets/images/svg/clipboard-blank.svg?raw"
 

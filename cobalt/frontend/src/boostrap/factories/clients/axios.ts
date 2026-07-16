@@ -8,7 +8,6 @@
 import type { Router } from "vue-router"
 
 import { HttpAxiosClient } from "@/clients"
-import type { IHttpClient } from "@/contracts"
 
 /**
  * Creates a new instance of HttpAxiosClient.

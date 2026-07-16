@@ -1,6 +1,6 @@
 import { createApp } from "vue"
 
-import { bootstrap } from "@/bootstrap"
+import { bootstrap } from "@/boostrap"
 
 import App from "@/App.vue"
 

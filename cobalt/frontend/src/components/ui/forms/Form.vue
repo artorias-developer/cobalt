@@ -20,7 +20,7 @@ import { useI18n } from "vue-i18n"
 import { provide, ref } from "vue"
 import { useNotification } from "@kyvg/vue3-notification"
 
-import { FORM_KEY } from "@/utils"
+import { FORM_KEY } from "@/constants"
 import type { FormField } from "@/types"
 
 const props = defineProps<{

@@ -53,6 +53,7 @@ import { RouteEnum } from "@/types"
 
 import MenuNavigation from "@/components/widgets/navigations/MenuNavigation.vue"
 import HeaderNavigation from "@/components/widgets/navigations/HeaderNavigation.vue"
+
 import checkIcon from "@/assets/images/svg/check.svg?raw"
 import warningIcon from "@/assets/images/svg/warning.svg?raw"
 import crossIcon from "@/assets/images/svg/cross.svg?raw"

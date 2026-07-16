@@ -161,8 +161,8 @@ import { ref, inject, onMounted, computed } from "vue"
 import { useRouter } from "vue-router"
 import { useNotification } from "@kyvg/vue3-notification"
 
-import { HTTP_SETTINGS_API_SERVICE_KEY, HTTP_AUTH_API_SERVICE_KEY } from "@/utils"
 import { useUserStore } from "@/stores"
+import { HTTP_SETTINGS_API_SERVICE_KEY, HTTP_AUTH_API_SERVICE_KEY } from "@/constants"
 import { LanguageEnum, PermissionEnum, RouteEnum, ThemeEnum, TimezoneEnum } from "@/types"
 import type { AuthChangeCredentialsRequest, SelectOption } from "@/types"
 
@@ -175,6 +175,7 @@ import SolidButton from "@/components/ui/forms/buttons/SolidButton.vue"
 import Form from "@/components/ui/forms/Form.vue"
 import Message from "@/components/ui/Message.vue"
 import BlockTabs from "@/components/ui/tabs/BlockTabs.vue"
+
 import settingsIcon from "@/assets/images/svg/settings.svg?raw"
 import padlockIcon from "@/assets/images/svg/padlock.svg?raw"
 

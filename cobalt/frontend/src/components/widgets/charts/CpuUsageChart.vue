@@ -40,8 +40,8 @@ import { useI18n } from "vue-i18n"
 import { ref, computed, onMounted, onUnmounted, inject } from "vue"
 import { useNotification } from "@kyvg/vue3-notification"
 
-import { LOCALE_HELPER_KEY, WS_METRICS_API_SERVICE_KEY, HTTP_METRICS_API_SERVICE_KEY } from "@/utils"
 import { useUserStore } from "@/stores"
+import { LOCALE_HELPER_KEY, WS_METRICS_API_SERVICE_KEY, HTTP_METRICS_API_SERVICE_KEY } from "@/constants"
 import { PermissionEnum } from "@/types"
 import type { UniversalBlockMode, Color, BlockHeaderSize } from "@/types"
 
@@ -49,6 +49,7 @@ import Block from "@/components/ui/Block.vue"
 import Header from "@/components/ui/Header.vue"
 import LineChart from "@/components/ui/charts/LineChart.vue"
 import Message from "@/components/ui/Message.vue"
+
 import cpuIcon from "@/assets/images/svg/cpu.svg?raw"
 import padlockIcon from "@/assets/images/svg/padlock.svg?raw"
 import listIcon from "@/assets/images/svg/clipboard-blank.svg?raw"

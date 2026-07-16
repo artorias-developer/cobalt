@@ -11,7 +11,6 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from "vue"
-
 import { basicSetup } from "codemirror"
 import { EditorState, Compartment, type Extension } from "@codemirror/state"
 import { EditorView, keymap } from "@codemirror/view"

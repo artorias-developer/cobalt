@@ -26,6 +26,7 @@
 <script setup lang="ts">
 import ChildBlock from "@/components/ui/ChildBlock.vue"
 import Header from "@/components/ui/Header.vue"
+
 import githubIcon from "@/assets/images/svg/github.svg?raw"
 
 /**

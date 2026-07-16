@@ -37,6 +37,7 @@
 
 <script setup lang="ts">
 import GhostButton from "@/components/ui/forms/buttons/GhostButton.vue"
+
 import prevIcon from "@/assets/images/svg/prev.svg?raw"
 import nextIcon from "@/assets/images/svg/next.svg?raw"
 

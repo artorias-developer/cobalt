@@ -226,14 +226,14 @@ import { useI18n } from "vue-i18n"
 import { ref, computed, inject, onMounted, onUnmounted } from "vue"
 import { useNotification } from "@kyvg/vue3-notification"
 
+import { useTableStore, useUserStore } from "@/stores"
 import {
   LOCALE_HELPER_KEY,
   HTTP_SERVERS_API_SERVICE_KEY,
   HTTP_GAMES_API_SERVICE_KEY,
   WS_SERVERS_API_SERVICE_KEY,
   GameModules
-} from "@/utils"
-import { useTableStore, useUserStore } from "@/stores"
+} from "@/constants"
 import { PermissionEnum, ServerStateEnum } from "@/types"
 import type {
   ServersPageEntity,
@@ -261,6 +261,7 @@ import Search from "@/components/ui/tables/Search.vue"
 import RadioList from "@/components/ui/forms/RadioList.vue"
 import Form from "@/components/ui/forms/Form.vue"
 import ConfirmPopup from "@/components/widgets/popups/ConfirmPopup.vue"
+
 import serversIcon from "@/assets/images/svg/servers.svg?raw"
 import trashIcon from "@/assets/images/svg/trash.svg?raw"
 import settingsIcon from "@/assets/images/svg/settings.svg?raw"

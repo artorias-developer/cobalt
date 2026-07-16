@@ -25,7 +25,7 @@
 <script setup lang="ts">
 import { inject, onMounted, onUnmounted } from "vue"
 
-import { FORM_KEY } from "@/utils"
+import { FORM_KEY } from "@/constants"
 import type { FormContext } from "@/types"
 
 import FieldLabel from "@/components/ui/forms/FieldLabel.vue"

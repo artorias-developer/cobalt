@@ -79,7 +79,7 @@
 <script setup lang="ts">
 import { ref, computed, inject, onMounted, onUnmounted, watch } from "vue"
 
-import { FORM_KEY } from "@/utils"
+import { FORM_KEY } from "@/constants"
 import type { FormContext, SelectOption } from "@/types"
 
 import FieldLabel from "@/components/ui/forms/FieldLabel.vue"

@@ -41,6 +41,7 @@ import ChildBlock from "@/components/ui/ChildBlock.vue"
 import Header from "@/components/ui/Header.vue"
 import GhostButton from "@/components/ui/forms/buttons/GhostButton.vue"
 import WalletPopup from "@/components/widgets/popups/WalletPopup.vue"
+
 import coinIcon from "@/assets/images/svg/coin.svg?raw"
 import btcIcon from "@/assets/images/svg/btc.svg?raw"
 import ethIcon from "@/assets/images/svg/eth.svg?raw"
