@@ -115,6 +115,7 @@
           :placeholder="$t('users.list.popups.create.password.placeholder')"
           name="user-password"
           :required="true"
+          type="password"
         />
         <Select
           v-model="selectedRole"
@@ -173,6 +174,7 @@
           :placeholder="$t('users.list.popups.edit.password.placeholder')"
           name="user-password"
           :required="false"
+          type="password"
         />
         <Select
           v-model="editSelectedRole"
