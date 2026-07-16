@@ -60,14 +60,15 @@ import { useI18n } from "vue-i18n"
 import { useRouter } from "vue-router"
 import { useNotification } from "@kyvg/vue3-notification"
 
-import { HTTP_AUTH_API_SERVICE_KEY, HTTP_USERS_API_SERVICE_KEY, WS_CLIENT_KEY } from "@/utils"
 import { useUserStore } from "@/stores"
+import { HTTP_AUTH_API_SERVICE_KEY, HTTP_USERS_API_SERVICE_KEY, WS_CLIENT_KEY } from "@/constants"
 import { RouteEnum } from "@/types"
 
 import Block from "@/components/ui/Block.vue"
 import Input from "@/components/ui/forms/Input.vue"
 import SolidButton from "@/components/ui/forms/buttons/SolidButton.vue"
 import Form from "@/components/ui/forms/Form.vue"
+
 import logoIcon from "@/assets/images/svg/logo.svg"
 
 const httpAuthApiService = inject(HTTP_AUTH_API_SERVICE_KEY)!

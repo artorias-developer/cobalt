@@ -19,10 +19,10 @@ import { init, graphic } from "echarts/core"
 import type { ECharts } from "echarts/core"
 import type { EChartsOption } from "echarts"
 
-use([LineChart, GridComponent, TooltipComponent, CanvasRenderer])
-
-import { DOCUMENT_HELPER_KEY } from "@/utils"
+import { DOCUMENT_HELPER_KEY } from "@/constants"
 import type { Color, ChartPoint } from "@/types"
+
+use([LineChart, GridComponent, TooltipComponent, CanvasRenderer])
 
 const props = defineProps<{
   color: Color

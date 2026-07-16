@@ -19,7 +19,8 @@ from infrastructure.configs import (
 from games import ENABLED_GAME_MODULES
 from composition import (
     ApplicationContainer,
-    create_fastapi_ioc_container
+    setup_fastapi_ioc_container,
+    setup_fastapi_app
 )
 
 
@@ -30,7 +31,7 @@ class CobaltApplication:
     app: FastAPI
     router: APIRouter
     config: ApplicationConfig
-    dependencies: ApplicationContainer
+    container: ApplicationContainer
     game_modules: Dict[str, AbstractGameModule]
 
     def __init__(self):
@@ -46,8 +47,8 @@ class CobaltApplication:
         Returns:
         - None.
         """
-        await self.dependencies.clients.containers.initialize()
-        await self.dependencies.queue.initialize()
+        await self.container.clients.containers.initialize()
+        await self.container.queue.initialize()
 
     async def _destroy_dependencies(self) -> None:
         """
@@ -59,7 +60,7 @@ class CobaltApplication:
         Returns:
         - None.
         """
-        await self.dependencies.clients.containers.close()
+        await self.container.clients.containers.close()
 
     async def _initialize_game_modules(self) -> None:
         """
@@ -76,7 +77,7 @@ class CobaltApplication:
 
         for game_module in ENABLED_GAME_MODULES:
             module: AbstractGameModule = game_module(
-                dependencies=self.dependencies,
+                container=self.container,
                 app_containers_dir=app_containers_dir,
                 host_containers_dir=self.config.server.host_containers_dir
             )
@@ -96,9 +97,9 @@ class CobaltApplication:
         - None.
         """
         await check_default_user(
-            roles_service=self.dependencies.services.roles,
-            users_service=self.dependencies.services.users,
-            logger=self.dependencies.logger
+            roles_service=self.container.services.roles,
+            users_service=self.container.services.users,
+            logger=self.container.logger
         )
 
     def _enable_cron_jobs(self) -> None:
@@ -111,9 +112,9 @@ class CobaltApplication:
         Returns:
         - None.
         """
-        scheduler = self.dependencies.scheduler
+        scheduler = self.container.scheduler
 
-        for job in self.dependencies.jobs:
+        for job in self.container.jobs:
             scheduler.add_job(
                 name=job.name,
                 job=job.instance,
@@ -132,7 +133,7 @@ class CobaltApplication:
         Returns:
         - None.
         """
-        self.dependencies.scheduler.shutdown(
+        self.container.scheduler.shutdown(
             wait=False
         )
 
@@ -151,7 +152,7 @@ class CobaltApplication:
         await self._initialize_game_modules()
         await self._check_default_user()
         self._enable_cron_jobs()
-        self.dependencies.logger.info(f"Cobalt running on http://{self.config.server.host}:{self.config.server.port}")
+        self.container.logger.info(f"Cobalt running on http://{self.config.server.host}:{self.config.server.port}")
         yield
         self._disable_cron_jobs()
         await self._destroy_dependencies()
@@ -167,18 +168,27 @@ class CobaltApplication:
         - None.
         """
         self.config = get_application_config()
-        self.router = APIRouter(prefix="/api/v1")
+
+        self.router = APIRouter(
+            prefix="/api/v1"
+        )
+
         self.app = FastAPI(
             lifespan=self.lifespan,
             title="Cobalt API",
             version="1.0.0"
         )
 
-        self.dependencies = create_fastapi_ioc_container(
+        self.container = setup_fastapi_ioc_container(
+            config=self.config,
+            game_modules=self.game_modules
+        )
+
+        setup_fastapi_app(
             app=self.app,
             router=self.router,
             config=self.config,
-            game_modules=self.game_modules
+            container=self.container
         )
 
         self.app.include_router(self.router)

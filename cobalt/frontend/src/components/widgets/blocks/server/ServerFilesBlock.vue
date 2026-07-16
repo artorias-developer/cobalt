@@ -321,8 +321,8 @@ import { useI18n } from "vue-i18n"
 import { computed, inject, onMounted, onUnmounted, ref } from "vue"
 import { useNotification } from "@kyvg/vue3-notification"
 
-import { HTTP_FILES_API_SERVICE_KEY, LOCALE_HELPER_KEY } from "@/utils"
 import { useTableStore, useUserStore } from "@/stores"
+import { HTTP_FILES_API_SERVICE_KEY, LOCALE_HELPER_KEY } from "@/constants"
 import { PermissionEnum } from "@/types"
 import type {
   FileContentEntity,
@@ -352,6 +352,7 @@ import Counter from "@/components/ui/editors/Counter.vue"
 import FileEditor from "@/components/ui/editors/FileEditor.vue"
 import Message from "@/components/ui/Message.vue"
 import ConfirmPopup from "@/components/widgets/popups/ConfirmPopup.vue"
+
 import filesIcon from "@/assets/images/svg/files.svg?raw"
 import trashIcon from "@/assets/images/svg/trash.svg?raw"
 import editIcon from "@/assets/images/svg/edit.svg?raw"

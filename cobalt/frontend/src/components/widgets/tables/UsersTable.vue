@@ -115,6 +115,7 @@
           :placeholder="$t('users.list.popups.create.password.placeholder')"
           name="user-password"
           :required="true"
+          type="password"
         />
         <Select
           v-model="selectedRole"
@@ -173,6 +174,7 @@
           :placeholder="$t('users.list.popups.edit.password.placeholder')"
           name="user-password"
           :required="false"
+          type="password"
         />
         <Select
           v-model="editSelectedRole"
@@ -209,8 +211,8 @@ import { useI18n } from "vue-i18n"
 import { ref, computed, inject, onMounted, onUnmounted } from "vue"
 import { useNotification } from "@kyvg/vue3-notification"
 
-import { LOCALE_HELPER_KEY, HTTP_USERS_API_SERVICE_KEY, HTTP_ROLES_API_SERVICE_KEY } from "@/utils"
 import { useTableStore, useUserStore } from "@/stores"
+import { LOCALE_HELPER_KEY, HTTP_USERS_API_SERVICE_KEY, HTTP_ROLES_API_SERVICE_KEY } from "@/constants"
 import { PermissionEnum } from "@/types"
 import type {
   UsersPageEntity,
@@ -235,6 +237,7 @@ import Counter from "@/components/ui/tables/Counter.vue"
 import Search from "@/components/ui/tables/Search.vue"
 import Form from "@/components/ui/forms/Form.vue"
 import ConfirmPopup from "@/components/widgets/popups/ConfirmPopup.vue"
+
 import usersIcon from "@/assets/images/svg/users.svg?raw"
 import trashIcon from "@/assets/images/svg/trash.svg?raw"
 import editIcon from "@/assets/images/svg/edit.svg?raw"

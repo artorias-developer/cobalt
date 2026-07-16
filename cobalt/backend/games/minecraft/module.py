@@ -26,14 +26,14 @@ class MinecraftGameModule(AbstractGameModule):
         self,
         app_containers_dir: Path,
         host_containers_dir: Path,
-        dependencies: ApplicationContainer
+        container: ApplicationContainer
     ):
         super().__init__(
             name="minecraft",
             has_logs_timestamp=True,
             app_containers_dir=app_containers_dir,
             host_containers_dir=host_containers_dir,
-            dependencies=dependencies
+            container=container
         )
 
         self.game_module_root_dir = Path(__file__).parents[0]
@@ -56,30 +56,30 @@ class MinecraftGameModule(AbstractGameModule):
             build_dir=fabric_build_dir,
             app_containers_dir=self.app_containers_dir,
             host_containers_dir=self.host_containers_dir,
-            core_servers_service=self.dependencies.services.servers,
-            containers_client=self.dependencies.clients.containers,
-            connections_manager=self.dependencies.managers.connections,
-            logger=self.dependencies.logger
+            core_servers_service=self.container.services.servers,
+            containers_client=self.container.clients.containers,
+            connections_manager=self.container.managers.connections,
+            logger=self.container.logger
         )
 
         forge_servers_service = ForgeServersService(
             build_dir=forge_build_dir,
             app_containers_dir=self.app_containers_dir,
             host_containers_dir=self.host_containers_dir,
-            core_servers_service=self.dependencies.services.servers,
-            containers_client=self.dependencies.clients.containers,
-            connections_manager=self.dependencies.managers.connections,
-            logger=self.dependencies.logger
+            core_servers_service=self.container.services.servers,
+            containers_client=self.container.clients.containers,
+            connections_manager=self.container.managers.connections,
+            logger=self.container.logger
         )
 
         paper_servers_service = PaperServersService(
             build_dir=paper_build_dir,
             app_containers_dir=self.app_containers_dir,
             host_containers_dir=self.host_containers_dir,
-            core_servers_service=self.dependencies.services.servers,
-            containers_client=self.dependencies.clients.containers,
-            connections_manager=self.dependencies.managers.connections,
-            logger=self.dependencies.logger
+            core_servers_service=self.container.services.servers,
+            containers_client=self.container.clients.containers,
+            connections_manager=self.container.managers.connections,
+            logger=self.container.logger
         )
 
         return [
@@ -87,18 +87,18 @@ class MinecraftGameModule(AbstractGameModule):
                 game_id=self.game_id,
                 name="fabric",
                 servers_service=fabric_servers_service,
-                logger=self.dependencies.logger
+                logger=self.container.logger
             ),
             ForgeLoader(
                 game_id=self.game_id,
                 name="forge",
                 servers_service=forge_servers_service,
-                logger=self.dependencies.logger
+                logger=self.container.logger
             ),
             PaperLoader(
                 game_id=self.game_id,
                 name="paper",
                 servers_service=paper_servers_service,
-                logger=self.dependencies.logger
+                logger=self.container.logger
             )
         ]

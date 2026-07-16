@@ -25,6 +25,7 @@
 import { useRouter } from "vue-router"
 
 import SolidButton from "@/components/ui/forms/buttons/SolidButton.vue"
+
 import notFoundIcon from "@/assets/images/svg/404.svg?raw"
 
 withDefaults(defineProps<{

@@ -63,14 +63,10 @@
 
 <script setup lang="ts">
 import { computed } from "vue"
-import { useRoute, type RouteLocationRaw } from "vue-router"
+import { useRoute } from "vue-router"
+import type { RouteLocationRaw } from "vue-router"
 
-import type {
-  Color,
-  ButtonAlign,
-  ButtonTarget,
-  ButtonType
-} from "@/types"
+import type { Color, ButtonAlign, ButtonTarget, ButtonType } from "@/types"
 
 import Icon from "@/components/ui/Icon.vue"
 

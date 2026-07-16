@@ -61,6 +61,7 @@ import type { MenuButton } from "@/types"
 
 import Block from "@/components/ui/Block.vue"
 import GhostButton from "@/components/ui/forms/buttons/GhostButton.vue"
+
 import logoIcon from "@/assets/images/svg/logo.svg"
 import settingsIcon from "@/assets/images/svg/settings.svg?raw"
 import usersIcon from "@/assets/images/svg/users.svg?raw"
@@ -129,6 +130,7 @@ const hasSettingsSystemAccess = computed((): boolean =>
 
 <style scoped lang="scss">
 .header {
+  height: 60px;
   display: flex;
   flex-direction: row;
   align-items: center;

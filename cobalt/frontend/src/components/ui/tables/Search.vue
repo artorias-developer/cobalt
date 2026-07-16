@@ -45,6 +45,7 @@ import { useTableStore } from "@/stores/table"
 
 import Input from "@/components/ui/forms/Input.vue"
 import GhostButton from "@/components/ui/forms/buttons/GhostButton.vue"
+
 import searchIcon from "@/assets/images/svg/search.svg?raw"
 import resetIcon from "@/assets/images/svg/reset.svg?raw"
 

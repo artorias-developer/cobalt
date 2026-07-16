@@ -49,7 +49,7 @@ import {
   HTTP_SERVERS_API_SERVICE_KEY,
   HTTP_GAMES_API_SERVICE_KEY,
   WS_SERVERS_API_SERVICE_KEY
-} from "@/utils"
+} from "@/constants"
 import { PermissionEnum, ServerStateEnum } from "@/types"
 import type { Tag, ServerEntity, ServerStatusEntity } from "@/types"
 

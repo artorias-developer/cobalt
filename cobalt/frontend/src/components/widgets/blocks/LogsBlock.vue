@@ -68,8 +68,13 @@ import { useI18n } from "vue-i18n"
 import { inject, onMounted, onUnmounted, ref, computed, nextTick, watch } from "vue"
 import { useNotification } from "@kyvg/vue3-notification"
 
-import { LOCALE_HELPER_KEY, HTTP_LOGS_API_SERVICE_KEY, HTTP_SERVERS_API_SERVICE_KEY, WS_LOGS_API_SERVICE_KEY } from "@/utils"
 import { useServerConsoleStore, useUserStore } from "@/stores"
+import {
+  LOCALE_HELPER_KEY,
+  HTTP_LOGS_API_SERVICE_KEY,
+  HTTP_SERVERS_API_SERVICE_KEY,
+  WS_LOGS_API_SERVICE_KEY
+} from "@/constants"
 import { PermissionEnum } from "@/types"
 import type { UniversalBlockMode, ParsedLog } from "@/types"
 
@@ -77,6 +82,7 @@ import Block from "@/components/ui/Block.vue"
 import Header from "@/components/ui/Header.vue"
 import BlockTabs from "@/components/ui/tabs/BlockTabs.vue"
 import Message from "@/components/ui/Message.vue"
+
 import monitorIcon from "@/assets/images/svg/monitor.svg?raw"
 import padlockIcon from "@/assets/images/svg/padlock.svg?raw"
 import listIcon from "@/assets/images/svg/clipboard-blank.svg?raw"

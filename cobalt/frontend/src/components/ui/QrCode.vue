@@ -13,7 +13,7 @@
 import { ref, onMounted, watch, inject } from "vue"
 import QRCodeStyling from "qr-code-styling"
 
-import { DOCUMENT_HELPER_KEY } from "@/utils"
+import { DOCUMENT_HELPER_KEY } from "@/constants"
 
 const props = defineProps<{
   data: string

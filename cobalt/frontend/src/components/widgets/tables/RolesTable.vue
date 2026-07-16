@@ -207,17 +207,10 @@ import { useI18n } from "vue-i18n"
 import { computed, inject, onMounted, onUnmounted, ref } from "vue"
 import { useNotification } from "@kyvg/vue3-notification"
 
-import { LOCALE_HELPER_KEY, HTTP_ROLES_API_SERVICE_KEY } from "@/utils"
 import { useTableStore, useUserStore } from "@/stores"
+import { LOCALE_HELPER_KEY, HTTP_ROLES_API_SERVICE_KEY } from "@/constants"
 import { PermissionEnum } from "@/types"
-import type {
-  BlockHeaderSize,
-  Color,
-  PermissionGroup,
-  RolesPageRequest,
-  RolesPageEntity,
-  TableColumn
-} from "@/types"
+import type { BlockHeaderSize, Color, PermissionGroup, RolesPageRequest, RolesPageEntity, TableColumn } from "@/types"
 
 import Block from "@/components/ui/Block.vue"
 import Header from "@/components/ui/Header.vue"
@@ -232,6 +225,7 @@ import Counter from "@/components/ui/tables/Counter.vue"
 import Search from "@/components/ui/tables/Search.vue"
 import Form from "@/components/ui/forms/Form.vue"
 import ConfirmPopup from "@/components/widgets/popups/ConfirmPopup.vue"
+
 import rolesIcon from "@/assets/images/svg/roles.svg?raw"
 import trashIcon from "@/assets/images/svg/trash.svg?raw"
 import editIcon from "@/assets/images/svg/edit.svg?raw"

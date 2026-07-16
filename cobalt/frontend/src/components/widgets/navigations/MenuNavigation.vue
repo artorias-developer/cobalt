@@ -70,12 +70,13 @@ import { useRouter } from "vue-router"
 import { useNotification } from "@kyvg/vue3-notification"
 
 import { useUserStore } from "@/stores"
-import { HTTP_AUTH_API_SERVICE_KEY, WS_CLIENT_KEY } from "@/utils"
+import { HTTP_AUTH_API_SERVICE_KEY, WS_CLIENT_KEY } from "@/constants"
 import { type MenuButton, PermissionEnum, RouteEnum } from "@/types"
 
 import GhostButton from "@/components/ui/forms/buttons/GhostButton.vue"
 import SourcesBanner from "@/components/widgets/banners/SourcesBanner.vue"
 import SupportBanner from "@/components/widgets/banners/SupportBanner.vue"
+
 import logoIcon from "@/assets/images/svg/logo.svg"
 import dashboardIcon from "@/assets/images/svg/dashboard.svg?raw"
 import serversIcon from "@/assets/images/svg/servers.svg?raw"
@@ -271,10 +272,11 @@ const hasRolesViewAccess = computed((): boolean =>
   box-sizing: border-box;
 
   .header {
+    height: 60px;
     display: flex;
     align-items: center;
     gap: $space-md;
-    padding: $space-md;
+    padding: 0 $space-md;
 
     .image {
       .icon {
