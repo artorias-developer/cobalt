@@ -77,6 +77,7 @@ class CobaltApplication:
 
         for game_module in ENABLED_GAME_MODULES:
             module: AbstractGameModule = game_module(
+                app_environment=self.config.server.environment,
                 container=self.container,
                 app_containers_dir=app_containers_dir,
                 host_containers_dir=self.config.server.host_containers_dir

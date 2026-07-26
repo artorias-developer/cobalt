@@ -8,13 +8,11 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from starlette.middleware.cors import CORSMiddleware
 
+from domain.enums import EnvironmentEnum
 from application.contracts.loggers import AbstractLogger
 from application.contracts.managers import AbstractI18nManager
 from application.contracts.services import AbstractAuthService
-from infrastructure.configs import (
-    EnvironmentEnum,
-    ApplicationConfig
-)
+from infrastructure.configs import ApplicationConfig
 from presentation.http.fastapi.v1.middlewares import (
     HttpErrorsMiddleware,
     HttpAuthMiddleware,
@@ -50,7 +48,7 @@ def setup_fastapi_trusted_host_middleware(
         f"*.{config.server.domain}",
     ]
 
-    if config.server.environment == EnvironmentEnum.DEVELOPMENT:
+    if config.server.environment == EnvironmentEnum.DEV:
         allowed_hosts.extend([
             "localhost",
             "127.0.0.1",
@@ -84,7 +82,7 @@ def setup_fastapi_cors_middleware(
         f"https://admin.{config.server.domain}",
     ]
 
-    if config.server.environment == EnvironmentEnum.DEVELOPMENT:
+    if config.server.environment == EnvironmentEnum.DEV:
         allowed_origins.extend([
             "http://localhost",
             "http://127.0.0.1",

@@ -6,6 +6,7 @@
 from asyncio import Task, Event, Lock, create_task, sleep
 from typing import List, Dict, Optional, Callable
 
+from domain.enums import EnvironmentEnum
 from domain.exceptions import NotFoundError
 from application.contracts.services import (
     AbstractLogsService,
@@ -32,7 +33,7 @@ class LogsService(AbstractLogsService):
     """
     Logs service.
     """
-    _HOST_CONTAINER: str = "cobalt-backend"
+    _HOST_CONTAINER: str
     _streaming_tasks: Dict[str, Task]
 
     logs_mapper: AbstractLogsServiceMapper
@@ -51,7 +52,8 @@ class LogsService(AbstractLogsService):
         connections_manager: AbstractConnectionsManager,
         servers_service: AbstractServersService,
         i18n_manager: AbstractI18nManager,
-        game_modules: Dict[str, AbstractGameModule]
+        game_modules: Dict[str, AbstractGameModule],
+        app_environment: EnvironmentEnum
     ):
         self.logs_mapper = logs_mapper
         self.containers_client = containers_client
@@ -62,6 +64,7 @@ class LogsService(AbstractLogsService):
 
         self._ = i18n_manager.gettext
         self._streaming_tasks = {}
+        self._HOST_CONTAINER = f"{app_environment}_cobalt_backend"
 
     async def _has_active_room(
         self,

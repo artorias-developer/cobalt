@@ -5,8 +5,9 @@
 
 from os import path
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Tuple
 
+from domain.enums import EnvironmentEnum
 from application.contracts.managers import AbstractConnectionsManager
 from application.contracts.clients import AbstractContainersClient
 from application.contracts.loggers import AbstractLogger
@@ -31,7 +32,8 @@ class VanillaServersService(AbstractServersService):
         core_servers_service: CoreServersService,
         containers_client: AbstractContainersClient,
         connections_manager: AbstractConnectionsManager,
-        logger: AbstractLogger
+        logger: AbstractLogger,
+        app_environment: EnvironmentEnum
     ):
         super().__init__(
             build_dir=build_dir,
@@ -39,7 +41,8 @@ class VanillaServersService(AbstractServersService):
             core_servers_service=core_servers_service,
             containers_client=containers_client,
             connections_manager=connections_manager,
-            logger=logger
+            logger=logger,
+            app_environment=app_environment
         )
 
         self.host_containers_dir = host_containers_dir
@@ -47,7 +50,7 @@ class VanillaServersService(AbstractServersService):
     @staticmethod
     def _parse_version(
         version: str
-    ) -> tuple[int, int, int]:
+    ) -> Tuple[int, int, int]:
         """
         Parses a version string into major, minor, and patch components.
 
