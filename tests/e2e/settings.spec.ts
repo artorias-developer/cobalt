@@ -6,75 +6,92 @@
  */
 
 import { test, expect } from "@playwright/test"
+import { gotoWithRetry, clickAndWaitForApi } from "./helpers/api.js"
 
 test.describe("Settings page", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/settings", { waitUntil: "domcontentloaded" })
+    await gotoWithRetry(page, "/settings")
   })
 
   test("Should return 200 on general settings save", async ({ page }) => {
-    const [response] = await Promise.all([
-      page.waitForResponse((resp) =>
-        resp.url().includes("settings") && resp.request().method() === "PATCH"
-      ),
-      page.locator('button[name="settings-save-general"]').click(),
-    ])
-
+    const response = await clickAndWaitForApi(
+      page,
+      'button[name="settings-save-general"]',
+      /settings/,
+      "PATCH",
+    )
     expect(response.status()).toBe(200)
   })
 
   test("Should return 409 on current password is invalid", async ({ page }) => {
-    await page.locator('.tabs .nav button[name="security"]').click()
+    const securityTab = page.locator('.tabs .nav button[name="security"]')
+    await securityTab.waitFor({ state: "visible" })
+    await expect(securityTab).toBeEnabled()
+    await securityTab.click()
 
-    await page.locator('input[name="old-password"]').fill("wrong")
-    await page.locator('input[name="new-password"]').fill("wrong")
-    const [response] = await Promise.all([
-      page.waitForResponse((resp) =>
-        resp.url().includes("credentials") && resp.request().method() === "PATCH"
-      ),
-      page.locator('button[name="settings-save-security"]').click(),
-    ])
+    const oldPasswordInput = page.locator('input[name="old-password"]')
+    await oldPasswordInput.waitFor({ state: "visible" })
+    await oldPasswordInput.fill("wrong")
 
+    const newPasswordInput = page.locator('input[name="new-password"]')
+    await newPasswordInput.waitFor({ state: "visible" })
+    await newPasswordInput.fill("wrong")
+
+    const response = await clickAndWaitForApi(
+      page,
+      'button[name="settings-save-security"]',
+      /credentials/,
+      "PATCH",
+    )
     expect(response.status()).toBe(409)
   })
 
   test("Should return 400 on old password is missing", async ({ page }) => {
-    await page.locator('.tabs .nav button[name="security"]').click()
+    const securityTab = page.locator('.tabs .nav button[name="security"]')
+    await securityTab.waitFor({ state: "visible" })
+    await expect(securityTab).toBeEnabled()
+    await securityTab.click()
 
-    await page.locator('input[name="new-password"]').fill("wrong")
-    const [response] = await Promise.all([
-      page.waitForResponse((resp) =>
-        resp.url().includes("credentials") && resp.request().method() === "PATCH"
-      ),
-      page.locator('button[name="settings-save-security"]').click(),
-    ])
+    const newPasswordInput = page.locator('input[name="new-password"]')
+    await newPasswordInput.waitFor({ state: "visible" })
+    await newPasswordInput.fill("wrong")
 
+    const response = await clickAndWaitForApi(
+      page,
+      'button[name="settings-save-security"]',
+      /credentials/,
+      "PATCH",
+    )
     expect(response.status()).toBe(400)
   })
 
   test("Should return 204 on credentials update", async ({ page }) => {
-    await page.locator('.tabs .nav button[name="security"]').click()
+    const securityTab = page.locator('.tabs .nav button[name="security"]')
+    await securityTab.waitFor({ state: "visible" })
+    await expect(securityTab).toBeEnabled()
+    await securityTab.click()
 
-    const [response] = await Promise.all([
-      page.waitForResponse((resp) =>
-        resp.url().includes("credentials") && resp.request().method() === "PATCH"
-      ),
-      page.locator('button[name="settings-save-security"]').click(),
-    ])
-
+    const response = await clickAndWaitForApi(
+      page,
+      'button[name="settings-save-security"]',
+      /credentials/,
+      "PATCH",
+    )
     expect(response.status()).toBe(204)
   })
 
   test("Should return 204 on unused containers data clear", async ({ page }) => {
-    await page.locator('.tabs .nav button[name="system"]').click()
+    const systemTab = page.locator('.tabs .nav button[name="system"]')
+    await systemTab.waitFor({ state: "visible" })
+    await expect(systemTab).toBeEnabled()
+    await systemTab.click()
 
-    const [response] = await Promise.all([
-      page.waitForResponse((resp) =>
-        resp.url().includes("containers") && resp.request().method() === "DELETE"
-      ),
-      page.locator('button[name="clear-containers"]').click(),
-    ])
-
+    const response = await clickAndWaitForApi(
+      page,
+      'button[name="clear-containers"]',
+      /containers/,
+      "DELETE",
+    )
     expect(response.status()).toBe(204)
   })
 })

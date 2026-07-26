@@ -6,23 +6,36 @@
  */
 
 import { test, expect } from "@playwright/test"
+import { gotoWithRetry } from "./helpers/api.js"
 
 test.describe("Header", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/', { waitUntil: "domcontentloaded" })
+    await gotoWithRetry(page, "/")
   })
 
   test("Should open Settings security tab on header item click", async ({ page }) => {
-    await page.locator('.header a[aria-label="settings-security"]').click()
+    const link = page.locator('.header a[aria-label="settings-security"]')
+    await link.waitFor({ state: "visible" })
+    await expect(link).toBeEnabled()
+    await link.click()
 
     await expect(page).toHaveURL("/settings")
-    await expect(page.locator('.page .block.settings .tabs .nav button[name="security"].active')).toBeVisible()
+
+    const tab = page.locator('.page .block.settings .tabs .nav button[name="security"].active')
+    await tab.waitFor({ state: "visible" })
+    await expect(tab).toBeVisible()
   })
 
   test("Should open Settings system tab on header item click", async ({ page }) => {
-    await page.locator('.header a[aria-label="settings-system"]').click()
+    const link = page.locator('.header a[aria-label="settings-system"]')
+    await link.waitFor({ state: "visible" })
+    await expect(link).toBeEnabled()
+    await link.click()
 
     await expect(page).toHaveURL("/settings")
-    await expect(page.locator('.page .block.settings .tabs .nav button[name="system"].active')).toBeVisible()
+
+    const tab = page.locator('.page .block.settings .tabs .nav button[name="system"].active')
+    await tab.waitFor({ state: "visible" })
+    await expect(tab).toBeVisible()
   })
 })
