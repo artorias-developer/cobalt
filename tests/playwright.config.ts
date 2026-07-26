@@ -29,7 +29,7 @@ export default defineConfig({
     {
       name: "main",
       use: {
-        ...devices["Desktop Chrome"],
+        ...devices["Desktop Firefox"],
         storageState: ".auth/session.json",
       },
       dependencies: ["setup"],
@@ -38,7 +38,7 @@ export default defineConfig({
     {
       name: "servers",
       use: {
-        ...devices["Desktop Chrome"],
+        ...devices["Desktop Firefox"],
         storageState: ".auth/session.json",
       },
       dependencies: ["main"],
@@ -47,7 +47,7 @@ export default defineConfig({
     {
       name: "server",
       use: {
-        ...devices["Desktop Chrome"],
+        ...devices["Desktop Firefox"],
         storageState: ".auth/session.json",
       },
       dependencies: ["servers"],
@@ -56,7 +56,7 @@ export default defineConfig({
     {
       name: "logout",
       use: {
-        ...devices["Desktop Chrome"],
+        ...devices["Desktop Firefox"],
         storageState: ".auth/session.json",
       },
       dependencies: ["server"],
