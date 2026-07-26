@@ -18,11 +18,11 @@ export PYTHONPATH := $(shell pwd)/cobalt/backend
     locales-compile l\:c
 
 docker-build-dev:
-	docker compose -f build/dev/docker-compose.yaml up -d
+	docker compose --all-resources -f build/dev/docker-compose.yaml up -d
 d\:b\:d: docker-build-dev
 
 docker-rebuild-dev:
-	docker compose -f build/dev/docker-compose.yaml up -d --build
+	docker compose --all-resources -f build/dev/docker-compose.yaml up -d --build
 d\:r\:d: docker-rebuild-dev
 
 docker-down-dev:
@@ -30,11 +30,11 @@ docker-down-dev:
 d\:d\:d: docker-down-dev
 
 docker-build-prod:
-	docker compose -f build/prod/docker-compose.yaml up -d
+	docker compose --all-resources -f build/prod/docker-compose.yaml up -d
 d\:b\:p: docker-build-prod
 
 docker-rebuild-prod:
-	docker compose -f build/prod/docker-compose.yaml up -d --build
+	docker compose --all-resources -f build/prod/docker-compose.yaml up -d --build
 d\:r\:p: docker-rebuild-prod
 
 docker-down-prod:
