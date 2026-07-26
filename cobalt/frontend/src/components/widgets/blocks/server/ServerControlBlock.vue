@@ -145,15 +145,23 @@ async function handleStart(): Promise<void> {
 
   try {
     await httpServersApiService.start(props.serverId)
-    await fetchServerStatus()
   } catch (error: any) {
     notify({
       type: "error",
       text: error?.response?.data?.message ?? t("servers.server.overview.control.start.error")
     })
-  } finally {
-    actionLoading.value = false
   }
+
+  try {
+    await fetchServerStatus()
+  } catch (error: any) {
+    notify({
+      type: "error",
+      text: error?.response?.data?.message ?? t("servers.server.overview.control.fetch.error")
+    })
+  }
+
+  actionLoading.value = false
 }
 
 /**
@@ -170,15 +178,23 @@ async function handleStop(): Promise<void> {
 
   try {
     await httpServersApiService.stop(props.serverId)
-    await fetchServerStatus()
   } catch (error: any) {
     notify({
       type: "error",
       text: error?.response?.data?.message ?? t("servers.server.overview.control.stop.error")
     })
-  } finally {
-    actionLoading.value = false
   }
+
+  try {
+    await fetchServerStatus()
+  } catch (error: any) {
+    notify({
+      type: "error",
+      text: error?.response?.data?.message ?? t("servers.server.overview.control.fetch.error")
+    })
+  }
+
+  actionLoading.value = false
 }
 
 /**
@@ -195,15 +211,23 @@ async function handleRestart(): Promise<void> {
 
   try {
     await httpServersApiService.restart(props.serverId)
-    await fetchServerStatus()
   } catch (error: any) {
     notify({
       type: "error",
       text: error?.response?.data?.message ?? t("servers.server.overview.control.restart.error")
     })
-  } finally {
-    actionLoading.value = false
   }
+
+  try {
+    await fetchServerStatus()
+  } catch (error: any) {
+    notify({
+      type: "error",
+      text: error?.response?.data?.message ?? t("servers.server.overview.control.fetch.error")
+    })
+  }
+
+  actionLoading.value = false
 }
 
 /**
