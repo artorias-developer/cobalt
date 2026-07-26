@@ -15,7 +15,10 @@ from typing import Optional, Dict, Any, Union
 from aiofiles import os, open
 from aioshutil import rmtree
 
-from domain.enums import ServerStateEnum
+from domain.enums import (
+    ServerStateEnum,
+    EnvironmentEnum
+)
 from domain.exceptions import NotFoundError
 from application.contracts.managers import AbstractConnectionsManager
 from application.contracts.clients import AbstractContainersClient
@@ -42,6 +45,7 @@ class AbstractServersService(ABC):
     containers_client: AbstractContainersClient
     connections_manager: AbstractConnectionsManager
     logger: AbstractLogger
+    app_environment: EnvironmentEnum
 
     def __init__(
         self,
@@ -50,7 +54,8 @@ class AbstractServersService(ABC):
         core_servers_service: CoreServersService,
         containers_client: AbstractContainersClient,
         connections_manager: AbstractConnectionsManager,
-        logger: AbstractLogger
+        logger: AbstractLogger,
+        app_environment: EnvironmentEnum
     ):
         self.build_dir = build_dir
         self.app_containers_dir = app_containers_dir
@@ -58,6 +63,7 @@ class AbstractServersService(ABC):
         self.containers_client = containers_client
         self.connections_manager = connections_manager
         self.logger = logger
+        self.app_environment = app_environment
 
     async def _remove_container(
         self,
@@ -723,7 +729,7 @@ class AbstractServersService(ABC):
         }
 
         prepared_container_kwargs = {
-            "network_mode": ContainersConstants.NETWORK_MODE,
+            "network_mode": ContainersConstants.NETWORK_MODE.format(environment=self.app_environment),
             **({"security_opt": ["seccomp=unconfined"]} if is_steam_server else {}),
             **(container_kwargs or {})
         }

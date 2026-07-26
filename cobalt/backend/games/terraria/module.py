@@ -6,6 +6,7 @@
 from pathlib import Path
 from typing import List
 
+from domain.enums import EnvironmentEnum
 from application.contracts.games import AbstractGameModule
 from composition import ApplicationContainer
 from games.terraria.vanilla.application.services import VanillaServersService
@@ -18,10 +19,12 @@ class TerrariaGameModule(AbstractGameModule):
     """
     Terraria game module.
     """
+    app_environment: EnvironmentEnum
     game_module_root_dir: Path
 
     def __init__(
         self,
+        app_environment: EnvironmentEnum,
         app_containers_dir: Path,
         host_containers_dir: Path,
         container: ApplicationContainer
@@ -34,6 +37,7 @@ class TerrariaGameModule(AbstractGameModule):
             container=container
         )
 
+        self.app_environment = app_environment
         self.game_module_root_dir = Path(__file__).parents[0]
 
     def get_loaders(self) -> List:
@@ -56,7 +60,8 @@ class TerrariaGameModule(AbstractGameModule):
             core_servers_service=self.container.services.servers,
             containers_client=self.container.clients.containers,
             connections_manager=self.container.managers.connections,
-            logger=self.container.logger
+            logger=self.container.logger,
+            app_environment=self.app_environment
         )
 
         tmodloader_servers_service = TModLoaderServersService(
@@ -66,7 +71,8 @@ class TerrariaGameModule(AbstractGameModule):
             core_servers_service=self.container.services.servers,
             containers_client=self.container.clients.containers,
             connections_manager=self.container.managers.connections,
-            logger=self.container.logger
+            logger=self.container.logger,
+            app_environment=self.app_environment
         )
 
         return [

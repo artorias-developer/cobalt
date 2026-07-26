@@ -5,6 +5,7 @@
 
 from typing import Dict
 
+from domain.enums import EnvironmentEnum
 from domain.repositories import (
     AbstractRolesRepository,
     AbstractUsersRepository,
@@ -260,7 +261,8 @@ def create_logs_service(
     containers_client: AbstractContainersClient,
     connections_manager: AbstractConnectionsManager,
     servers_service: AbstractServersService,
-    game_modules: Dict[str, AbstractGameModule]
+    game_modules: Dict[str, AbstractGameModule],
+    environment: EnvironmentEnum
 ) -> AbstractLogsService:
     """
     Creates the logs service.
@@ -272,6 +274,7 @@ def create_logs_service(
     - connections_manager: AbstractConnectionsManager object.
     - servers_service: AbstractServersService object.
     - game_modules: Game modules dictionary.
+    - environment: EnvironmentEnum value.
 
     Returns:
     - AbstractLogsService: AbstractLogsService object.
@@ -282,7 +285,8 @@ def create_logs_service(
         containers_client=containers_client,
         connections_manager=connections_manager,
         servers_service=servers_service,
-        game_modules=game_modules
+        game_modules=game_modules,
+        app_environment=environment
     )
 
 def create_metrics_service(
@@ -501,7 +505,8 @@ def create_services_container(
         containers_client=clients.containers,
         connections_manager=managers.connections,
         servers_service=servers_service,
-        game_modules=game_modules
+        game_modules=game_modules,
+        environment=config.server.environment
     )
 
     metrics_service = create_metrics_service(

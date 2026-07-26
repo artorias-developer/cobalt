@@ -6,46 +6,66 @@
  */
 
 import { test, expect } from "@playwright/test"
+import { gotoWithRetry } from "./helpers/api.js"
 
 test.describe("Menu", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/', { waitUntil: "domcontentloaded" })
+    await gotoWithRetry(page, "/")
   })
 
   test("Should open Dashboard page on menu item click", async ({ page }) => {
-    await page.locator('.menu a[aria-label="dashboard"]').click()
+    const link = page.locator('.menu a[aria-label="dashboard"]')
+    await link.waitFor({ state: "visible" })
+    await expect(link).toBeEnabled()
+    await link.click()
 
     await expect(page.locator(".page .metrics")).toBeVisible()
   })
 
   test("Should open Servers page on menu item click", async ({ page }) => {
-    await page.locator('.menu a[aria-label="servers"]').click()
+    const link = page.locator('.menu a[aria-label="servers"]')
+    await link.waitFor({ state: "visible" })
+    await expect(link).toBeEnabled()
+    await link.click()
 
     await expect(page.locator(".page .block.servers")).toBeVisible()
   })
 
   test("Should open Users page on menu item click", async ({ page }) => {
-    await page.locator('.menu a[aria-label="users"]').click()
+    const link = page.locator('.menu a[aria-label="users"]')
+    await link.waitFor({ state: "visible" })
+    await expect(link).toBeEnabled()
+    await link.click()
 
     await expect(page.locator(".page .block.users")).toBeVisible()
   })
 
   test("Should open Roles page on menu item click", async ({ page }) => {
-    await page.locator('.menu a[aria-label="roles"]').click()
+    const link = page.locator('.menu a[aria-label="roles"]')
+    await link.waitFor({ state: "visible" })
+    await expect(link).toBeEnabled()
+    await link.click()
 
     await expect(page.locator(".page .block.roles")).toBeVisible()
   })
 
   test("Should open Settings page on menu item click", async ({ page }) => {
-    await page.locator('.menu a[aria-label="settings"]').click()
+    const link = page.locator('.menu a[aria-label="settings"]')
+    await link.waitFor({ state: "visible" })
+    await expect(link).toBeEnabled()
+    await link.click()
 
     await expect(page.locator(".page .block.settings")).toBeVisible()
   })
 
   test("Should open GitHub repository on menu item click", async ({ page }) => {
+    const githubLink = page.locator(".menu .banners .github")
+    await githubLink.waitFor({ state: "visible" })
+    await expect(githubLink).toBeEnabled()
+
     const [newPage] = await Promise.all([
       page.waitForEvent("popup"),
-      page.locator(".menu .banners .github").click(),
+      githubLink.click(),
     ])
     await newPage.waitForLoadState()
 
@@ -53,15 +73,22 @@ test.describe("Menu", () => {
   })
 
   test("Should open Support popup on menu item click", async ({ page }) => {
-    await page.locator(".menu .banners .support .wallets button").first().click()
+    const walletButton = page.locator(".menu .banners .support .wallets button").first()
+    await walletButton.waitFor({ state: "visible" })
+    await expect(walletButton).toBeEnabled()
+    await walletButton.click()
 
     await expect(page.locator(".wallet-popup")).toBeVisible()
   })
 
   test("Should open GitHub issues on menu item click", async ({ page }) => {
+    const helpLink = page.locator('.menu a[aria-label="help"]')
+    await helpLink.waitFor({ state: "visible" })
+    await expect(helpLink).toBeEnabled()
+
     const [newPage] = await Promise.all([
       page.waitForEvent("popup"),
-      page.locator('.menu a[aria-label="help"]').click(),
+      helpLink.click(),
     ])
     await newPage.waitForLoadState()
 

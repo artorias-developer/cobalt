@@ -6,7 +6,22 @@
  */
 
 import { test, expect, type Page, type Response } from "@playwright/test"
+import { gotoWithRetry, clickAndWaitForApi } from "./helpers/api.js"
 
+/**
+ * Creates a server through the server-create popup.
+ *
+ * Parameters:
+ * - page: Playwright page instance.
+ * - name: Name of the server to create.
+ * - gameIndex: Index of the game option to select, or null to skip selection.
+ * - selectLoader: Whether to select a loader option.
+ * - selectVersion: Whether to select a version option.
+ *
+ * Returns:
+ * - Promise<Response | undefined>: the API response for the create request,
+ *   or undefined when the flow stops early due to missing selections.
+ */
 async function createServer(
   page: Page,
   name: string,
@@ -14,68 +29,109 @@ async function createServer(
   selectLoader: boolean = true,
   selectVersion: boolean = true,
 ): Promise<Response | undefined> {
-  await page.locator('button[name="server-create-popup"]').click()
+  const createPopupButton = page.locator('button[name="server-create-popup"]')
+  await createPopupButton.waitFor({ state: "visible" })
+  await expect(createPopupButton).toBeEnabled()
+  await createPopupButton.click()
+
+  const nextStepButton = page.locator('button[name="server-next-step"]')
 
   if (gameIndex == null) {
-    await page.locator('button[name="server-next-step"]').click()
+    await nextStepButton.waitFor({ state: "visible" })
+    await expect(nextStepButton).toBeEnabled()
+    await nextStepButton.click()
     return
   }
 
-  await page.locator('div[aria-label="server-game"]').nth(gameIndex).click()
-  await page.locator('button[name="server-next-step"]').click()
+  const gameOption = page.locator('div[aria-label="server-game"]').nth(gameIndex)
+  await gameOption.waitFor({ state: "visible" })
+  await gameOption.click()
+
+  await nextStepButton.waitFor({ state: "visible" })
+  await expect(nextStepButton).toBeEnabled()
+  await nextStepButton.click()
+
+  const createButton = page.locator('button[name="server-create"]')
 
   if (!name) {
-    await page.locator('button[name="server-create"]').click()
+    await createButton.waitFor({ state: "visible" })
+    await expect(createButton).toBeEnabled()
+    await createButton.click()
     return
   }
 
-  await page.locator('input[name="server-name"]').fill(name)
+  const nameInput = page.locator('input[name="server-name"]')
+  await nameInput.waitFor({ state: "visible" })
+  await nameInput.fill(name)
 
   if (!selectLoader) {
-    await page.locator('button[name="server-create"]').click()
+    await createButton.waitFor({ state: "visible" })
+    await expect(createButton).toBeEnabled()
+    await createButton.click()
     return
   }
 
-  await page.locator('div[aria-label="server-loader"]').click()
-  await page.locator(".select-dropdown .option").first().waitFor()
-  await page.waitForTimeout(700)
-  await page.locator(".select-dropdown .option").first().click()
+  const loaderField = page.locator('div[aria-label="server-loader"]')
+  await loaderField.waitFor({ state: "visible" })
+  await loaderField.click()
+
+  const loaderDropdown = page.locator(".select-dropdown")
+  await loaderDropdown.waitFor({ state: "visible" })
+  await loaderDropdown.locator(".option").first().click()
+  await loaderDropdown.waitFor({ state: "hidden" })
 
   if (!selectVersion) {
-    await page.locator('button[name="server-create"]').click()
+    await createButton.waitFor({ state: "visible" })
+    await expect(createButton).toBeEnabled()
+    await createButton.click()
     return
   }
 
-  await page.locator('div[aria-label="server-version"]').click()
-  await page.locator(".select-dropdown .option").first().waitFor()
-  await page.waitForTimeout(700)
-  await page.locator(".select-dropdown .option").first().click()
+  const versionField = page.locator('div[aria-label="server-version"]')
+  await versionField.waitFor({ state: "visible" })
+  await versionField.click()
 
-  const [response] = await Promise.all([
-    page.waitForResponse((resp) =>
-      resp.url().includes("servers") && resp.request().method() === "POST"
-    ),
-    page.locator('button[name="server-create"]').click(),
-  ])
-  return response
+  const versionDropdown = page.locator(".select-dropdown")
+  await versionDropdown.waitFor({ state: "visible" })
+  await versionDropdown.locator(".option").first().click()
+  await versionDropdown.waitFor({ state: "hidden" })
+
+  return clickAndWaitForApi(
+    page,
+    'button[name="server-create"]',
+    /servers/,
+    "POST",
+  )
 }
 
+/**
+ * Searches for a server by name.
+ *
+ * Parameters:
+ * - page: Playwright page instance.
+ * - name: Server name to search for.
+ *
+ * Returns:
+ * - Promise<Response>: the API response for the search request.
+ */
 async function searchServer(page: Page, name: string): Promise<Response> {
-  await page.locator('input[name="search-input"]').fill(name)
-  const [response] = await Promise.all([
-    page.waitForResponse((resp) =>
-      resp.url().includes("servers") && resp.request().method() === "GET"
-    ),
-    page.locator('button[name="search-submit"]').click(),
-  ])
-  return response
+  const searchInput = page.locator('input[name="search-input"]')
+  await searchInput.waitFor({ state: "visible" })
+  await searchInput.fill(name)
+
+  return clickAndWaitForApi(
+    page,
+    'button[name="search-submit"]',
+    /servers/,
+    "GET",
+  )
 }
 
 test.describe.configure({ mode: "serial" })
 
 test.describe("Servers page", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/servers", { waitUntil: "domcontentloaded" })
+    await gotoWithRetry(page, "/servers")
   })
 
   test("Should show validation warning on unselected game", async ({ page }) => {
@@ -138,13 +194,13 @@ test.describe("Servers page", () => {
 
   test("Should return 200 on search reset", async ({ page }) => {
     await searchServer(page, "e2e_test_server")
-    const [response] = await Promise.all([
-      page.waitForResponse((resp) =>
-        resp.url().includes("servers") && resp.request().method() === "GET"
-      ),
-      page.locator('button[name="search-reset"]').click(),
-    ])
 
+    const response = await clickAndWaitForApi(
+      page,
+      'button[name="search-reset"]',
+      /servers/,
+      "GET",
+    )
     expect(response.status()).toBe(200)
   })
 })

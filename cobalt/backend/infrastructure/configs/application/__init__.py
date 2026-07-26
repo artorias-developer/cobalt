@@ -5,10 +5,8 @@
 
 from .config import get_application_config
 from .dataclasses import ApplicationConfig
-from .enums import EnvironmentEnum
 
 __all__ = [
     "get_application_config",
-    "ApplicationConfig",
-    "EnvironmentEnum"
+    "ApplicationConfig"
 ]

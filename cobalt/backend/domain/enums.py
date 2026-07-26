@@ -98,3 +98,7 @@ class TimezoneEnum(StrEnum):
     UTC_PLUS_10 = "UTC+10"
     UTC_PLUS_11 = "UTC+11"
     UTC_PLUS_12 = "UTC+12"
+
+class EnvironmentEnum(StrEnum):
+    DEV = "dev"
+    PROD = "prod"

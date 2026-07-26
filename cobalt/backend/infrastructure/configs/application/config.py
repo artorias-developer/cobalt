@@ -6,7 +6,10 @@
 from os import getenv
 from pathlib import Path
 
-from domain.enums import LanguageEnum
+from domain.enums import (
+    LanguageEnum,
+    EnvironmentEnum
+)
 from infrastructure.configs.application.dataclasses import (
     ApplicationConfig,
     ServerSettings,
@@ -17,7 +20,6 @@ from infrastructure.configs.application.dataclasses import (
     SecuritySettings,
     I18nSettings
 )
-from infrastructure.configs.application.enums import EnvironmentEnum
 
 
 def get_application_config() -> ApplicationConfig:
@@ -51,9 +53,9 @@ def get_application_config() -> ApplicationConfig:
     )
 
     if getenv("APP_ENVIRONMENT") == "dev":
-        environment = EnvironmentEnum.DEVELOPMENT
+        environment = EnvironmentEnum.DEV
     else:
-        environment = EnvironmentEnum.PRODUCTION
+        environment = EnvironmentEnum.PROD
 
     server = ServerSettings(
         host=getenv("BACKEND_HOST"),

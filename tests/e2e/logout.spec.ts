@@ -6,6 +6,7 @@
  */
 
 import { test, expect } from "@playwright/test"
+import { gotoWithRetry } from "./helpers/api.js"
 
 test.describe("Logout", () => {
   test("Should redirect to login page on logout", async ({ browser }) => {
@@ -13,9 +14,12 @@ test.describe("Logout", () => {
       storageState: ".auth/session.json",
     })
     const page = await context.newPage()
-    await page.goto('/', { waitUntil: "domcontentloaded" })
+    await gotoWithRetry(page, "/")
 
-    await page.locator('.menu button[name="logout"]').click()
+    const logoutButton = page.locator('.menu button[name="logout"]')
+    await logoutButton.waitFor({ state: "visible" })
+    await expect(logoutButton).toBeEnabled()
+    await logoutButton.click()
 
     await expect(page).toHaveURL(/\/login/)
     await context.close()

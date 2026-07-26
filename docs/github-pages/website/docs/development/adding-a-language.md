@@ -75,7 +75,7 @@ def upgrade() -> None:
 9. Restart the backend container:
 
 ```bash
-docker restart cobalt-backend
+docker restart dev_cobalt_backend
 ```
 
 ## Frontend
