@@ -72,7 +72,6 @@ const labelsToShow = 4
       max-width: 450px;
       min-height: 500px;
       overflow-y: auto;
-      overscroll-behavior: none;
       @include scrollbar-hidden();
 
       :deep(.cpu),

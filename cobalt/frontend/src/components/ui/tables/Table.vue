@@ -286,7 +286,6 @@ const currentSort = computed((): SortState | null =>
     width: 100%;
     height: 100%;
     overflow: auto;
-    overscroll-behavior: none;
     @include scrollbar();
     display: flex;
     flex-direction: column;

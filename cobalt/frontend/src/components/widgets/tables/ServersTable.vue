@@ -1031,7 +1031,6 @@ onUnmounted(() => {
 
     .options {
       overflow-y: auto;
-      overscroll-behavior: none;
       @include scrollbar();
     }
   }

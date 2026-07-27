@@ -153,7 +153,6 @@ watch(
     background-color: var(--color-block);
     border-radius: 12px;
     overflow-x: auto;
-    overscroll-behavior: none;
     @include scrollbar();
     box-sizing: border-box;
   }

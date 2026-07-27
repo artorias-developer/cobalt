@@ -267,7 +267,6 @@ const hasRolesViewAccess = computed((): boolean =>
   padding: $space-xl;
   border-right: 1px solid var(--color-border-alt);
   overflow-y: auto;
-  overscroll-behavior: none;
   @include scrollbar-hidden();
   box-sizing: border-box;
 

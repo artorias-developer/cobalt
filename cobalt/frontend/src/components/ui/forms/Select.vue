@@ -412,7 +412,6 @@ onUnmounted(() => {
   background-color: var(--color-block-alt);
   border-radius: 8px;
   overflow-y: auto;
-  overscroll-behavior: none;
   @include scrollbar();
   border: 1px solid var(--color-border-alt);
   box-shadow: var(--shadow-soft);

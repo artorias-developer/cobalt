@@ -120,7 +120,6 @@ form {
   gap: $space-xl;
   outline: none;
   overflow-y: auto;
-  overscroll-behavior: none;
   @include scrollbar();
   box-sizing: border-box;
 }
