@@ -7,12 +7,12 @@
 
 <template>
   <template v-if="route.name !== RouteEnum.LOGIN">
-    <MenuNavigation
+    <NavigationMenu
       :open="menuOpen"
       @close="menuOpen = false"
     />
     <main>
-      <HeaderNavigation
+      <NavigationHeader
         :class="{
           'mobile-only': route.name == RouteEnum.SERVER
         }"
@@ -51,8 +51,8 @@ import { Notifications } from "@kyvg/vue3-notification"
 
 import { RouteEnum } from "@/types"
 
-import MenuNavigation from "@/components/widgets/navigations/MenuNavigation.vue"
-import HeaderNavigation from "@/components/widgets/navigations/HeaderNavigation.vue"
+import NavigationMenu from "@/components/widgets/navigations/NavigationMenu.vue"
+import NavigationHeader from "@/components/widgets/navigations/NavigationHeader.vue"
 
 import checkIcon from "@/assets/images/svg/check.svg?raw"
 import warningIcon from "@/assets/images/svg/warning.svg?raw"
