@@ -371,8 +371,8 @@ onUnmounted(() => {
       }
 
       .arrow {
-        width: 24px;
-        height: 24px;
+        width: 11px;
+        height: 7px;
         flex-shrink: 0;
         background-color: var(--color-description);
         -webkit-mask-image: url("@/assets/images/svg/angle-down.svg");
