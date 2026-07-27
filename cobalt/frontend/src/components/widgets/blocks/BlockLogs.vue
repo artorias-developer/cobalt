@@ -50,15 +50,21 @@
       </template>
     </TabsBlock>
     <template v-if="mode === 'server' && hasConsoleExecuteAccess">
-      <input
-        class="console-input"
-        v-model="command"
-        :placeholder="$t('logs.placeholder')"
-        name="server-console"
-        @keydown.enter="handleExecute"
-        @keydown.up.prevent="handleHistoryUp"
-        @keydown.down.prevent="handleHistoryDown"
-      />
+      <div class="console-input-wrapper">
+        <input
+          class="console-input"
+          v-model="command"
+          :placeholder="$t('logs.placeholder')"
+          name="server-console"
+          @keydown.enter="handleExecute"
+          @keydown.up.prevent="handleHistoryUp"
+          @keydown.down.prevent="handleHistoryDown"
+        />
+        <div class="history-arrows">
+          <button type="button" class="arrow-btn" @click="handleHistoryUp" v-html="angleUpIcon" />
+          <button type="button" class="arrow-btn" @click="handleHistoryDown" v-html="angleDownIcon" />
+        </div>
+      </div>
     </template>
   </Block>
 </template>
@@ -86,6 +92,8 @@ import Message from "@/components/ui/Message.vue"
 import monitorIcon from "@/assets/images/svg/monitor.svg?raw"
 import padlockIcon from "@/assets/images/svg/padlock.svg?raw"
 import listIcon from "@/assets/images/svg/clipboard-blank.svg?raw"
+import angleUpIcon from "@/assets/images/svg/angle-up.svg?raw"
+import angleDownIcon from "@/assets/images/svg/angle-down.svg?raw"
 
 const props = withDefaults(defineProps<{
   mode: UniversalBlockMode
@@ -541,22 +549,62 @@ onUnmounted(() => {
     }
   }
 
-  .console-input {
-    width: 100%;
-    background-color: var(--color-block-alt);
-    padding: $space-xl;
-    border-radius: 0 0 12px 12px;
-    border: none;
-    color: var(--color-description);
-    font-size: $font-md;
-    font-weight: 600;
-    font-family: "Montserrat", sans-serif;
-    box-sizing: border-box;
-    outline: none;
+  .console-input-wrapper {
+    display: flex;
+    position: relative;
 
-    &::placeholder {
-      opacity: 1;
+    .console-input {
+      width: 100%;
+      background-color: var(--color-block-alt);
+      padding: $space-xl;
+      border-radius: 0 0 12px 12px;
+      border: none;
       color: var(--color-description);
+      font-size: $font-md;
+      font-weight: 600;
+      font-family: "Montserrat", sans-serif;
+      box-sizing: border-box;
+      outline: none;
+
+      &::placeholder {
+        opacity: 1;
+        color: var(--color-description);
+      }
+    }
+
+    .history-arrows {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: $space-md;
+      position: absolute;
+      right: $space-xl;
+      bottom: 0;
+
+      .arrow-btn {
+        width: 11px;
+        height: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-description);
+        background-color: transparent;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        transition: color 0.3s;
+
+        &:hover {
+          color: var(--color-title);
+        }
+
+        svg {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+      }
     }
   }
 
@@ -631,9 +679,20 @@ onUnmounted(() => {
       }
     }
 
-    .console-input {
-      font-size: $font-sm;
-      padding: $space-lg;
+    .console-input-wrapper {
+      .console-input {
+        font-size: $font-sm;
+        padding: $space-lg;
+      }
+
+      .history-arrows {
+        right: $space-lg;
+
+        .arrow-btn {
+          width: 9px;
+          height: 9px;
+        }
+      }
     }
   }
 }
