@@ -150,7 +150,6 @@ watch(
     display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
-    overscroll-behavior: none;
     @include scrollbar-hidden();
     gap: $space-md;
     flex-shrink: 0;
@@ -170,7 +169,6 @@ watch(
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    overscroll-behavior: none;
     @include scrollbar();
     box-sizing: border-box;
     outline: none;

@@ -178,7 +178,6 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  overscroll-behavior: none;
   @include scrollbar();
 
   .item {

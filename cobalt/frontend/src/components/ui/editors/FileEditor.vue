@@ -209,7 +209,6 @@ onUnmounted(() => {
     }
 
     .cm-scroller {
-      overscroll-behavior: none;
       @include scrollbar();
 
       .cm-gutters {

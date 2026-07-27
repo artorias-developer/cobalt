@@ -85,7 +85,6 @@ main {
     flex-direction: column;
     gap: $space-xl;
     overflow-y: auto;
-    overscroll-behavior: none;
     @include scrollbar-hidden();
   }
 }
