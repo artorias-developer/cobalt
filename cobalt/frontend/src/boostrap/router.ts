@@ -11,14 +11,14 @@ import { useNotification } from "@kyvg/vue3-notification"
 import { useUserStore } from "@/stores"
 import { RouteEnum } from "@/types"
 
-import LoginPage from "@/pages/LoginPage.vue"
-import DashboardPage from "@/pages/DashboardPage.vue"
-import ServersPage from "@/pages/ServersPage.vue"
-import ServerPage from "@/pages/ServerPage.vue"
-import UsersPage from "@/pages/UsersPage.vue"
-import RolesPage from "@/pages/RolesPage.vue"
-import SettingsPage from "@/pages/SettingsPage.vue"
-import NotFoundPage from "@/pages/NotFoundPage.vue"
+import PageLogin from "@/pages/PageLogin.vue"
+import PageDashboard from "@/pages/PageDashboard.vue"
+import PageServers from "@/pages/PageServers.vue"
+import PageServer from "@/pages/PageServer.vue"
+import PageUsers from "@/pages/PageUsers.vue"
+import PageRoles from "@/pages/PageRoles.vue"
+import PageSettings from "@/pages/PageSettings.vue"
+import PageNotFound from "@/pages/PageNotFound.vue"
 
 import type { createHttpUsersApiService } from "@/boostrap/factories"
 import type { setupI18n } from "@/boostrap"
@@ -31,42 +31,42 @@ const routes = [
   {
     path: "/login",
     name: RouteEnum.LOGIN,
-    component: LoginPage
+    component: PageLogin
   },
   {
     path: "/",
     name: RouteEnum.DASHBOARD,
-    component: DashboardPage
+    component: PageDashboard
   },
   {
     path: "/servers",
     name: RouteEnum.SERVERS,
-    component: ServersPage
+    component: PageServers
   },
   {
     path: "/servers/:game/:server_id",
     name: RouteEnum.SERVER,
-    component: ServerPage
+    component: PageServer
   },
   {
     path: "/users",
     name: RouteEnum.USERS,
-    component: UsersPage
+    component: PageUsers
   },
   {
     path: "/roles",
     name: RouteEnum.ROLES,
-    component: RolesPage
+    component: PageRoles
   },
   {
     path: "/settings",
     name: RouteEnum.SETTINGS,
-    component: SettingsPage
+    component: PageSettings
   },
   {
     path: "/:pathMatch(.*)*",
     name: RouteEnum.NOT_FOUND,
-    component: NotFoundPage
+    component: PageNotFound
   }
 ]
 
