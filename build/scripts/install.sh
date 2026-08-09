@@ -66,6 +66,6 @@ bash "$SCRIPT_DIR/helpers/setup-configs.sh" "--$ENV" $DOMAIN_ARG
 bash "$SCRIPT_DIR/helpers/setup-ssl.sh" "--$ENV" $DOMAIN_ARG
 
 echo "Starting containers..."
-docker compose -f "$ROOT/$ENV/docker-compose.yaml" up -d --build
+docker compose --all-resources -f "$ROOT/$ENV/docker-compose.yaml" up -d --build
 
 echo "Cobalt has been successfully launched."
