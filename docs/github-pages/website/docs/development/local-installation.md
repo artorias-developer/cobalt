@@ -48,6 +48,10 @@ chmod +x build/scripts/install.sh
 You can optionally pass a custom local domain, e.g. `./build/scripts/install.sh --dev --local cobalt.local`.
 :::
 
+:::tip
+If you need to bind Cobalt to a port other than the default `443`, you can add the `--port <custom_port>` option.
+:::
+
 If a domain is provided, the dashboard will be available at `https://<domain>`. Otherwise, it will be available at `https://127.0.0.1`.
 
 :::tip Credentials
