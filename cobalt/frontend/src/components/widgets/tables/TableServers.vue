@@ -226,7 +226,7 @@ import { useI18n } from "vue-i18n"
 import { ref, computed, inject, onMounted, onUnmounted } from "vue"
 import { useNotification } from "@kyvg/vue3-notification"
 
-import { useTableStore, useUserStore } from "@/stores"
+import { useServerConsoleStore, useTableStore, useUserStore } from "@/stores"
 import {
   LOCALE_HELPER_KEY,
   HTTP_SERVERS_API_SERVICE_KEY,
@@ -288,6 +288,7 @@ const httpGamesApiService = inject(HTTP_GAMES_API_SERVICE_KEY)!
 const wsServersApiService = inject(WS_SERVERS_API_SERVICE_KEY)!
 const tableStore = useTableStore()
 const userStore = useUserStore()
+const serverConsoleStore = useServerConsoleStore()
 const { notify } = useNotification()
 const { t } = useI18n()
 
@@ -531,6 +532,8 @@ async function deleteServer(serverId: number): Promise<void> {
   try {
     await httpServersApiService.deleteOne(serverId)
 
+    serverConsoleStore.clear(serverId)
+
     notify({
       type: "success",
       text: t("servers.list.delete.success")
@@ -572,6 +575,8 @@ async function deleteSelected(): Promise<void> {
 
   try {
     await httpServersApiService.deleteMany(selected)
+
+    selected.forEach(id => serverConsoleStore.clear(id))
 
     notify({
       type: "success",
