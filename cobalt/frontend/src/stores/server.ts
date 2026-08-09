@@ -6,7 +6,8 @@
 import { defineStore } from "pinia"
 import { ref } from "vue"
 
-import { type ServerEntity, ServerStateEnum, type ServerStatusEntity } from "@/types"
+import { ServerStateEnum } from "@/types"
+import type { ServerEntity, ServerStatusEntity } from "@/types"
 
 interface ServerState {
   server: ServerEntity | null

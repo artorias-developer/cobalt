@@ -5,7 +5,7 @@ services:
       dockerfile_inline: |
         FROM nginx:1.29.6-alpine-slim
         LABEL managed_by=cobalt
-    container_name: cobalt-nginx
+    container_name: dev_cobalt_nginx
     restart: unless-stopped
     env_file:
       - ./nginx/.env
@@ -13,7 +13,7 @@ services:
     ports:
       - "${HTTPS_PORT:-443}:443"
     networks:
-      - cobalt
+      - dev_cobalt_network
     volumes:
       - ../dev/nginx/configs/main.conf:/etc/nginx/nginx.conf.template:ro
       - ../dev/nginx/scripts/entrypoint.sh:/usr/local/bin/nginx-entrypoint.sh:ro
@@ -34,17 +34,17 @@ services:
       dockerfile: build/dev/frontend/Dockerfile
       labels:
         - managed_by=cobalt
-    container_name: cobalt-frontend
+    container_name: dev_cobalt_frontend
     restart: unless-stopped
     env_file:
       - ./frontend/.env
-    entrypoint: [ "sh", "/app/entrypoint.sh" ]
+    entrypoint: [ "sh", "/app/frontend-entrypoint.sh" ]
     ports:
       - "8011:8011"
     networks:
-      - cobalt
+      - dev_cobalt_network
     volumes:
-      - ./frontend/scripts/entrypoint.sh:/app/entrypoint.sh:ro
+      - ./frontend/scripts/entrypoint.sh:/app/frontend-entrypoint.sh:ro
       - ../../cobalt/frontend:/app/cobalt/frontend
     labels:
       - managed_by=cobalt
@@ -59,20 +59,20 @@ services:
       dockerfile: build/dev/backend/Dockerfile
       labels:
         - managed_by=cobalt
-    container_name: cobalt-backend
+    container_name: dev_cobalt_backend
     restart: unless-stopped
     env_file:
       - ./backend/.env
-    entrypoint: ["sh", "/app/entrypoint.sh"]
+    entrypoint: ["sh", "/app/backend-entrypoint.sh"]
     ports:
       - "8010:8010"
     networks:
-      - cobalt
+      - dev_cobalt_network
     environment:
       - HOST_CONTAINERS_ROOT=${PWD}/cobalt/backend/generated/containers
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ../shared/backend/scripts/entrypoint.sh:/app/entrypoint.sh:ro
+      - ../shared/backend/scripts/entrypoint.sh:/app/backend-entrypoint.sh:ro
       - ../../Makefile:/app/Makefile:ro
       - ../../cobalt/backend:/app/cobalt/backend
     labels:
@@ -94,16 +94,16 @@ services:
       dockerfile_inline: |
         FROM postgres:18.3-alpine
         LABEL managed_by=cobalt
-    container_name: cobalt-postgres
+    container_name: dev_cobalt_postgres
     restart: unless-stopped
     env_file:
       - ./postgres/.env
     ports:
       - "5432:5432"
     networks:
-      - cobalt
+      - dev_cobalt_network
     volumes:
-      - postgres_data:/var/lib/postgresql
+      - dev_postgres_data:/var/lib/postgresql
     labels:
       - managed_by=cobalt
     ulimits:
@@ -117,7 +117,7 @@ services:
       dockerfile_inline: |
         FROM redis:8.6.1-alpine
         LABEL managed_by=cobalt
-    container_name: cobalt-redis
+    container_name: dev_cobalt_redis
     restart: unless-stopped
     env_file:
       - ./redis/.env
@@ -125,7 +125,7 @@ services:
     ports:
       - "6379:6379"
     networks:
-      - cobalt
+      - dev_cobalt_network
     volumes:
       - ../shared/redis/scripts/entrypoint.sh:/usr/local/bin/redis-entrypoint.sh:ro
     labels:
@@ -141,15 +141,15 @@ services:
       dockerfile_inline: |
         FROM prom/prometheus:v3.10.0
         LABEL managed_by=cobalt
-    container_name: cobalt-prometheus
+    container_name: dev_cobalt_prometheus
     restart: unless-stopped
     ports:
       - "9090:9090"
     networks:
-      - cobalt
+      - dev_cobalt_network
     volumes:
       - ../shared/prometheus/configs/main.yaml:/etc/prometheus/prometheus.yaml:ro
-      - prometheus_data:/prometheus
+      - dev_prometheus_data:/prometheus
     labels:
       - managed_by=cobalt
     command:
@@ -174,12 +174,12 @@ services:
       dockerfile_inline: |
         FROM prom/node-exporter:v1.10.2
         LABEL managed_by=cobalt
-    container_name: cobalt-node-exporter
+    container_name: dev_cobalt_node_exporter
     restart: unless-stopped
     ports:
       - "9100:9100"
     networks:
-      - cobalt
+      - dev_cobalt_network
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
@@ -203,13 +203,13 @@ services:
       dockerfile_inline: |
         FROM ghcr.io/google/cadvisor:0.56.2
         LABEL managed_by=cobalt
-    container_name: cobalt-cadvisor
+    container_name: dev_cobalt_cadvisor
     restart: unless-stopped
     privileged: true
     ports:
       - "8080:8080"
     networks:
-      - cobalt
+      - dev_cobalt_network
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
@@ -233,14 +233,17 @@ services:
         hard: 65535
 
 networks:
-  cobalt:
-    name: cobalt_network
+  dev_cobalt_network:
+    name: dev_cobalt_network
+    driver: bridge
+  dev_cobalt_servers_network:
+    name: dev_cobalt_servers_network
     driver: bridge
 
 volumes:
-  postgres_data:
+  dev_postgres_data:
     labels:
       - managed_by=cobalt
-  prometheus_data:
+  dev_prometheus_data:
     labels:
       - managed_by=cobalt

@@ -75,7 +75,7 @@ def upgrade() -> None:
 9. Restart the backend container:
 
 ```bash
-docker restart cobalt-backend
+docker restart dev_cobalt_backend
 ```
 
 ## Frontend
@@ -84,7 +84,7 @@ docker restart cobalt-backend
 
 2. Create a new locale file in `cobalt/frontend/src/locales`, e.g. `de.json`, using one of the existing locale files (`en.json`, `uk.json`, `ru.json`) as a template.
 
-3. Import the new locale file in the `cobalt/frontend/src/bootstrap.ts` file:
+3. Import the new locale file in the `cobalt/frontend/src/bootstrap/i18n.ts` file:
 
 ```typescript
 import de from "@/locales/de.json"

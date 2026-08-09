@@ -136,6 +136,7 @@ import { useTableStore } from "@/stores"
 import type { SortDirection, SortState, TableColumn } from "@/types"
 
 import Message from "@/components/ui/Message.vue"
+
 import padlockIcon from "@/assets/images/svg/padlock.svg?raw"
 import listIcon from "@/assets/images/svg/clipboard-blank.svg?raw"
 
@@ -285,7 +286,6 @@ const currentSort = computed((): SortState | null =>
     width: 100%;
     height: 100%;
     overflow: auto;
-    overscroll-behavior: none;
     @include scrollbar();
     display: flex;
     flex-direction: column;
@@ -450,11 +450,11 @@ table {
           &::after {
             content: "";
             position: absolute;
-            right: -25px;
+            right: calc(-1 * (#{$space-md} + 11px));
             top: 50%;
             transform: translateY(-50%) rotate(0deg);
-            width: 20px;
-            height: 20px;
+            width: 11px;
+            height: 7px;
             background-color: var(--color-description);
             -webkit-mask-image: url("@/assets/images/svg/angle-down.svg");
             mask-image: url("@/assets/images/svg/angle-down.svg");

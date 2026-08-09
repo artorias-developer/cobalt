@@ -18,7 +18,7 @@ from application.dtos import (
     LoaderUpdateDto
 )
 if TYPE_CHECKING:
-    from composition import ApplicationContainer
+    from composition.dataclasses import ApplicationContainer
 
 
 class AbstractGameModule(ABC):
@@ -33,7 +33,7 @@ class AbstractGameModule(ABC):
     has_logs_timestamp: bool
     app_containers_dir: Path
     host_containers_dir: Path
-    dependencies: "ApplicationContainer"
+    container: "ApplicationContainer"
 
     def __init__(
         self,
@@ -41,13 +41,13 @@ class AbstractGameModule(ABC):
         has_logs_timestamp: bool,
         app_containers_dir: Path,
         host_containers_dir: Path,
-        dependencies: "ApplicationContainer"
+        container: "ApplicationContainer"
     ):
         self.name = name
         self.has_logs_timestamp = has_logs_timestamp
         self.app_containers_dir = app_containers_dir
         self.host_containers_dir = host_containers_dir
-        self.dependencies = dependencies
+        self.container = container
 
         self.loaders = {}
 
@@ -65,7 +65,7 @@ class AbstractGameModule(ABC):
             name=self.name
         )
 
-        game = await self.dependencies.services.games.create_one(
+        game = await self.container.services.games.create_one(
             dto=create_dto
         )
 
@@ -112,7 +112,7 @@ class AbstractGameModule(ABC):
             versions=versions
         )
 
-        created_loader = await self.dependencies.services.loaders.create_one(
+        created_loader = await self.container.services.loaders.create_one(
             game_id=loader.game_id,
             dto=request_dto
         )
@@ -147,7 +147,7 @@ class AbstractGameModule(ABC):
             versions=versions
         )
 
-        await self.dependencies.services.loaders.update_one(
+        await self.container.services.loaders.update_one(
             game_id=existing_loader.game_id,
             dto=request_dto
         )
@@ -164,7 +164,7 @@ class AbstractGameModule(ABC):
         """
         for _, loader in self.loaders.items():
             try:
-                existing_loader = await self.dependencies.services.loaders.get_one_by_name(
+                existing_loader = await self.container.services.loaders.get_one_by_name(
                     game_id=loader.game_id,
                     name=loader.name
                 )
@@ -174,7 +174,7 @@ class AbstractGameModule(ABC):
                     existing_loader=existing_loader
                 )
             except Exception:
-                self.dependencies.logger.exception(f'Error while updating loader "{loader.name}" for "{self.name}":')
+                self.container.logger.exception(f'Error while updating loader "{loader.name}" for "{self.name}":')
 
     async def setup_game(self) -> None:
         """
@@ -187,7 +187,7 @@ class AbstractGameModule(ABC):
         - None.
         """
         try:
-            game = await self.dependencies.services.games.get_one_by_name(
+            game = await self.container.services.games.get_one_by_name(
                 name=self.name
             )
         except NotFoundError:
@@ -209,7 +209,7 @@ class AbstractGameModule(ABC):
 
         for loader in loaders:
             try:
-                game_loader = await self.dependencies.services.loaders.get_one_by_name(
+                game_loader = await self.container.services.loaders.get_one_by_name(
                     game_id=self.game_id,
                     name=loader.name
                 )
@@ -223,7 +223,7 @@ class AbstractGameModule(ABC):
                     loader=loader
                 )
             except Exception:
-                self.dependencies.logger.exception(f'Error while setup loader "{loader.name}" for "{self.name}":')
+                self.container.logger.exception(f'Error while setup loader "{loader.name}" for "{self.name}":')
 
                 continue
 

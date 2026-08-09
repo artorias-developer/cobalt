@@ -5,7 +5,8 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-import { test as setup } from "@playwright/test"
+import { test as setup, expect } from "@playwright/test"
+import { gotoWithRetry } from "./api.js"
 
 const TEST_USER = {
   login: process.env.TEST_LOGIN ?? "admin",
@@ -13,12 +14,22 @@ const TEST_USER = {
 }
 
 setup("Authenticate", async ({ page }) => {
-  await page.goto("/login", { waitUntil: "domcontentloaded" })
+  await gotoWithRetry(page, "/login")
 
-  await page.locator('input[name="login"]').fill(TEST_USER.login)
-  await page.locator('input[name="password"]').fill(TEST_USER.password)
-  await page.locator('button[name="sign-in"]').click()
-  await page.waitForURL('/')
+  const loginInput = page.locator('input[name="login"]')
+  await loginInput.waitFor({ state: "visible" })
+  await loginInput.fill(TEST_USER.login)
+
+  const passwordInput = page.locator('input[name="password"]')
+  await passwordInput.waitFor({ state: "visible" })
+  await passwordInput.fill(TEST_USER.password)
+
+  const signInButton = page.locator('button[name="sign-in"]')
+  await signInButton.waitFor({ state: "visible" })
+  await expect(signInButton).toBeEnabled()
+  await signInButton.click()
+
+  await page.waitForURL("/")
 
   await page.context().storageState({ path: ".auth/session.json" })
 })

@@ -14,4 +14,4 @@ class ContainersConstants:
     SERVER_ROOT: str = "/opt/cobalt_server"
     SERVER_FIFO: str = "/tmp/cobalt_server_fifo"
 
-    NETWORK_MODE: str = "cobalt_network"
+    NETWORK_MODE: str = "{environment}_cobalt_servers_network"

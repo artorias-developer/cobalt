@@ -6,6 +6,7 @@
 from pathlib import Path
 from typing import List
 
+from domain.enums import EnvironmentEnum
 from application.contracts.games import AbstractGameModule
 from composition import ApplicationContainer
 from games.terraria.vanilla.application.services import VanillaServersService
@@ -18,22 +19,25 @@ class TerrariaGameModule(AbstractGameModule):
     """
     Terraria game module.
     """
+    app_environment: EnvironmentEnum
     game_module_root_dir: Path
 
     def __init__(
         self,
+        app_environment: EnvironmentEnum,
         app_containers_dir: Path,
         host_containers_dir: Path,
-        dependencies: ApplicationContainer
+        container: ApplicationContainer
     ):
         super().__init__(
             name="terraria",
             has_logs_timestamp=False,
             app_containers_dir=app_containers_dir,
             host_containers_dir=host_containers_dir,
-            dependencies=dependencies
+            container=container
         )
 
+        self.app_environment = app_environment
         self.game_module_root_dir = Path(__file__).parents[0]
 
     def get_loaders(self) -> List:
@@ -53,20 +57,22 @@ class TerrariaGameModule(AbstractGameModule):
             build_dir=vanilla_build_dir,
             app_containers_dir=self.app_containers_dir,
             host_containers_dir=self.host_containers_dir,
-            core_servers_service=self.dependencies.services.servers,
-            containers_client=self.dependencies.clients.containers,
-            connections_manager=self.dependencies.managers.connections,
-            logger=self.dependencies.logger
+            core_servers_service=self.container.services.servers,
+            containers_client=self.container.clients.containers,
+            connections_manager=self.container.managers.connections,
+            logger=self.container.logger,
+            app_environment=self.app_environment
         )
 
         tmodloader_servers_service = TModLoaderServersService(
             build_dir=tmodloader_build_dir,
             app_containers_dir=self.app_containers_dir,
             host_containers_dir=self.host_containers_dir,
-            core_servers_service=self.dependencies.services.servers,
-            containers_client=self.dependencies.clients.containers,
-            connections_manager=self.dependencies.managers.connections,
-            logger=self.dependencies.logger
+            core_servers_service=self.container.services.servers,
+            containers_client=self.container.clients.containers,
+            connections_manager=self.container.managers.connections,
+            logger=self.container.logger,
+            app_environment=self.app_environment
         )
 
         return [
@@ -74,12 +80,12 @@ class TerrariaGameModule(AbstractGameModule):
                 game_id=self.game_id,
                 name="vanilla",
                 servers_service=vanilla_servers_service,
-                logger=self.dependencies.logger
+                logger=self.container.logger
             ),
             TModLoaderLoader(
                 game_id=self.game_id,
                 name="tmodloader",
                 servers_service=tmodloader_servers_service,
-                logger=self.dependencies.logger
+                logger=self.container.logger
             )
         ]

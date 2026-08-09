@@ -6,8 +6,10 @@
 from dataclasses import dataclass
 from pathlib import Path
 
-from domain.enums import LanguageEnum
-from infrastructure.configs.application.enums import EnvironmentEnum
+from domain.enums import (
+    LanguageEnum,
+    EnvironmentEnum
+)
 
 
 @dataclass(slots=True)

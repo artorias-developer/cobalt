@@ -179,12 +179,34 @@ export const useServerConsoleStore = defineStore("serverConsole", () => {
     state.draft = ""
   }
 
+  /**
+   * Removes all stored console state (history, navigation index, draft) for a given
+   * server ID, both in-memory and in localStorage. Intended to be called when a
+   * server is deleted, to avoid leaking stale history for IDs that no longer exist.
+   *
+   * Parameters:
+   * - serverId: number - unique identifier of the server.
+   *
+   * Returns:
+   * - void.
+   */
+  function clear(serverId: number): void {
+    consoles.value.delete(serverId)
+
+    try {
+      localStorage.removeItem(storageKey(serverId))
+    } catch {
+      // Ignore storage errors (quota exceeded, disabled, etc.)
+    }
+  }
+
   return {
     consoles,
     getHistory,
     push,
     navigateUp,
     navigateDown,
-    resetNavigation
+    resetNavigation,
+    clear
   }
 })

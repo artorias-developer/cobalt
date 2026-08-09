@@ -102,7 +102,6 @@ onUnmounted(() => {
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.5);
   overflow-y: auto;
-  overscroll-behavior: none;
   @include scrollbar-hidden();
   padding: $space-xl;
   box-sizing: border-box;

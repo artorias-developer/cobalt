@@ -6,38 +6,73 @@
  */
 
 import { test, expect, type Page, type Response } from "@playwright/test"
+import { gotoWithRetry, clickAndWaitForApi } from "./helpers/api.js"
 
+/**
+ * Creates a user through the user-create popup.
+ *
+ * Parameters:
+ * - page: Playwright page instance.
+ * - login: Login of the user to create.
+ * - password: Password for the user.
+ * - selectRole: Whether to select a role option.
+ *
+ * Returns:
+ * - Promise<Response | undefined>: the API response for the create request,
+ *   or undefined when the flow stops early due to missing input.
+ */
 async function createUser(
   page: Page,
   login: string,
   password: string,
   selectRole: boolean = true,
 ): Promise<Response | undefined> {
-  await page.locator('button[name="user-create-popup"]').click()
+  const createPopupButton = page.locator('button[name="user-create-popup"]')
+  await createPopupButton.waitFor({ state: "visible" })
+  await expect(createPopupButton).toBeEnabled()
+  await createPopupButton.click()
+
+  const createButton = page.locator('button[name="user-create"]')
 
   if (!login) {
-    await page.locator('button[name="user-create"]').click()
+    await createButton.waitFor({ state: "visible" })
+    await expect(createButton).toBeEnabled()
+    await createButton.click()
     return
   }
 
-  await page.locator('input[name="user-login"]').fill(login)
+  const loginInput = page.locator('input[name="user-login"]')
+  await loginInput.waitFor({ state: "visible" })
+  await loginInput.fill(login)
 
   if (!password) {
-    await page.locator('button[name="user-create"]').click()
+    await createButton.waitFor({ state: "visible" })
+    await expect(createButton).toBeEnabled()
+    await createButton.click()
     return
   }
 
-  await page.locator('input[name="user-password"]').fill(password)
+  const passwordInput = page.locator('input[name="user-password"]')
+  await passwordInput.waitFor({ state: "visible" })
+  await passwordInput.fill(password)
 
   if (!selectRole) {
-    await page.locator('button[name="user-create"]').click()
+    await createButton.waitFor({ state: "visible" })
+    await expect(createButton).toBeEnabled()
+    await createButton.click()
     return
   }
 
-  await page.locator('div[aria-label="user-role"]').click()
-  await page.locator(".select-dropdown .option").first().waitFor()
-  await page.waitForTimeout(700)
-  const options = page.locator(".select-dropdown .option")
+  const roleField = page.locator('div[aria-label="user-role"]')
+  await roleField.waitFor({ state: "visible" })
+  await roleField.click()
+
+  const roleDropdown = page.locator(".select-dropdown")
+  await roleDropdown.waitFor({ state: "visible" })
+
+  const options = roleDropdown.locator(".option")
+  await options.first().waitFor({ state: "visible" })
+
   const count = await options.count()
   for (let i = 0; i < count; i++) {
     const text = await options.nth(i).textContent()
@@ -47,31 +82,44 @@ async function createUser(
     }
   }
 
-  const [response] = await Promise.all([
-    page.waitForResponse((resp) =>
-      resp.url().includes("users") && resp.request().method() === "POST"
-    ),
-    page.locator('button[name="user-create"]').click(),
-  ])
-  return response
+  await roleDropdown.waitFor({ state: "hidden" })
+
+  return clickAndWaitForApi(
+    page,
+    'button[name="user-create"]',
+    /users/,
+    "POST",
+  )
 }
 
+/**
+ * Searches for a user by login.
+ *
+ * Parameters:
+ * - page: Playwright page instance.
+ * - login: Login to search for.
+ *
+ * Returns:
+ * - Promise<Response>: the API response for the search request.
+ */
 async function searchUser(page: Page, login: string): Promise<Response> {
-  await page.locator('input[name="search-input"]').fill(login)
-  const [response] = await Promise.all([
-    page.waitForResponse((resp) =>
-      resp.url().includes("users") && resp.request().method() === "GET"
-    ),
-    page.locator('button[name="search-submit"]').click(),
-  ])
-  return response
+  const searchInput = page.locator('input[name="search-input"]')
+  await searchInput.waitFor({ state: "visible" })
+  await searchInput.fill(login)
+
+  return clickAndWaitForApi(
+    page,
+    'button[name="search-submit"]',
+    /users/,
+    "GET",
+  )
 }
 
 test.describe.configure({ mode: "serial" })
 
 test.describe("Users page", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/users", { waitUntil: "domcontentloaded" })
+    await gotoWithRetry(page, "/users")
   })
 
   test("Should show validation warning on empty login at user create", async ({ page }) => {
@@ -111,13 +159,13 @@ test.describe("Users page", () => {
 
   test("Should return 200 on search reset", async ({ page }) => {
     await searchUser(page, "e2e_test_user")
-    const [response] = await Promise.all([
-      page.waitForResponse((resp) =>
-        resp.url().includes("users") && resp.request().method() === "GET"
-      ),
-      page.locator('button[name="search-reset"]').click(),
-    ])
 
+    const response = await clickAndWaitForApi(
+      page,
+      'button[name="search-reset"]',
+      /users/,
+      "GET",
+    )
     expect(response.status()).toBe(200)
   })
 
@@ -125,16 +173,21 @@ test.describe("Users page", () => {
     const row = page.locator("tr").filter({
       has: page.locator("td:nth-child(2)", { hasText: "e2e_test_user" }),
     })
-    await row.locator('button[name="user-edit-popup"]').click()
-    await page.locator('input[name="user-login"]').fill("e2e_test_user_updated")
+    const editButton = row.locator('button[name="user-edit-popup"]')
+    await editButton.waitFor({ state: "visible" })
+    await expect(editButton).toBeEnabled()
+    await editButton.click()
 
-    const [response] = await Promise.all([
-      page.waitForResponse((resp) =>
-        resp.url().includes("users") && resp.request().method() === "PATCH"
-      ),
-      page.locator('button[name="user-update"]').click(),
-    ])
+    const loginInput = page.locator('input[name="user-login"]')
+    await loginInput.waitFor({ state: "visible" })
+    await loginInput.fill("e2e_test_user_updated")
 
+    const response = await clickAndWaitForApi(
+      page,
+      'button[name="user-update"]',
+      /users/,
+      "PATCH",
+    )
     expect(response.status()).toBe(200)
   })
 
@@ -142,15 +195,17 @@ test.describe("Users page", () => {
     const row = page.locator("tr").filter({
       has: page.locator("td:nth-child(2)", { hasText: "e2e_test_user_updated" }),
     })
-    await row.locator('button[name="user-delete-popup"]').click()
+    const deleteButton = row.locator('button[name="user-delete-popup"]')
+    await deleteButton.waitFor({ state: "visible" })
+    await expect(deleteButton).toBeEnabled()
+    await deleteButton.click()
 
-    const [response] = await Promise.all([
-      page.waitForResponse((resp) =>
-        resp.url().includes("users") && resp.request().method() === "DELETE"
-      ),
-      page.locator('button[name="confirm"]').click(),
-    ])
-
+    const response = await clickAndWaitForApi(
+      page,
+      'button[name="confirm"]',
+      /users/,
+      "DELETE",
+    )
     expect(response.status()).toBe(204)
   })
 })

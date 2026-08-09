@@ -6,9 +6,9 @@
  */
 
 import axios, { AxiosError } from "axios"
+import { notify } from "@kyvg/vue3-notification"
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios"
 import type { Router } from "vue-router"
-import { notify } from "@kyvg/vue3-notification"
 
 import { RouteEnum } from "@/types"
 import type { IHttpClient } from "@/contracts"
@@ -64,7 +64,8 @@ export class HttpAxiosClient implements IHttpClient {
         this.handleError(error)
 
         if (error.response?.status === 401) {
-          return new Promise(() => {})
+          return new Promise(() => {
+          })
         }
 
         return Promise.reject(error)
@@ -98,7 +99,7 @@ export class HttpAxiosClient implements IHttpClient {
 
       if (this.router.currentRoute.value.name !== RouteEnum.LOGIN && !this.isRedirecting) {
         this.isRedirecting = true
-        this.router.push({ name: RouteEnum.LOGIN }).finally(() => {
+        this.router.push({name: RouteEnum.LOGIN}).finally(() => {
           this.isRedirecting = false
         })
       }

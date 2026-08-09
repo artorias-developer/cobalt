@@ -6,13 +6,7 @@
 import { defineStore } from "pinia"
 import { ref } from "vue"
 
-import type {
-  PermissionEnum,
-  RoleEntity,
-  UserEntity,
-  UserMeEntity,
-  SettingsEntity
-} from "@/types"
+import type { PermissionEnum, RoleEntity, UserEntity, UserMeEntity, SettingsEntity } from "@/types"
 
 export const useUserStore = defineStore("user", () => {
   const user = ref<UserMeEntity | null>(null)

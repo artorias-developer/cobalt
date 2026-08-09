@@ -12,7 +12,7 @@
       <h1>{{ title }}</h1>
       <p>{{ message }}</p>
     </div>
-    <SolidButton
+    <ButtonSolid
       type="button"
       text="Go back"
       color="blue"
@@ -24,7 +24,8 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router"
 
-import SolidButton from "@/components/ui/forms/buttons/SolidButton.vue"
+import ButtonSolid from "@/components/ui/buttons/ButtonSolid.vue"
+
 import notFoundIcon from "@/assets/images/svg/404.svg?raw"
 
 withDefaults(defineProps<{

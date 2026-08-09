@@ -91,7 +91,7 @@ ENABLED_GAME_MODULES = [
 13. Restart the backend container:
 
 ```bash
-docker restart cobalt-backend
+docker restart dev_cobalt_backend
 ```
 
 ## Frontend
@@ -106,7 +106,7 @@ docker restart cobalt-backend
 
     [Compress](https://www.iloveimg.com/compress-image) all images beforehand.
 
-2. In `cobalt/frontend/src/utils/games.ts`, import the icon:
+2. In `cobalt/frontend/src/constants/game-modules.ts`, import the icon:
 
 ```typescript
 import newGameIcon from "@/assets/images/games/new-game/icon.png"
@@ -129,13 +129,13 @@ new_game: {
 
 This is used to display the game in the server creation form.
 
-4. Create `cobalt/frontend/src/pages/games/new-game/ServerPage.vue`. This is the page that gets rendered when a user opens a server of this game.
+4. Create `cobalt/frontend/src/pages/games/new-game/PageServer.vue`. This is the page that gets rendered when a user opens a server of this game.
 
 :::info Example
-[Terraria's ServerPage](https://github.com/artorias-developer/cobalt/blob/main/cobalt/frontend/src/pages/games/terraria/ServerPage.vue)
+[Terraria's PageServer](https://github.com/artorias-developer/cobalt/blob/main/cobalt/frontend/src/pages/games/terraria/PageServer.vue)
 :::
 
-5. In `cobalt/frontend/src/pages/ServerPage.vue`, register the new page in `gameComponents`:
+5. In `cobalt/frontend/src/pages/PageServer.vue`, register the new page in `gameComponents`:
 
 ```typescript
 const gameComponents: Record<string, Component> = {

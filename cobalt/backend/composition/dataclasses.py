@@ -4,7 +4,7 @@
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, List
 
 from application.contracts.databases import AbstractTransactionsManager
 from domain.repositories import (
@@ -181,3 +181,4 @@ class ApplicationContainer:
     mappers: MappersContainer
     services: ServicesContainer
     database: DatabaseContainer
+    jobs: List[SchedulerJob]
