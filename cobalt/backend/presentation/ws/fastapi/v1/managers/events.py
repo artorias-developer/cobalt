@@ -118,8 +118,8 @@ class EventsManager(AbstractEventsManager):
             if is_model:
                 try:
                     kwargs[name] = param.annotation.from_dict(context.get("data", {}))
-                except PydanticValidationError as e:
-                    raise ValidationError(str(e)) from e
+                except PydanticValidationError:
+                    raise
 
         return kwargs
 
