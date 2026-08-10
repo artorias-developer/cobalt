@@ -99,6 +99,7 @@ def setup_fastapi_cors_middleware(
 
 def setup_fastapi_http_errors_middleware(
     app: FastAPI,
+    i18n_manager: AbstractI18nManager,
     logger: AbstractLogger
 ) -> None:
     """
@@ -106,6 +107,7 @@ def setup_fastapi_http_errors_middleware(
 
     Parameters:
     - app: FastAPI object.
+    - i18n_manager: AbstractI18nManager object.
     - logger: AbstractLogger object.
 
     Returns:
@@ -113,6 +115,7 @@ def setup_fastapi_http_errors_middleware(
     """
     app.add_middleware(
         HttpErrorsMiddleware,
+        i18n_manager=i18n_manager,
         logger=logger
     )
 
@@ -250,6 +253,7 @@ def setup_fastapi_middlewares(
 
     setup_fastapi_http_errors_middleware(
         app=app,
+        i18n_manager=managers.i18n,
         logger=logger
     )
 

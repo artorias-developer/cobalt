@@ -3,7 +3,7 @@
 #  Repository: https://github.com/artorias-developer/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-from typing import Dict, List, Tuple, Callable
+from typing import Dict, Tuple, List
 
 from orjson import loads
 
@@ -17,10 +17,7 @@ from domain.repositories import AbstractServersRepository
 from application.contracts.loggers import AbstractLogger
 from application.contracts.queues import AbstractQueue
 from application.contracts.clients import AbstractCachesClient
-from application.contracts.managers import (
-    AbstractConnectionsManager,
-    AbstractI18nManager
-)
+from application.contracts.managers import AbstractConnectionsManager
 from application.contracts.services import (
     AbstractServersService,
     AbstractLoadersService
@@ -55,13 +52,10 @@ class ServersService(AbstractServersService):
     servers_repository: AbstractServersRepository
     servers_mapper: AbstractServersServiceMapper
     loaders_service: AbstractLoadersService
-    i18n_manager: AbstractI18nManager
     transactions_manager: AbstractTransactionsManager
     queue: AbstractQueue
     logger: AbstractLogger
     game_modules: Dict[str, AbstractGameModule]
-
-    _: Callable
 
     def __init__(
         self,
@@ -70,7 +64,6 @@ class ServersService(AbstractServersService):
         servers_repository: AbstractServersRepository,
         servers_mapper: AbstractServersServiceMapper,
         loaders_service: AbstractLoadersService,
-        i18n_manager: AbstractI18nManager,
         transactions_manager: AbstractTransactionsManager,
         queue: AbstractQueue,
         logger: AbstractLogger,
@@ -81,13 +74,10 @@ class ServersService(AbstractServersService):
         self.servers_repository = servers_repository
         self.servers_mapper = servers_mapper
         self.loaders_service = loaders_service
-        self.i18n_manager = i18n_manager
         self.transactions_manager = transactions_manager
         self.queue = queue
         self.logger = logger
         self.game_modules = game_modules
-
-        self._ = i18n_manager.gettext
 
     async def _get_server_data(
         self,
@@ -105,12 +95,12 @@ class ServersService(AbstractServersService):
         game_module = self.game_modules.get(server.game.name.value)
 
         if not game_module:
-            raise NotFoundError(self._('Game "{name}" not found').format(name=server.game.name.value))
+            raise NotFoundError('Game "{name}" not found', name=server.game.name.value)
 
         loader = game_module.loaders.get(server.loader.name.value)
 
         if not loader:
-            raise NotFoundError(self._('Loader "{name}" not found').format(name=server.loader.name.value))
+            raise NotFoundError('Loader "{name}" not found', name=server.loader.name.value)
 
         return game_module, loader
 
@@ -132,12 +122,12 @@ class ServersService(AbstractServersService):
         )
 
         if not server:
-            raise NotFoundError(self._("Server {server_id} not found").format(server_id=server_id))
+            raise NotFoundError("Server {server_id} not found", server_id=server_id)
 
         game_module = self.game_modules.get(server.game.name)
 
         if not game_module:
-            raise NotFoundError(self._('Game "{name}" not found').format(name=server.game.name))
+            raise NotFoundError('Game "{name}" not found', name=server.game.name)
 
         return game_module
 
@@ -180,7 +170,7 @@ class ServersService(AbstractServersService):
         )
 
         if not received_entity.servers:
-            raise NotFoundError(self._("Servers not found"))
+            raise NotFoundError("Servers not found")
 
         mapped_dto = self.servers_mapper.page_entity_to_dto(
             entity=received_entity
@@ -225,7 +215,7 @@ class ServersService(AbstractServersService):
         )
 
         if not received_entity:
-            raise NotFoundError(self._("Server {server_id} not found").format(server_id=server_id))
+            raise NotFoundError("Server {server_id} not found", server_id=server_id)
 
         key = self.caches_client.format_pattern(
             pattern=CacheConstants.SERVERS_ITEM_KEY,
@@ -265,7 +255,7 @@ class ServersService(AbstractServersService):
         )
 
         if dto.version not in received_entity.versions:
-            raise NotFoundError(self._('Version "{version}" not found').format(version=dto.version))
+            raise NotFoundError('Version "{version}" not found', version=dto.version)
 
         mapped_entity = self.servers_mapper.create_dto_to_entity(
             dto=dto
@@ -334,22 +324,22 @@ class ServersService(AbstractServersService):
         )
 
         if received_entity.state in (ServerStateEnum.PENDING, ServerStateEnum.PROCESSING):
-            raise ConflictError(self._("Server {server_id} is still being installed").format(server_id=server_id))
+            raise ConflictError("Server {server_id} is still being installed", server_id=server_id)
 
         if received_entity.state == ServerStateEnum.UPGRADING:
-            raise ConflictError(self._("Server {server_id} is already being upgraded").format(server_id=server_id))
+            raise ConflictError("Server {server_id} is already being upgraded", server_id=server_id)
 
         available_versions = received_entity.loader.versions
 
         if len(available_versions) == 1 and available_versions[0].lower() == "latest":
             if dto.version != available_versions[0]:
-                raise NotFoundError(self._('Version "{version}" not found').format(version=dto.version))
+                raise NotFoundError('Version "{version}" not found', version=dto.version)
         else:
             if dto.version not in available_versions:
-                raise NotFoundError(self._('Version "{version}" not found').format(version=dto.version))
+                raise NotFoundError('Version "{version}" not found', version=dto.version)
 
             if dto.version == received_entity.version:
-                raise ConflictError(self._('Server is already on version "{version}"').format(version=received_entity.version))
+                raise ConflictError('Server is already on version "{version}"', version=received_entity.version)
 
             if received_entity.version in available_versions:
                 current_index = available_versions.index(received_entity.version)
@@ -360,10 +350,9 @@ class ServersService(AbstractServersService):
 
             if new_index >= current_index:
                 raise ConflictError(
-                    self._('Version "{version}" is not newer than the current version "{current_version}"').format(
-                        version=dto.version,
-                        current_version=received_entity.version
-                    )
+                    'Version "{version}" is not newer than the current version "{current_version}"',
+                    version=dto.version,
+                    current_version=received_entity.version
                 )
 
         mapped_entity = self.servers_mapper.upgrade_dto_to_update_entity(
@@ -439,7 +428,7 @@ class ServersService(AbstractServersService):
         )
 
         if not updated_entity:
-            raise NotFoundError(self._("Server {server_id} not found").format(server_id=server_id))
+            raise NotFoundError("Server {server_id} not found", server_id=server_id)
 
         await self.caches_client.delete(
             patterns=[
@@ -475,13 +464,13 @@ class ServersService(AbstractServersService):
         )
 
         if not received_entity:
-            raise NotFoundError(self._("Server {server_id} not found").format(server_id=server_id))
+            raise NotFoundError("Server {server_id} not found", server_id=server_id)
 
         if received_entity.state in (ServerStateEnum.PENDING, ServerStateEnum.PROCESSING):
-            raise ConflictError(self._("Server {server_id} is still being installed").format(server_id=server_id))
+            raise ConflictError("Server {server_id} is still being installed", server_id=server_id)
 
         if received_entity.state == ServerStateEnum.UPGRADING:
-            raise ConflictError(self._("Server {server_id} is still being upgraded").format(server_id=server_id))
+            raise ConflictError("Server {server_id} is still being upgraded", server_id=server_id)
 
         await self.servers_repository.delete_one(
             server_id=server_id
@@ -534,7 +523,7 @@ class ServersService(AbstractServersService):
         )
 
         if not received_entities:
-            raise NotFoundError(self._("Servers not found"))
+            raise NotFoundError("Servers not found")
 
         installing = [
             server for server in received_entities
@@ -542,7 +531,7 @@ class ServersService(AbstractServersService):
         ]
 
         if installing:
-            raise ConflictError(self._("Some servers are still being installed"))
+            raise ConflictError("Some servers are still being installed")
 
         upgrading = [
             server for server in received_entities
@@ -550,7 +539,7 @@ class ServersService(AbstractServersService):
         ]
 
         if upgrading:
-            raise ConflictError(self._("Some servers are still being upgraded"))
+            raise ConflictError("Some servers are still being upgraded")
 
         await self.servers_repository.delete_many(
             server_ids=server_ids

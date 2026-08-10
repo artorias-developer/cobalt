@@ -5,7 +5,6 @@
 
 from fastapi import APIRouter, Request, Response, Body, status, Depends
 
-from application.contracts.managers import AbstractI18nManager
 from application.contracts.services import AbstractAuthService
 from presentation.contracts.http.mappers import AbstractAuthRouterMapper
 from presentation.contracts.http.routers import AbstractHttpAuthRouter
@@ -29,10 +28,9 @@ class HttpAuthRouter(AbstractHttpAuthRouter, HttpBaseRouter):
         self,
         router: APIRouter,
         auth_service: AbstractAuthService,
-        auth_mapper: AbstractAuthRouterMapper,
-        i18n_manager: AbstractI18nManager
+        auth_mapper: AbstractAuthRouterMapper
     ):
-        HttpBaseRouter.__init__(self, auth_service, i18n_manager)
+        HttpBaseRouter.__init__(self, auth_service)
 
         self.router = router
         self.auth_service = auth_service

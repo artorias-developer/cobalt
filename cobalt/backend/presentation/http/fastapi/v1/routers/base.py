@@ -12,7 +12,6 @@ from domain.exceptions import (
     PermissionsError
 )
 from domain.enums import PermissionEnum
-from application.contracts.managers import AbstractI18nManager
 from application.contracts.services import AbstractAuthService
 from application.dtos import UserDto
 
@@ -22,19 +21,12 @@ class HttpBaseRouter:
     Base router.
     """
     auth_service: AbstractAuthService
-    i18n_manager: AbstractI18nManager
-
-    _: Callable
 
     def __init__(
         self,
-        auth_service: AbstractAuthService,
-        i18n_manager: AbstractI18nManager
+        auth_service: AbstractAuthService
     ):
         self.auth_service = auth_service
-        self.i18n_manager = i18n_manager
-
-        self._ = i18n_manager.gettext
 
     async def http_session_required(
         self,
@@ -55,7 +47,7 @@ class HttpBaseRouter:
         user = getattr(request.state, "user", None)
 
         if not user:
-            raise AuthenticationError(self._("Invalid session"))
+            raise AuthenticationError("Invalid session")
 
         return user
 
@@ -80,10 +72,10 @@ class HttpBaseRouter:
             user = getattr(request.state, "user", None)
 
             if not user:
-                raise AuthenticationError(self._("Invalid session"))
+                raise AuthenticationError("Invalid session")
 
             if not any(permission in user.role.permissions for permission in permissions):
-                raise PermissionsError(self._("Not enough permissions"))
+                raise PermissionsError("Not enough permissions")
 
             return user
 

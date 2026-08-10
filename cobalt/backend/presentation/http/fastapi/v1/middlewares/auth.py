@@ -14,16 +14,16 @@ class HttpAuthMiddleware:
     """
     Middleware for authenticating user via session cookie.
     """
-    _app: ASGIApp
-    _auth_service: AbstractAuthService
+    app: ASGIApp
+    auth_service: AbstractAuthService
 
     def __init__(
         self,
         app: ASGIApp,
         auth_service: AbstractAuthService
     ):
-        self._app = app
-        self._auth_service = auth_service
+        self.app = app
+        self.auth_service = auth_service
 
     async def __call__(
         self,
@@ -43,18 +43,18 @@ class HttpAuthMiddleware:
         - None.
         """
         if scope["type"] != "http":
-            await self._app(scope, receive, send)
+            await self.app(scope, receive, send)
             return
 
         request = Request(scope)
         session_id = request.cookies.get(CookieConstants.SESSION_KEY)
 
         if not session_id:
-            await self._app(scope, receive, send)
+            await self.app(scope, receive, send)
             return
 
         try:
-            user = await self._auth_service.get_session_user(
+            user = await self.auth_service.get_session_user(
                 session_id=session_id
             )
         except Exception:
@@ -63,4 +63,4 @@ class HttpAuthMiddleware:
         if user:
             request.state.user = user
 
-        await self._app(scope, receive, send)
+        await self.app(scope, receive, send)

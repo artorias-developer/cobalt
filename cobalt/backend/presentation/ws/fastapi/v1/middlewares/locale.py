@@ -13,16 +13,16 @@ class WsLocaleMiddleware:
     """
     Middleware for detecting language from user settings and activating gettext translations for WebSocket connections.
     """
-    _app: ASGIApp
-    _i18n_manager: AbstractI18nManager
+    app: ASGIApp
+    i18n_manager: AbstractI18nManager
 
     def __init__(
         self,
         app: ASGIApp,
         i18n_manager: AbstractI18nManager
     ):
-        self._app = app
-        self._i18n_manager = i18n_manager
+        self.app = app
+        self.i18n_manager = i18n_manager
 
     async def __call__(
         self,
@@ -42,10 +42,10 @@ class WsLocaleMiddleware:
         - None.
         """
         if scope["type"] != "websocket":
-            await self._app(scope, receive, send)
+            await self.app(scope, receive, send)
             return
 
-        language = self._i18n_manager.get_default_language()
+        language = self.i18n_manager.get_default_language()
         user = scope.get("state", {}).get("user")
 
         if user:
@@ -54,7 +54,7 @@ class WsLocaleMiddleware:
             except (ValueError, TypeError, AttributeError):
                 pass
 
-        self._i18n_manager.activate(language)
+        self.i18n_manager.activate(language)
         scope["state"]["language"] = language
 
-        await self._app(scope, receive, send)
+        await self.app(scope, receive, send)

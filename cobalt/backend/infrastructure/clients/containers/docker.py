@@ -6,7 +6,7 @@
 from io import BytesIO
 from pathlib import Path
 from tarfile import open as tarfile_open
-from typing import Dict, Optional, Any, List, AsyncGenerator, Union, Callable
+from typing import Dict, Optional, Any, List, AsyncGenerator, Union
 
 from aiodocker import Docker
 from aiodocker.containers import DockerContainer
@@ -17,7 +17,6 @@ from domain.exceptions import (
     NotFoundError,
     UnexpectedError
 )
-from application.contracts.managers import AbstractI18nManager
 from application.contracts.clients import AbstractContainersClient
 from application.clients.containers.shared import (
     ContainerLog,
@@ -29,18 +28,7 @@ class DockerClient(AbstractContainersClient):
     """
     Docker client.
     """
-    i18n_manager: AbstractI18nManager
-
-    _: Callable
     _client: Docker
-
-    def __init__(
-        self,
-        i18n_manager: AbstractI18nManager
-    ):
-        self.i18n_manager = i18n_manager
-
-        self._ = i18n_manager.gettext
 
     async def initialize(self) -> None:
         """
@@ -89,9 +77,9 @@ class DockerClient(AbstractContainersClient):
                     return container
 
         except DockerError as e:
-            raise UnexpectedError(self._('Error while getting container "{name}"').format(name=name)) from e
+            raise UnexpectedError('Error while getting container "{name}"', name=name) from e
 
-        raise NotFoundError(self._('Container "{name}" not found').format(name=name))
+        raise NotFoundError('Container "{name}" not found', name=name)
 
     async def image_build(
         self,
@@ -157,7 +145,7 @@ class DockerClient(AbstractContainersClient):
             return image_id or tag
 
         except DockerError as e:
-            raise UnexpectedError(self._('Error while building image "{tag}"').format(tag=tag)) from e
+            raise UnexpectedError('Error while building image "{tag}"', tag=tag) from e
 
     async def image_remove(
         self,
@@ -181,9 +169,9 @@ class DockerClient(AbstractContainersClient):
             )
         except DockerError as e:
             if e.status == 404:
-                raise NotFoundError(self._('Image "{image}" not found').format(image=image)) from e
+                raise NotFoundError('Image "{image}" not found', image=image) from e
 
-            raise UnexpectedError(self._('Error while removing image "{image}"').format(image=image)) from e
+            raise UnexpectedError('Error while removing image "{image}"', image=image) from e
 
     async def image_prune(
         self,
@@ -203,7 +191,7 @@ class DockerClient(AbstractContainersClient):
                 filters=filters or {}
             )
         except DockerError as e:
-            raise UnexpectedError(self._('Error while pruning images')) from e
+            raise UnexpectedError('Error while pruning images') from e
 
     async def container_list(
         self,
@@ -226,7 +214,7 @@ class DockerClient(AbstractContainersClient):
                 filters=filters or {}
             )
         except DockerError as e:
-            raise UnexpectedError(self._('Error while listing containers')) from e
+            raise UnexpectedError('Error while listing containers') from e
 
     async def container_create(
         self,
@@ -327,7 +315,7 @@ class DockerClient(AbstractContainersClient):
                 name=name
             )
         except DockerError as e:
-            raise UnexpectedError(self._('Error while creating container "{name}"').format(name=name)) from e
+            raise UnexpectedError('Error while creating container "{name}"', name=name) from e
 
     async def container_start(
         self,
@@ -348,7 +336,7 @@ class DockerClient(AbstractContainersClient):
         except (NotFoundError, UnexpectedError):
             raise
         except DockerError as e:
-            raise UnexpectedError(self._('Error while starting container "{name}"').format(name=container_name)) from e
+            raise UnexpectedError('Error while starting container "{name}"', name=container_name) from e
 
     async def container_stop(
         self,
@@ -371,7 +359,7 @@ class DockerClient(AbstractContainersClient):
         except (NotFoundError, UnexpectedError):
             raise
         except DockerError as e:
-            raise UnexpectedError(self._('Error while stopping container "{name}"').format(name=container_name)) from e
+            raise UnexpectedError('Error while stopping container "{name}"', name=container_name) from e
 
     async def container_remove(
         self,
@@ -396,7 +384,7 @@ class DockerClient(AbstractContainersClient):
         except (NotFoundError, UnexpectedError):
             raise
         except DockerError as e:
-            raise UnexpectedError(self._('Error while removing container "{name}"').format(name=container_name)) from e
+            raise UnexpectedError('Error while removing container "{name}"', name=container_name) from e
 
     async def container_restart(
         self,
@@ -419,7 +407,7 @@ class DockerClient(AbstractContainersClient):
         except (NotFoundError, UnexpectedError):
             raise
         except DockerError as e:
-            raise UnexpectedError(self._('Error while restarting container "{name}"').format(name=container_name)) from e
+            raise UnexpectedError('Error while restarting container "{name}"', name=container_name) from e
 
     async def container_wait(
         self,
@@ -440,7 +428,7 @@ class DockerClient(AbstractContainersClient):
         except (NotFoundError, UnexpectedError):
             raise
         except DockerError as e:
-            raise UnexpectedError(self._('Error while waiting for container "{name}"').format(name=container_name)) from e
+            raise UnexpectedError('Error while waiting for container "{name}"', name=container_name) from e
 
     async def container_logs(
         self,
@@ -477,7 +465,7 @@ class DockerClient(AbstractContainersClient):
         except (NotFoundError, UnexpectedError):
             raise
         except DockerError as e:
-            raise UnexpectedError(self._('Error while getting logs for container "{name}"').format(name=container_name)) from e
+            raise UnexpectedError('Error while getting logs for container "{name}"', name=container_name) from e
 
     async def container_stream_logs(
         self,
@@ -512,7 +500,7 @@ class DockerClient(AbstractContainersClient):
         except (NotFoundError, UnexpectedError):
             raise
         except DockerError as e:
-            raise UnexpectedError(self._('Error while streaming logs for container "{name}"').format(name=container_name)) from e
+            raise UnexpectedError('Error while streaming logs for container "{name}"', name=container_name) from e
 
     async def container_status(
         self,
@@ -548,7 +536,7 @@ class DockerClient(AbstractContainersClient):
         except (NotFoundError, UnexpectedError):
             raise
         except DockerError as e:
-            raise UnexpectedError(self._('Error while getting status for container "{name}"').format(name=container_name)) from e
+            raise UnexpectedError('Error while getting status for container "{name}"', name=container_name) from e
 
     async def container_execute(
         self,
@@ -580,7 +568,7 @@ class DockerClient(AbstractContainersClient):
         except (NotFoundError, UnexpectedError):
             raise
         except DockerError as e:
-            raise UnexpectedError(self._('Error while executing command in container "{name}"').format(name=container_name)) from e
+            raise UnexpectedError('Error while executing command in container "{name}"', name=container_name) from e
 
     async def volume_prune(
         self,
@@ -600,7 +588,7 @@ class DockerClient(AbstractContainersClient):
                 filters=filters or {}
             )
         except DockerError as e:
-            raise UnexpectedError(self._("Error while pruning volumes")) from e
+            raise UnexpectedError("Error while pruning volumes") from e
 
     async def builder_prune(
         self,
@@ -647,4 +635,4 @@ class DockerClient(AbstractContainersClient):
                 params=params
             )
         except DockerError as e:
-            raise UnexpectedError(self._("Error while pruning builder cache")) from e
+            raise UnexpectedError("Error while pruning builder cache") from e

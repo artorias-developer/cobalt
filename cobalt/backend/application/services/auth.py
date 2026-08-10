@@ -4,7 +4,7 @@
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from secrets import token_urlsafe
-from typing import Optional, Callable
+from typing import Optional
 
 from domain.exceptions import (
     ConflictError,
@@ -12,7 +12,6 @@ from domain.exceptions import (
     NotFoundError,
     ValidationError
 )
-from application.contracts.managers import AbstractI18nManager
 from application.contracts.clients import AbstractCachesClient
 from application.contracts.services import (
     AbstractUsersService,
@@ -36,23 +35,16 @@ class AuthService(AbstractAuthService):
     caches_client: AbstractCachesClient
     users_service: AbstractUsersService
     hasher: AbstractHasher
-    i18n_manager: AbstractI18nManager
-
-    _: Callable
 
     def __init__(
         self,
         caches_client: AbstractCachesClient,
         users_service: AbstractUsersService,
-        hasher: AbstractHasher,
-        i18n_manager: AbstractI18nManager
+        hasher: AbstractHasher
     ):
         self.caches_client = caches_client
         self.users_service = users_service
         self.hasher = hasher
-        self.i18n_manager = i18n_manager
-
-        self._ = i18n_manager.gettext
 
     async def login(
         self,
@@ -74,14 +66,14 @@ class AuthService(AbstractAuthService):
         )
 
         if not received_dto:
-            raise AuthenticationError(self._("Invalid login or password"))
+            raise AuthenticationError("Invalid login or password")
 
         if not self.hasher.verify(
             plain=dto.password,
             hashed=received_dto.hashed_password,
             salt=received_dto.salt
         ):
-            raise AuthenticationError(self._("Invalid login or password"))
+            raise AuthenticationError("Invalid login or password")
 
         if old_session_id:
             old_key = self.caches_client.format_pattern(
@@ -153,11 +145,11 @@ class AuthService(AbstractAuthService):
         )
 
         if not received_dto:
-            raise NotFoundError(self._("User not found"))
+            raise NotFoundError("User not found")
 
         if dto.new_password:
             if not dto.old_password:
-                raise ValidationError(self._("Current password is required"))
+                raise ValidationError("Current password is required")
 
             is_valid = self.hasher.verify(
                 plain=dto.old_password,
@@ -166,7 +158,7 @@ class AuthService(AbstractAuthService):
             )
 
             if not is_valid:
-                raise ConflictError(self._("Invalid current password"))
+                raise ConflictError("Invalid current password")
 
         user_update_dto = UserUpdateDto(
             login=dto.login,

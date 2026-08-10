@@ -65,7 +65,6 @@ def setup_fastapi_ioc_container(
 
     clients_container = create_clients_container(
         config=config,
-        managers=managers_container,
         logger=logger
     )
 
@@ -73,7 +72,6 @@ def setup_fastapi_ioc_container(
 
     database_container = create_postgres_database_container(
         config=config,
-        managers=managers_container,
         mappers=mappers_container,
         logger=logger
     )

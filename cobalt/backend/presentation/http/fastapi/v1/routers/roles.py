@@ -6,7 +6,6 @@
 from fastapi import APIRouter, Response, status, Depends, Body
 
 from domain.enums import PermissionEnum
-from application.contracts.managers import AbstractI18nManager
 from application.contracts.services import (
     AbstractRolesService,
     AbstractAuthService
@@ -37,10 +36,9 @@ class HttpRolesRouter(AbstractHttpRolesRouter, HttpBaseRouter):
         router: APIRouter,
         roles_service: AbstractRolesService,
         roles_mapper: AbstractRolesRouterMapper,
-        auth_service: AbstractAuthService,
-        i18n_manager: AbstractI18nManager
+        auth_service: AbstractAuthService
     ):
-        HttpBaseRouter.__init__(self, auth_service, i18n_manager)
+        HttpBaseRouter.__init__(self, auth_service)
 
         self.router = router
         self.roles_service = roles_service

@@ -3,7 +3,7 @@
 #  Repository: https://github.com/artorias-developer/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-from typing import Optional, List, cast, Callable
+from typing import Optional, List, cast
 
 from sqlalchemy import select, delete
 from sqlalchemy.orm import selectinload
@@ -22,7 +22,6 @@ from domain.entities import (
     GameUpdateEntity
 )
 from domain.repositories import AbstractGamesRepository
-from application.contracts.managers import AbstractI18nManager
 from application.contracts.loggers import AbstractLogger
 from infrastructure.contracts.databases.mappers import AbstractGamesRepositoryMapper
 from infrastructure.databases.postgres.models import (
@@ -41,25 +40,18 @@ class GamesRepository(AbstractGamesRepository, BaseRepository):
     Repository for working with the 'games' table.
     """
     games_mapper: AbstractGamesRepositoryMapper
-    i18n_manager: AbstractI18nManager
     logger: AbstractLogger
-
-    _: Callable
 
     def __init__(
         self,
         async_session: async_sessionmaker,
         games_mapper: AbstractGamesRepositoryMapper,
-        i18n_manager: AbstractI18nManager,
         logger: AbstractLogger
     ):
         super().__init__(async_session)
 
         self.games_mapper = games_mapper
         self.logger = logger
-        self.i18n_manager = i18n_manager
-
-        self._ = i18n_manager.gettext
 
     def _handle_integrity_error(
         self,
@@ -86,10 +78,10 @@ class GamesRepository(AbstractGamesRepository, BaseRepository):
             ]:
                 game_name = details.get("name")
 
-                raise ConflictError(self._('Game "{name}" already exists').format(name=game_name)) from e
+                raise ConflictError('Game "{name}" already exists', name=game_name) from e
 
         self.logger.exception(f"Unhandled DB integrity error during {operation}:")
-        raise UnexpectedError(self._("Internal server error")) from e
+        raise UnexpectedError("Internal server error") from e
 
     async def get_page(
         self,

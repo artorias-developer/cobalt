@@ -14,16 +14,16 @@ class HttpLocaleMiddleware:
     """
     Middleware for detecting language from user settings and activating gettext translations.
     """
-    _app: ASGIApp
-    _i18n_manager: AbstractI18nManager
+    app: ASGIApp
+    i18n_manager: AbstractI18nManager
 
     def __init__(
         self,
         app: ASGIApp,
         i18n_manager: AbstractI18nManager
     ):
-        self._app = app
-        self._i18n_manager = i18n_manager
+        self.app = app
+        self.i18n_manager = i18n_manager
 
     async def __call__(
         self,
@@ -43,11 +43,11 @@ class HttpLocaleMiddleware:
         - None.
         """
         if scope["type"] != "http":
-            await self._app(scope, receive, send)
+            await self.app(scope, receive, send)
             return
 
         request = Request(scope)
-        language = self._i18n_manager.get_default_language()
+        language = self.i18n_manager.get_default_language()
         user = getattr(request.state, "user", None)
 
         if user:
@@ -56,7 +56,7 @@ class HttpLocaleMiddleware:
             except (ValueError, TypeError, AttributeError):
                 pass
 
-        self._i18n_manager.activate(language)
+        self.i18n_manager.activate(language)
         scope["state"]["language"] = language
 
-        await self._app(scope, receive, send)
+        await self.app(scope, receive, send)

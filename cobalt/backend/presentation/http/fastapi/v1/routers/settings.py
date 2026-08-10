@@ -6,7 +6,6 @@
 from fastapi import APIRouter, Request, Response, Depends, Body, status
 
 from domain.enums import PermissionEnum
-from application.contracts.managers import AbstractI18nManager
 from application.contracts.services import (
     AbstractSettingsService,
     AbstractAuthService
@@ -33,10 +32,9 @@ class HttpSettingsRouter(AbstractHttpSettingsRouter, HttpBaseRouter):
         router: APIRouter,
         settings_service: AbstractSettingsService,
         settings_mapper: AbstractSettingsRouterMapper,
-        auth_service: AbstractAuthService,
-        i18n_manager: AbstractI18nManager
+        auth_service: AbstractAuthService
     ):
-        HttpBaseRouter.__init__(self, auth_service, i18n_manager)
+        HttpBaseRouter.__init__(self, auth_service)
 
         self.router = router
         self.settings_service = settings_service

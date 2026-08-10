@@ -4,12 +4,11 @@
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from collections import defaultdict
-from typing import Optional, Any, Union, Iterable, Callable
+from typing import Optional, Any, Union, Iterable
 
 from redis.asyncio import Redis
 
 from domain.exceptions import UnexpectedError
-from application.contracts.managers import AbstractI18nManager
 from application.contracts.clients import AbstractCachesClient
 from application.contracts.loggers import AbstractLogger
 
@@ -20,21 +19,14 @@ class RedisClient(AbstractCachesClient):
     """
     logger: AbstractLogger
     redis_client: Redis
-    i18n_manager: AbstractI18nManager
-
-    _: Callable
 
     def __init__(
         self,
         logger: AbstractLogger,
-        redis_client: Redis,
-        i18n_manager: AbstractI18nManager
+        redis_client: Redis
     ):
         self.logger = logger
         self.redis_client = redis_client
-        self.i18n_manager = i18n_manager
-
-        self._ = i18n_manager.gettext
 
     def format_pattern(
         self,
@@ -88,7 +80,7 @@ class RedisClient(AbstractCachesClient):
 
         except Exception as e:
             if raise_on_error:
-                raise UnexpectedError(self._("Error while getting value from cache")) from e
+                raise UnexpectedError("Error while getting value from cache") from e
 
             self.logger.exception(f"Error while getting key={key} or pattern={pattern} from Redis:")
             return None
@@ -121,7 +113,7 @@ class RedisClient(AbstractCachesClient):
             return True
         except Exception as e:
             if raise_on_error:
-                raise UnexpectedError(self._("Error while writing value to cache")) from e
+                raise UnexpectedError("Error while writing value to cache") from e
 
             self.logger.exception(f"Error while setting {key} in Redis:")
             return False
@@ -147,7 +139,7 @@ class RedisClient(AbstractCachesClient):
             await self.redis_client.expire(key, seconds)
         except Exception as e:
             if raise_on_error:
-                raise UnexpectedError(self._("Error while setting expire in cache")) from e
+                raise UnexpectedError("Error while setting expire in cache") from e
 
             self.logger.exception(f"Error while setting expire for {key}:")
 
@@ -196,7 +188,7 @@ class RedisClient(AbstractCachesClient):
 
         except Exception as e:
             if raise_on_error:
-                raise UnexpectedError(self._("Error while deleting values from cache")) from e
+                raise UnexpectedError("Error while deleting values from cache") from e
 
             self.logger.exception(f"Error while deleting keys={keys} or patterns={patterns} from Redis:")
 
@@ -217,6 +209,6 @@ class RedisClient(AbstractCachesClient):
             await self.redis_client.flushdb()
         except Exception as e:
             if raise_on_error:
-                raise UnexpectedError(self._("Error while clearing cache")) from e
+                raise UnexpectedError("Error while clearing cache") from e
 
             self.logger.exception(f"Error while clearing Redis cache:")

@@ -6,7 +6,7 @@
 from os import path
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import List, AsyncIterable, Optional, Callable
+from typing import List, AsyncIterable, Optional
 
 from aioshutil import copytree, rmtree, move, copy2
 from aiofiles import os, open
@@ -16,10 +16,7 @@ from domain.exceptions import (
     ConflictError,
     PermissionsError
 )
-from application.contracts.managers import (
-    AbstractArchivesManager,
-    AbstractI18nManager
-)
+from application.contracts.managers import AbstractArchivesManager
 from application.contracts.services import AbstractFilesService
 from application.clients.containers.shared import ContainersConstants
 from application.dtos import (
@@ -48,21 +45,14 @@ class FilesService(AbstractFilesService):
 
     app_containers_dir: Path
     archives_manager: AbstractArchivesManager
-    i18n_manager: AbstractI18nManager
-
-    _: Callable
 
     def __init__(
         self,
         app_containers_dir: Path,
-        archives_manager: AbstractArchivesManager,
-        i18n_manager: AbstractI18nManager
+        archives_manager: AbstractArchivesManager
     ):
         self.app_containers_dir = app_containers_dir
         self.archives_manager = archives_manager
-        self.i18n_manager = i18n_manager
-
-        self._ = i18n_manager.gettext
 
     def _get_server_root(
         self,
@@ -105,7 +95,7 @@ class FilesService(AbstractFilesService):
         resolved = (root / relative_path.lstrip("/")).resolve()
 
         if not str(resolved).startswith(str(root.resolve())):
-            raise PermissionsError(self._("Access outside the server root is not allowed"))
+            raise PermissionsError("Access outside the server root is not allowed")
 
         return resolved
 
@@ -153,7 +143,7 @@ class FilesService(AbstractFilesService):
             target = self._resolve_path(server_id, relative_path)
 
             if not await os.path.exists(target):
-                raise NotFoundError(self._('Path "{relative_path}" not found').format(relative_path=relative_path))
+                raise NotFoundError('Path "{relative_path}" not found', relative_path=relative_path)
 
             paths.append(target)
 
@@ -178,10 +168,10 @@ class FilesService(AbstractFilesService):
         target = self._resolve_path(server_id, dto.path)
 
         if not await os.path.exists(target):
-            raise NotFoundError(self._('Path "{path}" not found').format(path=dto.path))
+            raise NotFoundError('Path "{path}" not found', path=dto.path)
 
         if not await os.path.isdir(target):
-            raise NotFoundError(self._('Path "{path}" is not a directory').format(path=dto.path))
+            raise NotFoundError('Path "{path}" is not a directory', path=dto.path)
 
         raw_entries = await os.scandir(target)
 
@@ -242,15 +232,15 @@ class FilesService(AbstractFilesService):
         target = self._resolve_path(server_id, dto.path)
 
         if not await os.path.exists(target):
-            raise NotFoundError(self._('File "{path}" not found').format(path=dto.path))
+            raise NotFoundError('File "{path}" not found', path=dto.path)
 
         if not await os.path.isfile(target):
-            raise NotFoundError(self._('Path "{path}" is not a file').format(path=dto.path))
+            raise NotFoundError('Path "{path}" is not a file', path=dto.path)
 
         stat = await os.stat(target)
 
         if stat.st_size > self._MAX_FILE_READ_SIZE:
-            raise ConflictError(self._('File "{path}" exceeds the read limit').format(path=dto.path))
+            raise ConflictError('File "{path}" exceeds the read limit', path=dto.path)
 
         async with open(target, mode="r", encoding="utf-8", errors="replace") as file:
             content = await file.read()
@@ -282,10 +272,10 @@ class FilesService(AbstractFilesService):
         target = self._resolve_path(server_id, dto.path)
 
         if not await os.path.exists(target):
-            raise NotFoundError(self._('File "{path}" not found').format(path=dto.path))
+            raise NotFoundError('File "{path}" not found', path=dto.path)
 
         if not await os.path.isfile(target):
-            raise NotFoundError(self._('Path "{path}" is not a file').format(path=dto.path))
+            raise NotFoundError('Path "{path}" is not a file', path=dto.path)
 
         async with open(target, mode="w", encoding="utf-8") as file:
             await file.write(dto.content)
@@ -308,7 +298,7 @@ class FilesService(AbstractFilesService):
         target = self._resolve_path(server_id, dto.path)
 
         if await os.path.exists(target):
-            raise ConflictError(self._('Path "{path}" already exists').format(path=dto.path))
+            raise ConflictError('Path "{path}" already exists', path=dto.path)
 
         if dto.type == "directory":
             await os.makedirs(target, exist_ok=True)
@@ -338,10 +328,10 @@ class FilesService(AbstractFilesService):
         destination = self._resolve_path(server_id, dto.path)
 
         if not await os.path.exists(destination):
-            raise NotFoundError(self._('Path "{path}" not found').format(path=dto.path))
+            raise NotFoundError('Path "{path}" not found', path=dto.path)
 
         if not await os.path.isdir(destination):
-            raise NotFoundError(self._('Path "{path}" is not a directory').format(path=dto.path))
+            raise NotFoundError('Path "{path}" is not a directory', path=dto.path)
 
         for filename, data in dto.files:
             target = destination / filename
@@ -391,10 +381,10 @@ class FilesService(AbstractFilesService):
         destination = self._resolve_path(server_id, dto.destination_path)
 
         if not await os.path.exists(destination):
-            raise NotFoundError(self._('Destination path "{path}" not found').format(path=dto.destination_path))
+            raise NotFoundError('Destination path "{path}" not found', path=dto.destination_path)
 
         if not await os.path.isdir(destination):
-            raise NotFoundError(self._('Destination path "{path}" is not a directory').format(path=dto.destination_path))
+            raise NotFoundError('Destination path "{path}" is not a directory', path=dto.destination_path)
 
         sources = await self._collect_paths(
             server_id=server_id,
@@ -422,12 +412,12 @@ class FilesService(AbstractFilesService):
         target = self._resolve_path(server_id, dto.path)
 
         if not await os.path.exists(target):
-            raise NotFoundError(self._('Path "{path}" not found').format(path=dto.path))
+            raise NotFoundError('Path "{path}" not found', path=dto.path)
 
         destination = target.parent / dto.name
 
         if await os.path.exists(destination):
-            raise ConflictError(self._('Name "{name}" is already in use').format(name=dto.name))
+            raise ConflictError('Name "{name}" is already in use', name=dto.name)
 
         await os.rename(target, destination)
 
@@ -482,10 +472,10 @@ class FilesService(AbstractFilesService):
         target = self._resolve_path(server_id, dto.path)
 
         if not await os.path.exists(target):
-            raise NotFoundError(self._('File "{path}" not found').format(path=dto.path))
+            raise NotFoundError('File "{path}" not found', path=dto.path)
 
         if not await os.path.isfile(target):
-            raise NotFoundError(self._('Path "{path}" is not a file').format(path=dto.path))
+            raise NotFoundError('Path "{path}" is not a file', path=dto.path)
 
         destination = (
             self._resolve_path(server_id, dto.destination_path)
@@ -494,7 +484,7 @@ class FilesService(AbstractFilesService):
         )
 
         if dto.destination_path and not await os.path.exists(destination):
-            raise NotFoundError(self._('Destination path "{path}" not found').format(path=dto.destination_path))
+            raise NotFoundError('Destination path "{path}" not found', path=dto.destination_path)
 
         await self.archives_manager.extract_zip(
             source=target,
