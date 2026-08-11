@@ -14,7 +14,10 @@ from application.contracts.services import (
 from presentation.contracts.http.routers import AbstractHttpSettingsRouter
 from presentation.contracts.http.mappers import AbstractSettingsRouterMapper
 from presentation.http.fastapi.v1.routers import HttpBaseRouter
-from presentation.http.fastapi.v1.schemas import SettingsUpdateSchema
+from presentation.http.fastapi.v1.schemas import (
+    SettingsSchema,
+    SettingsUpdateSchema
+)
 from presentation.shared import CookieConstants
 
 
@@ -61,7 +64,8 @@ class HttpSettingsRouter(AbstractHttpSettingsRouter, HttpBaseRouter):
             path="/me",
             endpoint=self.update_me,
             methods=["PATCH"],
-            operation_id="settings_update_me"
+            operation_id="settings_update_me",
+            response_model=SettingsSchema
         )
 
         router.add_api_route(
