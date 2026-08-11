@@ -3,13 +3,10 @@
 #  Repository: https://github.com/artorias-developer/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-from typing import Callable
-
 from orjson import loads
 
 from domain.exceptions import NotFoundError
 from domain.repositories import AbstractGamesRepository
-from application.contracts.managers import AbstractI18nManager
 from application.contracts.clients import AbstractCachesClient
 from application.contracts.services import AbstractGamesService
 from application.contracts.mappers import AbstractGamesServiceMapper
@@ -30,23 +27,16 @@ class GamesService(AbstractGamesService):
     caches_client: AbstractCachesClient
     games_repository: AbstractGamesRepository
     games_mapper: AbstractGamesServiceMapper
-    i18n_manager: AbstractI18nManager
-
-    _: Callable
 
     def __init__(
         self,
         caches_client: AbstractCachesClient,
         games_repository: AbstractGamesRepository,
-        games_mapper: AbstractGamesServiceMapper,
-        i18n_manager: AbstractI18nManager
+        games_mapper: AbstractGamesServiceMapper
     ):
         self.caches_client = caches_client
         self.games_repository = games_repository
         self.games_mapper = games_mapper
-        self.i18n_manager = i18n_manager
-
-        self._ = i18n_manager.gettext
 
     async def get_page(
         self,
@@ -87,7 +77,7 @@ class GamesService(AbstractGamesService):
         )
 
         if not received_entity.games:
-            raise NotFoundError(self._("Game not found"))
+            raise NotFoundError("Game not found")
 
         mapped_dto = self.games_mapper.page_entity_to_dto(
             entity=received_entity
@@ -132,7 +122,7 @@ class GamesService(AbstractGamesService):
         )
 
         if not received_entity:
-            raise NotFoundError(self._("Game {game_id} not found").format(game_id=game_id))
+            raise NotFoundError("Game {game_id} not found", game_id=game_id)
 
         key = self.caches_client.format_pattern(
             pattern=CacheConstants.GAMES_ITEM_KEY,
@@ -183,7 +173,7 @@ class GamesService(AbstractGamesService):
         )
 
         if not received_entity:
-            raise NotFoundError(self._('Game "{name}" not found').format(name=name))
+            raise NotFoundError('Game "{name}" not found', name=name)
 
         key = self.caches_client.format_pattern(
             pattern=CacheConstants.GAMES_ITEM_KEY,
@@ -259,7 +249,7 @@ class GamesService(AbstractGamesService):
         )
 
         if not updated_entity:
-            raise NotFoundError(self._("Game {game_id} not found").format(game_id=game_id))
+            raise NotFoundError("Game {game_id} not found", game_id=game_id)
 
         await self.caches_client.delete(
             patterns=[
@@ -302,7 +292,7 @@ class GamesService(AbstractGamesService):
         )
 
         if not deleted_entity:
-            raise NotFoundError(self._("Game {game_id} not found").format(game_id=game_id))
+            raise NotFoundError("Game {game_id} not found", game_id=game_id)
 
         await self.caches_client.delete(
             patterns=[

@@ -1,8 +1,3 @@
-#  Copyright (C) 2026 Artorias
-#  Author: Artorias
-#  Repository: https://github.com/artorias-developer/cobalt
-#  SPDX-License-Identifier: AGPL-3.0-or-later
-
 from typing import Callable, Tuple, Dict, Type, Any
 
 from fastapi import WebSocket, status
@@ -20,6 +15,7 @@ from domain.exceptions import (
 )
 from application.contracts.loggers import AbstractLogger
 from application.contracts.interceptors import AbstractInterceptor
+from application.contracts.managers import AbstractI18nManager
 from presentation.ws.shared import WebSocketStatusCodesEnum
 
 
@@ -36,12 +32,15 @@ class WsErrorsInterceptor(AbstractInterceptor):
     """
     Handles errors when processing WebSockets events.
     """
+    i18n_manager: AbstractI18nManager
     logger: AbstractLogger
 
     def __init__(
         self,
+        i18n_manager: AbstractI18nManager,
         logger: AbstractLogger
     ):
+        self.i18n_manager = i18n_manager
         self.logger = logger
 
     def _get_ws_error(
@@ -65,7 +64,8 @@ class WsErrorsInterceptor(AbstractInterceptor):
                 self.logger.warning(f"BaseError subclass {error_type.__name__} not mapped to WS status.")
                 status_code = status.WS_1011_INTERNAL_ERROR
 
-            return status_code, str(error)
+            message = self.i18n_manager.gettext(error.error_message).format(**error.kwargs)
+            return status_code, message
 
         elif isinstance(error, PydanticValidationError):
             status_code = WebSocketStatusCodesEnum.WS_4400_BAD_REQUEST
@@ -73,7 +73,7 @@ class WsErrorsInterceptor(AbstractInterceptor):
             return status_code, str(error)
 
         self.logger.exception("Unhandled exception occurred:")
-        return status.WS_1011_INTERNAL_ERROR, "Internal server error"
+        return status.WS_1011_INTERNAL_ERROR, self.i18n_manager.gettext("Internal server error")
 
     async def dispatch(
         self,

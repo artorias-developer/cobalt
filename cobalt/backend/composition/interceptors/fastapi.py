@@ -23,6 +23,7 @@ def setup_fastapi_ws_errors_interceptor(
     - None.
     """
     errors_interceptor = WsErrorsInterceptor(
+        i18n_manager=managers.i18n,
         logger=logger
     )
 

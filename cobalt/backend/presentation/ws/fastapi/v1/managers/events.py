@@ -15,7 +15,7 @@ from domain.exceptions import ValidationError
 from application.dtos import UserDto
 from application.contracts.managers import (
     AbstractEventsManager,
-    AbstractConnectionsManager, AbstractI18nManager
+    AbstractConnectionsManager
 )
 
 
@@ -24,21 +24,14 @@ class EventsManager(AbstractEventsManager):
     WebSockets events manager.
     """
     connections_manager: AbstractConnectionsManager
-    i18n_manager: AbstractI18nManager
-
-    _: Callable
 
     def __init__(
         self,
-        connections_manager: AbstractConnectionsManager,
-        i18n_manager: AbstractI18nManager
+        connections_manager: AbstractConnectionsManager
     ):
         super().__init__()
 
         self.connections_manager = connections_manager
-        self.i18n_manager = i18n_manager
-
-        self._ = i18n_manager.gettext
 
     @staticmethod
     async def _call_with_context(
@@ -125,8 +118,8 @@ class EventsManager(AbstractEventsManager):
             if is_model:
                 try:
                     kwargs[name] = param.annotation.from_dict(context.get("data", {}))
-                except PydanticValidationError as e:
-                    raise ValidationError(str(e)) from e
+                except PydanticValidationError:
+                    raise
 
         return kwargs
 
@@ -226,7 +219,7 @@ class EventsManager(AbstractEventsManager):
 
         async def _dispatch() -> None:
             if event not in self._event_handlers:
-                raise ValidationError(self._('Unknown event "{event}"').format(event=event))
+                raise ValidationError('Unknown event "{event}"', event=event)
 
             event_data = self._event_handlers[event]
 

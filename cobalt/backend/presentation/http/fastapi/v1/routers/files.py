@@ -9,7 +9,6 @@ from fastapi import APIRouter, Response, status, Depends, Body, Query, File, Upl
 from fastapi.responses import StreamingResponse
 
 from domain.enums import PermissionEnum
-from application.contracts.managers import AbstractI18nManager
 from application.contracts.services import (
     AbstractFilesService,
     AbstractAuthService
@@ -46,10 +45,9 @@ class HttpFilesRouter(AbstractHttpFilesRouter, HttpBaseRouter):
         router: APIRouter,
         files_service: AbstractFilesService,
         files_mapper: AbstractFilesRouterMapper,
-        auth_service: AbstractAuthService,
-        i18n_manager: AbstractI18nManager
+        auth_service: AbstractAuthService
     ):
-        HttpBaseRouter.__init__(self, auth_service, i18n_manager)
+        HttpBaseRouter.__init__(self, auth_service)
 
         self.router = router
         self.files_service = files_service

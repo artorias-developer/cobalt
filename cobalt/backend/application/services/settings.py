@@ -5,7 +5,7 @@
 
 from asyncio import gather
 from pathlib import Path
-from typing import List, Coroutine, Callable
+from typing import List, Coroutine
 
 from aioshutil import rmtree
 from aiofiles import os
@@ -18,10 +18,7 @@ from domain.enums import ServerStateEnum
 from domain.repositories import AbstractSettingsRepository
 from application.contracts.loggers import AbstractLogger
 from application.contracts.queues import AbstractQueue
-from application.contracts.managers import (
-    AbstractI18nManager,
-    AbstractConnectionsManager
-)
+from application.contracts.managers import AbstractConnectionsManager
 from application.contracts.clients import AbstractCachesClient
 from application.contracts.clients import AbstractContainersClient
 from application.contracts.services import (
@@ -49,12 +46,9 @@ class SettingsService(AbstractSettingsService):
     containers_client: AbstractContainersClient
     servers_service: AbstractServersService
     connections_manager: AbstractConnectionsManager
-    i18n_manager: AbstractI18nManager
     queue: AbstractQueue
     logger: AbstractLogger
     app_containers_dir: Path
-
-    _: Callable
 
     def __init__(
         self,
@@ -64,7 +58,6 @@ class SettingsService(AbstractSettingsService):
         containers_client: AbstractContainersClient,
         servers_service: AbstractServersService,
         connections_manager: AbstractConnectionsManager,
-        i18n_manager: AbstractI18nManager,
         queue: AbstractQueue,
         logger: AbstractLogger,
         app_containers_dir: Path
@@ -75,12 +68,9 @@ class SettingsService(AbstractSettingsService):
         self.containers_client = containers_client
         self.servers_service = servers_service
         self.connections_manager = connections_manager
-        self.i18n_manager = i18n_manager
         self.queue = queue
         self.logger = logger
         self.app_containers_dir = app_containers_dir
-
-        self._ = i18n_manager.gettext
 
     @staticmethod
     async def _gather_in_batches(
@@ -214,7 +204,7 @@ class SettingsService(AbstractSettingsService):
         )
 
         if not updated_entity:
-            raise NotFoundError(self._("Settings for user with ID {user_id} not found").format(user_id=user_id))
+            raise NotFoundError("Settings for user with ID {user_id} not found", user_id=user_id)
 
         await self.caches_client.delete(
             patterns=[
@@ -291,7 +281,7 @@ class SettingsService(AbstractSettingsService):
         )
 
         if installing:
-            raise ConflictError(self._("Cannot clear containers while servers are being created"))
+            raise ConflictError("Cannot clear containers while servers are being created")
 
         upgrading = any(
             server.state == ServerStateEnum.UPGRADING
@@ -299,7 +289,7 @@ class SettingsService(AbstractSettingsService):
         )
 
         if upgrading:
-            raise ConflictError(self._("Cannot clear containers while servers are being upgraded"))
+            raise ConflictError("Cannot clear containers while servers are being upgraded")
 
         server_container_names = [
             ContainersConstants.GAME_CONTAINER_NAME_KEY.format(

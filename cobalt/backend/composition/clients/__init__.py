@@ -5,10 +5,7 @@
 
 from application.contracts.loggers import AbstractLogger
 from infrastructure.configs import ApplicationConfig
-from composition.dataclasses import (
-    ClientsContainer,
-    ManagersContainer
-)
+from composition.dataclasses import ClientsContainer
 
 from .caches import create_redis_client
 from .containers import create_docker_client
@@ -21,7 +18,6 @@ __all__ = [
 
 def create_clients_container(
     config: ApplicationConfig,
-    managers: ManagersContainer,
     logger: AbstractLogger
 ) -> ClientsContainer:
     """
@@ -29,7 +25,6 @@ def create_clients_container(
 
     Parameters:
     - config: ApplicationConfig object.
-    - managers: ServicesContainer object.
     - logger: AbstractLogger object.
 
     Returns:
@@ -37,7 +32,6 @@ def create_clients_container(
     """
     caches_client = create_redis_client(
         config=config,
-        i18n_manager=managers.i18n,
         logger=logger
     )
 
@@ -46,9 +40,7 @@ def create_clients_container(
         logger=logger
     )
 
-    containers_client = create_docker_client(
-        i18n_manager=managers.i18n
-    )
+    containers_client = create_docker_client()
 
     return ClientsContainer(
         caches=caches_client,

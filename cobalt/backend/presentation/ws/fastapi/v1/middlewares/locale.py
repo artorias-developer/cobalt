@@ -4,25 +4,27 @@
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from starlette.types import ASGIApp, Receive, Scope, Send
+from starlette.requests import HTTPConnection
 
 from domain.enums import LanguageEnum
 from application.contracts.managers import AbstractI18nManager
+from presentation.shared import CookieConstants
 
 
 class WsLocaleMiddleware:
     """
     Middleware for detecting language from user settings and activating gettext translations for WebSocket connections.
     """
-    _app: ASGIApp
-    _i18n_manager: AbstractI18nManager
+    app: ASGIApp
+    i18n_manager: AbstractI18nManager
 
     def __init__(
         self,
         app: ASGIApp,
         i18n_manager: AbstractI18nManager
     ):
-        self._app = app
-        self._i18n_manager = i18n_manager
+        self.app = app
+        self.i18n_manager = i18n_manager
 
     async def __call__(
         self,
@@ -42,10 +44,10 @@ class WsLocaleMiddleware:
         - None.
         """
         if scope["type"] != "websocket":
-            await self._app(scope, receive, send)
+            await self.app(scope, receive, send)
             return
 
-        language = self._i18n_manager.get_default_language()
+        language = self.i18n_manager.get_default_language()
         user = scope.get("state", {}).get("user")
 
         if user:
@@ -53,8 +55,17 @@ class WsLocaleMiddleware:
                 language = LanguageEnum(user.settings.language)
             except (ValueError, TypeError, AttributeError):
                 pass
+        else:
+            connection = HTTPConnection(scope)
+            cookie_language = connection.cookies.get(CookieConstants.LANGUAGE_KEY)
 
-        self._i18n_manager.activate(language)
+            if cookie_language:
+                try:
+                    language = LanguageEnum(cookie_language)
+                except ValueError:
+                    pass
+
+        self.i18n_manager.activate(language)
         scope["state"]["language"] = language
 
-        await self._app(scope, receive, send)
+        await self.app(scope, receive, send)

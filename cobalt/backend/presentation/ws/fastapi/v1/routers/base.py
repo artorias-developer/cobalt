@@ -5,17 +5,15 @@
 
 from typing import Callable, List
 
-from fastapi import WebSocket, WebSocketException
+from fastapi import WebSocket
 
 from domain.exceptions import (
     PermissionsError,
     AuthenticationError
 )
 from domain.enums import PermissionEnum
-from application.contracts.managers import AbstractI18nManager
 from application.contracts.services import AbstractAuthService
 from application.dtos import UserDto
-from presentation.ws.shared import WebSocketStatusCodesEnum
 
 
 class BaseWsRouter:
@@ -23,19 +21,12 @@ class BaseWsRouter:
     Base WebSockets router.
     """
     auth_service: AbstractAuthService
-    i18n_manager: AbstractI18nManager
-
-    _: Callable
 
     def __init__(
         self,
-        auth_service: AbstractAuthService,
-        i18n_manager: AbstractI18nManager
+        auth_service: AbstractAuthService
     ):
         self.auth_service = auth_service
-        self.i18n_manager = i18n_manager
-
-        self._ = i18n_manager.gettext
 
     async def ws_session_required(
         self,
@@ -56,10 +47,7 @@ class BaseWsRouter:
         user = getattr(websocket.state, "user", None)
 
         if not user:
-            raise WebSocketException(
-                code=WebSocketStatusCodesEnum.WS_4401_UNAUTHORIZED,
-                reason=self._("Invalid session")
-            )
+            raise AuthenticationError("Invalid session")
 
         return user
 
@@ -84,10 +72,10 @@ class BaseWsRouter:
             user = getattr(websocket.state, "user", None)
 
             if not user:
-                raise AuthenticationError(self._("Invalid session"))
+                raise AuthenticationError("Invalid session")
 
             if not any(permission in user.role.permissions for permission in permissions):
-                raise PermissionsError(self._("Not enough permissions"))
+                raise PermissionsError("Not enough permissions")
 
             return user
 

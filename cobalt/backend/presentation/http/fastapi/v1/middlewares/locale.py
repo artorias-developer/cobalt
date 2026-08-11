@@ -8,22 +8,23 @@ from starlette.requests import Request
 
 from domain.enums import LanguageEnum
 from application.contracts.managers import AbstractI18nManager
+from presentation.shared import CookieConstants
 
 
 class HttpLocaleMiddleware:
     """
     Middleware for detecting language from user settings and activating gettext translations.
     """
-    _app: ASGIApp
-    _i18n_manager: AbstractI18nManager
+    app: ASGIApp
+    i18n_manager: AbstractI18nManager
 
     def __init__(
         self,
         app: ASGIApp,
         i18n_manager: AbstractI18nManager
     ):
-        self._app = app
-        self._i18n_manager = i18n_manager
+        self.app = app
+        self.i18n_manager = i18n_manager
 
     async def __call__(
         self,
@@ -43,11 +44,11 @@ class HttpLocaleMiddleware:
         - None.
         """
         if scope["type"] != "http":
-            await self._app(scope, receive, send)
+            await self.app(scope, receive, send)
             return
 
         request = Request(scope)
-        language = self._i18n_manager.get_default_language()
+        language = self.i18n_manager.get_default_language()
         user = getattr(request.state, "user", None)
 
         if user:
@@ -55,8 +56,16 @@ class HttpLocaleMiddleware:
                 language = LanguageEnum(user.settings.language)
             except (ValueError, TypeError, AttributeError):
                 pass
+        else:
+            cookie_language = request.cookies.get(CookieConstants.LANGUAGE_KEY)
 
-        self._i18n_manager.activate(language)
+            if cookie_language:
+                try:
+                    language = LanguageEnum(cookie_language)
+                except ValueError:
+                    pass
+
+        self.i18n_manager.activate(language)
         scope["state"]["language"] = language
 
-        await self._app(scope, receive, send)
+        await self.app(scope, receive, send)

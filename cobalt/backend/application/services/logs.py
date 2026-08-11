@@ -4,7 +4,7 @@
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from asyncio import Task, Event, Lock, create_task, sleep
-from typing import List, Dict, Optional, Callable
+from typing import List, Dict, Optional
 
 from domain.enums import EnvironmentEnum
 from domain.exceptions import NotFoundError
@@ -15,10 +15,7 @@ from application.contracts.services import (
 from application.contracts.games import AbstractGameModule
 from application.contracts.mappers import AbstractLogsServiceMapper
 from application.contracts.clients import AbstractContainersClient
-from application.contracts.managers import (
-    AbstractConnectionsManager,
-    AbstractI18nManager
-)
+from application.contracts.managers import AbstractConnectionsManager
 from application.clients.containers.shared import ContainersConstants
 from application.managers.connections.shared import RoomsConstants
 from application.managers.events.shared import LogsEventsEnum
@@ -40,10 +37,7 @@ class LogsService(AbstractLogsService):
     containers_client: AbstractContainersClient
     connections_manager: AbstractConnectionsManager
     servers_service: AbstractServersService
-    i18n_manager: AbstractI18nManager
     game_modules: Dict[str, AbstractGameModule]
-
-    _: Callable
 
     def __init__(
         self,
@@ -51,7 +45,6 @@ class LogsService(AbstractLogsService):
         containers_client: AbstractContainersClient,
         connections_manager: AbstractConnectionsManager,
         servers_service: AbstractServersService,
-        i18n_manager: AbstractI18nManager,
         game_modules: Dict[str, AbstractGameModule],
         app_environment: EnvironmentEnum
     ):
@@ -59,10 +52,8 @@ class LogsService(AbstractLogsService):
         self.containers_client = containers_client
         self.connections_manager = connections_manager
         self.servers_service = servers_service
-        self.i18n_manager = i18n_manager
         self.game_modules = game_modules
 
-        self._ = i18n_manager.gettext
         self._streaming_tasks = {}
         self._HOST_CONTAINER = f"{app_environment}_cobalt_backend"
 
@@ -253,7 +244,7 @@ class LogsService(AbstractLogsService):
         )
 
         if not logs:
-            raise NotFoundError(self._("Logs for host not found"))
+            raise NotFoundError("Logs for host not found")
 
         return self.logs_mapper.dataclasses_to_dtos(
             dataclasses=logs
@@ -277,7 +268,7 @@ class LogsService(AbstractLogsService):
         )
 
         if not server:
-            raise NotFoundError(self._("Server with ID {server_id} not found").format(server_id=server_id))
+            raise NotFoundError("Server with ID {server_id} not found", server_id=server_id)
 
         container_name = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
             server_id=server_id
@@ -293,7 +284,7 @@ class LogsService(AbstractLogsService):
         )
 
         if not logs:
-            raise NotFoundError(self._("Logs for server with ID {server_id} not found").format(server_id=server_id))
+            raise NotFoundError("Logs for server with ID {server_id} not found", server_id=server_id)
 
         return self.logs_mapper.dataclasses_to_dtos(
             dataclasses=logs
