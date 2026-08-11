@@ -9,7 +9,7 @@ import { watch } from "vue"
 import type { Composer } from "vue-i18n"
 
 import { useUserStore } from "@/stores"
-import { LanguageEnum, RolesEventEnum } from "@/types"
+import { CookieEnum, LanguageEnum, RolesEventEnum } from "@/types"
 import type { RoleEntity } from "@/types"
 
 import type { createWebSocketClient, createLocaleHelper } from "@/boostrap/factories"
@@ -53,7 +53,14 @@ export function setupLanguageWatch(i18n: ReturnType<typeof setupI18n>): void {
   watch(
     () => userStore.user?.settings?.language,
     (language) => {
-      if (language) (i18n.global as unknown as Composer).locale.value = language as LanguageEnum
+      const cookieMatch = document.cookie.match(
+        new RegExp(`(?:^|; )${CookieEnum.LANGUAGE_KEY}=([^;]*)`)
+      )
+      const resolvedLanguage = language ?? (cookieMatch?.[1] ? decodeURIComponent(cookieMatch[1]) : undefined)
+
+      if (resolvedLanguage) {
+        (i18n.global as unknown as Composer).locale.value = resolvedLanguage as LanguageEnum
+      }
     },
     { immediate: true }
   )

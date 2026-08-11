@@ -8,6 +8,7 @@ from starlette.requests import Request
 
 from domain.enums import LanguageEnum
 from application.contracts.managers import AbstractI18nManager
+from presentation.shared import CookieConstants
 
 
 class HttpLocaleMiddleware:
@@ -55,6 +56,14 @@ class HttpLocaleMiddleware:
                 language = LanguageEnum(user.settings.language)
             except (ValueError, TypeError, AttributeError):
                 pass
+        else:
+            cookie_language = request.cookies.get(CookieConstants.LANGUAGE_KEY)
+
+            if cookie_language:
+                try:
+                    language = LanguageEnum(cookie_language)
+                except ValueError:
+                    pass
 
         self.i18n_manager.activate(language)
         scope["state"]["language"] = language

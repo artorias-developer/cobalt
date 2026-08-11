@@ -4,9 +4,11 @@
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from starlette.types import ASGIApp, Receive, Scope, Send
+from starlette.requests import HTTPConnection
 
 from domain.enums import LanguageEnum
 from application.contracts.managers import AbstractI18nManager
+from presentation.shared import CookieConstants
 
 
 class WsLocaleMiddleware:
@@ -53,6 +55,15 @@ class WsLocaleMiddleware:
                 language = LanguageEnum(user.settings.language)
             except (ValueError, TypeError, AttributeError):
                 pass
+        else:
+            connection = HTTPConnection(scope)
+            cookie_language = connection.cookies.get(CookieConstants.LANGUAGE_KEY)
+
+            if cookie_language:
+                try:
+                    language = LanguageEnum(cookie_language)
+                except ValueError:
+                    pass
 
         self.i18n_manager.activate(language)
         scope["state"]["language"] = language

@@ -114,6 +114,21 @@ class HttpAuthRouter(AbstractHttpAuthRouter, HttpBaseRouter):
             max_age=CookieConstants.EXPIRATION_SECONDS
         )
 
+        user_dto = await self.auth_service.get_session_user(
+            session_id=response_dto.session_id
+        )
+
+        if user_dto:
+            response.set_cookie(
+                key=CookieConstants.LANGUAGE_KEY,
+                value=user_dto.settings.language,
+                httponly=False,
+                secure=True,
+                samesite="strict",
+                path="/",
+                max_age=CookieConstants.EXPIRATION_SECONDS
+            )
+
         return response
 
     async def logout(
