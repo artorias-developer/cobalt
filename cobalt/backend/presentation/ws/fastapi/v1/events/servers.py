@@ -6,10 +6,7 @@
 from fastapi import APIRouter, Depends
 
 from domain.enums import PermissionEnum
-from application.contracts.managers import (
-    AbstractEventsManager,
-    AbstractI18nManager
-)
+from application.contracts.managers import AbstractEventsManager
 from application.contracts.services import (
     AbstractAuthService,
     AbstractServersService
@@ -32,10 +29,9 @@ class WsServersEvents(AbstractWsServersEvents, BaseWsRouter):
         router: APIRouter,
         events_manager: AbstractEventsManager,
         servers_service: AbstractServersService,
-        auth_service: AbstractAuthService,
-        i18n_manager: AbstractI18nManager
+        auth_service: AbstractAuthService
     ):
-        BaseWsRouter.__init__(self, auth_service, i18n_manager)
+        BaseWsRouter.__init__(self, auth_service)
 
         self.router = router
         self.events_manager = events_manager

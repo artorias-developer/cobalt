@@ -5,10 +5,7 @@
 
 from fastapi import Depends, APIRouter
 
-from application.contracts.managers import (
-    AbstractEventsManager,
-    AbstractI18nManager
-)
+from application.contracts.managers import AbstractEventsManager
 from application.contracts.services import AbstractAuthService
 from presentation.contracts.ws.routers import AbstractWsEventsRouter
 from presentation.ws.fastapi.v1.routers import BaseWsRouter
@@ -25,10 +22,9 @@ class WsEventsRouter(AbstractWsEventsRouter, BaseWsRouter):
         self,
         router: APIRouter,
         events_manager: AbstractEventsManager,
-        auth_service: AbstractAuthService,
-        i18n_manager: AbstractI18nManager
+        auth_service: AbstractAuthService
     ):
-        super().__init__(auth_service, i18n_manager)
+        super().__init__(auth_service)
 
         self.router = router
         self.events_manager = events_manager

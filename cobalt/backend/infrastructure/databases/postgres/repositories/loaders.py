@@ -3,7 +3,7 @@
 #  Repository: https://github.com/artorias-developer/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-from typing import Optional, Callable
+from typing import Optional
 
 from sqlalchemy import select, delete
 from sqlalchemy.exc import IntegrityError
@@ -19,7 +19,6 @@ from domain.entities import (
     LoaderUpdateEntity
 )
 from domain.repositories import AbstractLoadersRepository
-from application.contracts.managers import AbstractI18nManager
 from application.contracts.loggers import AbstractLogger
 from infrastructure.contracts.databases.mappers import AbstractLoadersRepositoryMapper
 from infrastructure.databases.postgres.models import LoaderModel
@@ -35,25 +34,18 @@ class LoadersRepository(AbstractLoadersRepository, BaseRepository):
     Repository for working with the 'games_loaders' table.
     """
     loaders_mapper: AbstractLoadersRepositoryMapper
-    i18n_manager: AbstractI18nManager
     logger: AbstractLogger
-
-    _: Callable
 
     def __init__(
         self,
         async_session: async_sessionmaker,
         loaders_mapper: AbstractLoadersRepositoryMapper,
-        i18n_manager: AbstractI18nManager,
         logger: AbstractLogger
     ):
         super().__init__(async_session)
 
         self.loaders_mapper = loaders_mapper
-        self.i18n_manager = i18n_manager
         self.logger = logger
-
-        self._ = i18n_manager.gettext
 
     def _handle_integrity_error(
         self,
@@ -80,10 +72,10 @@ class LoadersRepository(AbstractLoadersRepository, BaseRepository):
             ]:
                 loader_name = details.get("name")
 
-                raise ConflictError(self._('Loader "{name}" already exists').format(name=loader_name)) from e
+                raise ConflictError('Loader "{name}" already exists', name=loader_name) from e
 
         self.logger.exception(f"Unhandled DB integrity error during {operation}:")
-        raise UnexpectedError(self._("Internal server error")) from e
+        raise UnexpectedError("Internal server error") from e
 
     async def get_one_by_id(
         self,

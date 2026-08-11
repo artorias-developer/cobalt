@@ -39,8 +39,7 @@ def create_fastapi_managers_container(
     )
 
     events_manager = create_fastapi_events_manager(
-        connections_manager=connections_manager,
-        i18n_manager=i18n_manager
+        connections_manager=connections_manager
     )
 
     archives_managers = create_archives_manager()

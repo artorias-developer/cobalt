@@ -6,7 +6,6 @@
 from fastapi import APIRouter, Depends
 
 from domain.enums import PermissionEnum
-from application.contracts.managers import AbstractI18nManager
 from application.contracts.services import (
     AbstractGamesService,
     AbstractAuthService
@@ -34,10 +33,9 @@ class HttpGamesRouter(AbstractHttpGamesRouter, HttpBaseRouter):
         router: APIRouter,
         games_service: AbstractGamesService,
         games_mapper: AbstractGamesRouterMapper,
-        auth_service: AbstractAuthService,
-        i18n_manager: AbstractI18nManager
+        auth_service: AbstractAuthService
     ):
-        HttpBaseRouter.__init__(self, auth_service, i18n_manager)
+        HttpBaseRouter.__init__(self, auth_service)
 
         self.router = router
         self.games_service = games_service

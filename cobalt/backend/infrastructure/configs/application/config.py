@@ -101,7 +101,7 @@ def get_application_config() -> ApplicationConfig:
     )
 
     i18n = I18nSettings(
-        locales_dir=Path(__file__).parents[3] / "infrastructure" / "locales",
+        locales_dir=Path(__file__).parents[3] / "infrastructure" / "locales" / "babel",
         domain="messages",
         default_language=LanguageEnum.EN
     )

@@ -118,8 +118,8 @@ class UserMeSchema(BaseModel):
                 },
                 "settings": {
                     "id": 1,
-                    "language": "english",
-                    "theme": "dark",
+                    "language": "en",
+                    "theme": "cobalt_dark",
                     "timezone": "UTC",
                     "created_at": "2024-01-01T12:00:00",
                     "updated_at": "2024-01-02T12:00:00"

@@ -13,7 +13,7 @@ export PYTHONPATH := $(shell pwd)/cobalt/backend
     alembic-downgrade a\:d \
     branches-local-delete b\:l\:d \
     locales-init l\:i \
-    locales-generate l\:g \
+    locales-extract l\:e \
     locales-update l\:u \
     locales-compile l\:c
 
@@ -62,18 +62,18 @@ branches-local-delete:
 b\:l\:d: branches-local-delete
 
 locales-init:
-	pybabel init -i cobalt/backend/infrastructure/locales/messages.pot -d cobalt/backend/infrastructure/locales -l $(locale)
+	pybabel init -i cobalt/backend/infrastructure/locales/babel/messages.pot -d cobalt/backend/infrastructure/locales/babel -l $(locale)
 l\:i: locales-init
 
-locales-generate:
-	mkdir -p cobalt/backend/infrastructure/locales
-	pybabel extract -F cobalt/backend/babel.cfg -o cobalt/backend/infrastructure/locales/messages.pot cobalt/backend/ --no-wrap
-l\:g: locales-generate
+locales-extract:
+	mkdir -p cobalt/backend/infrastructure/locales/babel
+	pybabel extract -F cobalt/backend/babel.cfg -o cobalt/backend/infrastructure/locales/babel/messages.pot cobalt/backend/ --no-wrap
+l\:e: locales-extract
 
 locales-update:
-	pybabel update -i cobalt/backend/infrastructure/locales/messages.pot -d cobalt/backend/infrastructure/locales --no-wrap --no-fuzzy-matching --ignore-obsolete
+	pybabel update -i cobalt/backend/infrastructure/locales/babel/messages.pot -d cobalt/backend/infrastructure/locales/babel --no-wrap --no-fuzzy-matching --ignore-obsolete
 l\:u: locales-update
 
 locales-compile:
-	pybabel compile -d cobalt/backend/infrastructure/locales
+	pybabel compile -d cobalt/backend/infrastructure/locales/babel
 l\:c: locales-compile

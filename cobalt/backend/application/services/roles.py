@@ -3,16 +3,13 @@
 #  Repository: https://github.com/artorias-developer/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-from typing import List, Callable
+from typing import List
 
 from orjson import loads
 
 from domain.exceptions import NotFoundError
 from domain.repositories import AbstractRolesRepository
-from application.contracts.managers import (
-    AbstractConnectionsManager,
-    AbstractI18nManager
-)
+from application.contracts.managers import AbstractConnectionsManager
 from application.contracts.clients import AbstractCachesClient
 from application.contracts.services import AbstractRolesService
 from application.contracts.mappers import AbstractRolesServiceMapper
@@ -35,25 +32,18 @@ class RolesService(AbstractRolesService):
     roles_repository: AbstractRolesRepository
     roles_mapper: AbstractRolesServiceMapper
     connections_manager: AbstractConnectionsManager
-    i18n_manager: AbstractI18nManager
-
-    _: Callable
 
     def __init__(
         self,
         caches_client: AbstractCachesClient,
         roles_repository: AbstractRolesRepository,
         roles_mapper: AbstractRolesServiceMapper,
-        connections_manager: AbstractConnectionsManager,
-        i18n_manager: AbstractI18nManager
+        connections_manager: AbstractConnectionsManager
     ):
         self.caches_client = caches_client
         self.roles_repository = roles_repository
         self.roles_mapper = roles_mapper
         self.connections_manager = connections_manager
-        self.i18n_manager = i18n_manager
-
-        self._ = i18n_manager.gettext
 
     async def get_page(
         self,
@@ -94,7 +84,7 @@ class RolesService(AbstractRolesService):
         )
 
         if not received_entity.roles:
-            raise NotFoundError(self._("Roles not found"))
+            raise NotFoundError("Roles not found")
 
         mapped_dto = self.roles_mapper.page_entity_to_dto(
             entity=received_entity
@@ -139,7 +129,7 @@ class RolesService(AbstractRolesService):
         )
 
         if not received_entity:
-            raise NotFoundError(self._("Role {role_id} not found").format(role_id=role_id))
+            raise NotFoundError("Role {role_id} not found", role_id=role_id)
 
         mapped_dto = self.roles_mapper.entity_to_dto(
             entity=received_entity
@@ -209,7 +199,7 @@ class RolesService(AbstractRolesService):
         )
 
         if not updated_entity:
-            raise NotFoundError(self._("Role {role_id} not found").format(role_id=role_id))
+            raise NotFoundError("Role {role_id} not found", role_id=role_id)
 
         await self.caches_client.delete(
             patterns=[
@@ -274,7 +264,7 @@ class RolesService(AbstractRolesService):
         )
 
         if not deleted_entity:
-            raise NotFoundError(self._("Role {role_id} not found").format(role_id=role_id))
+            raise NotFoundError("Role {role_id} not found", role_id=role_id)
 
         await self.caches_client.delete(
             patterns=[
@@ -313,7 +303,7 @@ class RolesService(AbstractRolesService):
         )
 
         if not deleted_entities:
-            raise NotFoundError(self._("Roles not found"))
+            raise NotFoundError("Roles not found")
 
         patterns_to_delete = [
             self.caches_client.format_pattern(

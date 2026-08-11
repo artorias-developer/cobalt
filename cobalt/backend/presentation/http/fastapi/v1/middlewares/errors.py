@@ -1,8 +1,3 @@
-#  Copyright (C) 2026 Artorias
-#  Author: Artorias
-#  Repository: https://github.com/artorias-developer/cobalt
-#  SPDX-License-Identifier: AGPL-3.0-or-later
-
 from typing import Tuple, Dict, Type
 
 from fastapi import status
@@ -19,6 +14,7 @@ from domain.exceptions import (
     ConflictError
 )
 from application.contracts.loggers import AbstractLogger
+from application.contracts.managers import AbstractI18nManager
 
 
 EXCEPTION_TO_HTTP_STATUS: Dict[Type[BaseError], int] = {
@@ -35,14 +31,17 @@ class HttpErrorsMiddleware:
     Handles errors when processing HTTP requests.
     """
     app: ASGIApp
+    i18n_manager: AbstractI18nManager
     logger: AbstractLogger
 
     def __init__(
         self,
         app: ASGIApp,
+        i18n_manager: AbstractI18nManager,
         logger: AbstractLogger
     ):
         self.app = app
+        self.i18n_manager = i18n_manager
         self.logger = logger
 
     def get_http_error(
@@ -66,10 +65,11 @@ class HttpErrorsMiddleware:
                 self.logger.warning(f"BaseError subclass {error_type.__name__} not mapped to HTTP status.")
                 status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
 
-            return status_code, str(error)
+            message = self.i18n_manager.gettext(error.error_message).format(**error.kwargs)
+            return status_code, message
 
         self.logger.exception("Unhandled exception occurred:")
-        return status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal server error"
+        return status.HTTP_500_INTERNAL_SERVER_ERROR, self.i18n_manager.gettext("Internal server error")
 
     async def __call__(
         self,

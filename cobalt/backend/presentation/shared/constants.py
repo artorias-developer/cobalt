@@ -8,4 +8,5 @@ class CookieConstants:
     Cookie-related constants.
     """
     SESSION_KEY: str = "session_id"
+    LANGUAGE_KEY: str = "language"
     EXPIRATION_SECONDS: int = 365 * 24 * 60 * 60

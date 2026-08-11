@@ -3,13 +3,10 @@
 #  Repository: https://github.com/artorias-developer/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-from typing import Callable
-
 from orjson import loads
 
 from domain.exceptions import NotFoundError
 from domain.repositories import AbstractLoadersRepository
-from application.contracts.managers import AbstractI18nManager
 from application.contracts.clients import AbstractCachesClient
 from application.contracts.services import AbstractLoadersService
 from application.contracts.mappers import AbstractLoadersServiceMapper
@@ -28,23 +25,16 @@ class LoadersService(AbstractLoadersService):
     caches_client: AbstractCachesClient
     loaders_repository: AbstractLoadersRepository
     loaders_mapper: AbstractLoadersServiceMapper
-    i18n_manager: AbstractI18nManager
-
-    _: Callable
 
     def __init__(
         self,
         caches_client: AbstractCachesClient,
         loaders_repository: AbstractLoadersRepository,
-        loaders_mapper: AbstractLoadersServiceMapper,
-        i18n_manager: AbstractI18nManager
+        loaders_mapper: AbstractLoadersServiceMapper
     ):
         self.caches_client = caches_client
         self.loaders_repository = loaders_repository
         self.loaders_mapper = loaders_mapper
-        self.i18n_manager = i18n_manager
-
-        self._ = i18n_manager.gettext
 
     async def get_one_by_id(
             self,
@@ -82,10 +72,9 @@ class LoadersService(AbstractLoadersService):
 
         if not received_entity:
             raise NotFoundError(
-                self._('Loader {loader_id} for game {game_id} not found').format(
-                    loader_id=loader_id,
-                    game_id=game_id
-                )
+                'Loader {loader_id} for game {game_id} not found',
+                loader_id=loader_id,
+                game_id=game_id
             )
 
         key = self.caches_client.format_pattern(
@@ -143,10 +132,9 @@ class LoadersService(AbstractLoadersService):
 
         if not received_entity:
             raise NotFoundError(
-                self._('Loader "{name}" for game {game_id} not found').format(
-                    name=name,
-                    game_id=game_id
-                )
+                'Loader "{name}" for game {game_id} not found',
+                name=name,
+                game_id=game_id
             )
 
         key = self.caches_client.format_pattern(
@@ -233,7 +221,7 @@ class LoadersService(AbstractLoadersService):
         )
 
         if not updated_entity:
-            raise NotFoundError(self._("Loader {loader_id} not found").format(loader_id=mapped_entity.id))
+            raise NotFoundError("Loader {loader_id} not found", loader_id=mapped_entity.id)
 
         await self.caches_client.delete(
             patterns=[
@@ -283,7 +271,7 @@ class LoadersService(AbstractLoadersService):
         )
 
         if not deleted_entity:
-            raise NotFoundError(self._("Loader {loader_id} not found").format(loader_id=loader_id))
+            raise NotFoundError("Loader {loader_id} not found", loader_id=loader_id)
 
         await self.caches_client.delete(
             patterns=[

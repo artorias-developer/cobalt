@@ -4,9 +4,9 @@
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from fastapi import APIRouter, Request, Response, Depends, Body, status
+from starlette.responses import JSONResponse
 
 from domain.enums import PermissionEnum
-from application.contracts.managers import AbstractI18nManager
 from application.contracts.services import (
     AbstractSettingsService,
     AbstractAuthService
@@ -18,6 +18,7 @@ from presentation.http.fastapi.v1.schemas import (
     SettingsSchema,
     SettingsUpdateSchema
 )
+from presentation.shared import CookieConstants
 
 
 class HttpSettingsRouter(AbstractHttpSettingsRouter, HttpBaseRouter):
@@ -33,10 +34,9 @@ class HttpSettingsRouter(AbstractHttpSettingsRouter, HttpBaseRouter):
         router: APIRouter,
         settings_service: AbstractSettingsService,
         settings_mapper: AbstractSettingsRouterMapper,
-        auth_service: AbstractAuthService,
-        i18n_manager: AbstractI18nManager
+        auth_service: AbstractAuthService
     ):
-        HttpBaseRouter.__init__(self, auth_service, i18n_manager)
+        HttpBaseRouter.__init__(self, auth_service)
 
         self.router = router
         self.settings_service = settings_service
@@ -64,7 +64,8 @@ class HttpSettingsRouter(AbstractHttpSettingsRouter, HttpBaseRouter):
             path="/me",
             endpoint=self.update_me,
             methods=["PATCH"],
-            operation_id="settings_update_me"
+            operation_id="settings_update_me",
+            response_model=SettingsSchema
         )
 
         router.add_api_route(
@@ -101,7 +102,7 @@ class HttpSettingsRouter(AbstractHttpSettingsRouter, HttpBaseRouter):
         self,
         request: Request,
         schema: SettingsUpdateSchema = Body(...)
-    ) -> SettingsSchema:
+    ) -> Response:
         """
         Updates settings for the currently authenticated user.
 
@@ -110,7 +111,7 @@ class HttpSettingsRouter(AbstractHttpSettingsRouter, HttpBaseRouter):
         - schema: SettingsUpdateSchema object.
 
         Returns:
-        - SettingsSchema: SettingsSchema object.
+        - Response: Response object.
         """
         request_dto = self.settings_mapper.update_schema_to_dto(
             schema=schema
@@ -122,9 +123,25 @@ class HttpSettingsRouter(AbstractHttpSettingsRouter, HttpBaseRouter):
             dto=request_dto
         )
 
-        return self.settings_mapper.dto_to_schema(
+        response_schema = self.settings_mapper.dto_to_schema(
             dto=response_dto
         )
+
+        response = JSONResponse(
+            content=response_schema.model_dump(mode="json")
+        )
+
+        response.set_cookie(
+            key=CookieConstants.LANGUAGE_KEY,
+            value=response_dto.language,
+            httponly=False,
+            secure=True,
+            samesite="strict",
+            path="/",
+            max_age=CookieConstants.EXPIRATION_SECONDS
+        )
+
+        return response
 
     async def clear_cache(self) -> Response:
         """
