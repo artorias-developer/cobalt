@@ -6,7 +6,7 @@
 from typing import List
 
 from domain.value_objects import (
-    UserLogin,
+    Login,
     HashedPassword,
     Salt
 )
@@ -53,7 +53,7 @@ class UsersRepositoryMapper(AbstractUsersRepositoryMapper):
         """
         return UserEntity(
             id=model.id,
-            login=UserLogin(model.login),
+            login=Login(model.login),
             hashed_password=HashedPassword(model.hashed_password),
             salt=Salt(model.salt),
             role=self.roles_mapper.model_to_entity(

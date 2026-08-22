@@ -4,11 +4,15 @@
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from datetime import datetime
-from typing import Optional, List, Literal, Annotated
+from typing import Optional, List
 
 from pydantic import BaseModel, Field, ConfigDict, RootModel
 
-from domain.enums import PermissionEnum
+from domain.enums import (
+    PermissionEnum,
+    SortDirectionEnum,
+    RoleSortFieldEnum
+)
 
 
 class RoleSchema(BaseModel):
@@ -111,35 +115,30 @@ class RolesPageSchema(BaseModel):
 class RolesGetPageSchema(BaseModel):
     page: int = Field(
         1,
-        gt=0,
         title="Page",
         description="Page number"
     )
 
     search: Optional[str] = Field(
         None,
-        max_length=100,
-        pattern=r"^[a-zA-Zа-яА-ЯёЁіІїЇєЄ0-9_\-.,' ]+$",
         title="Search",
         description="Search query"
     )
 
-    sort_field: Literal["id", "name", "created_at", "updated_at"] = Field(
-        "id",
+    sort_field: RoleSortFieldEnum = Field(
+        RoleSortFieldEnum.ID,
         title="Sort field",
         description="Field to sort by"
     )
 
-    sort_direction: Literal["asc", "desc"] = Field(
-        "desc",
+    sort_direction: SortDirectionEnum = Field(
+        SortDirectionEnum.DESC,
         title="Sort direction",
         description="Sort direction"
     )
 
     limit: int = Field(
         10,
-        gt=0,
-        le=100,
         title="Limit",
         description="Number of items per page"
     )
@@ -160,9 +159,6 @@ class RolesGetPageSchema(BaseModel):
 class RoleCreateSchema(BaseModel):
     name: str = Field(
         ...,
-        min_length=3,
-        max_length=32,
-        pattern=r"^[a-zA-Zа-яА-ЯёЁіІїЇєЄ0-9_\-' ]+$",
         title="Role name",
         description="Role name"
     )
@@ -189,9 +185,6 @@ class RoleCreateSchema(BaseModel):
 class RoleUpdateSchema(BaseModel):
     name: Optional[str] = Field(
         None,
-        min_length=3,
-        max_length=32,
-        pattern=r"^[a-zA-Zа-яА-ЯёЁіІїЇєЄ0-9_\-' ]+$",
         title="Role name",
         description="Role name"
     )
@@ -216,9 +209,8 @@ class RoleUpdateSchema(BaseModel):
     )
 
 class RolesDeleteSchema(RootModel):
-    root: List[Annotated[int, Field(gt=0)]] = Field(
+    root: List[int] = Field(
         ...,
-        min_length=1,
         title="Role ids",
         description="List of role IDs to delete"
     )

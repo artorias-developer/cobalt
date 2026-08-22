@@ -5,7 +5,7 @@
 
 from redis.asyncio import Redis
 
-from application.contracts.clients import AbstractCachesClient
+from application.contracts.clients import AbstractCacheClient
 from application.contracts.loggers import AbstractLogger
 from infrastructure.clients.caches.redis import RedisClient
 from infrastructure.configs import ApplicationConfig
@@ -14,7 +14,7 @@ from infrastructure.configs import ApplicationConfig
 def create_redis_client(
     config: ApplicationConfig,
     logger: AbstractLogger
-) -> AbstractCachesClient:
+) -> AbstractCacheClient:
     """
     Creates a Redis client.
 
@@ -23,7 +23,7 @@ def create_redis_client(
     - logger: AbstractLogger object.
 
     Returns:
-    - AbstractCachesClient: AbstractCachesClient object.
+    - AbstractCacheClient: AbstractCacheClient object.
     """
     base_client = Redis.from_url(
         url=config.redis.url

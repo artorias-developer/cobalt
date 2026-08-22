@@ -53,7 +53,7 @@ class HttpLogsRouter(AbstractHttpLogsRouter, HttpBaseRouter):
             prefix="/logs",
             tags=["Logs"],
             dependencies=[
-                Depends(self.http_session_required)
+                Depends(self.session_required)
             ]
         )
 
@@ -63,7 +63,7 @@ class HttpLogsRouter(AbstractHttpLogsRouter, HttpBaseRouter):
             methods=["GET"],
             operation_id="logs_host_all",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.DASHBOARD_LOGS_VIEW
                     ]
@@ -77,7 +77,7 @@ class HttpLogsRouter(AbstractHttpLogsRouter, HttpBaseRouter):
             methods=["GET"],
             operation_id="logs_server_all",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_LOGS_VIEW
                     ]

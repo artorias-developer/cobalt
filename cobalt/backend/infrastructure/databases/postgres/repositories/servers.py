@@ -121,14 +121,16 @@ class ServersRepository(AbstractServersRepository, BaseRepository):
             )
 
             if entity.search:
+                search = entity.search.value
+
                 stmt = stmt.filter(
-                    ServerModel.name.ilike(f"%{entity.search}%") |
-                    ServerModel.version.ilike(f"%{entity.search}%") |
+                    ServerModel.name.ilike(f"%{search}%") |
+                    ServerModel.version.ilike(f"%{search}%") |
                     ServerModel.game.has(
-                        GameModel.name.ilike(f"%{entity.search}%")
+                        GameModel.name.ilike(f"%{search}%")
                     ) |
                     ServerModel.loader.has(
-                        LoaderModel.name.ilike(f"%{entity.search}%")
+                        LoaderModel.name.ilike(f"%{search}%")
                     )
                 )
 
@@ -143,7 +145,7 @@ class ServersRepository(AbstractServersRepository, BaseRepository):
                 session=session,
                 stmt=stmt,
                 page=entity.page,
-                limit=entity.limit
+                limit=entity.limit.value
             )
 
             records = cast(List[ServerModel], records)

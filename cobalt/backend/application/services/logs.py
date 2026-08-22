@@ -18,7 +18,7 @@ from application.contracts.clients import AbstractContainersClient
 from application.contracts.managers import AbstractConnectionsManager
 from application.clients.containers.shared import ContainersConstants
 from application.managers.connections.shared import RoomsConstants
-from application.managers.events.shared import LogsEventsEnum
+from application.managers.events.shared import LogEventEnum
 from application.dtos import (
     LogDto,
     LogsSubscribeServerDto,
@@ -320,7 +320,7 @@ class LogsService(AbstractLogsService):
                 self._stream_logs_to_room(
                     room_name=room_name,
                     container_name=self._HOST_CONTAINER,
-                    event=LogsEventsEnum.HOST_LOG
+                    event=LogEventEnum.HOST_LOG
                 )
             )
 
@@ -373,7 +373,7 @@ class LogsService(AbstractLogsService):
                 self._stream_logs_to_room(
                     room_name=room_name,
                     container_name=container_name,
-                    event=LogsEventsEnum.SERVER_LOG,
+                    event=LogEventEnum.SERVER_LOG,
                     server_id=dto.server_id,
                     timestamps=with_timestamps
                 )

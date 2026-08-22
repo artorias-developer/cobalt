@@ -55,7 +55,7 @@ class HttpGamesRouter(AbstractHttpGamesRouter, HttpBaseRouter):
             prefix="/games",
             tags=["Games"],
             dependencies=[
-                Depends(self.http_session_required)
+                Depends(self.session_required)
             ]
         )
 
@@ -65,7 +65,7 @@ class HttpGamesRouter(AbstractHttpGamesRouter, HttpBaseRouter):
             methods=["GET"],
             operation_id="games_get_page",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.GAMES_VIEW,
                         PermissionEnum.SERVERS_CREATE
@@ -80,7 +80,7 @@ class HttpGamesRouter(AbstractHttpGamesRouter, HttpBaseRouter):
             methods=["GET"],
             operation_id="games_get_one",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVERS_CREATE
                     ]

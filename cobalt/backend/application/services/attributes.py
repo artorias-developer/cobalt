@@ -12,7 +12,7 @@ from domain.exceptions import (
     ValidationError
 )
 from domain.repositories import AbstractAttributesRepository
-from application.contracts.clients import AbstractCachesClient
+from application.contracts.clients import AbstractCacheClient
 from application.contracts.services import AbstractAttributesService
 from application.contracts.mappers import AbstractAttributesServiceMapper
 from application.clients.caches.shared import CacheConstants
@@ -29,17 +29,17 @@ class AttributesService(AbstractAttributesService):
     """
     Attributes service.
     """
-    caches_client: AbstractCachesClient
+    cache_client: AbstractCacheClient
     attributes_repository: AbstractAttributesRepository
     attributes_mapper: AbstractAttributesServiceMapper
 
     def __init__(
         self,
-        caches_client: AbstractCachesClient,
+        cache_client: AbstractCacheClient,
         attributes_repository: AbstractAttributesRepository,
         attributes_mapper: AbstractAttributesServiceMapper
     ):
-        self.caches_client = caches_client
+        self.cache_client = cache_client
         self.attributes_repository = attributes_repository
         self.attributes_mapper = attributes_mapper
 
@@ -58,7 +58,7 @@ class AttributesService(AbstractAttributesService):
         Returns:
         - AttributesPageDto: AttributesPageDto object.
         """
-        key = self.caches_client.format_pattern(
+        key = self.cache_client.format_pattern(
             pattern=CacheConstants.ATTRIBUTES_PAGE_KEY,
             server_id=server_id,
             page=dto.page,
@@ -68,7 +68,7 @@ class AttributesService(AbstractAttributesService):
             limit=dto.limit
         )
 
-        cached = await self.caches_client.get(
+        cached = await self.cache_client.get(
             key=key
         )
 
@@ -92,10 +92,10 @@ class AttributesService(AbstractAttributesService):
             entity=received_entity
         )
 
-        await self.caches_client.set(
+        await self.cache_client.set(
             key=key,
             value=mapped_dto.model_dump_json(),
-            expire=CacheConstants.NORMAL_TTL_SECONDS
+            expire=CacheConstants.TTL_1_HOUR
         )
 
         return mapped_dto
@@ -115,13 +115,13 @@ class AttributesService(AbstractAttributesService):
         Returns:
         - AttributeDto: AttributeDto object.
         """
-        search_key = self.caches_client.format_pattern(
+        search_key = self.cache_client.format_pattern(
             pattern=CacheConstants.ATTRIBUTES_ITEM_KEY,
             attribute_id=attribute_id,
             server_id=server_id
         )
 
-        cached = await self.caches_client.get(
+        cached = await self.cache_client.get(
             pattern=search_key
         )
 
@@ -141,7 +141,7 @@ class AttributesService(AbstractAttributesService):
                 attribute_id=attribute_id
             )
 
-        key = self.caches_client.format_pattern(
+        key = self.cache_client.format_pattern(
             pattern=CacheConstants.ATTRIBUTES_ITEM_KEY,
             attribute_id=received_entity.id,
             key=received_entity.key.value,
@@ -152,10 +152,10 @@ class AttributesService(AbstractAttributesService):
             entity=received_entity
         )
 
-        await self.caches_client.set(
+        await self.cache_client.set(
             key=key,
             value=mapped_dto.model_dump_json(),
-            expire=CacheConstants.NORMAL_TTL_SECONDS
+            expire=CacheConstants.TTL_1_HOUR
         )
 
         return mapped_dto
@@ -184,17 +184,17 @@ class AttributesService(AbstractAttributesService):
             entity=mapped_entity
         )
 
-        await self.caches_client.delete(
+        await self.cache_client.delete(
             patterns=[
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.ATTRIBUTES_PAGE_KEY,
                     server_id=server_id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.SERVERS_ITEM_KEY,
                     server_id=server_id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.SERVERS_PAGE_KEY
                 )
             ]
@@ -228,17 +228,17 @@ class AttributesService(AbstractAttributesService):
             entities=mapped_entities
         )
 
-        await self.caches_client.delete(
+        await self.cache_client.delete(
             patterns=[
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.ATTRIBUTES_PAGE_KEY,
                     server_id=server_id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.SERVERS_ITEM_KEY,
                     server_id=server_id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.SERVERS_PAGE_KEY
                 )
             ]
@@ -278,21 +278,21 @@ class AttributesService(AbstractAttributesService):
         if not updated_entity:
             raise NotFoundError("Server or attribute not found")
 
-        await self.caches_client.delete(
+        await self.cache_client.delete(
             patterns=[
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.ATTRIBUTES_ITEM_KEY,
                     attribute_id=updated_entity.id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.ATTRIBUTES_PAGE_KEY,
                     server_id=server_id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.SERVERS_ITEM_KEY,
                     server_id=server_id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.SERVERS_PAGE_KEY
                 )
             ]
@@ -330,28 +330,28 @@ class AttributesService(AbstractAttributesService):
             raise NotFoundError("Server or attributes not found")
 
         patterns_to_delete = [
-            self.caches_client.format_pattern(
+            self.cache_client.format_pattern(
                 pattern=CacheConstants.ATTRIBUTES_PAGE_KEY,
                 server_id=server_id
             ),
-            self.caches_client.format_pattern(
+            self.cache_client.format_pattern(
                 pattern=CacheConstants.SERVERS_ITEM_KEY,
                 server_id=server_id
             ),
-            self.caches_client.format_pattern(
+            self.cache_client.format_pattern(
                 pattern=CacheConstants.SERVERS_PAGE_KEY
             )
         ]
 
         for entity in updated_entities:
             patterns_to_delete.append(
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.ATTRIBUTES_ITEM_KEY,
                     attribute_id=entity.id
                 )
             )
 
-        await self.caches_client.delete(
+        await self.cache_client.delete(
             patterns=patterns_to_delete
         )
 
@@ -382,21 +382,21 @@ class AttributesService(AbstractAttributesService):
         if not deleted_entity:
             raise NotFoundError("Server or attribute not found")
 
-        await self.caches_client.delete(
+        await self.cache_client.delete(
             patterns=[
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.ATTRIBUTES_ITEM_KEY,
                     attribute_id=deleted_entity.id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.ATTRIBUTES_PAGE_KEY,
                     server_id=server_id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.SERVERS_ITEM_KEY,
                     server_id=server_id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.SERVERS_PAGE_KEY
                 )
             ]
@@ -426,27 +426,27 @@ class AttributesService(AbstractAttributesService):
             raise NotFoundError("Server or attributes not found")
 
         patterns_to_delete = [
-            self.caches_client.format_pattern(
+            self.cache_client.format_pattern(
                 pattern=CacheConstants.ATTRIBUTES_PAGE_KEY,
                 server_id=server_id
             ),
-            self.caches_client.format_pattern(
+            self.cache_client.format_pattern(
                 pattern=CacheConstants.SERVERS_ITEM_KEY,
                 server_id=server_id
             ),
-            self.caches_client.format_pattern(
+            self.cache_client.format_pattern(
                 pattern=CacheConstants.SERVERS_PAGE_KEY
             )
         ]
 
         for entity in deleted_entities:
             patterns_to_delete.append(
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.ATTRIBUTES_ITEM_KEY,
                     attribute_id=entity.id
                 )
             )
 
-        await self.caches_client.delete(
+        await self.cache_client.delete(
             patterns=patterns_to_delete
         )

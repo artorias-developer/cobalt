@@ -19,7 +19,7 @@ from domain.repositories import AbstractSettingsRepository
 from application.contracts.loggers import AbstractLogger
 from application.contracts.queues import AbstractQueue
 from application.contracts.managers import AbstractConnectionsManager
-from application.contracts.clients import AbstractCachesClient
+from application.contracts.clients import AbstractCacheClient
 from application.contracts.clients import AbstractContainersClient
 from application.contracts.services import (
     AbstractSettingsService,
@@ -40,7 +40,7 @@ class SettingsService(AbstractSettingsService):
     """
     Settings service.
     """
-    caches_client: AbstractCachesClient
+    cache_client: AbstractCacheClient
     settings_repository: AbstractSettingsRepository
     settings_mapper: AbstractSettingsServiceMapper
     containers_client: AbstractContainersClient
@@ -52,7 +52,7 @@ class SettingsService(AbstractSettingsService):
 
     def __init__(
         self,
-        caches_client: AbstractCachesClient,
+        cache_client: AbstractCacheClient,
         settings_repository: AbstractSettingsRepository,
         settings_mapper: AbstractSettingsServiceMapper,
         containers_client: AbstractContainersClient,
@@ -62,7 +62,7 @@ class SettingsService(AbstractSettingsService):
         logger: AbstractLogger,
         app_containers_dir: Path
     ):
-        self.caches_client = caches_client
+        self.cache_client = cache_client
         self.settings_repository = settings_repository
         self.settings_mapper = settings_mapper
         self.containers_client = containers_client
@@ -206,17 +206,17 @@ class SettingsService(AbstractSettingsService):
         if not updated_entity:
             raise NotFoundError("Settings for user with ID {user_id} not found", user_id=user_id)
 
-        await self.caches_client.delete(
+        await self.cache_client.delete(
             patterns=[
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.SETTINGS_ITEM_KEY,
                     user_id=user_id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.USERS_ITEM_KEY,
                     user_id=user_id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.USERS_PAGE_KEY
                 )
             ]
@@ -241,7 +241,7 @@ class SettingsService(AbstractSettingsService):
         Returns:
         - None.
         """
-        await self.caches_client.clear()
+        await self.cache_client.clear()
 
     async def clear_containers(self) -> None:
         """

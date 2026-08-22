@@ -4,9 +4,10 @@
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from datetime import datetime
-from typing import Optional, List, Literal
+from typing import Optional, List
 
 from application.dtos.base import BaseDto
+from domain.enums import SortDirectionEnum, AttributeSortFieldEnum
 
 
 class AttributeDto(BaseDto):
@@ -26,8 +27,8 @@ class AttributesPageDto(BaseDto):
 class AttributesGetPageDto(BaseDto):
     page: int
     search: Optional[str] = None
-    sort_field: Literal["id", "key", "value", "created_at", "updated_at"] = "id"
-    sort_direction: Literal["asc", "desc"] = "desc"
+    sort_field: AttributeSortFieldEnum = AttributeSortFieldEnum.ID
+    sort_direction: SortDirectionEnum = SortDirectionEnum.DESC
     limit: int = 10
 
 class AttributeCreateDto(BaseDto):

@@ -5,7 +5,7 @@
 
 from typing import Callable, List
 
-from fastapi import WebSocket
+from fastapi import WebSocket, WebSocketException
 
 from domain.exceptions import (
     PermissionsError,
@@ -14,6 +14,7 @@ from domain.exceptions import (
 from domain.enums import PermissionEnum
 from application.contracts.services import AbstractAuthService
 from application.dtos import UserDto
+from presentation.ws.shared import WebSocketStatusCodesEnum
 
 
 class BaseWsRouter:
@@ -28,7 +29,7 @@ class BaseWsRouter:
     ):
         self.auth_service = auth_service
 
-    async def ws_session_required(
+    async def session_required(
         self,
         websocket: WebSocket
     ) -> UserDto:
@@ -47,11 +48,14 @@ class BaseWsRouter:
         user = getattr(websocket.state, "user", None)
 
         if not user:
-            raise AuthenticationError("Invalid session")
+            raise WebSocketException(
+                code=WebSocketStatusCodesEnum.WS_4401_UNAUTHORIZED,
+                reason="Invalid session"
+            )
 
         return user
 
-    def ws_permission_required(
+    def one_of_permissions_required(
         self,
         permissions: List[PermissionEnum]
     ) -> Callable:

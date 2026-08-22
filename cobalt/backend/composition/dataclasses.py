@@ -17,7 +17,7 @@ from domain.repositories import (
     AbstractUsersRepository
 )
 from application.contracts.queues import AbstractQueue
-from application.contracts.clients import AbstractCachesClient
+from application.contracts.clients import AbstractCacheClient
 from application.contracts.mappers import (
     AbstractAttributesServiceMapper,
     AbstractGamesServiceMapper,
@@ -95,7 +95,7 @@ class ManagersContainer:
 
 @dataclass(slots=True)
 class ClientsContainer:
-    caches: AbstractCachesClient
+    caches: AbstractCacheClient
     metrics: AbstractMetricsClient
     containers: AbstractContainersClient
 

@@ -7,7 +7,7 @@ from orjson import loads
 
 from domain.exceptions import NotFoundError
 from domain.repositories import AbstractLoadersRepository
-from application.contracts.clients import AbstractCachesClient
+from application.contracts.clients import AbstractCacheClient
 from application.contracts.services import AbstractLoadersService
 from application.contracts.mappers import AbstractLoadersServiceMapper
 from application.clients.caches.shared import CacheConstants
@@ -22,17 +22,17 @@ class LoadersService(AbstractLoadersService):
     """
     Loaders service.
     """
-    caches_client: AbstractCachesClient
+    cache_client: AbstractCacheClient
     loaders_repository: AbstractLoadersRepository
     loaders_mapper: AbstractLoadersServiceMapper
 
     def __init__(
         self,
-        caches_client: AbstractCachesClient,
+        cache_client: AbstractCacheClient,
         loaders_repository: AbstractLoadersRepository,
         loaders_mapper: AbstractLoadersServiceMapper
     ):
-        self.caches_client = caches_client
+        self.cache_client = cache_client
         self.loaders_repository = loaders_repository
         self.loaders_mapper = loaders_mapper
 
@@ -51,13 +51,13 @@ class LoadersService(AbstractLoadersService):
         Returns:
         - LoaderDto: LoaderDto object.
         """
-        key = self.caches_client.format_pattern(
+        key = self.cache_client.format_pattern(
             pattern=CacheConstants.LOADERS_ITEM_KEY,
             loader_id=loader_id,
             game_id=game_id
         )
 
-        cached = await self.caches_client.get(
+        cached = await self.cache_client.get(
             key=key
         )
 
@@ -77,7 +77,7 @@ class LoadersService(AbstractLoadersService):
                 game_id=game_id
             )
 
-        key = self.caches_client.format_pattern(
+        key = self.cache_client.format_pattern(
             pattern=CacheConstants.LOADERS_ITEM_KEY,
             loader_id=received_entity.id,
             name=received_entity.name.value,
@@ -88,10 +88,10 @@ class LoadersService(AbstractLoadersService):
             entity=received_entity
         )
 
-        await self.caches_client.set(
+        await self.cache_client.set(
             key=key,
             value=mapped_dto.model_dump_json(),
-            expire=CacheConstants.NORMAL_TTL_SECONDS
+            expire=CacheConstants.TTL_1_HOUR
         )
 
         return mapped_dto
@@ -111,13 +111,13 @@ class LoadersService(AbstractLoadersService):
         Returns:
         - LoaderDto: LoaderDto object.
         """
-        key = self.caches_client.format_pattern(
+        key = self.cache_client.format_pattern(
             pattern=CacheConstants.LOADERS_ITEM_KEY,
             name=name,
             game_id=game_id
         )
 
-        cached = await self.caches_client.get(
+        cached = await self.cache_client.get(
             key=key
         )
 
@@ -137,7 +137,7 @@ class LoadersService(AbstractLoadersService):
                 game_id=game_id
             )
 
-        key = self.caches_client.format_pattern(
+        key = self.cache_client.format_pattern(
             pattern=CacheConstants.LOADERS_ITEM_KEY,
             loader_id=received_entity.id,
             name=received_entity.name.value,
@@ -148,10 +148,10 @@ class LoadersService(AbstractLoadersService):
             entity=received_entity
         )
 
-        await self.caches_client.set(
+        await self.cache_client.set(
             key=key,
             value=mapped_dto.model_dump_json(),
-            expire=CacheConstants.NORMAL_TTL_SECONDS
+            expire=CacheConstants.TTL_1_HOUR
         )
 
         return mapped_dto
@@ -180,13 +180,13 @@ class LoadersService(AbstractLoadersService):
             entity=mapped_entity
         )
 
-        await self.caches_client.delete(
+        await self.cache_client.delete(
             patterns=[
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.GAMES_ITEM_KEY,
                     game_id=created_entity.game_id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.GAMES_PAGE_KEY
                 )
             ]
@@ -223,24 +223,24 @@ class LoadersService(AbstractLoadersService):
         if not updated_entity:
             raise NotFoundError("Loader {loader_id} not found", loader_id=mapped_entity.id)
 
-        await self.caches_client.delete(
+        await self.cache_client.delete(
             patterns=[
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.LOADERS_ITEM_KEY,
                     loader_id=updated_entity.id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.GAMES_ITEM_KEY,
                     game_id=updated_entity.game_id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.GAMES_PAGE_KEY
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.SERVERS_ITEM_KEY,
                     loader_id=updated_entity.id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.SERVERS_PAGE_KEY
                 )
             ]
@@ -273,24 +273,24 @@ class LoadersService(AbstractLoadersService):
         if not deleted_entity:
             raise NotFoundError("Loader {loader_id} not found", loader_id=loader_id)
 
-        await self.caches_client.delete(
+        await self.cache_client.delete(
             patterns=[
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.LOADERS_ITEM_KEY,
                     loader_id=loader_id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.GAMES_ITEM_KEY,
                     game_id=deleted_entity.game_id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.GAMES_PAGE_KEY
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.SERVERS_ITEM_KEY,
                     loader_id=loader_id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.SERVERS_PAGE_KEY
                 )
             ]

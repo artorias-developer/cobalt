@@ -41,3 +41,29 @@ class LoaderName(AbstractValueObject):
             value=self.value,
             pattern=self._PATTERN
         )
+
+@dataclass(frozen=True, slots=True)
+class LoaderVersion(AbstractValueObject):
+    """
+    Loader version value object.
+    """
+    value: str
+
+    _MIN_LENGTH: ClassVar[int] = 1
+    _MAX_LENGTH: ClassVar[int] = 16
+
+    def _validate(self) -> None:
+        """
+        Validates the loader version.
+
+        Parameters:
+        - value: Value to validate.
+
+        Returns:
+        - None.
+        """
+        self._validate_length(
+            value=self.value,
+            min_length=self._MIN_LENGTH,
+            max_length=self._MAX_LENGTH
+        )

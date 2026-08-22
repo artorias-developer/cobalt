@@ -61,7 +61,7 @@ class HttpServersRouter(AbstractHttpServersRouter, HttpBaseRouter):
             prefix="/servers",
             tags=["Servers"],
             dependencies=[
-                Depends(self.http_session_required)
+                Depends(self.session_required)
             ]
         )
 
@@ -71,7 +71,7 @@ class HttpServersRouter(AbstractHttpServersRouter, HttpBaseRouter):
             methods=["DELETE"],
             operation_id="servers_delete_many",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVERS_DELETE
                     ]
@@ -85,7 +85,7 @@ class HttpServersRouter(AbstractHttpServersRouter, HttpBaseRouter):
             methods=["GET"],
             operation_id="servers_get_page",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVERS_VIEW
                     ]
@@ -99,7 +99,7 @@ class HttpServersRouter(AbstractHttpServersRouter, HttpBaseRouter):
             methods=["GET"],
             operation_id="servers_get_one",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVERS_VIEW
                     ]
@@ -113,7 +113,7 @@ class HttpServersRouter(AbstractHttpServersRouter, HttpBaseRouter):
             methods=["POST"],
             operation_id="servers_create_one",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVERS_CREATE
                     ]
@@ -127,7 +127,7 @@ class HttpServersRouter(AbstractHttpServersRouter, HttpBaseRouter):
             methods=["PATCH"],
             operation_id="servers_update_one",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_UPDATE
                     ]
@@ -141,7 +141,7 @@ class HttpServersRouter(AbstractHttpServersRouter, HttpBaseRouter):
             methods=["PATCH"],
             operation_id="servers_upgrade_one",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_SETTINGS_UPDATE
                     ]
@@ -155,7 +155,7 @@ class HttpServersRouter(AbstractHttpServersRouter, HttpBaseRouter):
             methods=["DELETE"],
             operation_id="servers_delete_one",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVERS_DELETE
                     ]
@@ -169,7 +169,7 @@ class HttpServersRouter(AbstractHttpServersRouter, HttpBaseRouter):
             methods=["POST"],
             operation_id="servers_start",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_START
                     ]
@@ -183,7 +183,7 @@ class HttpServersRouter(AbstractHttpServersRouter, HttpBaseRouter):
             methods=["POST"],
             operation_id="servers_stop",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_STOP
                     ]
@@ -197,7 +197,7 @@ class HttpServersRouter(AbstractHttpServersRouter, HttpBaseRouter):
             methods=["POST"],
             operation_id="servers_restart",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_START
                     ]
@@ -211,7 +211,7 @@ class HttpServersRouter(AbstractHttpServersRouter, HttpBaseRouter):
             methods=["POST"],
             operation_id="servers_execute",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_CONSOLE_EXECUTE
                     ]
@@ -225,7 +225,7 @@ class HttpServersRouter(AbstractHttpServersRouter, HttpBaseRouter):
             methods=["GET"],
             operation_id="servers_status",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_VIEW
                     ]

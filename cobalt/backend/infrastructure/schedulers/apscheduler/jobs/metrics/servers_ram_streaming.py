@@ -7,7 +7,7 @@ from domain.exceptions import NotFoundError
 from application.contracts.services import AbstractMetricsService
 from application.contracts.managers import AbstractConnectionsManager
 from application.contracts.loggers import AbstractLogger
-from application.managers.events.shared import MetricsEventsEnum
+from application.managers.events.shared import MetricEventEnum
 from infrastructure.schedulers.apscheduler.jobs import BaseApschedulerJob
 
 
@@ -79,7 +79,7 @@ class ServersRamMetricsStreamingJob(BaseApschedulerJob):
                 room_name=room_name,
                 data={
                     "type": "message",
-                    "event": MetricsEventsEnum.SERVER_RAM_METRIC,
+                    "event": MetricEventEnum.SERVER_RAM_METRIC,
                     "server_id": server_id,
                     "data": metric.model_dump(mode="json")
                 }

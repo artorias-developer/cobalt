@@ -4,9 +4,14 @@
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from datetime import datetime
-from typing import List, Literal, Optional, Annotated
+from typing import List, Optional
 
 from pydantic import BaseModel, Field, ConfigDict, RootModel
+
+from domain.enums import (
+    SortDirectionEnum,
+    AttributeSortFieldEnum
+)
 
 
 class AttributeSchema(BaseModel):
@@ -109,35 +114,30 @@ class AttributesPageSchema(BaseModel):
 class AttributesGetPageSchema(BaseModel):
     page: int = Field(
         1,
-        gt=0,
         title="Page",
         description="Page number"
     )
 
     search: Optional[str] = Field(
         None,
-        max_length=100,
-        pattern=r"^[a-zA-Z0-9_\-]+$",
         title="Search",
         description="Search query (by key or value)"
     )
 
-    sort_field: Literal["id", "key", "value", "created_at", "updated_at"] = Field(
-        "id",
+    sort_field: AttributeSortFieldEnum = Field(
+        AttributeSortFieldEnum.ID,
         title="Sort field",
         description="Field to sort by"
     )
 
-    sort_direction: Literal["asc", "desc"] = Field(
-        "desc",
+    sort_direction: SortDirectionEnum = Field(
+        SortDirectionEnum.DESC,
         title="Sort direction",
         description="Sort direction"
     )
 
     limit: int = Field(
         10,
-        gt=0,
-        le=100,
         title="Limit",
         description="Number of items per page"
     )
@@ -158,9 +158,6 @@ class AttributesGetPageSchema(BaseModel):
 class AttributeCreateSchema(BaseModel):
     key: str = Field(
         ...,
-        min_length=1,
-        max_length=64,
-        pattern=r"^[a-zA-Z0-9_]+$",
         title="Attribute key",
         description="Attribute key"
     )
@@ -184,9 +181,6 @@ class AttributeCreateSchema(BaseModel):
 class AttributeUpdateSchema(BaseModel):
     key: Optional[str] = Field(
         None,
-        min_length=1,
-        max_length=64,
-        pattern=r"^[a-zA-Z0-9_]+$",
         title="Attribute key",
         description="Attribute key"
     )
@@ -226,19 +220,14 @@ class AttributesUpdateSchema(AttributeUpdateSchema):
     )
 
 class AttributesDeleteSchema(RootModel):
-    root: List[Annotated[int, Field(gt=0)]] = Field(
+    root: List[int] = Field(
         ...,
-        min_length=1,
-        max_length=100,
         title="Attribute ids",
         description="List of attribute IDs to delete"
     )
 
     model_config = ConfigDict(
         json_schema_extra={
-            "example": [
-                1,
-                2
-            ]
+            "example": [1, 2, 3]
         }
     )

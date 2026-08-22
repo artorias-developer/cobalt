@@ -5,7 +5,10 @@
 
 from typing import List
 
-from domain.value_objects import LoaderName
+from domain.value_objects import (
+    LoaderName,
+    LoaderVersion
+)
 from domain.entities import (
     LoaderEntity,
     LoaderCreateEntity,
@@ -37,7 +40,7 @@ class LoadersRepositoryMapper(AbstractLoadersRepositoryMapper):
             id=model.id,
             game_id=model.game_id,
             name=LoaderName(model.name),
-            versions=model.versions,
+            versions=[LoaderVersion(version) for version in model.versions],
             created_at=model.created_at,
             updated_at=model.updated_at
         )
@@ -78,7 +81,7 @@ class LoadersRepositoryMapper(AbstractLoadersRepositoryMapper):
         return LoaderModel(
             game_id=game_id,
             name=entity.name.value,
-            versions=entity.versions
+            versions=[version.value for version in entity.versions]
         )
 
     def update_entity_to_model(
@@ -100,6 +103,6 @@ class LoadersRepositoryMapper(AbstractLoadersRepositoryMapper):
             model.name = entity.name.value
 
         if entity.versions is not None:
-            model.versions = entity.versions
+            model.versions = [version.value for version in entity.versions]
 
         return model

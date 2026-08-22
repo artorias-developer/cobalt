@@ -30,7 +30,7 @@ def create_clients_container(
     Returns:
     - ClientsContainer: ClientsContainer object.
     """
-    caches_client = create_redis_client(
+    cache_client = create_redis_client(
         config=config,
         logger=logger
     )
@@ -43,7 +43,7 @@ def create_clients_container(
     containers_client = create_docker_client()
 
     return ClientsContainer(
-        caches=caches_client,
+        caches=cache_client,
         metrics=metrics_client,
         containers=containers_client
     )

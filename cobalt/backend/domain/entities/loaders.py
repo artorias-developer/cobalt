@@ -7,7 +7,10 @@ from datetime import datetime
 from typing import Optional, List
 from dataclasses import dataclass, field
 
-from domain.value_objects import LoaderName
+from domain.value_objects import (
+    LoaderName,
+    LoaderVersion
+)
 
 
 @dataclass(slots=True)
@@ -15,17 +18,17 @@ class LoaderEntity:
     id: int
     game_id: int
     name: LoaderName
-    versions: List[str]
+    versions: List[LoaderVersion]
     created_at: datetime
     updated_at: datetime
 
 @dataclass(slots=True)
 class LoaderCreateEntity:
     name: LoaderName
-    versions: List[str]
+    versions: List[LoaderVersion]
 
 @dataclass(slots=True)
 class LoaderUpdateEntity:
     id: int
     name: Optional[LoaderName] = None
-    versions: List[str] = field(default_factory=list)
+    versions: List[LoaderVersion] = field(default_factory=list)

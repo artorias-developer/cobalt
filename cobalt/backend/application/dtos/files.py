@@ -4,15 +4,16 @@
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from datetime import datetime
-from typing import Optional, List, Literal
+from typing import Optional, List, Literal, Tuple
 
+from domain.enums import FileTypeEnum
 from application.dtos.base import BaseDto
 
 
 class FileDto(BaseDto):
     name: str
     path: str
-    type: Literal["file", "directory"]
+    type: FileTypeEnum
     format: Optional[str] = None
     size: Optional[int] = None
     modified_at: datetime
@@ -60,12 +61,12 @@ class FileSaveContentDto(BaseDto):
 
 class FileCreateDto(BaseDto):
     path: str
-    type: Literal["file", "directory"]
+    type: FileTypeEnum
     content: Optional[str] = None
 
 class FilesUploadDto(BaseDto):
     path: str
-    files: List[tuple[str, bytes]]
+    files: List[Tuple[str, bytes]]
 
 class FilesExtractDto(BaseDto):
     path: str

@@ -8,7 +8,7 @@ from application.contracts.services import AbstractMetricsService
 from application.contracts.managers import AbstractConnectionsManager
 from application.contracts.loggers import AbstractLogger
 from application.managers.connections.shared import RoomsConstants
-from application.managers.events.shared import MetricsEventsEnum
+from application.managers.events.shared import MetricEventEnum
 from infrastructure.schedulers.apscheduler.jobs import BaseApschedulerJob
 
 
@@ -51,7 +51,7 @@ class HostCpuMetricsStreamingJob(BaseApschedulerJob):
             room_name=RoomsConstants.HOST_CPU_METRICS_KEY,
             data={
                 "type": "message",
-                "event": MetricsEventsEnum.HOST_CPU_METRIC,
+                "event": MetricEventEnum.HOST_CPU_METRIC,
                 "data": metric_dict
             }
         )

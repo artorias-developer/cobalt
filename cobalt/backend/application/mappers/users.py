@@ -6,9 +6,11 @@
 from typing import Optional, List
 
 from domain.value_objects import (
-    UserLogin,
+    Login,
     HashedPassword,
-    Salt
+    Salt,
+    Search,
+    PageLimit
 )
 from domain.entities import (
     UserEntity,
@@ -129,10 +131,10 @@ class UsersServiceMapper(AbstractUsersServiceMapper):
         """
         return UsersGetPageEntity(
             page=dto.page,
-            search=dto.search,
+            search=Search(dto.search) if dto.search is not None else None,
             sort_field=dto.sort_field,
             sort_direction=dto.sort_direction,
-            limit=dto.limit
+            limit=PageLimit(dto.limit)
         )
 
     def create_dto_to_entity(
@@ -153,7 +155,7 @@ class UsersServiceMapper(AbstractUsersServiceMapper):
         - UserCreateEntity: UserCreateEntity object.
         """
         return UserCreateEntity(
-            login=UserLogin(dto.login),
+            login=Login(dto.login),
             hashed_password=HashedPassword(hashed_password),
             salt=Salt(salt),
             role_id=dto.role_id
@@ -180,7 +182,7 @@ class UsersServiceMapper(AbstractUsersServiceMapper):
         """
         return UserUpdateEntity(
             id=user_id,
-            login=UserLogin(dto.login) if dto.login is not None else None,
+            login=Login(dto.login) if dto.login is not None else None,
             hashed_password=HashedPassword(hashed_password) if hashed_password is not None else None,
             salt=Salt(salt) if salt is not None else None,
             role_id=dto.role_id
