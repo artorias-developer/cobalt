@@ -7,9 +7,10 @@ class CacheConstants:
     """
     Cache-related constants.
     """
-    SHORT_TTL_SECONDS: int = 5 * 60
-    NORMAL_TTL_SECONDS: int = 1 * 60 * 60
-    LONG_TTL_SECONDS: int = 24 * 60 * 60
+    TTL_5_MINUTES: int = 5 * 60
+    TTL_1_HOUR: int = 1 * 60 * 60
+    TTL_1_DAY: int = 24 * 60 * 60
+    TTL_1_WEEK: int = 7 * 24 * 60 * 60
 
     USERS_PAGE_KEY: str = "users:page:{page}:{search}:{sort_field}:{sort_direction}:{limit}"
     USERS_ITEM_KEY: str = "users:item:{user_id}:{login}:{role_id}"

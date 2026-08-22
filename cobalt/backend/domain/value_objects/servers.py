@@ -5,7 +5,7 @@
 
 from dataclasses import dataclass
 from re import compile as re_compile
-from typing import ClassVar, Pattern
+from typing import ClassVar, Pattern, List
 
 from domain.value_objects import AbstractValueObject
 
@@ -42,20 +42,19 @@ class ServerName(AbstractValueObject):
             pattern=self._PATTERN
         )
 
-
 @dataclass(frozen=True, slots=True)
-class ServerVersion(AbstractValueObject):
+class ServerCommand(AbstractValueObject):
     """
-    Server version value object.
+    Server command value object.
     """
-    value: str
+    value: List[str]
 
     _MIN_LENGTH: ClassVar[int] = 1
-    _MAX_LENGTH: ClassVar[int] = 16
+    _MAX_LENGTH: ClassVar[int] = 1024
 
     def _validate(self) -> None:
         """
-        Validates the server version.
+        Validates the server command.
 
         Parameters:
         - value: Value to validate.
@@ -64,7 +63,7 @@ class ServerVersion(AbstractValueObject):
         - None.
         """
         self._validate_length(
-            value=self.value,
+            value=' '.join(self.value),
             min_length=self._MIN_LENGTH,
             max_length=self._MAX_LENGTH
         )

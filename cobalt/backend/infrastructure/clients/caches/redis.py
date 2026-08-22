@@ -9,11 +9,11 @@ from typing import Optional, Any, Union, Iterable
 from redis.asyncio import Redis
 
 from domain.exceptions import UnexpectedError
-from application.contracts.clients import AbstractCachesClient
+from application.contracts.clients import AbstractCacheClient
 from application.contracts.loggers import AbstractLogger
 
 
-class RedisClient(AbstractCachesClient):
+class RedisClient(AbstractCacheClient):
     """
     Redis client.
     """

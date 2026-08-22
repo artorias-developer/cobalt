@@ -56,7 +56,7 @@ class HttpMetricsRouter(AbstractHttpMetricsRouter, HttpBaseRouter):
             prefix="/metrics",
             tags=["Metrics"],
             dependencies=[
-                Depends(self.http_session_required)
+                Depends(self.session_required)
             ]
         )
 
@@ -66,7 +66,7 @@ class HttpMetricsRouter(AbstractHttpMetricsRouter, HttpBaseRouter):
             methods=["GET"],
             operation_id="metrics_host_disk",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.DASHBOARD_DISK_VIEW
                     ]
@@ -80,7 +80,7 @@ class HttpMetricsRouter(AbstractHttpMetricsRouter, HttpBaseRouter):
             methods=["GET"],
             operation_id="metrics_host_last_cpu",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.DASHBOARD_CPU_VIEW
                     ]
@@ -94,7 +94,7 @@ class HttpMetricsRouter(AbstractHttpMetricsRouter, HttpBaseRouter):
             methods=["GET"],
             operation_id="metrics_host_last_ram",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.DASHBOARD_RAM_VIEW
                     ]
@@ -108,7 +108,7 @@ class HttpMetricsRouter(AbstractHttpMetricsRouter, HttpBaseRouter):
             methods=["GET"],
             operation_id="metrics_host_all_cpu",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.DASHBOARD_CPU_VIEW
                     ]
@@ -122,7 +122,7 @@ class HttpMetricsRouter(AbstractHttpMetricsRouter, HttpBaseRouter):
             methods=["GET"],
             operation_id="metrics_host_all_ram",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.DASHBOARD_RAM_VIEW
                     ]
@@ -136,7 +136,7 @@ class HttpMetricsRouter(AbstractHttpMetricsRouter, HttpBaseRouter):
             methods=["GET"],
             operation_id="metrics_server_last_cpu",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_CPU_VIEW
                     ]
@@ -150,7 +150,7 @@ class HttpMetricsRouter(AbstractHttpMetricsRouter, HttpBaseRouter):
             methods=["GET"],
             operation_id="metrics_server_last_ram",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_RAM_VIEW
                     ]
@@ -164,7 +164,7 @@ class HttpMetricsRouter(AbstractHttpMetricsRouter, HttpBaseRouter):
             methods=["GET"],
             operation_id="metrics_server_all_cpu",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_CPU_VIEW
                     ]
@@ -178,7 +178,7 @@ class HttpMetricsRouter(AbstractHttpMetricsRouter, HttpBaseRouter):
             methods=["GET"],
             operation_id="metrics_server_all_ram",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_RAM_VIEW
                     ]

@@ -28,7 +28,7 @@ class HttpBaseRouter:
     ):
         self.auth_service = auth_service
 
-    async def http_session_required(
+    async def session_required(
         self,
         request: Request
     ) -> UserDto:
@@ -51,7 +51,7 @@ class HttpBaseRouter:
 
         return user
 
-    def http_permission_required(
+    def one_of_permissions_required(
         self,
         permissions: List[PermissionEnum]
     ) -> Callable:

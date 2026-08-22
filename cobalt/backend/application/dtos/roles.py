@@ -4,11 +4,15 @@
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from datetime import datetime
-from typing import Optional, List, Literal
+from typing import Optional, List
 
 from pydantic import Field
 
-from domain.enums import PermissionEnum
+from domain.enums import (
+    PermissionEnum,
+    SortDirectionEnum,
+    RoleSortFieldEnum
+)
 from application.dtos.base import BaseDto
 
 
@@ -28,8 +32,8 @@ class RolesPageDto(BaseDto):
 class RolesGetPageDto(BaseDto):
     page: int
     search: Optional[str] = None
-    sort_field: Literal["id", "name", "created_at", "updated_at"] = "id"
-    sort_direction: Literal["asc", "desc"] = "desc"
+    sort_field: RoleSortFieldEnum = RoleSortFieldEnum.ID
+    sort_direction: SortDirectionEnum = SortDirectionEnum.DESC
     limit: int = 10
 
 class RoleCreateDto(BaseDto):

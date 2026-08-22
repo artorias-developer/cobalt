@@ -6,7 +6,7 @@ This guide explains how to add support for a new theme to Cobalt.
 
 1. Make sure you start from the project root.
 
-2. Add the new theme to the `ThemeEnum` in the `cobalt/backend/domain/enums.py` file:
+2. Add the new theme to the `ThemeEnum` in the `cobalt/backend/domain/enums/settings.py` file:
 
 ```python
 class ThemeEnum(StrEnum):
@@ -70,7 +70,7 @@ $new-theme-dark: (
 }
 ```
 
-4. Add the new theme to the `ThemeEnum` type in the `cobalt/frontend/src/types/enums/theme.ts` file:
+4. Add the new theme to the `ThemeEnum` type in the `cobalt/frontend/src/types/enums/settings.ts` file:
 
 ```typescript
 export enum ThemeEnum {

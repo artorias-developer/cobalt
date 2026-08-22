@@ -106,10 +106,12 @@ class GamesRepository(AbstractGamesRepository, BaseRepository):
             )
 
             if entity.search:
+                search = entity.search.value
+
                 stmt = stmt.filter(
-                    GameModel.name.ilike(f"%{entity.search}%") |
+                    GameModel.name.ilike(f"%{search}%") |
                     GameModel.loaders.any(
-                        LoaderModel.name.ilike(f"%{entity.search}%")
+                        LoaderModel.name.ilike(f"%{search}%")
                     )
                 )
 
@@ -124,7 +126,7 @@ class GamesRepository(AbstractGamesRepository, BaseRepository):
                 session=session,
                 stmt=stmt,
                 page=entity.page,
-                limit=entity.limit
+                limit=entity.limit.value
             )
 
             records = cast(List[GameModel], records)

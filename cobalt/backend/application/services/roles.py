@@ -10,11 +10,11 @@ from orjson import loads
 from domain.exceptions import NotFoundError
 from domain.repositories import AbstractRolesRepository
 from application.contracts.managers import AbstractConnectionsManager
-from application.contracts.clients import AbstractCachesClient
+from application.contracts.clients import AbstractCacheClient
 from application.contracts.services import AbstractRolesService
 from application.contracts.mappers import AbstractRolesServiceMapper
 from application.clients.caches.shared import CacheConstants
-from application.managers.events.shared.enums import RolesEventsEnum
+from application.managers.events.shared.enums import RoleEventEnum
 from application.dtos import (
     RoleDto,
     RolesGetPageDto,
@@ -28,19 +28,19 @@ class RolesService(AbstractRolesService):
     """
     Roles service.
     """
-    caches_client: AbstractCachesClient
+    cache_client: AbstractCacheClient
     roles_repository: AbstractRolesRepository
     roles_mapper: AbstractRolesServiceMapper
     connections_manager: AbstractConnectionsManager
 
     def __init__(
         self,
-        caches_client: AbstractCachesClient,
+        cache_client: AbstractCacheClient,
         roles_repository: AbstractRolesRepository,
         roles_mapper: AbstractRolesServiceMapper,
         connections_manager: AbstractConnectionsManager
     ):
-        self.caches_client = caches_client
+        self.cache_client = cache_client
         self.roles_repository = roles_repository
         self.roles_mapper = roles_mapper
         self.connections_manager = connections_manager
@@ -58,7 +58,7 @@ class RolesService(AbstractRolesService):
         Returns:
         - RolesPageDto: RolesPageDto object.
         """
-        key = self.caches_client.format_pattern(
+        key = self.cache_client.format_pattern(
             pattern=CacheConstants.ROLES_PAGE_KEY,
             page=dto.page,
             search=dto.search,
@@ -67,7 +67,7 @@ class RolesService(AbstractRolesService):
             limit=dto.limit
         )
 
-        cached = await self.caches_client.get(
+        cached = await self.cache_client.get(
             key=key
         )
 
@@ -90,10 +90,10 @@ class RolesService(AbstractRolesService):
             entity=received_entity
         )
 
-        await self.caches_client.set(
+        await self.cache_client.set(
             key=key,
             value=mapped_dto.model_dump_json(),
-            expire=CacheConstants.NORMAL_TTL_SECONDS
+            expire=CacheConstants.TTL_1_HOUR
         )
 
         return mapped_dto
@@ -111,12 +111,12 @@ class RolesService(AbstractRolesService):
         Returns:
         - RoleDto: RoleDto object.
         """
-        key = self.caches_client.format_pattern(
+        key = self.cache_client.format_pattern(
             pattern=CacheConstants.ROLES_ITEM_KEY,
             role_id=role_id
         )
 
-        cached = await self.caches_client.get(
+        cached = await self.cache_client.get(
             key=key
         )
 
@@ -135,10 +135,10 @@ class RolesService(AbstractRolesService):
             entity=received_entity
         )
 
-        await self.caches_client.set(
+        await self.cache_client.set(
             key=key,
             value=mapped_dto.model_dump_json(),
-            expire=CacheConstants.NORMAL_TTL_SECONDS
+            expire=CacheConstants.TTL_1_HOUR
         )
 
         return mapped_dto
@@ -164,8 +164,8 @@ class RolesService(AbstractRolesService):
             entity=mapped_entity
         )
 
-        await self.caches_client.delete(
-            patterns=self.caches_client.format_pattern(
+        await self.cache_client.delete(
+            patterns=self.cache_client.format_pattern(
                 pattern=CacheConstants.ROLES_PAGE_KEY
             )
         )
@@ -201,20 +201,20 @@ class RolesService(AbstractRolesService):
         if not updated_entity:
             raise NotFoundError("Role {role_id} not found", role_id=role_id)
 
-        await self.caches_client.delete(
+        await self.cache_client.delete(
             patterns=[
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.ROLES_ITEM_KEY,
                     role_id=role_id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.ROLES_PAGE_KEY
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.USERS_ITEM_KEY,
                     role_id=role_id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.USERS_PAGE_KEY
                 )
             ]
@@ -235,7 +235,7 @@ class RolesService(AbstractRolesService):
                 connection_id=connection_id,
                 data={
                     "type": "message",
-                    "event": RolesEventsEnum.ROLE_UPDATE,
+                    "event": RoleEventEnum.ROLE_UPDATE,
                     "data": data_dict
                 }
             )
@@ -266,20 +266,20 @@ class RolesService(AbstractRolesService):
         if not deleted_entity:
             raise NotFoundError("Role {role_id} not found", role_id=role_id)
 
-        await self.caches_client.delete(
+        await self.cache_client.delete(
             patterns=[
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.ROLES_ITEM_KEY,
                     role_id=role_id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.ROLES_PAGE_KEY
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.USERS_ITEM_KEY,
                     role_id=role_id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.USERS_PAGE_KEY
                 )
             ]
@@ -306,26 +306,26 @@ class RolesService(AbstractRolesService):
             raise NotFoundError("Roles not found")
 
         patterns_to_delete = [
-            self.caches_client.format_pattern(
+            self.cache_client.format_pattern(
                 pattern=CacheConstants.ROLES_PAGE_KEY
             ),
-            self.caches_client.format_pattern(
+            self.cache_client.format_pattern(
                 pattern=CacheConstants.USERS_PAGE_KEY
             )
         ]
 
         for entity in deleted_entities:
             patterns_to_delete.extend([
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.ROLES_ITEM_KEY,
                     role_id=entity.id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.USERS_ITEM_KEY,
                     role_id=entity.id
                 )
             ])
 
-        await self.caches_client.delete(
+        await self.cache_client.delete(
             patterns=patterns_to_delete
         )

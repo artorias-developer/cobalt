@@ -4,13 +4,13 @@
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from .enums import (
-    LogsEventsEnum,
-    MetricsEventsEnum,
-    ServersEventsEnum
+    LogEventEnum,
+    MetricEventEnum,
+    ServerEventEnum
 )
 
 __all__ = [
-    "LogsEventsEnum",
-    "MetricsEventsEnum",
-    "ServersEventsEnum"
+    "LogEventEnum",
+    "MetricEventEnum",
+    "ServerEventEnum"
 ]

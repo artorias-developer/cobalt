@@ -18,7 +18,7 @@ from domain.repositories import (
 from application.contracts.databases import AbstractTransactionsManager
 from application.contracts.queues import AbstractQueue
 from application.services.files import FilesService
-from application.contracts.clients import AbstractCachesClient
+from application.contracts.clients import AbstractCacheClient
 from application.contracts.managers import (
     AbstractConnectionsManager,
     AbstractArchivesManager
@@ -75,7 +75,7 @@ from composition.dataclasses import (
 
 
 def create_roles_service(
-    caches_client: AbstractCachesClient,
+    cache_client: AbstractCacheClient,
     roles_repository: AbstractRolesRepository,
     roles_mapper: AbstractRolesServiceMapper,
     connections_manager: AbstractConnectionsManager
@@ -84,7 +84,7 @@ def create_roles_service(
     Creates the roles service.
 
     Parameters:
-    - caches_client: AbstractCachesClient object.
+    - cache_client: AbstractCacheClient object.
     - roles_repository: AbstractRolesRepository object.
     - roles_mapper: AbstractRolesServiceMapper object.
     - connections_manager: AbstractConnectionsManager object.
@@ -93,7 +93,7 @@ def create_roles_service(
     - AbstractRolesService: AbstractRolesService object.
     """
     return RolesService(
-        caches_client=caches_client,
+        cache_client=cache_client,
         roles_repository=roles_repository,
         roles_mapper=roles_mapper,
         connections_manager=connections_manager
@@ -101,7 +101,7 @@ def create_roles_service(
 
 def create_settings_service(
     config: ApplicationConfig,
-    caches_client: AbstractCachesClient,
+    cache_client: AbstractCacheClient,
     settings_repository: AbstractSettingsRepository,
     settings_mapper: AbstractSettingsServiceMapper,
     containers_client: AbstractContainersClient,
@@ -115,7 +115,7 @@ def create_settings_service(
 
     Parameters:
     - config: ApplicationConfig object.
-    - caches_client: AbstractCachesClient object.
+    - cache_client: AbstractCacheClient object.
     - settings_repository: AbstractSettingsRepository object.
     - settings_mapper: AbstractSettingsServiceMapper object.
     - containers_client: AbstractContainersClient object.
@@ -128,7 +128,7 @@ def create_settings_service(
     - AbstractSettingsService: AbstractSettingsService object.
     """
     return SettingsService(
-        caches_client=caches_client,
+        cache_client=cache_client,
         settings_repository=settings_repository,
         settings_mapper=settings_mapper,
         containers_client=containers_client,
@@ -140,7 +140,7 @@ def create_settings_service(
     )
 
 def create_users_service(
-    caches_client: AbstractCachesClient,
+    cache_client: AbstractCacheClient,
     users_repository: AbstractUsersRepository,
     users_mapper: AbstractUsersServiceMapper,
     hasher: AbstractHasher,
@@ -151,7 +151,7 @@ def create_users_service(
     Creates the users service.
 
     Parameters:
-    - caches_client: AbstractCachesClient.
+    - cache_client: AbstractCacheClient.
     - users_repository: AbstractUsersRepository object.
     - users_mapper: AbstractUsersServiceMapper object.
     - hasher: AbstractHasher object.
@@ -162,7 +162,7 @@ def create_users_service(
     - AbstractUsersService: AbstractUsersService object.
     """
     return UsersService(
-        caches_client=caches_client,
+        cache_client=cache_client,
         users_repository=users_repository,
         users_mapper=users_mapper,
         hasher=hasher,
@@ -171,7 +171,7 @@ def create_users_service(
     )
 
 def create_auth_service(
-    caches_client: AbstractCachesClient,
+    cache_client: AbstractCacheClient,
     users_service: AbstractUsersService,
     hasher: AbstractHasher
 ) -> AbstractAuthService:
@@ -179,7 +179,7 @@ def create_auth_service(
     Creates the auth service.
 
     Parameters:
-    - caches_client: AbstractCachesClient object.
+    - cache_client: AbstractCacheClient object.
     - users_service: AbstractUsersService object.
     - hasher: AbstractHasher object.
 
@@ -187,13 +187,13 @@ def create_auth_service(
     - AbstractAuthService: AbstractAuthService object.
     """
     return AuthService(
-        caches_client=caches_client,
+        cache_client=cache_client,
         users_service=users_service,
         hasher=hasher
     )
 
 def create_games_service(
-    caches_client: AbstractCachesClient,
+    cache_client: AbstractCacheClient,
     games_repository: AbstractGamesRepository,
     games_mapper: AbstractGamesServiceMapper
 ) -> AbstractGamesService:
@@ -201,7 +201,7 @@ def create_games_service(
     Creates the games service.
 
     Parameters:
-    - caches_client: AbstractCachesClient object.
+    - cache_client: AbstractCacheClient object.
     - games_repository: AbstractGamesRepository object.
     - games_mapper: AbstractGamesServiceMapper object.
 
@@ -209,13 +209,13 @@ def create_games_service(
     - AbstractGamesService: AbstractGamesService object.
     """
     return GamesService(
-        caches_client=caches_client,
+        cache_client=cache_client,
         games_repository=games_repository,
         games_mapper=games_mapper
     )
 
 def create_loaders_service(
-    caches_client: AbstractCachesClient,
+    cache_client: AbstractCacheClient,
     loaders_repository: AbstractLoadersRepository,
     loaders_mapper: AbstractLoadersServiceMapper
 ) -> AbstractLoadersService:
@@ -223,7 +223,7 @@ def create_loaders_service(
     Creates the loaders service.
 
     Parameters:
-    - caches_client: AbstractCachesClient object.
+    - cache_client: AbstractCacheClient object.
     - loaders_repository: AbstractLoadersRepository object.
     - loaders_mapper: AbstractLoadersServiceMapper object.
 
@@ -231,7 +231,7 @@ def create_loaders_service(
     - AbstractLoadersService: AbstractLoadersService object.
     """
     return LoadersService(
-        caches_client=caches_client,
+        cache_client=cache_client,
         loaders_repository=loaders_repository,
         loaders_mapper=loaders_mapper
     )
@@ -268,7 +268,7 @@ def create_logs_service(
     )
 
 def create_metrics_service(
-    caches_client: AbstractCachesClient,
+    cache_client: AbstractCacheClient,
     metrics_client: AbstractMetricsClient,
     metrics_mapper: AbstractMetricsServiceMapper,
     connections_manager: AbstractConnectionsManager
@@ -277,7 +277,7 @@ def create_metrics_service(
     Creates the metrics service.
 
     Parameters:
-    - caches_client: AbstractCachesClient object.
+    - cache_client: AbstractCacheClient object.
     - metrics_client: AbstractMetricsClient object.
     - metrics_mapper: AbstractMetricsServiceMapper object.
     - connections_manager: AbstractConnectionsManager object.
@@ -286,14 +286,14 @@ def create_metrics_service(
     - AbstractMetricsService: AbstractMetricsService object.
     """
     return MetricsService(
-        caches_client=caches_client,
+        cache_client=cache_client,
         metrics_client=metrics_client,
         metrics_mapper=metrics_mapper,
         connections_manager=connections_manager
     )
 
 def create_servers_service(
-    caches_client: AbstractCachesClient,
+    cache_client: AbstractCacheClient,
     connections_manager: AbstractConnectionsManager,
     servers_repository: AbstractServersRepository,
     servers_mapper: AbstractServersServiceMapper,
@@ -307,7 +307,7 @@ def create_servers_service(
     Creates the servers service.
 
     Parameters:
-    - caches_client: AbstractCachesClient object.
+    - cache_client: AbstractCacheClient object.
     - connections_manager: AbstractConnectionsManager object.
     - servers_repository: AbstractServersRepository object.
     - servers_mapper: AbstractServersServiceMapper object.
@@ -321,7 +321,7 @@ def create_servers_service(
     - AbstractServersService: AbstractServersService object.
     """
     return ServersService(
-        caches_client=caches_client,
+        cache_client=cache_client,
         connections_manager=connections_manager,
         servers_repository=servers_repository,
         servers_mapper=servers_mapper,
@@ -333,7 +333,7 @@ def create_servers_service(
     )
 
 def create_attributes_service(
-    caches_client: AbstractCachesClient,
+    cache_client: AbstractCacheClient,
     attributes_repository: AbstractAttributesRepository,
     attributes_mapper: AbstractAttributesServiceMapper
 ) -> AbstractAttributesService:
@@ -341,7 +341,7 @@ def create_attributes_service(
     Creates the attributes service.
 
     Parameters:
-    - caches_client: AbstractCachesClient object.
+    - cache_client: AbstractCacheClient object.
     - attributes_repository: AbstractAttributesRepository object.
     - attributes_mapper: AbstractAttributesServiceMapper object.
 
@@ -349,7 +349,7 @@ def create_attributes_service(
     - AbstractAttributesService: AbstractAttributesService object.
     """
     return AttributesService(
-        caches_client=caches_client,
+        cache_client=cache_client,
         attributes_repository=attributes_repository,
         attributes_mapper=attributes_mapper
     )
@@ -401,20 +401,20 @@ def create_services_container(
     - ServicesContainer: ServicesContainer object.
     """
     roles_service = create_roles_service(
-        caches_client=clients.caches,
+        cache_client=clients.caches,
         roles_repository=database.repositories.roles,
         roles_mapper=mappers.services.roles,
         connections_manager=managers.connections
     )
 
     loaders_service = create_loaders_service(
-        caches_client=clients.caches,
+        cache_client=clients.caches,
         loaders_repository=database.repositories.loaders,
         loaders_mapper=mappers.services.loaders
     )
 
     servers_service = create_servers_service(
-        caches_client=clients.caches,
+        cache_client=clients.caches,
         connections_manager=managers.connections,
         servers_repository=database.repositories.servers,
         servers_mapper=mappers.services.servers,
@@ -427,7 +427,7 @@ def create_services_container(
 
     settings_service = create_settings_service(
         config=config,
-        caches_client=clients.caches,
+        cache_client=clients.caches,
         settings_repository=database.repositories.settings,
         settings_mapper=mappers.services.settings,
         containers_client=clients.containers,
@@ -438,7 +438,7 @@ def create_services_container(
     )
 
     users_service = create_users_service(
-        caches_client=clients.caches,
+        cache_client=clients.caches,
         users_repository=database.repositories.users,
         users_mapper=mappers.services.users,
         hasher=hasher,
@@ -447,13 +447,13 @@ def create_services_container(
     )
 
     auth_service = create_auth_service(
-        caches_client=clients.caches,
+        cache_client=clients.caches,
         users_service=users_service,
         hasher=hasher
     )
 
     games_service = create_games_service(
-        caches_client=clients.caches,
+        cache_client=clients.caches,
         games_repository=database.repositories.games,
         games_mapper=mappers.services.games
     )
@@ -468,14 +468,14 @@ def create_services_container(
     )
 
     metrics_service = create_metrics_service(
-        caches_client=clients.caches,
+        cache_client=clients.caches,
         metrics_client=clients.metrics,
         metrics_mapper=mappers.services.metrics,
         connections_manager=managers.connections
     )
 
     attributes_service = create_attributes_service(
-        caches_client=clients.caches,
+        cache_client=clients.caches,
         attributes_repository=database.repositories.attributes,
         attributes_mapper=mappers.services.attributes
     )

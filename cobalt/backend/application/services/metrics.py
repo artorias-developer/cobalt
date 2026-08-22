@@ -10,7 +10,7 @@ from psutil import disk_usage
 from orjson import loads
 
 from domain.exceptions import NotFoundError
-from application.contracts.clients import AbstractCachesClient
+from application.contracts.clients import AbstractCacheClient
 from application.contracts.services import AbstractMetricsService
 from application.contracts.mappers import AbstractMetricsServiceMapper
 from application.contracts.clients import AbstractMetricsClient
@@ -30,19 +30,19 @@ class MetricsService(AbstractMetricsService):
     """
     Metrics service.
     """
-    caches_client: AbstractCachesClient
+    cache_client: AbstractCacheClient
     metrics_client: AbstractMetricsClient
     metrics_mapper: AbstractMetricsServiceMapper
     connections_manager: AbstractConnectionsManager
 
     def __init__(
         self,
-        caches_client: AbstractCachesClient,
+        cache_client: AbstractCacheClient,
         metrics_client: AbstractMetricsClient,
         metrics_mapper: AbstractMetricsServiceMapper,
         connections_manager: AbstractConnectionsManager
     ):
-        self.caches_client = caches_client
+        self.cache_client = cache_client
         self.metrics_client = metrics_client
         self.metrics_mapper = metrics_mapper
         self.connections_manager = connections_manager
@@ -81,7 +81,7 @@ class MetricsService(AbstractMetricsService):
         - MetricDiskDto: MetricDiskDto object.
         """
         if not refresh:
-            cached = await self.caches_client.get(
+            cached = await self.cache_client.get(
                 pattern=CacheConstants.METRICS_HOST_DISK_KEY
             )
 
@@ -99,10 +99,10 @@ class MetricsService(AbstractMetricsService):
             next_check=now + timedelta(minutes=5)
         )
 
-        await self.caches_client.set(
+        await self.cache_client.set(
             key=CacheConstants.METRICS_HOST_DISK_KEY,
             value=data.model_dump_json(),
-            expire=CacheConstants.SHORT_TTL_SECONDS
+            expire=CacheConstants.TTL_5_MINUTES
         )
 
         return data

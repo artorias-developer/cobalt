@@ -4,8 +4,12 @@
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from datetime import datetime
-from typing import List, Optional, Literal
+from typing import List, Optional
 
+from domain.enums import (
+    SortDirectionEnum,
+    GameSortFieldEnum
+)
 from application.dtos.base import BaseDto
 from application.dtos.loaders import LoaderDto
 
@@ -26,8 +30,8 @@ class GamesPageDto(BaseDto):
 class GamesGetPageDto(BaseDto):
     page: int
     search: Optional[str] = None
-    sort_field: Literal["id", "name", "loader_id", "created_at", "updated_at"] = "id"
-    sort_direction: Literal["asc", "desc"] = "desc"
+    sort_field: GameSortFieldEnum = GameSortFieldEnum.ID
+    sort_direction: SortDirectionEnum = SortDirectionEnum.DESC
     limit: int = 10
 
 class GameCreateDto(BaseDto):

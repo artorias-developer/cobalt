@@ -6,9 +6,9 @@
 from enum import StrEnum
 
 
-class LogsEventsEnum(StrEnum):
+class LogEventEnum(StrEnum):
     """
-    Logs WebSocket events enum.
+    WebSocket logs events enum.
     """
     SUBSCRIBE_HOST = "logs_subscribe_host"
     SUBSCRIBE_SERVER = "logs_subscribe_server"
@@ -17,9 +17,9 @@ class LogsEventsEnum(StrEnum):
     HOST_LOG = "host_log"
     SERVER_LOG = "server_log"
 
-class MetricsEventsEnum(StrEnum):
+class MetricEventEnum(StrEnum):
     """
-    Metrics WebSocket events enum.
+    WebSocket metrics events enum.
     """
     SUBSCRIBE_HOST_CPU = "metrics_subscribe_host_cpu"
     UNSUBSCRIBE_HOST_CPU = "metrics_unsubscribe_host_cpu"
@@ -34,16 +34,16 @@ class MetricsEventsEnum(StrEnum):
     HOST_RAM_METRIC = "host_ram_metric"
     SERVER_RAM_METRIC = "server_ram_metric"
 
-class ServersEventsEnum(StrEnum):
+class ServerEventEnum(StrEnum):
     """
-    Servers WebSocket events enum.
+    WebSocket servers events enum.
     """
     SUBSCRIBE_STATES = "servers_subscribe_states"
     UNSUBSCRIBE_STATES = "servers_unsubscribe_states"
     SERVER_STATE = "server_state"
 
-class RolesEventsEnum(StrEnum):
+class RoleEventEnum(StrEnum):
     """
-    Roles WebSocket events enum.
+    WebSocket roles events enum.
     """
     ROLE_UPDATE = "role_update"

@@ -6,7 +6,7 @@
  */
 
 import type { IWsClient, IWsServersApiService } from "@/contracts"
-import { ServersEventEnum } from "@/types"
+import { ServerEventEnum } from "@/types"
 
 /**
  * WebSocket service for servers events.
@@ -28,8 +28,8 @@ export class WsServersApiService implements IWsServersApiService {
    * - void.
    */
   subscribeStates(handler: (states: any) => void): void {
-    this.client.listen(ServersEventEnum.SERVER_STATE, handler)
-    this.client.subscribe(ServersEventEnum.SUBSCRIBE_STATES)
+    this.client.listen(ServerEventEnum.SERVER_STATE, handler)
+    this.client.subscribe(ServerEventEnum.SUBSCRIBE_STATES)
   }
 
   /**
@@ -42,7 +42,7 @@ export class WsServersApiService implements IWsServersApiService {
    * - void.
    */
   unsubscribeStates(handler: (states: any) => void): void {
-    this.client.unlisten(ServersEventEnum.SERVER_STATE, handler)
-    this.client.unsubscribe(ServersEventEnum.UNSUBSCRIBE_STATES)
+    this.client.unlisten(ServerEventEnum.SERVER_STATE, handler)
+    this.client.unsubscribe(ServerEventEnum.UNSUBSCRIBE_STATES)
   }
 }

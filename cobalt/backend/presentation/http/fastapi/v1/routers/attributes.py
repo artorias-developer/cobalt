@@ -61,7 +61,7 @@ class HttpAttributesRouter(AbstractHttpAttributesRouter, HttpBaseRouter):
             prefix="/servers/{server_id}/attributes",
             tags=["Attributes"],
             dependencies=[
-                Depends(self.http_session_required)
+                Depends(self.session_required)
             ]
         )
 
@@ -71,7 +71,7 @@ class HttpAttributesRouter(AbstractHttpAttributesRouter, HttpBaseRouter):
             methods=["POST"],
             operation_id="attributes_create_many",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_SETTINGS_UPDATE
                     ]
@@ -85,7 +85,7 @@ class HttpAttributesRouter(AbstractHttpAttributesRouter, HttpBaseRouter):
             methods=["PATCH"],
             operation_id="attributes_update_many",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_SETTINGS_UPDATE
                     ]
@@ -99,7 +99,7 @@ class HttpAttributesRouter(AbstractHttpAttributesRouter, HttpBaseRouter):
             methods=["DELETE"],
             operation_id="attributes_delete_many",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_SETTINGS_UPDATE
                     ]
@@ -113,7 +113,7 @@ class HttpAttributesRouter(AbstractHttpAttributesRouter, HttpBaseRouter):
             methods=["GET"],
             operation_id="attributes_get_page",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_SETTINGS_VIEW
                     ]
@@ -127,7 +127,7 @@ class HttpAttributesRouter(AbstractHttpAttributesRouter, HttpBaseRouter):
             methods=["GET"],
             operation_id="attributes_get_one",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_SETTINGS_VIEW
                     ]
@@ -141,7 +141,7 @@ class HttpAttributesRouter(AbstractHttpAttributesRouter, HttpBaseRouter):
             methods=["POST"],
             operation_id="attributes_create_one",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_SETTINGS_UPDATE
                     ]
@@ -155,7 +155,7 @@ class HttpAttributesRouter(AbstractHttpAttributesRouter, HttpBaseRouter):
             methods=["PATCH"],
             operation_id="attributes_update_one",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_SETTINGS_UPDATE
                     ]
@@ -169,7 +169,7 @@ class HttpAttributesRouter(AbstractHttpAttributesRouter, HttpBaseRouter):
             methods=["DELETE"],
             operation_id="attributes_delete_one",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_SETTINGS_UPDATE
                     ]

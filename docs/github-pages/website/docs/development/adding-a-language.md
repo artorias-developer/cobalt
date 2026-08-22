@@ -27,7 +27,7 @@ make locales-update
 Short aliases are also available: `make l:g`, `make l:u`.
 :::
 
-4. Add translations to the generated file at `cobalt/backend/infrastructure/locales/de/LC_MESSAGES/messages.po`.
+4. Add translations to the generated file at `cobalt/backend/infrastructure/locales/babel/de/LC_MESSAGES/messages.po`.
 
 5. Compile the translations:
 
@@ -39,7 +39,7 @@ make locales-compile
 Short alias is also available: `make l:c`.
 :::
 
-6. Add the new language to the `LanguageEnum` in the `cobalt/backend/domain/enums.py` file:
+6. Add the new language to the `LanguageEnum` in the `cobalt/backend/domain/enums/settings.py` file:
 
 ```python
 class LanguageEnum(StrEnum):
@@ -126,7 +126,7 @@ pluralRules: {
 If the language follows standard singular/plural rules (like English or German), you can skip this step entirely - vue-i18n's default pluralization will work out of the box.
 :::
 
-6. Add the new language to the `LanguageEnum` type in the `cobalt/frontend/src/types/enums/language.ts` file:
+6. Add the new language to the `LanguageEnum` type in the `cobalt/frontend/src/types/enums/settings.ts` file:
 
 ```typescript
 export enum LanguageEnum {

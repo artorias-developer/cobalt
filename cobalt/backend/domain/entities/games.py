@@ -4,11 +4,19 @@
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from datetime import datetime
-from typing import List, Literal, Optional
+from typing import List, Optional
 from dataclasses import dataclass
 
+from domain.enums import (
+    SortDirectionEnum,
+    GameSortFieldEnum
+)
+from domain.value_objects import (
+    GameName,
+    PageLimit,
+    Search
+)
 from domain.entities.loaders import LoaderEntity
-from domain.value_objects import GameName
 
 
 @dataclass(slots=True)
@@ -29,10 +37,10 @@ class GamesPageEntity:
 @dataclass(slots=True)
 class GamesGetPageEntity:
     page: int
-    search: Optional[str] = None
-    sort_field: Literal["id", "name", "loader_id", "created_at", "updated_at"] = "id"
-    sort_direction: Literal["asc", "desc"] = "desc"
-    limit: int = 10
+    search: Optional[Search] = None
+    sort_field: GameSortFieldEnum = GameSortFieldEnum.ID
+    sort_direction: SortDirectionEnum = SortDirectionEnum.DESC
+    limit: PageLimit = PageLimit(10)
 
 @dataclass(slots=True)
 class GameCreateEntity:

@@ -18,7 +18,7 @@ class RoleName(AbstractValueObject):
     value: str
 
     _PATTERN: ClassVar[Pattern] = re_compile(r"^[a-zA-Zа-яА-ЯёЁіІїЇєЄ0-9_\-' ]+$")
-    _MIN_LENGTH: ClassVar[int] = 3
+    _MIN_LENGTH: ClassVar[int] = 1
     _MAX_LENGTH: ClassVar[int] = 32
 
     def _validate(self) -> None:

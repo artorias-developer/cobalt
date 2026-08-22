@@ -7,9 +7,9 @@ from abc import ABC, abstractmethod
 from typing import Any, Optional, Union, Iterable
 
 
-class AbstractCachesClient(ABC):
+class AbstractCacheClient(ABC):
     """
-    Abstract caches client.
+    Abstract cache client.
     """
 
     @abstractmethod

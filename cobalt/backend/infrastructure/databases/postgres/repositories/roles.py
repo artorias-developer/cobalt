@@ -104,7 +104,8 @@ class RolesRepository(AbstractRolesRepository, BaseRepository):
             stmt = select(RoleModel)
 
             if entity.search:
-                stmt = stmt.filter(RoleModel.name.ilike(f"%{entity.search}%"))
+                search = entity.search.value
+                stmt = stmt.filter(RoleModel.name.ilike(f"%{search}%"))
 
             if entity.sort_field:
                 sort_col = getattr(RoleModel, entity.sort_field)
@@ -117,7 +118,7 @@ class RolesRepository(AbstractRolesRepository, BaseRepository):
                 session=session,
                 stmt=stmt,
                 page=entity.page,
-                limit=entity.limit
+                limit=entity.limit.value
             )
 
             records = cast(List[RoleModel], records)

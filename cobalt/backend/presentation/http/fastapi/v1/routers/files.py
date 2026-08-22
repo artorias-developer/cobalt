@@ -67,7 +67,7 @@ class HttpFilesRouter(AbstractHttpFilesRouter, HttpBaseRouter):
             prefix="/servers/{server_id}/files",
             tags=["Files"],
             dependencies=[
-                Depends(self.http_session_required)
+                Depends(self.session_required)
             ]
         )
 
@@ -77,7 +77,7 @@ class HttpFilesRouter(AbstractHttpFilesRouter, HttpBaseRouter):
             methods=["GET"],
             operation_id="files_get_list",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_FILES_VIEW
                     ]
@@ -91,7 +91,7 @@ class HttpFilesRouter(AbstractHttpFilesRouter, HttpBaseRouter):
             methods=["GET"],
             operation_id="files_get_content",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_FILES_VIEW
                     ]
@@ -105,7 +105,7 @@ class HttpFilesRouter(AbstractHttpFilesRouter, HttpBaseRouter):
             methods=["PUT"],
             operation_id="files_save_content",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_FILES_UPDATE
                     ]
@@ -119,7 +119,7 @@ class HttpFilesRouter(AbstractHttpFilesRouter, HttpBaseRouter):
             methods=["POST"],
             operation_id="files_create",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_FILES_UPDATE
                     ]
@@ -133,7 +133,7 @@ class HttpFilesRouter(AbstractHttpFilesRouter, HttpBaseRouter):
             methods=["POST"],
             operation_id="files_upload",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_FILES_UPDATE
                     ]
@@ -147,7 +147,7 @@ class HttpFilesRouter(AbstractHttpFilesRouter, HttpBaseRouter):
             methods=["POST"],
             operation_id="files_download",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_FILES_DOWNLOAD
                     ]
@@ -161,7 +161,7 @@ class HttpFilesRouter(AbstractHttpFilesRouter, HttpBaseRouter):
             methods=["POST"],
             operation_id="files_move",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_FILES_UPDATE
                     ]
@@ -175,7 +175,7 @@ class HttpFilesRouter(AbstractHttpFilesRouter, HttpBaseRouter):
             methods=["POST"],
             operation_id="files_rename",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_FILES_UPDATE
                     ]
@@ -189,7 +189,7 @@ class HttpFilesRouter(AbstractHttpFilesRouter, HttpBaseRouter):
             methods=["POST"],
             operation_id="files_duplicate",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_FILES_UPDATE
                     ]
@@ -203,7 +203,7 @@ class HttpFilesRouter(AbstractHttpFilesRouter, HttpBaseRouter):
             methods=["POST"],
             operation_id="files_extract",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_FILES_UPDATE
                     ]
@@ -217,7 +217,7 @@ class HttpFilesRouter(AbstractHttpFilesRouter, HttpBaseRouter):
             methods=["DELETE"],
             operation_id="files_delete",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_FILES_UPDATE
                     ]

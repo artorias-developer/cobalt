@@ -4,10 +4,14 @@
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from datetime import datetime
-from typing import List, Optional, Literal, Annotated
+from typing import List, Optional
 
 from pydantic import BaseModel, Field, ConfigDict, RootModel
 
+from domain.enums import (
+    SortDirectionEnum,
+    UserSortFieldEnum
+)
 from presentation.http.fastapi.v1.schemas.roles import RoleSchema
 from presentation.http.fastapi.v1.schemas.settings import SettingsSchema
 
@@ -188,35 +192,30 @@ class UsersPageSchema(BaseModel):
 class UsersGetPageSchema(BaseModel):
     page: int = Field(
         1,
-        gt=0,
         title="Page",
         description="Page number"
     )
 
     search: Optional[str] = Field(
         None,
-        max_length=100,
-        pattern=r"^[a-zA-Zа-яА-ЯёЁіІїЇєЄ0-9_\-.,' ]+$",
         title="Search",
         description="Search query"
     )
 
-    sort_field: Literal["id", "login", "role_id", "created_at", "updated_at"] = Field(
-        "id",
+    sort_field: UserSortFieldEnum = Field(
+        UserSortFieldEnum.ID,
         title="Sort field",
         description="Field to sort by"
     )
 
-    sort_direction: Literal["asc", "desc"] = Field(
-        "desc",
+    sort_direction: SortDirectionEnum = Field(
+        SortDirectionEnum.DESC,
         title="Sort direction",
         description="Sort direction"
     )
 
     limit: int = Field(
         10,
-        gt=0,
-        le=100,
         title="Limit",
         description="Number of items per page"
     )
@@ -237,25 +236,18 @@ class UsersGetPageSchema(BaseModel):
 class UserCreateSchema(BaseModel):
     login: str = Field(
         ...,
-        min_length=3,
-        max_length=32,
-        pattern=r"^[a-zA-Zа-яА-ЯёЁіІїЇєЄ0-9_\-' ]+$",
         title="Login",
         description="User login"
     )
 
     password: str = Field(
         ...,
-        min_length=3,
-        max_length=32,
-        pattern=r"^[a-zA-Z0-9!@#$%&*]+$",
         title="Password",
         description="User password"
     )
 
     role_id: int = Field(
         ...,
-        gt=0,
         title="Role id",
         description="User role ID"
     )
@@ -274,25 +266,18 @@ class UserCreateSchema(BaseModel):
 class UserUpdateSchema(BaseModel):
     login: Optional[str] = Field(
         None,
-        min_length=3,
-        max_length=32,
-        pattern=r"^[a-zA-Zа-яА-ЯёЁіІїЇєЄ0-9_\-' ]+$",
         title="Login",
         description="User login"
     )
 
     password: Optional[str] = Field(
         None,
-        min_length=3,
-        max_length=32,
-        pattern=r"^[a-zA-Z0-9!@#$%&*]+$",
         title="Password",
         description="User password"
     )
 
     role_id: Optional[int] = Field(
         None,
-        gt=0,
         title="Role id",
         description="User role ID"
     )
@@ -309,9 +294,8 @@ class UserUpdateSchema(BaseModel):
     )
 
 class UsersDeleteSchema(RootModel):
-    root: List[Annotated[int, Field(gt=0)]] = Field(
+    root: List[int] = Field(
         ...,
-        min_length=1,
         title="User ids",
         description="List of user IDs to delete"
     )

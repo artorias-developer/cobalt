@@ -59,7 +59,7 @@ class HttpUsersRouter(AbstractHttpUsersRouter, HttpBaseRouter):
             prefix="/users",
             tags=["Users"],
             dependencies=[
-                Depends(self.http_session_required)
+                Depends(self.session_required)
             ]
         )
 
@@ -69,7 +69,7 @@ class HttpUsersRouter(AbstractHttpUsersRouter, HttpBaseRouter):
             methods=["DELETE"],
             operation_id="users_delete_many",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.USERS_DELETE
                     ]
@@ -83,7 +83,7 @@ class HttpUsersRouter(AbstractHttpUsersRouter, HttpBaseRouter):
             methods=["GET"],
             operation_id="users_get_page",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.USERS_VIEW
                     ]
@@ -104,7 +104,7 @@ class HttpUsersRouter(AbstractHttpUsersRouter, HttpBaseRouter):
             methods=["GET"],
             operation_id="users_get_one",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.USERS_VIEW
                     ]
@@ -118,7 +118,7 @@ class HttpUsersRouter(AbstractHttpUsersRouter, HttpBaseRouter):
             methods=["POST"],
             operation_id="users_create_one",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.USERS_CREATE
                     ]
@@ -132,7 +132,7 @@ class HttpUsersRouter(AbstractHttpUsersRouter, HttpBaseRouter):
             methods=["PATCH"],
             operation_id="users_update_one",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.USERS_UPDATE
                     ]
@@ -146,7 +146,7 @@ class HttpUsersRouter(AbstractHttpUsersRouter, HttpBaseRouter):
             methods=["DELETE"],
             operation_id="users_delete_one",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.USERS_DELETE
                     ]

@@ -5,7 +5,10 @@
 
 from typing import List
 
-from domain.value_objects import LoaderName
+from domain.value_objects import (
+    LoaderName,
+    LoaderVersion
+)
 from domain.entities import (
     LoaderEntity,
     LoaderCreateEntity,
@@ -41,7 +44,7 @@ class LoadersServiceMapper(AbstractLoadersServiceMapper):
             id=entity.id,
             game_id=entity.game_id,
             name=entity.name.value,
-            versions=entity.versions,
+            versions=[version.value for version in entity.versions],
             created_at=entity.created_at,
             updated_at=entity.updated_at
         )
@@ -79,7 +82,7 @@ class LoadersServiceMapper(AbstractLoadersServiceMapper):
         """
         return LoaderCreateEntity(
             name=LoaderName(dto.name),
-            versions=dto.versions
+            versions=[LoaderVersion(version) for version in dto.versions]
         )
 
     def update_dto_to_entity(
@@ -99,5 +102,5 @@ class LoadersServiceMapper(AbstractLoadersServiceMapper):
         return LoaderUpdateEntity(
             id=dto.id,
             name=LoaderName(dto.name) if dto.name is not None else None,
-            versions=dto.versions
+            versions=[LoaderVersion(version) for version in dto.versions]
         )

@@ -116,9 +116,11 @@ class AttributesRepository(AbstractAttributesRepository, BaseRepository):
             )
 
             if entity.search:
+                search = entity.search.value
+
                 stmt = stmt.filter(
-                    AttributeModel.key.ilike(f"%{entity.search}%") |
-                    AttributeModel.value.ilike(f"%{entity.search}%")
+                    AttributeModel.key.ilike(f"%{search}%") |
+                    AttributeModel.value.ilike(f"%{search}%")
                 )
 
             if entity.sort_field:
@@ -132,7 +134,7 @@ class AttributesRepository(AbstractAttributesRepository, BaseRepository):
                 session=session,
                 stmt=stmt,
                 page=entity.page,
-                limit=entity.limit
+                limit=entity.limit.value
             )
 
             records = cast(List[AttributeModel], records)

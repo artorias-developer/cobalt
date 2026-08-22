@@ -4,11 +4,15 @@
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from datetime import datetime
-from typing import Optional, List, Literal, Annotated
+from typing import Optional, List
 
 from pydantic import BaseModel, Field, ConfigDict, RootModel
 
-from domain.enums import ServerStateEnum
+from domain.enums import (
+    ServerStateEnum,
+    SortDirectionEnum,
+    ServerSortFieldEnum
+)
 from presentation.http.fastapi.v1.schemas.games import GameShortSchema
 from presentation.http.fastapi.v1.schemas.loaders import LoaderShortSchema
 from presentation.http.fastapi.v1.schemas.attributes import AttributeSchema
@@ -201,35 +205,30 @@ class ServerStatusSchema(BaseModel):
 class ServersGetPageSchema(BaseModel):
     page: int = Field(
         1,
-        gt=0,
         title="Page",
         description="Page number"
     )
 
     search: Optional[str] = Field(
         None,
-        max_length=100,
-        pattern=r"^[a-zA-Zа-яА-ЯёЁіІїЇєЄ0-9_\-.,' ]+$",
         title="Search",
         description="Search query"
     )
 
-    sort_field: Literal["id", "name", "game_id", "loader_id", "version", "created_at", "updated_at"] = Field(
-        "id",
+    sort_field: ServerSortFieldEnum = Field(
+        ServerSortFieldEnum.ID,
         title="Sort field",
         description="Field to sort by"
     )
 
-    sort_direction: Literal["asc", "desc"] = Field(
-        "desc",
+    sort_direction: SortDirectionEnum = Field(
+        SortDirectionEnum.DESC,
         title="Sort direction",
         description="Sort direction"
     )
 
     limit: int = Field(
         10,
-        gt=0,
-        le=100,
         title="Limit",
         description="Number of items per page"
     )
@@ -250,31 +249,24 @@ class ServersGetPageSchema(BaseModel):
 class ServerCreateSchema(BaseModel):
     name: str = Field(
         ...,
-        min_length=1,
-        max_length=128,
-        pattern=r"^[a-zA-Zа-яА-ЯёЁіІїЇєЄ0-9_\-' ]+$",
         title="Server name",
         description="Server name"
     )
 
     game_id: int = Field(
         ...,
-        gt=0,
         title="Game id",
         description="Game ID"
     )
 
     loader_id: int = Field(
         ...,
-        gt=0,
         title="Loader id",
         description="Loader ID"
     )
 
     version: str = Field(
         ...,
-        min_length=1,
-        max_length=16,
         title="Server version",
         description="Server version"
     )
@@ -294,9 +286,6 @@ class ServerCreateSchema(BaseModel):
 class ServerUpdateSchema(BaseModel):
     name: Optional[str] = Field(
         None,
-        min_length=1,
-        max_length=128,
-        pattern=r"^[a-zA-Zа-яА-ЯёЁіІїЇєЄ0-9_\-' ]+$",
         title="Server name",
         description="Server name"
     )
@@ -313,8 +302,6 @@ class ServerUpdateSchema(BaseModel):
 class ServerUpgradeSchema(BaseModel):
     version: str = Field(
         ...,
-        min_length=1,
-        max_length=16,
         title="Server version",
         description="Server version"
     )
@@ -329,10 +316,8 @@ class ServerUpgradeSchema(BaseModel):
     )
 
 class ServersDeleteSchema(RootModel):
-    root: List[Annotated[int, Field(gt=0)]] = Field(
+    root: List[int] = Field(
         ...,
-        min_length=1,
-        max_length=100,
         title="Server ids",
         description="List of server IDs to delete"
     )
@@ -346,8 +331,6 @@ class ServersDeleteSchema(RootModel):
 class ServerExecuteSchema(BaseModel):
     command: str = Field(
         ...,
-        min_length=1,
-        max_length=1024,
         title="Command",
         description="Command to execute"
     )
