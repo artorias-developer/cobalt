@@ -9,7 +9,7 @@ import { watch } from "vue"
 import type { Composer } from "vue-i18n"
 
 import { useUserStore } from "@/stores"
-import { CookieEnum, LanguageEnum, RolesEventEnum } from "@/types"
+import { CookieEnum, LanguageEnum, RoleEventEnum } from "@/types"
 import type { RoleEntity } from "@/types"
 
 import type { createWebSocketClient, createLocaleHelper } from "@/boostrap/factories"
@@ -102,7 +102,7 @@ export function setupTimezoneWatch(localeHelper: ReturnType<typeof createLocaleH
 export function setupRoleUpdateWatch(wsClient: ReturnType<typeof createWebSocketClient>): void {
   const userStore = useUserStore()
 
-  wsClient.listen(RolesEventEnum.ROLE_UPDATE, (event: any) => {
+  wsClient.listen(RoleEventEnum.ROLE_UPDATE, (event: any) => {
     const role: RoleEntity = event.data
     if (userStore.user?.role?.id !== role.id) return
     userStore.setUserRole(role)

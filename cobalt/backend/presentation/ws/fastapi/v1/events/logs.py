@@ -11,7 +11,7 @@ from application.contracts.services import (
     AbstractLogsService
 )
 from application.contracts.managers import AbstractEventsManager
-from application.managers.events.shared import LogsEventsEnum
+from application.managers.events.shared import LogEventEnum
 from application.dtos import (
     LogsSubscribeServerDto,
     LogsUnsubscribeServerDto
@@ -52,7 +52,7 @@ class WsLogsEvents(AbstractWsLogsEvents, BaseWsRouter):
         - None.
         """
         self.events_manager.on_event(
-            event=LogsEventsEnum.SUBSCRIBE_HOST,
+            event=LogEventEnum.SUBSCRIBE_HOST,
             handler=self.subscribe_host,
             dependencies=[
                 Depends(self.one_of_permissions_required(
@@ -64,7 +64,7 @@ class WsLogsEvents(AbstractWsLogsEvents, BaseWsRouter):
         )
 
         self.events_manager.on_event(
-            event=LogsEventsEnum.SUBSCRIBE_SERVER,
+            event=LogEventEnum.SUBSCRIBE_SERVER,
             handler=self.subscribe_server,
             dependencies=[
                 Depends(self.one_of_permissions_required(
@@ -76,7 +76,7 @@ class WsLogsEvents(AbstractWsLogsEvents, BaseWsRouter):
         )
 
         self.events_manager.on_event(
-            event=LogsEventsEnum.UNSUBSCRIBE_HOST,
+            event=LogEventEnum.UNSUBSCRIBE_HOST,
             handler=self.unsubscribe_host,
             dependencies=[
                 Depends(self.one_of_permissions_required(
@@ -88,7 +88,7 @@ class WsLogsEvents(AbstractWsLogsEvents, BaseWsRouter):
         )
 
         self.events_manager.on_event(
-            event=LogsEventsEnum.UNSUBSCRIBE_SERVER,
+            event=LogEventEnum.UNSUBSCRIBE_SERVER,
             handler=self.unsubscribe_server,
             dependencies=[
                 Depends(self.one_of_permissions_required(

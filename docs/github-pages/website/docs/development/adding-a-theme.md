@@ -70,7 +70,7 @@ $new-theme-dark: (
 }
 ```
 
-4. Add the new theme to the `ThemeEnum` type in the `cobalt/frontend/src/types/enums/theme.ts` file:
+4. Add the new theme to the `ThemeEnum` type in the `cobalt/frontend/src/types/enums/settings.ts` file:
 
 ```typescript
 export enum ThemeEnum {

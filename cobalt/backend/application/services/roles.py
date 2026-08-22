@@ -14,7 +14,7 @@ from application.contracts.clients import AbstractCacheClient
 from application.contracts.services import AbstractRolesService
 from application.contracts.mappers import AbstractRolesServiceMapper
 from application.clients.caches.shared import CacheConstants
-from application.managers.events.shared.enums import RolesEventsEnum
+from application.managers.events.shared.enums import RoleEventEnum
 from application.dtos import (
     RoleDto,
     RolesGetPageDto,
@@ -235,7 +235,7 @@ class RolesService(AbstractRolesService):
                 connection_id=connection_id,
                 data={
                     "type": "message",
-                    "event": RolesEventsEnum.ROLE_UPDATE,
+                    "event": RoleEventEnum.ROLE_UPDATE,
                     "data": data_dict
                 }
             )

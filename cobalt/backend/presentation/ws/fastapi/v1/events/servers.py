@@ -11,7 +11,7 @@ from application.contracts.services import (
     AbstractAuthService,
     AbstractServersService
 )
-from application.managers.events.shared import ServersEventsEnum
+from application.managers.events.shared import ServerEventEnum
 from presentation.contracts.ws.events import AbstractWsServersEvents
 from presentation.ws.fastapi.v1.routers import BaseWsRouter
 
@@ -48,7 +48,7 @@ class WsServersEvents(AbstractWsServersEvents, BaseWsRouter):
         - None.
         """
         self.events_manager.on_event(
-            event=ServersEventsEnum.SUBSCRIBE_STATES,
+            event=ServerEventEnum.SUBSCRIBE_STATES,
             handler=self.subscribe_states,
             dependencies=[
                 Depends(self.one_of_permissions_required(
@@ -60,7 +60,7 @@ class WsServersEvents(AbstractWsServersEvents, BaseWsRouter):
         )
 
         self.events_manager.on_event(
-            event=ServersEventsEnum.UNSUBSCRIBE_STATES,
+            event=ServerEventEnum.UNSUBSCRIBE_STATES,
             handler=self.unsubscribe_states,
             dependencies=[
                 Depends(self.one_of_permissions_required(

@@ -5,6 +5,17 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
+export enum LanguageEnum {
+  EN = "en",
+  RU = "ru",
+  UK = "uk",
+}
+
+export enum ThemeEnum {
+  COBALT_DARK = "cobalt_dark",
+  COBALT_LIGHT ="cobalt_light"
+}
+
 export enum TimezoneEnum {
   UTC_MINUS_12 = "UTC-12",
   UTC_MINUS_11 = "UTC-11",

@@ -25,7 +25,7 @@ from application.contracts.clients import AbstractContainersClient
 from application.contracts.services import AbstractServersService as CoreServersService
 from application.contracts.loggers import AbstractLogger
 from application.clients.containers.shared import ContainersConstants
-from application.managers.events.shared import ServersEventsEnum
+from application.managers.events.shared import ServerEventEnum
 from application.managers.connections.shared import RoomsConstants
 from application.dtos import ServerUpdateDto
 
@@ -187,7 +187,7 @@ class AbstractServersService(ABC):
             room_name=RoomsConstants.SERVERS_STATES_KEY,
             data={
                 "type": "message",
-                "event": ServersEventsEnum.SERVER_STATE,
+                "event": ServerEventEnum.SERVER_STATE,
                 "data": server_data
             }
         )

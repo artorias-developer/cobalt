@@ -11,7 +11,7 @@ from application.contracts.services import (
     AbstractMetricsService
 )
 from application.contracts.managers import AbstractEventsManager
-from application.managers.events.shared import MetricsEventsEnum
+from application.managers.events.shared import MetricEventEnum
 from application.dtos import (
     MetricsSubscribeServerDto,
     MetricsUnsubscribeServerDto
@@ -52,7 +52,7 @@ class WsMetricsEvents(AbstractWsMetricsEvents, BaseWsRouter):
         - None.
         """
         self.events_manager.on_event(
-            event=MetricsEventsEnum.SUBSCRIBE_HOST_CPU,
+            event=MetricEventEnum.SUBSCRIBE_HOST_CPU,
             handler=self.subscribe_host_cpu,
             dependencies=[
                 Depends(self.one_of_permissions_required(
@@ -64,7 +64,7 @@ class WsMetricsEvents(AbstractWsMetricsEvents, BaseWsRouter):
         )
 
         self.events_manager.on_event(
-            event=MetricsEventsEnum.UNSUBSCRIBE_HOST_CPU,
+            event=MetricEventEnum.UNSUBSCRIBE_HOST_CPU,
             handler=self.unsubscribe_host_cpu,
             dependencies=[
                 Depends(self.one_of_permissions_required(
@@ -76,7 +76,7 @@ class WsMetricsEvents(AbstractWsMetricsEvents, BaseWsRouter):
         )
 
         self.events_manager.on_event(
-            event=MetricsEventsEnum.SUBSCRIBE_HOST_RAM,
+            event=MetricEventEnum.SUBSCRIBE_HOST_RAM,
             handler=self.subscribe_host_ram,
             dependencies=[
                 Depends(self.one_of_permissions_required(
@@ -88,7 +88,7 @@ class WsMetricsEvents(AbstractWsMetricsEvents, BaseWsRouter):
         )
 
         self.events_manager.on_event(
-            event=MetricsEventsEnum.UNSUBSCRIBE_HOST_RAM,
+            event=MetricEventEnum.UNSUBSCRIBE_HOST_RAM,
             handler=self.unsubscribe_host_ram,
             dependencies=[
                 Depends(self.one_of_permissions_required(
@@ -100,7 +100,7 @@ class WsMetricsEvents(AbstractWsMetricsEvents, BaseWsRouter):
         )
 
         self.events_manager.on_event(
-            event=MetricsEventsEnum.SUBSCRIBE_SERVER_CPU,
+            event=MetricEventEnum.SUBSCRIBE_SERVER_CPU,
             handler=self.subscribe_server_cpu,
             dependencies=[
                 Depends(self.one_of_permissions_required(
@@ -112,7 +112,7 @@ class WsMetricsEvents(AbstractWsMetricsEvents, BaseWsRouter):
         )
 
         self.events_manager.on_event(
-            event=MetricsEventsEnum.UNSUBSCRIBE_SERVER_CPU,
+            event=MetricEventEnum.UNSUBSCRIBE_SERVER_CPU,
             handler=self.unsubscribe_server_cpu,
             dependencies=[
                 Depends(self.one_of_permissions_required(
@@ -124,7 +124,7 @@ class WsMetricsEvents(AbstractWsMetricsEvents, BaseWsRouter):
         )
 
         self.events_manager.on_event(
-            event=MetricsEventsEnum.SUBSCRIBE_SERVER_RAM,
+            event=MetricEventEnum.SUBSCRIBE_SERVER_RAM,
             handler=self.subscribe_server_ram,
             dependencies=[
                 Depends(self.one_of_permissions_required(
@@ -136,7 +136,7 @@ class WsMetricsEvents(AbstractWsMetricsEvents, BaseWsRouter):
         )
 
         self.events_manager.on_event(
-            event=MetricsEventsEnum.UNSUBSCRIBE_SERVER_RAM,
+            event=MetricEventEnum.UNSUBSCRIBE_SERVER_RAM,
             handler=self.unsubscribe_server_ram,
             dependencies=[
                 Depends(self.one_of_permissions_required(
