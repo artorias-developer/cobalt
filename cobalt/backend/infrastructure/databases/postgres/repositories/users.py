@@ -118,10 +118,12 @@ class UsersRepository(AbstractUsersRepository, BaseRepository):
             )
 
             if entity.search:
+                search = entity.search.value
+
                 stmt = stmt.filter(
-                    UserModel.login.ilike(f"%{entity.search}%") |
+                    UserModel.login.ilike(f"%{search}%") |
                     UserModel.role.has(
-                        RoleModel.name.ilike(f"%{entity.search}%")
+                        RoleModel.name.ilike(f"%{search}%")
                     )
                 )
 
@@ -136,7 +138,7 @@ class UsersRepository(AbstractUsersRepository, BaseRepository):
                 session=session,
                 stmt=stmt,
                 page=entity.page,
-                limit=entity.limit
+                limit=entity.limit.value
             )
 
             records = cast(List[UserModel], records)

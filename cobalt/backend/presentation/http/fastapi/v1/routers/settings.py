@@ -56,7 +56,7 @@ class HttpSettingsRouter(AbstractHttpSettingsRouter, HttpBaseRouter):
             prefix="/settings",
             tags=["Settings"],
             dependencies=[
-                Depends(self.http_session_required)
+                Depends(self.session_required)
             ]
         )
 
@@ -74,7 +74,7 @@ class HttpSettingsRouter(AbstractHttpSettingsRouter, HttpBaseRouter):
             methods=["DELETE"],
             operation_id="settings_clear_cache",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SETTINGS_CACHE_CLEAR
                     ]
@@ -88,7 +88,7 @@ class HttpSettingsRouter(AbstractHttpSettingsRouter, HttpBaseRouter):
             methods=["DELETE"],
             operation_id="settings_clear_containers",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SETTINGS_CONTAINERS_CLEAR
                     ]

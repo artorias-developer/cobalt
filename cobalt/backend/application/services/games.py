@@ -7,7 +7,7 @@ from orjson import loads
 
 from domain.exceptions import NotFoundError
 from domain.repositories import AbstractGamesRepository
-from application.contracts.clients import AbstractCachesClient
+from application.contracts.clients import AbstractCacheClient
 from application.contracts.services import AbstractGamesService
 from application.contracts.mappers import AbstractGamesServiceMapper
 from application.clients.caches.shared import CacheConstants
@@ -24,17 +24,17 @@ class GamesService(AbstractGamesService):
     """
     Games service.
     """
-    caches_client: AbstractCachesClient
+    cache_client: AbstractCacheClient
     games_repository: AbstractGamesRepository
     games_mapper: AbstractGamesServiceMapper
 
     def __init__(
         self,
-        caches_client: AbstractCachesClient,
+        cache_client: AbstractCacheClient,
         games_repository: AbstractGamesRepository,
         games_mapper: AbstractGamesServiceMapper
     ):
-        self.caches_client = caches_client
+        self.cache_client = cache_client
         self.games_repository = games_repository
         self.games_mapper = games_mapper
 
@@ -51,7 +51,7 @@ class GamesService(AbstractGamesService):
         Returns:
         - GamesPageDto: GamesPageDto object.
         """
-        key = self.caches_client.format_pattern(
+        key = self.cache_client.format_pattern(
             pattern=CacheConstants.GAMES_PAGE_KEY,
             page=dto.page,
             search=dto.search,
@@ -60,7 +60,7 @@ class GamesService(AbstractGamesService):
             limit=dto.limit
         )
 
-        cached = await self.caches_client.get(
+        cached = await self.cache_client.get(
             key=key
         )
 
@@ -83,10 +83,10 @@ class GamesService(AbstractGamesService):
             entity=received_entity
         )
 
-        await self.caches_client.set(
+        await self.cache_client.set(
             key=key,
             value=mapped_dto.model_dump_json(),
-            expire=CacheConstants.NORMAL_TTL_SECONDS
+            expire=CacheConstants.TTL_1_HOUR
         )
 
         return mapped_dto
@@ -104,12 +104,12 @@ class GamesService(AbstractGamesService):
         Returns:
         - GameDto: GameDto object.
         """
-        key = self.caches_client.format_pattern(
+        key = self.cache_client.format_pattern(
             pattern=CacheConstants.GAMES_ITEM_KEY,
             game_id=game_id
         )
 
-        cached = await self.caches_client.get(
+        cached = await self.cache_client.get(
             key=key
         )
 
@@ -124,7 +124,7 @@ class GamesService(AbstractGamesService):
         if not received_entity:
             raise NotFoundError("Game {game_id} not found", game_id=game_id)
 
-        key = self.caches_client.format_pattern(
+        key = self.cache_client.format_pattern(
             pattern=CacheConstants.GAMES_ITEM_KEY,
             game_id=received_entity.id,
             name=received_entity.name.value
@@ -134,10 +134,10 @@ class GamesService(AbstractGamesService):
             entity=received_entity
         )
 
-        await self.caches_client.set(
+        await self.cache_client.set(
             key=key,
             value=mapped_dto.model_dump_json(),
-            expire=CacheConstants.NORMAL_TTL_SECONDS
+            expire=CacheConstants.TTL_1_HOUR
         )
 
         return mapped_dto
@@ -155,12 +155,12 @@ class GamesService(AbstractGamesService):
         Returns:
         - GameDto: GameDto object.
         """
-        key = self.caches_client.format_pattern(
+        key = self.cache_client.format_pattern(
             pattern=CacheConstants.GAMES_ITEM_KEY,
             name=name
         )
 
-        cached = await self.caches_client.get(
+        cached = await self.cache_client.get(
             key=key
         )
 
@@ -175,7 +175,7 @@ class GamesService(AbstractGamesService):
         if not received_entity:
             raise NotFoundError('Game "{name}" not found', name=name)
 
-        key = self.caches_client.format_pattern(
+        key = self.cache_client.format_pattern(
             pattern=CacheConstants.GAMES_ITEM_KEY,
             game_id=received_entity.id,
             name=name
@@ -185,10 +185,10 @@ class GamesService(AbstractGamesService):
             entity=received_entity
         )
 
-        await self.caches_client.set(
+        await self.cache_client.set(
             key=key,
             value=mapped_dto.model_dump_json(),
-            expire=CacheConstants.NORMAL_TTL_SECONDS
+            expire=CacheConstants.TTL_1_HOUR
         )
 
         return mapped_dto
@@ -214,8 +214,8 @@ class GamesService(AbstractGamesService):
             entity=mapped_entity
         )
 
-        await self.caches_client.delete(
-            patterns=self.caches_client.format_pattern(
+        await self.cache_client.delete(
+            patterns=self.cache_client.format_pattern(
                 pattern=CacheConstants.GAMES_PAGE_KEY
             )
         )
@@ -251,20 +251,20 @@ class GamesService(AbstractGamesService):
         if not updated_entity:
             raise NotFoundError("Game {game_id} not found", game_id=game_id)
 
-        await self.caches_client.delete(
+        await self.cache_client.delete(
             patterns=[
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.GAMES_ITEM_KEY,
                     game_id=game_id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.GAMES_PAGE_KEY
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.SERVERS_ITEM_KEY,
                     game_id=game_id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.SERVERS_PAGE_KEY
                 )
             ]
@@ -294,20 +294,20 @@ class GamesService(AbstractGamesService):
         if not deleted_entity:
             raise NotFoundError("Game {game_id} not found", game_id=game_id)
 
-        await self.caches_client.delete(
+        await self.cache_client.delete(
             patterns=[
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.GAMES_ITEM_KEY,
                     game_id=game_id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.GAMES_PAGE_KEY
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.SERVERS_ITEM_KEY,
                     game_id=game_id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.SERVERS_PAGE_KEY
                 )
             ]

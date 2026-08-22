@@ -4,10 +4,18 @@
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from datetime import datetime
-from typing import List, Optional, Literal
+from typing import List, Optional
 from dataclasses import dataclass
 
-from domain.value_objects import AttributeKey
+from domain.enums import (
+    SortDirectionEnum,
+    AttributeSortFieldEnum
+)
+from domain.value_objects import (
+    AttributeKey,
+    PageLimit,
+    Search
+)
 
 
 @dataclass(slots=True)
@@ -29,10 +37,10 @@ class AttributesPageEntity:
 @dataclass(slots=True)
 class AttributesGetPageEntity:
     page: int = 1
-    search: Optional[str] = None
-    sort_field: Literal["id", "key", "value", "created_at", "updated_at"] = "id"
-    sort_direction: Literal["asc", "desc"] = "desc"
-    limit: int = 10
+    search: Optional[Search] = None
+    sort_field: AttributeSortFieldEnum = AttributeSortFieldEnum.ID
+    sort_direction: SortDirectionEnum = SortDirectionEnum.DESC
+    limit: PageLimit = PageLimit(10)
 
 @dataclass(slots=True)
 class AttributeCreateEntity:

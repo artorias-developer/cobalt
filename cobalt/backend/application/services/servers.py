@@ -16,7 +16,7 @@ from domain.exceptions import (
 from domain.repositories import AbstractServersRepository
 from application.contracts.loggers import AbstractLogger
 from application.contracts.queues import AbstractQueue
-from application.contracts.clients import AbstractCachesClient
+from application.contracts.clients import AbstractCacheClient
 from application.contracts.managers import AbstractConnectionsManager
 from application.contracts.services import (
     AbstractServersService,
@@ -41,13 +41,14 @@ from application.dtos import (
     ServerExecuteDto,
     ServerStatusDto
 )
+from domain.value_objects import ServerCommand
 
 
 class ServersService(AbstractServersService):
     """
     Servers service.
     """
-    caches_client: AbstractCachesClient
+    cache_client: AbstractCacheClient
     connections_manager: AbstractConnectionsManager
     servers_repository: AbstractServersRepository
     servers_mapper: AbstractServersServiceMapper
@@ -59,7 +60,7 @@ class ServersService(AbstractServersService):
 
     def __init__(
         self,
-        caches_client: AbstractCachesClient,
+        cache_client: AbstractCacheClient,
         connections_manager: AbstractConnectionsManager,
         servers_repository: AbstractServersRepository,
         servers_mapper: AbstractServersServiceMapper,
@@ -69,7 +70,7 @@ class ServersService(AbstractServersService):
         logger: AbstractLogger,
         game_modules: Dict[str, AbstractGameModule]
     ):
-        self.caches_client = caches_client
+        self.cache_client = cache_client
         self.connections_manager = connections_manager
         self.servers_repository = servers_repository
         self.servers_mapper = servers_mapper
@@ -144,7 +145,7 @@ class ServersService(AbstractServersService):
         Returns:
         - ServersPageDto: ServersPageDto object.
         """
-        key = self.caches_client.format_pattern(
+        key = self.cache_client.format_pattern(
             pattern=CacheConstants.SERVERS_PAGE_KEY,
             page=dto.page,
             search=dto.search,
@@ -153,7 +154,7 @@ class ServersService(AbstractServersService):
             limit=dto.limit
         )
 
-        cached = await self.caches_client.get(
+        cached = await self.cache_client.get(
             key=key
         )
 
@@ -176,10 +177,10 @@ class ServersService(AbstractServersService):
             entity=received_entity
         )
 
-        await self.caches_client.set(
+        await self.cache_client.set(
             key=key,
             value=mapped_dto.model_dump_json(),
-            expire=CacheConstants.NORMAL_TTL_SECONDS
+            expire=CacheConstants.TTL_1_HOUR
         )
 
         return mapped_dto
@@ -197,12 +198,12 @@ class ServersService(AbstractServersService):
         Returns:
         - ServerDto: ServerDto object.
         """
-        search_key = self.caches_client.format_pattern(
+        search_key = self.cache_client.format_pattern(
             pattern=CacheConstants.SERVERS_ITEM_KEY,
             server_id=server_id
         )
 
-        cached = await self.caches_client.get(
+        cached = await self.cache_client.get(
             pattern=search_key
         )
 
@@ -217,7 +218,7 @@ class ServersService(AbstractServersService):
         if not received_entity:
             raise NotFoundError("Server {server_id} not found", server_id=server_id)
 
-        key = self.caches_client.format_pattern(
+        key = self.cache_client.format_pattern(
             pattern=CacheConstants.SERVERS_ITEM_KEY,
             server_id=received_entity.id,
             game_id=received_entity.game.id,
@@ -228,10 +229,10 @@ class ServersService(AbstractServersService):
             entity=received_entity
         )
 
-        await self.caches_client.set(
+        await self.cache_client.set(
             key=key,
             value=mapped_dto.model_dump_json(),
-            expire=CacheConstants.NORMAL_TTL_SECONDS
+            expire=CacheConstants.TTL_1_HOUR
         )
 
         return mapped_dto
@@ -280,9 +281,9 @@ class ServersService(AbstractServersService):
             except Exception:
                 raise
 
-        await self.caches_client.delete(
+        await self.cache_client.delete(
             patterns=[
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.SERVERS_PAGE_KEY
                 )
             ]
@@ -379,13 +380,13 @@ class ServersService(AbstractServersService):
             except Exception:
                 raise
 
-        await self.caches_client.delete(
+        await self.cache_client.delete(
             patterns=[
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.SERVERS_ITEM_KEY,
                     server_id=server_id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.SERVERS_PAGE_KEY
                 )
             ]
@@ -430,13 +431,13 @@ class ServersService(AbstractServersService):
         if not updated_entity:
             raise NotFoundError("Server {server_id} not found", server_id=server_id)
 
-        await self.caches_client.delete(
+        await self.cache_client.delete(
             patterns=[
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.SERVERS_ITEM_KEY,
                     server_id=server_id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.SERVERS_PAGE_KEY
                 )
             ]
@@ -476,16 +477,16 @@ class ServersService(AbstractServersService):
             server_id=server_id
         )
 
-        await self.caches_client.delete(
+        await self.cache_client.delete(
             patterns=[
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.SERVERS_ITEM_KEY,
                     server_id=server_id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.SERVERS_PAGE_KEY
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.ATTRIBUTES_ITEM_KEY,
                     server_id=server_id
                 )
@@ -546,24 +547,24 @@ class ServersService(AbstractServersService):
         )
 
         patterns_to_delete = [
-            self.caches_client.format_pattern(
+            self.cache_client.format_pattern(
                 pattern=CacheConstants.SERVERS_PAGE_KEY
             )
         ]
 
         for entity in received_entities:
             patterns_to_delete.extend([
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.SERVERS_ITEM_KEY,
                     server_id=entity.id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.ATTRIBUTES_ITEM_KEY,
                     server_id=entity.id
                 )
             ])
 
-        await self.caches_client.delete(
+        await self.cache_client.delete(
             patterns=patterns_to_delete
         )
 
@@ -689,11 +690,11 @@ class ServersService(AbstractServersService):
             server_id=server_id
         )
 
-        command = ["sh", "-c", f"echo \"{dto.command}\" > {ContainersConstants.SERVER_FIFO}"]
+        command = ServerCommand(["sh", "-c", f"echo \"{dto.command}\" > {ContainersConstants.SERVER_FIFO}"])
 
         await game_module.container.clients.containers.container_execute(
             container_name=container,
-            command=command
+            command=command.value
         )
 
     async def status(

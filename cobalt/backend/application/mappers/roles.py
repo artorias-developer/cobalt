@@ -5,7 +5,11 @@
 
 from typing import List
 
-from domain.value_objects import RoleName
+from domain.value_objects import (
+    RoleName,
+    Search,
+    PageLimit
+)
 from domain.entities import (
     RoleEntity,
     RolesPageEntity,
@@ -104,10 +108,10 @@ class RolesServiceMapper(AbstractRolesServiceMapper):
         """
         return RolesGetPageEntity(
             page=dto.page,
-            search=dto.search,
+            search=Search(dto.search) if dto.search is not None else None,
             sort_field=dto.sort_field,
             sort_direction=dto.sort_direction,
-            limit=dto.limit
+            limit=PageLimit(dto.limit)
         )
 
     def create_dto_to_entity(

@@ -12,7 +12,8 @@ from domain.exceptions import (
     NotFoundError,
     ValidationError
 )
-from application.contracts.clients import AbstractCachesClient
+from domain.value_objects import Password, Login
+from application.contracts.clients import AbstractCacheClient
 from application.contracts.services import (
     AbstractUsersService,
     AbstractAuthService
@@ -32,17 +33,17 @@ class AuthService(AbstractAuthService):
     """
     Auth service for session-based authentication using Redis.
     """
-    caches_client: AbstractCachesClient
+    cache_client: AbstractCacheClient
     users_service: AbstractUsersService
     hasher: AbstractHasher
 
     def __init__(
         self,
-        caches_client: AbstractCachesClient,
+        cache_client: AbstractCacheClient,
         users_service: AbstractUsersService,
         hasher: AbstractHasher
     ):
-        self.caches_client = caches_client
+        self.cache_client = cache_client
         self.users_service = users_service
         self.hasher = hasher
 
@@ -61,41 +62,44 @@ class AuthService(AbstractAuthService):
         Returns:
         - AuthSessionDto: AuthSessionDto object.
         """
+        login = Login(dto.login)
+        password = Password(dto.password)
+
         received_dto = await self.users_service.get_one_by_login(
-            login=dto.login
+            login=login.value
         )
 
         if not received_dto:
             raise AuthenticationError("Invalid login or password")
 
         if not self.hasher.verify(
-            plain=dto.password,
+            plain=password.value,
             hashed=received_dto.hashed_password,
             salt=received_dto.salt
         ):
             raise AuthenticationError("Invalid login or password")
 
         if old_session_id:
-            old_key = self.caches_client.format_pattern(
+            old_key = self.cache_client.format_pattern(
                 pattern=CacheConstants.SESSION_KEY,
                 session_id=old_session_id
             )
 
-            await self.caches_client.delete(
+            await self.cache_client.delete(
                 keys=old_key
             )
 
         session_id = token_urlsafe(32)
 
-        key = self.caches_client.format_pattern(
+        key = self.cache_client.format_pattern(
             pattern=CacheConstants.SESSION_KEY,
             session_id=session_id
         )
 
-        await self.caches_client.set(
+        await self.cache_client.set(
             key=key,
             value=str(received_dto.id),
-            expire=CacheConstants.LONG_TTL_SECONDS,
+            expire=CacheConstants.TTL_1_DAY,
             raise_on_error=True
         )
 
@@ -116,12 +120,12 @@ class AuthService(AbstractAuthService):
         Returns:
         - None.
         """
-        key = self.caches_client.format_pattern(
+        key = self.cache_client.format_pattern(
             pattern=CacheConstants.SESSION_KEY,
             session_id=session_id
         )
 
-        await self.caches_client.delete(
+        await self.cache_client.delete(
             keys=key
         )
 
@@ -151,8 +155,10 @@ class AuthService(AbstractAuthService):
             if not dto.old_password:
                 raise ValidationError("Current password is required")
 
+            old_password = Password(dto.old_password)
+
             is_valid = self.hasher.verify(
-                plain=dto.old_password,
+                plain=old_password.value,
                 hashed=received_dto.hashed_password,
                 salt=received_dto.salt
             )
@@ -183,20 +189,20 @@ class AuthService(AbstractAuthService):
         Returns:
         - UserDto: UserDto object.
         """
-        key = self.caches_client.format_pattern(
+        key = self.cache_client.format_pattern(
             pattern=CacheConstants.SESSION_KEY,
             session_id=session_id
         )
 
-        cached = await self.caches_client.get(
+        cached = await self.cache_client.get(
             key=key,
             raise_on_error=True
         )
 
         if cached:
-            await self.caches_client.expire(
+            await self.cache_client.expire(
                 key=key,
-                seconds=CacheConstants.LONG_TTL_SECONDS
+                seconds=CacheConstants.TTL_1_DAY
             )
 
             received_entity = await self.users_service.get_one_by_id(

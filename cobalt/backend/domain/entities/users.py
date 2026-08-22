@@ -4,13 +4,19 @@
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from datetime import datetime
-from typing import Optional, List, Literal
+from typing import Optional, List
 from dataclasses import dataclass
 
+from domain.enums import (
+    SortDirectionEnum,
+    UserSortFieldEnum
+)
 from domain.value_objects import (
-    UserLogin,
+    Login,
     HashedPassword,
-    Salt
+    Salt,
+    PageLimit,
+    Search
 )
 from domain.entities.roles import RoleEntity
 from domain.entities.settings import SettingsEntity
@@ -19,7 +25,7 @@ from domain.entities.settings import SettingsEntity
 @dataclass(slots=True)
 class UserEntity:
     id: int
-    login: UserLogin
+    login: Login
     hashed_password: HashedPassword
     salt: Salt
     role: RoleEntity
@@ -37,14 +43,14 @@ class UsersPageEntity:
 @dataclass(slots=True)
 class UsersGetPageEntity:
     page: int = 1
-    search: Optional[str] = None
-    sort_field: Literal["id", "login", "role_id", "created_at", "updated_at"] = "id"
-    sort_direction: Literal["asc", "desc"] = "desc"
-    limit: int = 10
+    search: Optional[Search] = None
+    sort_field: UserSortFieldEnum = UserSortFieldEnum.ID
+    sort_direction: SortDirectionEnum = SortDirectionEnum.DESC
+    limit: PageLimit = PageLimit(10)
 
 @dataclass(slots=True)
 class UserCreateEntity:
-    login: UserLogin
+    login: Login
     hashed_password: HashedPassword
     salt: Salt
     role_id: int
@@ -52,7 +58,7 @@ class UserCreateEntity:
 @dataclass(slots=True)
 class UserUpdateEntity:
     id: int
-    login: Optional[UserLogin] = None
+    login: Optional[Login] = None
     hashed_password: Optional[HashedPassword] = None
     salt: Optional[Salt] = None
     role_id: Optional[int] = None

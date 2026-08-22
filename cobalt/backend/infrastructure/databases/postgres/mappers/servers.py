@@ -7,7 +7,7 @@ from typing import List
 
 from domain.value_objects import (
     ServerName,
-    ServerVersion
+    LoaderVersion
 )
 from domain.entities import (
     ServerEntity,
@@ -58,7 +58,7 @@ class ServersRepositoryMapper(AbstractServersRepositoryMapper):
         return ServerEntity(
             id=model.id,
             name=ServerName(model.name),
-            version=ServerVersion(model.version),
+            version=LoaderVersion(model.version),
             game=self.games_mapper.model_to_entity(
                 model=model.game
             ),

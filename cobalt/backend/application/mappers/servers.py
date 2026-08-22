@@ -8,7 +8,9 @@ from typing import List
 from domain.enums import ServerStateEnum
 from domain.value_objects import (
     ServerName,
-    ServerVersion
+    LoaderVersion,
+    Search,
+    PageLimit
 )
 from domain.entities import (
     ServerEntity,
@@ -157,10 +159,10 @@ class ServersServiceMapper(AbstractServersServiceMapper):
         """
         return ServersGetPageEntity(
             page=dto.page,
-            search=dto.search,
+            search=Search(dto.search) if dto.search is not None else None,
             sort_field=dto.sort_field,
             sort_direction=dto.sort_direction,
-            limit=dto.limit
+            limit=PageLimit(dto.limit)
         )
 
     def create_dto_to_entity(
@@ -180,7 +182,7 @@ class ServersServiceMapper(AbstractServersServiceMapper):
             name=ServerName(dto.name),
             game_id=dto.game_id,
             loader_id=dto.loader_id,
-            version=ServerVersion(dto.version)
+            version=LoaderVersion(dto.version)
         )
 
     def update_dto_to_entity(
@@ -201,7 +203,7 @@ class ServersServiceMapper(AbstractServersServiceMapper):
         return ServerUpdateEntity(
             id=server_id,
             name=ServerName(dto.name) if dto.name is not None else None,
-            version=ServerVersion(dto.version) if dto.version is not None else None,
+            version=LoaderVersion(dto.version) if dto.version is not None else None,
             state=dto.state
         )
 
@@ -222,6 +224,6 @@ class ServersServiceMapper(AbstractServersServiceMapper):
         """
         return ServerUpdateEntity(
             id=server_id,
-            version=ServerVersion(dto.version),
+            version=LoaderVersion(dto.version),
             state=ServerStateEnum.UPGRADING
         )

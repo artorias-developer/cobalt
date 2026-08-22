@@ -4,11 +4,19 @@
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from datetime import datetime
-from typing import List, Optional, Literal
+from typing import List, Optional
 from dataclasses import dataclass, field
 
-from domain.value_objects import RoleName
-from domain.enums import PermissionEnum
+from domain.enums import (
+    PermissionEnum,
+    SortDirectionEnum,
+    RoleSortFieldEnum
+)
+from domain.value_objects import (
+    RoleName,
+    PageLimit,
+    Search
+)
 
 
 @dataclass(slots=True)
@@ -29,10 +37,10 @@ class RolesPageEntity:
 @dataclass(slots=True)
 class RolesGetPageEntity:
     page: int = 1
-    search: Optional[str] = None
-    sort_field: Literal["id", "name", "created_at", "updated_at"] = "id"
-    sort_direction: Literal["asc", "desc"] = "desc"
-    limit: int = 10
+    search: Optional[Search] = None
+    sort_field: RoleSortFieldEnum = RoleSortFieldEnum.ID
+    sort_direction: SortDirectionEnum = SortDirectionEnum.DESC
+    limit: PageLimit = PageLimit(10)
 
 @dataclass(slots=True)
 class RoleCreateEntity:

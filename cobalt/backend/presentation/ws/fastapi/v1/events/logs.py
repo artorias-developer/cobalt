@@ -55,7 +55,7 @@ class WsLogsEvents(AbstractWsLogsEvents, BaseWsRouter):
             event=LogsEventsEnum.SUBSCRIBE_HOST,
             handler=self.subscribe_host,
             dependencies=[
-                Depends(self.ws_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.DASHBOARD_LOGS_VIEW
                     ]
@@ -67,7 +67,7 @@ class WsLogsEvents(AbstractWsLogsEvents, BaseWsRouter):
             event=LogsEventsEnum.SUBSCRIBE_SERVER,
             handler=self.subscribe_server,
             dependencies=[
-                Depends(self.ws_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_LOGS_VIEW
                     ]
@@ -79,7 +79,7 @@ class WsLogsEvents(AbstractWsLogsEvents, BaseWsRouter):
             event=LogsEventsEnum.UNSUBSCRIBE_HOST,
             handler=self.unsubscribe_host,
             dependencies=[
-                Depends(self.ws_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.DASHBOARD_LOGS_VIEW
                     ]
@@ -91,7 +91,7 @@ class WsLogsEvents(AbstractWsLogsEvents, BaseWsRouter):
             event=LogsEventsEnum.UNSUBSCRIBE_SERVER,
             handler=self.unsubscribe_server,
             dependencies=[
-                Depends(self.ws_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_LOGS_VIEW
                     ]

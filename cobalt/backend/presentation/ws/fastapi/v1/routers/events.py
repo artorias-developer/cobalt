@@ -44,7 +44,7 @@ class WsEventsRouter(AbstractWsEventsRouter, BaseWsRouter):
             prefix="/ws",
             tags=["WebSockets"],
             dependencies=[
-                Depends(self.ws_session_required)
+                Depends(self.session_required)
             ]
         )
 

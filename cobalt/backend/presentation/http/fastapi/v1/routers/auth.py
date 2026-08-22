@@ -71,7 +71,7 @@ class HttpAuthRouter(AbstractHttpAuthRouter, HttpBaseRouter):
             methods=["PATCH"],
             operation_id="auth_change_credentials",
             dependencies=[
-                Depends(self.http_session_required)
+                Depends(self.session_required)
             ]
         )
 

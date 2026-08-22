@@ -4,9 +4,11 @@
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from datetime import datetime
-from typing import Optional, List, Literal
+from typing import Optional, List
 
 from pydantic import BaseModel, Field, ConfigDict, RootModel
+
+from domain.enums import FileTypeEnum
 
 
 class FileSchema(BaseModel):
@@ -22,7 +24,7 @@ class FileSchema(BaseModel):
         description="Full path to the file"
     )
 
-    type: Literal["file", "directory"] = Field(
+    type: FileTypeEnum = Field(
         ...,
         title="Type",
         description="File type"
@@ -200,7 +202,6 @@ class FileGetContentSchema(BaseModel):
 class FilesMoveSchema(BaseModel):
     paths: List[str] = Field(
         ...,
-        min_length=1,
         title="Paths",
         description="List of source paths to move"
     )
@@ -270,7 +271,6 @@ class FileSaveContentSchema(BaseModel):
 class FilesDeleteSchema(RootModel):
     root: List[str] = Field(
         ...,
-        min_length=1,
         title="Paths",
         description="List of paths to delete"
     )
@@ -284,7 +284,6 @@ class FilesDeleteSchema(RootModel):
 class FilesDownloadSchema(RootModel):
     root: List[str] = Field(
         ...,
-        min_length=1,
         title="Paths",
         description="List of paths to download"
     )
@@ -298,7 +297,6 @@ class FilesDownloadSchema(RootModel):
 class FilesDuplicateSchema(RootModel):
     root: List[str] = Field(
         ...,
-        min_length=1,
         title="Paths",
         description="List of paths to duplicate"
     )
@@ -316,7 +314,7 @@ class FileCreateSchema(BaseModel):
         description="Path for the new file/directory including name"
     )
 
-    type: Literal["file", "directory"] = Field(
+    type: FileTypeEnum = Field(
         ...,
         title="Type",
         description="Type of entry to create"

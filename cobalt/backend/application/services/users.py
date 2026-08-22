@@ -11,8 +11,9 @@ from domain.exceptions import (
     NotFoundError,
     AuthenticationError
 )
+from domain.value_objects import Password
 from domain.repositories import AbstractUsersRepository
-from application.contracts.clients import AbstractCachesClient
+from application.contracts.clients import AbstractCacheClient
 from application.contracts.services import (
     AbstractUsersService,
     AbstractRolesService,
@@ -34,7 +35,7 @@ class UsersService(AbstractUsersService):
     """
     Users service.
     """
-    caches_client: AbstractCachesClient
+    cache_client: AbstractCacheClient
     users_repository: AbstractUsersRepository
     users_mapper: AbstractUsersServiceMapper
     hasher: AbstractHasher
@@ -43,14 +44,14 @@ class UsersService(AbstractUsersService):
 
     def __init__(
         self,
-        caches_client: AbstractCachesClient,
+        cache_client: AbstractCacheClient,
         users_repository: AbstractUsersRepository,
         users_mapper: AbstractUsersServiceMapper,
         hasher: AbstractHasher,
         roles_service: AbstractRolesService,
         settings_service: AbstractSettingsService
     ):
-        self.caches_client = caches_client
+        self.cache_client = cache_client
         self.users_repository = users_repository
         self.users_mapper = users_mapper
         self.hasher = hasher
@@ -94,7 +95,7 @@ class UsersService(AbstractUsersService):
         Returns:
         - UsersPageDto: UsersPageDto object.
         """
-        key = self.caches_client.format_pattern(
+        key = self.cache_client.format_pattern(
             pattern=CacheConstants.USERS_PAGE_KEY,
             page=dto.page,
             search=dto.search,
@@ -103,7 +104,7 @@ class UsersService(AbstractUsersService):
             limit=dto.limit
         )
 
-        cached = await self.caches_client.get(
+        cached = await self.cache_client.get(
             key=key
         )
 
@@ -126,10 +127,10 @@ class UsersService(AbstractUsersService):
             entity=received_entity
         )
 
-        await self.caches_client.set(
+        await self.cache_client.set(
             key=key,
             value=mapped_dto.model_dump_json(),
-            expire=CacheConstants.NORMAL_TTL_SECONDS
+            expire=CacheConstants.TTL_1_HOUR
         )
 
         return mapped_dto
@@ -147,12 +148,12 @@ class UsersService(AbstractUsersService):
         Returns:
         - UserDto: UserDto object.
         """
-        search_key = self.caches_client.format_pattern(
+        search_key = self.cache_client.format_pattern(
             pattern=CacheConstants.USERS_ITEM_KEY,
             user_id=user_id
         )
 
-        cached = await self.caches_client.get(
+        cached = await self.cache_client.get(
             pattern=search_key
         )
 
@@ -167,7 +168,7 @@ class UsersService(AbstractUsersService):
         if not received_entity:
             raise NotFoundError("User {user_id} not found", user_id=user_id)
 
-        key = self.caches_client.format_pattern(
+        key = self.cache_client.format_pattern(
             pattern=CacheConstants.USERS_ITEM_KEY,
             user_id=received_entity.id,
             login=received_entity.login.value,
@@ -178,10 +179,10 @@ class UsersService(AbstractUsersService):
             entity=received_entity
         )
 
-        await self.caches_client.set(
+        await self.cache_client.set(
             key=key,
             value=mapped_dto.model_dump_json(),
-            expire=CacheConstants.NORMAL_TTL_SECONDS
+            expire=CacheConstants.TTL_1_HOUR
         )
 
         return mapped_dto
@@ -199,12 +200,12 @@ class UsersService(AbstractUsersService):
         Returns:
         - UserDto: UserDto object.
         """
-        search_key = self.caches_client.format_pattern(
+        search_key = self.cache_client.format_pattern(
             pattern=CacheConstants.USERS_ITEM_KEY,
             login=login
         )
 
-        cached = await self.caches_client.get(
+        cached = await self.cache_client.get(
             pattern=search_key
         )
 
@@ -219,7 +220,7 @@ class UsersService(AbstractUsersService):
         if not received_entity:
             raise AuthenticationError("Invalid login or password")
 
-        key = self.caches_client.format_pattern(
+        key = self.cache_client.format_pattern(
             pattern=CacheConstants.USERS_ITEM_KEY,
             user_id=received_entity.id,
             login=received_entity.login.value,
@@ -230,10 +231,10 @@ class UsersService(AbstractUsersService):
             entity=received_entity
         )
 
-        await self.caches_client.set(
+        await self.cache_client.set(
             key=key,
             value=mapped_dto.model_dump_json(),
-            expire=CacheConstants.NORMAL_TTL_SECONDS
+            expire=CacheConstants.TTL_1_HOUR
         )
 
         return mapped_dto
@@ -251,8 +252,10 @@ class UsersService(AbstractUsersService):
         Returns:
         - UserDto: UserDto object.
         """
+        password = Password(dto.password)
+
         hashed_password, local_salt = self._hash_password(
-            password=dto.password
+            password=password.value
         )
 
         mapped_entity = self.users_mapper.create_dto_to_entity(
@@ -265,8 +268,8 @@ class UsersService(AbstractUsersService):
             entity=mapped_entity
         )
 
-        await self.caches_client.delete(
-            patterns=self.caches_client.format_pattern(
+        await self.cache_client.delete(
+            patterns=self.cache_client.format_pattern(
                 pattern=CacheConstants.USERS_PAGE_KEY
             )
         )
@@ -291,8 +294,10 @@ class UsersService(AbstractUsersService):
         - UserDto: UserDto object.
         """
         if dto.password is not None:
+            password = Password(dto.password)
+
             hashed_password, local_salt = self._hash_password(
-                password=dto.password
+                password=password.value
             )
         else:
             hashed_password = None
@@ -312,13 +317,13 @@ class UsersService(AbstractUsersService):
         if not updated_entity:
             raise NotFoundError("User {user_id} not found", user_id=user_id)
 
-        await self.caches_client.delete(
+        await self.cache_client.delete(
             patterns=[
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.USERS_ITEM_KEY,
                     user_id=user_id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.USERS_PAGE_KEY
                 )
             ]
@@ -348,13 +353,13 @@ class UsersService(AbstractUsersService):
         if not deleted_entity:
             raise NotFoundError("User {user_id} not found", user_id=user_id)
 
-        await self.caches_client.delete(
+        await self.cache_client.delete(
             patterns=[
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.USERS_ITEM_KEY,
                     user_id=user_id
                 ),
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.USERS_PAGE_KEY
                 )
             ]
@@ -381,19 +386,19 @@ class UsersService(AbstractUsersService):
             raise NotFoundError("Users not found")
 
         patterns_to_delete = [
-            self.caches_client.format_pattern(
+            self.cache_client.format_pattern(
                 pattern=CacheConstants.USERS_PAGE_KEY
             )
         ]
 
         for entity in deleted_entities:
             patterns_to_delete.append(
-                self.caches_client.format_pattern(
+                self.cache_client.format_pattern(
                     pattern=CacheConstants.USERS_ITEM_KEY,
                     user_id=entity.id
                 )
             )
 
-        await self.caches_client.delete(
+        await self.cache_client.delete(
             patterns=patterns_to_delete
         )

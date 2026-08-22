@@ -55,7 +55,7 @@ class WsMetricsEvents(AbstractWsMetricsEvents, BaseWsRouter):
             event=MetricsEventsEnum.SUBSCRIBE_HOST_CPU,
             handler=self.subscribe_host_cpu,
             dependencies=[
-                Depends(self.ws_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.DASHBOARD_CPU_VIEW
                     ]
@@ -67,7 +67,7 @@ class WsMetricsEvents(AbstractWsMetricsEvents, BaseWsRouter):
             event=MetricsEventsEnum.UNSUBSCRIBE_HOST_CPU,
             handler=self.unsubscribe_host_cpu,
             dependencies=[
-                Depends(self.ws_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.DASHBOARD_CPU_VIEW
                     ]
@@ -79,7 +79,7 @@ class WsMetricsEvents(AbstractWsMetricsEvents, BaseWsRouter):
             event=MetricsEventsEnum.SUBSCRIBE_HOST_RAM,
             handler=self.subscribe_host_ram,
             dependencies=[
-                Depends(self.ws_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.DASHBOARD_RAM_VIEW
                     ]
@@ -91,7 +91,7 @@ class WsMetricsEvents(AbstractWsMetricsEvents, BaseWsRouter):
             event=MetricsEventsEnum.UNSUBSCRIBE_HOST_RAM,
             handler=self.unsubscribe_host_ram,
             dependencies=[
-                Depends(self.ws_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.DASHBOARD_RAM_VIEW
                     ]
@@ -103,7 +103,7 @@ class WsMetricsEvents(AbstractWsMetricsEvents, BaseWsRouter):
             event=MetricsEventsEnum.SUBSCRIBE_SERVER_CPU,
             handler=self.subscribe_server_cpu,
             dependencies=[
-                Depends(self.ws_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_CPU_VIEW
                     ]
@@ -115,7 +115,7 @@ class WsMetricsEvents(AbstractWsMetricsEvents, BaseWsRouter):
             event=MetricsEventsEnum.UNSUBSCRIBE_SERVER_CPU,
             handler=self.unsubscribe_server_cpu,
             dependencies=[
-                Depends(self.ws_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_CPU_VIEW
                     ]
@@ -127,7 +127,7 @@ class WsMetricsEvents(AbstractWsMetricsEvents, BaseWsRouter):
             event=MetricsEventsEnum.SUBSCRIBE_SERVER_RAM,
             handler=self.subscribe_server_ram,
             dependencies=[
-                Depends(self.ws_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_RAM_VIEW
                     ]
@@ -139,7 +139,7 @@ class WsMetricsEvents(AbstractWsMetricsEvents, BaseWsRouter):
             event=MetricsEventsEnum.UNSUBSCRIBE_SERVER_RAM,
             handler=self.unsubscribe_server_ram,
             dependencies=[
-                Depends(self.ws_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVER_RAM_VIEW
                     ]

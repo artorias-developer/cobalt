@@ -51,7 +51,7 @@ class WsServersEvents(AbstractWsServersEvents, BaseWsRouter):
             event=ServersEventsEnum.SUBSCRIBE_STATES,
             handler=self.subscribe_states,
             dependencies=[
-                Depends(self.ws_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVERS_VIEW
                     ]
@@ -63,7 +63,7 @@ class WsServersEvents(AbstractWsServersEvents, BaseWsRouter):
             event=ServersEventsEnum.UNSUBSCRIBE_STATES,
             handler=self.unsubscribe_states,
             dependencies=[
-                Depends(self.ws_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.SERVERS_VIEW
                     ]

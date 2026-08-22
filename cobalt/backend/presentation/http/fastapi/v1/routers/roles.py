@@ -58,7 +58,7 @@ class HttpRolesRouter(AbstractHttpRolesRouter, HttpBaseRouter):
             prefix="/roles",
             tags=["Roles"],
             dependencies=[
-                Depends(self.http_session_required)
+                Depends(self.session_required)
             ]
         )
 
@@ -68,7 +68,7 @@ class HttpRolesRouter(AbstractHttpRolesRouter, HttpBaseRouter):
             methods=["DELETE"],
             operation_id="roles_delete_many",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.ROLES_DELETE
                     ]
@@ -82,7 +82,7 @@ class HttpRolesRouter(AbstractHttpRolesRouter, HttpBaseRouter):
             methods=["GET"],
             operation_id="roles_get_page",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.ROLES_VIEW,
                         PermissionEnum.USERS_CREATE,
@@ -98,7 +98,7 @@ class HttpRolesRouter(AbstractHttpRolesRouter, HttpBaseRouter):
             methods=["GET"],
             operation_id="roles_get_one",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.ROLES_VIEW
                     ]
@@ -112,7 +112,7 @@ class HttpRolesRouter(AbstractHttpRolesRouter, HttpBaseRouter):
             methods=["POST"],
             operation_id="roles_create_one",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.ROLES_CREATE
                     ]
@@ -126,7 +126,7 @@ class HttpRolesRouter(AbstractHttpRolesRouter, HttpBaseRouter):
             methods=["PATCH"],
             operation_id="roles_update_one",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.ROLES_UPDATE
                     ]
@@ -140,7 +140,7 @@ class HttpRolesRouter(AbstractHttpRolesRouter, HttpBaseRouter):
             methods=["DELETE"],
             operation_id="roles_delete_one",
             dependencies=[
-                Depends(self.http_permission_required(
+                Depends(self.one_of_permissions_required(
                     permissions=[
                         PermissionEnum.ROLES_DELETE
                     ]

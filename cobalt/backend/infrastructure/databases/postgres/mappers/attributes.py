@@ -116,6 +116,9 @@ class AttributesRepositoryMapper(AbstractAttributesRepositoryMapper):
         Returns:
         - AttributeModel: AttributeModel object.
         """
+        if entity.key is not None:
+            model.key = entity.key.value
+
         if entity.value is not None:
             model.value = entity.value
 

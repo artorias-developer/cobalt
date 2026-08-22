@@ -3,12 +3,12 @@
 #  Repository: https://github.com/artorias-developer/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-from .caches import AbstractCachesClient
+from .caches import AbstractCacheClient
 from .containers import AbstractContainersClient
 from .metrics import AbstractMetricsClient
 
 __all__ = [
-    "AbstractCachesClient",
+    "AbstractCacheClient",
     "AbstractContainersClient",
     "AbstractMetricsClient"
 ]

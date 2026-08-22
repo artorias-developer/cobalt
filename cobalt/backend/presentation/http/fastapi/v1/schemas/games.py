@@ -4,10 +4,14 @@
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from datetime import datetime
-from typing import List, Optional, Literal
+from typing import List, Optional
 
 from pydantic import BaseModel, Field, ConfigDict
 
+from domain.enums import (
+    SortDirectionEnum,
+    GameSortFieldEnum
+)
 from presentation.http.fastapi.v1.schemas.loaders import LoaderSchema
 
 
@@ -158,35 +162,30 @@ class GamesPageSchema(BaseModel):
 class GamesGetPageSchema(BaseModel):
     page: int = Field(
         1,
-        gt=0,
         title="Page",
         description="Page number"
     )
 
     search: Optional[str] = Field(
         None,
-        max_length=100,
-        pattern=r"^[a-zA-Zа-яА-ЯёЁіІїЇєЄ0-9_\-.,' ]+$",
         title="Search",
         description="Search query"
     )
 
-    sort_field: Literal["id", "name", "loader_id", "created_at", "updated_at"] = Field(
-        "id",
+    sort_field: GameSortFieldEnum = Field(
+        GameSortFieldEnum.ID,
         title="Sort field",
         description="Field to sort by"
     )
 
-    sort_direction: Literal["asc", "desc"] = Field(
-        "desc",
+    sort_direction: SortDirectionEnum = Field(
+        SortDirectionEnum.DESC,
         title="Sort direction",
         description="Sort direction"
     )
 
     limit: int = Field(
         10,
-        gt=0,
-        le=100,
         title="Limit",
         description="Number of items per page"
     )
