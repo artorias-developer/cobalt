@@ -126,7 +126,7 @@ pluralRules: {
 If the language follows standard singular/plural rules (like English or German), you can skip this step entirely - vue-i18n's default pluralization will work out of the box.
 :::
 
-6. Add the new language to the `LanguageEnum` type in the `cobalt/frontend/src/types/enums/language.ts` file:
+6. Add the new language to the `LanguageEnum` type in the `cobalt/frontend/src/types/enums/settings.ts` file:
 
 ```typescript
 export enum LanguageEnum {
