@@ -9,6 +9,7 @@ services:
     restart: unless-stopped
     env_file:
       - ./nginx/.env
+      - ./frontend/.env
     entrypoint: ["sh", "/usr/local/bin/nginx-entrypoint.sh"]
     ports:
       - "${HTTPS_PORT:-443}:443"
@@ -36,6 +37,8 @@ services:
       labels:
         - managed_by=cobalt
     container_name: prod_cobalt_frontend
+    env_file:
+      - ./frontend/.env
     restart: "no"
     volumes:
       - prod_frontend_dist:/frontend-dist

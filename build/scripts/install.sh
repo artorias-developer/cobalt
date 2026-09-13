@@ -61,6 +61,9 @@ fi
 
 export HTTPS_PORT
 
+SUMMARY_FILE="$(mktemp)"
+export SUMMARY_FILE
+
 bash "$SCRIPT_DIR/helpers/setup-docker.sh"
 bash "$SCRIPT_DIR/helpers/setup-configs.sh" "--$ENV" $DOMAIN_ARG
 bash "$SCRIPT_DIR/helpers/setup-ssl.sh" "--$ENV" $DOMAIN_ARG
@@ -68,4 +71,14 @@ bash "$SCRIPT_DIR/helpers/setup-ssl.sh" "--$ENV" $DOMAIN_ARG
 echo "Starting containers..."
 docker compose --all-resources -f "$ROOT/$ENV/docker-compose.yaml" up -d --build
 
-echo "Cobalt has been successfully launched."
+echo ""
+echo " Cobalt has been successfully launched."
+
+DOMAIN=$(grep -m1 '^DOMAIN=' "$SUMMARY_FILE" | cut -d'=' -f2-)
+APP_BASE_URL=$(grep -m1 '^APP_BASE_URL=' "$SUMMARY_FILE" | cut -d'=' -f2-)
+rm -f "$SUMMARY_FILE"
+
+echo ""
+echo " URL:      https://$DOMAIN/$APP_BASE_URL/login"
+echo " Login:    admin"
+echo " Password: admin"

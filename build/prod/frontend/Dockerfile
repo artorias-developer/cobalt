@@ -6,7 +6,9 @@ COPY cobalt/frontend/package*.json ./
 RUN npm install
 
 COPY cobalt/frontend ./
-RUN npm run build
+COPY build/prod/frontend/.env ./.env
+
+RUN set -a && . ./.env && set +a && npm run build
 
 FROM alpine:latest
 
