@@ -1,7 +1,14 @@
-# Folders
-**/__pycache__
-
 # Files
-**/*.pyc
 **/*.pyo
 **/*.pyd
+**/*.pyc
+
+# Folders
+**/__pycache__
+**/node_modules
+**/dist
+**/.venv
+**/.git
+**/.idea
+**/.vscode
+**/*.tsbuildinfo
