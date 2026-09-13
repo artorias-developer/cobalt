@@ -88,6 +88,7 @@ generate "$TARGET/nginx/.env" "$TARGET/nginx/.env.example" \
   -e "s|{{base_url}}|$APP_BASE_URL|"
 
 generate "$TARGET/frontend/.env" "$TARGET/frontend/.env.example" \
+  -e "s|{{domain}}|$DOMAIN|" \
   -e "s|{{base_url}}|$APP_BASE_URL|"
 
 ALEMBIC_DEST="$ROOT/cobalt/backend/alembic.ini"
