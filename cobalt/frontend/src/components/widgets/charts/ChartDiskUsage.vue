@@ -173,16 +173,6 @@ async function refreshDiskMetrics(): Promise<void> {
       type: "success",
       text: t("metrics.disk.refresh.success")
     })
-
-    notify({
-      type: "warn",
-      text: t("metrics.disk.refresh.success")
-    })
-
-    notify({
-      type: "error",
-      text: t("metrics.disk.refresh.success")
-    })
   } finally {
     isRefreshing.value = false
   }
