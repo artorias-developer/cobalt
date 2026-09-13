@@ -3,26 +3,12 @@ import { fileURLToPath, URL } from "node:url"
 import { defineConfig, Plugin } from "vite"
 import vue from "@vitejs/plugin-vue"
 
-function blockRootRedirect(): Plugin {
-  return {
-    name: "block-root-redirect",
-    configureServer(server) {
-      server.middlewares.use((req, res, next) => {
-        if (req.url === "/") {
-          res.statusCode = 404
-          res.end("Not Found")
-          return
-        }
-        next()
-      })
-    }
-  }
-}
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const isDev = process.env.APP_ENVIRONMENT === "dev"
   const appBase = process.env.APP_BASE_URL
+  const appDomain = process.env.APP_DOMAIN
 
   return {
     define: {
@@ -36,7 +22,7 @@ export default defineConfig(({ mode }) => {
       vue(),
       blockRootRedirect()
     ],
-    base: appBase ? `/${appBase}/` : '/',
+    base: getBase(appBase),
     server: {
       host: "0.0.0.0",
       port: 8011,
@@ -46,9 +32,7 @@ export default defineConfig(({ mode }) => {
         host: "127.0.0.1",
         clientPort: 443,
       },
-      allowedHosts: isDev
-        ? ["localhost", "127.0.0.1", ".ngrok-free.app"]
-        : true,
+      allowedHosts: getAllowedHosts(isDev, appDomain),
     },
     build: {
       sourcemap: false,
@@ -101,3 +85,70 @@ export default defineConfig(({ mode }) => {
     }
   }
 })
+
+/**
+ * Resolves the Vite `base` path from the app's base segment.
+ *
+ * Parameters:
+ * - appBase: The app base segment (e.g. from `APP_BASE` env var), without leading/trailing slashes.
+ *
+ * Returns:
+ * - string: `/${appBase}/` if `appBase` is set, otherwise `/`.
+ */
+function getBase(appBase?: string): string {
+  return appBase ? `/${appBase}/` : '/'
+}
+
+/**
+ * Resolves the `allowedHosts` list for the Vite dev server.
+ *
+ * In dev mode, returns a fixed list of known local/tunnel hosts.
+ * In non-dev mode, requires `appDomain` to be set and restricts access to that host only.
+ *
+ * Parameters:
+ * - isDev: Whether the app is running in development mode.
+ * - appDomain: The production domain (e.g. from `APP_DOMAIN` env var). Required when `isDev` is false.
+ *
+ * Returns:
+ * - string[] | true: An array of allowed hosts.
+ *
+ * Throws:
+ * - Error: If `isDev` is false and `appDomain` is not provided.
+ */
+function getAllowedHosts(isDev: boolean, appDomain?: string): string[] | true {
+  if (isDev) {
+    return ["localhost", "127.0.0.1", ".ngrok-free.app"]
+  }
+
+  if (!appDomain) {
+    throw new Error("APP_DOMAIN is required in production")
+  }
+
+  return [appDomain]
+}
+
+/**
+ * Vite plugin that blocks requests to the root path ("/") during development,
+ * returning a 404 instead. Used to prevent access outside the app's base path.
+ *
+ * Parameters:
+ * - null.
+ *
+ * Returns:
+ * - Plugin: A Vite plugin instance.
+ */
+function blockRootRedirect(): Plugin {
+  return {
+    name: "block-root-redirect",
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        if (req.url === "/") {
+          res.statusCode = 404
+          res.end("Not Found")
+          return
+        }
+        next()
+      })
+    }
+  }
+}
