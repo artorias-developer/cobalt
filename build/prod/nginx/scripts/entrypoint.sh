@@ -5,6 +5,7 @@ set -e
 : "${BACKEND_HOST:?}"
 : "${BACKEND_PORT:?}"
 : "${APP_DOMAIN:?}"
+: "${APP_BASE_URL:?}"
 
 BACKEND_UPSTREAM_BLOCK="server $BACKEND_HOST:$BACKEND_PORT;"
 
@@ -14,7 +15,8 @@ sed "
 s|\$BACKEND_UPSTREAM|$BACKEND_UPSTREAM_BLOCK|g;
 s|\$NGINX_PORT|$NGINX_PORT|g;
 s|\$SSL_CERT_FILE|$SAFE_DOMAIN.crt|g;
-s|\$SSL_KEY_FILE|$SAFE_DOMAIN.key|g
+s|\$SSL_KEY_FILE|$SAFE_DOMAIN.key|g;
+s|\$APP_BASE_URL|$APP_BASE_URL|g
 " /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
 
 nginx -g 'daemon off;'

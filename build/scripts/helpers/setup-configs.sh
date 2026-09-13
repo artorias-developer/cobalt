@@ -53,6 +53,7 @@ ROOT="$SCRIPT_DIR/../../.."
 PEPPER=$(openssl rand -hex 32)
 POSTGRES_PASSWORD=$(openssl rand -hex 24)
 REDIS_PASSWORD=$(openssl rand -hex 24)
+APP_BASE_URL=$(openssl rand -hex 16)
 
 generate() {
   local dest="$1"
@@ -70,21 +71,6 @@ generate() {
   echo "  The $name file has been successfully $action."
 }
 
-copy() {
-  local dest="$1"
-  local src="$2"
-  local name
-  name=$(basename "$(dirname "$dest")")/$(basename "$dest")
-  local action="generated"
-
-  if [[ -f "$dest" ]]; then
-    action="replaced"
-  fi
-
-  cp "$src" "$dest"
-  echo "  The $name file has been successfully $action."
-}
-
 generate "$TARGET/backend/.env" "$TARGET/backend/.env.example" \
   -e "s/{{pepper}}/$PEPPER/" \
   -e "s/{{postgres_password}}/$POSTGRES_PASSWORD/" \
@@ -98,9 +84,11 @@ generate "$TARGET/redis/.env" "$TARGET/redis/.env.example" \
   -e "s/{{redis_password}}/$REDIS_PASSWORD/"
 
 generate "$TARGET/nginx/.env" "$TARGET/nginx/.env.example" \
-  -e "s/{{domain}}/$DOMAIN/"
+  -e "s/{{domain}}/$DOMAIN/" \
+  -e "s|{{base_url}}|$APP_BASE_URL|"
 
-copy "$TARGET/frontend/.env" "$TARGET/frontend/.env.example"
+generate "$TARGET/frontend/.env" "$TARGET/frontend/.env.example" \
+  -e "s|{{base_url}}|$APP_BASE_URL|"
 
 ALEMBIC_DEST="$ROOT/cobalt/backend/alembic.ini"
 ALEMBIC_SRC="$ROOT/cobalt/backend/alembic.ini.example"
@@ -112,3 +100,10 @@ fi
 
 cp "$ALEMBIC_SRC" "$ALEMBIC_DEST"
 echo "  The alembic.ini file has been successfully $ALEMBIC_ACTION."
+
+if [[ -n "${SUMMARY_FILE:-}" ]]; then
+  {
+    echo "DOMAIN=$DOMAIN"
+    echo "APP_BASE_URL=$APP_BASE_URL"
+  } > "$SUMMARY_FILE"
+fi
