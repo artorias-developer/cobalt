@@ -241,14 +241,14 @@ def setup_fastapi_middlewares(
     Returns:
     - None.
     """
-    setup_fastapi_trusted_host_middleware(
+    setup_fastapi_http_auth_middleware(
         app=app,
-        config=config
+        auth_service=services.auth
     )
 
-    setup_fastapi_cors_middleware(
+    setup_fastapi_http_locale_middleware(
         app=app,
-        config=config
+        i18n_manager=managers.i18n
     )
 
     setup_fastapi_http_errors_middleware(
@@ -257,14 +257,14 @@ def setup_fastapi_middlewares(
         logger=logger
     )
 
-    setup_fastapi_http_locale_middleware(
+    setup_fastapi_cors_middleware(
         app=app,
-        i18n_manager=managers.i18n
+        config=config
     )
 
-    setup_fastapi_http_auth_middleware(
+    setup_fastapi_trusted_host_middleware(
         app=app,
-        auth_service=services.auth
+        config=config
     )
 
     setup_fastapi_http_validation_middleware(
@@ -273,13 +273,12 @@ def setup_fastapi_middlewares(
         logger=logger
     )
 
-    setup_fastapi_ws_locale_middleware(
-        app=app,
-        i18n_manager=managers.i18n
-    )
-
     setup_fastapi_ws_auth_middleware(
         app=app,
         auth_service=services.auth
     )
 
+    setup_fastapi_ws_locale_middleware(
+        app=app,
+        i18n_manager=managers.i18n
+    )
