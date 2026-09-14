@@ -95,6 +95,6 @@ test.describe("Login page", () => {
     await expect(signInButton).toBeEnabled()
     await signInButton.click()
 
-    await expect(page).toHaveURL("/")
+    await expect(page).toHaveURL(/\/$/)
   })
 })

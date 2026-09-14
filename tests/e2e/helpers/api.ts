@@ -24,9 +24,13 @@ export async function gotoWithRetry(
   url: string,
   retries = 3,
 ): Promise<void> {
+  const base = process.env.COBALT_BASE ?? ""
+  const path = url.startsWith("/") ? url.slice(1) : url
+  const fullPath = [base, path].filter(Boolean).join("/")
+
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
-      await page.goto(url, { waitUntil: "domcontentloaded" })
+      await page.goto(fullPath, { waitUntil: "domcontentloaded" })
       return
     } catch (error) {
       const isTransient =

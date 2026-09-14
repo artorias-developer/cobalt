@@ -29,7 +29,7 @@ setup("Authenticate", async ({ page }) => {
   await expect(signInButton).toBeEnabled()
   await signInButton.click()
 
-  await page.waitForURL("/")
+  await page.locator('button[name="logout"]').waitFor({ state: "visible" })
 
   await page.context().storageState({ path: ".auth/session.json" })
 })
