@@ -15,7 +15,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : 2,
   reporter: "html",
   use: {
-    baseURL: process.env.BASE_URL ?? "https://127.0.0.1",
+    baseURL: process.env.COBALT_URL ?? "https://127.0.0.1",
     ignoreHTTPSErrors: true,
     screenshot: "only-on-failure",
     video: "retain-on-failure",
