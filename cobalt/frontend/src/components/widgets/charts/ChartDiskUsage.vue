@@ -253,7 +253,9 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .disk {
+  height: 100%;
   min-height: min-content;
+  max-height: 360px;
 
   .heading {
     display: flex;
@@ -280,6 +282,7 @@ onMounted(() => {
         align-items: center;
         justify-content: center;
         flex-direction: column;
+        flex-shrink: 0;
         gap: $space-sm;
         border: 8px solid;
         border-radius: 100%;
@@ -432,6 +435,9 @@ onMounted(() => {
         gap: $space-lg;
 
         .circle {
+          width: 115px;
+          height: 115px;
+
           p {
             font-size: $font-xl;
           }
