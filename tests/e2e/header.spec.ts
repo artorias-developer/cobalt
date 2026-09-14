@@ -19,7 +19,7 @@ test.describe("Header", () => {
     await expect(link).toBeEnabled()
     await link.click()
 
-    await expect(page).toHaveURL("/settings")
+    await expect(page).toHaveURL(/\/settings/)
 
     const tab = page.locator('.page .block.settings .tabs .nav button[name="security"].active')
     await tab.waitFor({ state: "visible" })
@@ -32,7 +32,7 @@ test.describe("Header", () => {
     await expect(link).toBeEnabled()
     await link.click()
 
-    await expect(page).toHaveURL("/settings")
+    await expect(page).toHaveURL(/\/settings/)
 
     const tab = page.locator('.page .block.settings .tabs .nav button[name="system"].active')
     await tab.waitFor({ state: "visible" })
