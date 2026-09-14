@@ -17,6 +17,7 @@ services:
       - prod_cobalt_network
     volumes:
       - ../prod/nginx/configs/main.conf:/etc/nginx/nginx.conf.template:ro
+      - ../prod/nginx/configs/parts:/etc/nginx/parts:ro
       - ../prod/nginx/scripts/entrypoint.sh:/usr/local/bin/nginx-entrypoint.sh:ro
       - ../prod/nginx/ssl:/etc/nginx/ssl:ro
       - prod_frontend_dist:/usr/share/nginx/html:ro
