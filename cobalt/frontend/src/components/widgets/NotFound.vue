@@ -9,12 +9,12 @@
   <div class="not-found">
     <div class="icon" v-html="notFoundIcon"/>
     <div class="content">
-      <h1>{{ title }}</h1>
-      <p>{{ message }}</p>
+      <h1>{{ displayTitle }}</h1>
+      <p>{{ displayMessage }}</p>
     </div>
     <ButtonSolid
       type="button"
-      text="Go back"
+      :text="t('common.404.back')"
       color="blue"
       @click="router.back()"
     />
@@ -22,21 +22,29 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue"
 import { useRouter } from "vue-router"
+import { useI18n } from "vue-i18n"
 
 import ButtonSolid from "@/components/ui/buttons/ButtonSolid.vue"
 
 import notFoundIcon from "@/assets/images/svg/404.svg?raw"
 
-withDefaults(defineProps<{
+const props = defineProps<{
   title?: string
   message?: string
-}>(), {
-  title: "Page not found",
-  message: "The page does not exist or has been moved."
-})
+}>()
 
+const { t } = useI18n()
 const router = useRouter()
+
+const displayTitle = computed(() =>
+  props.title ?? t("common.404.title")
+)
+
+const displayMessage = computed(() =>
+  props.message ?? t("common.404.message")
+)
 </script>
 
 <style scoped lang="scss">

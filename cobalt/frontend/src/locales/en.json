@@ -36,6 +36,11 @@
     },
     "table": {
       "counter": "0 items | {count} item | {count} items"
+    },
+    "404": {
+      "title": "Page not found",
+      "message": "The page does not exist or has been moved.",
+      "back": "Go back"
     }
   },
   "auth": {
@@ -597,7 +602,7 @@
     "general": {
       "theme": {
         "title": "Theme",
-        "description": "Color scheme and visual style",
+        "description": "Color scheme",
         "placeholder": "Select theme...",
         "options": {
           "cobalt_dark": "Cobalt - Dark",
@@ -611,7 +616,7 @@
       },
       "language": {
         "title": "Language",
-        "description": "Interface language and localization",
+        "description": "Interface language",
         "placeholder": "Select language...",
         "options": {
           "en": "English",
@@ -632,7 +637,7 @@
       },
       "password": {
         "title": "Password",
-        "description": "Access credentials and authentication",
+        "description": "Account password",
         "old": {
           "placeholder": "Old password"
         },
