@@ -44,20 +44,25 @@ chmod +x build/scripts/install.sh
 ./build/scripts/install.sh --dev --local
 ```
 
-::: tip
-You can optionally pass a custom local domain, e.g. `./build/scripts/install.sh --dev --local cobalt.local`.
+:::details List of available flags
+
+<div class="table flags">
+
+| Flag                 | Required                | Description                                                                                                                                                               |
+|----------------------|-------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| --prod               | no                      | Use production environment. Defaults to `--prod` if neither `--prod` nor `--dev` is provided.                                                                             |
+| --dev                | no                      | Use development environment.                                                                                                                                              |
+| --local [domain]     | yes (or use `--server`) | Deploy locally. Defaults to `127.0.0.1` if domain is not provided.                                                                                                        |
+| --server &lt;ip&gt;  | yes (or use `--local`)  | An IP or a domain name of the VPS / VDS.                                                                                                                                  |
+| --port &lt;port&gt;  | no                      | HTTPS port to use. Defaults to `443` if not provided.                                                                                                                     |                                                                                                               |
+| --no-admin-base      | no                      | By default the dashboard page is hidden behind a random, hard-to-guess URL for extra security. Use this flag to disable that and use a normal, predictable URL instead.   |
+</div>
 :::
+
+The installer will automatically install Docker and Docker Compose if not present, generate SSL certificates and all config files, build and start the containers.
 
 :::tip
-If you need to bind Cobalt to a port other than the default `443`, you can add the `--port <custom_port>` option.
-:::
-
-If a domain is provided, the dashboard will be available at `https://<domain>`. Otherwise, it will be available at `https://127.0.0.1`.
-
-:::tip Credentials
-**Login**: `admin`
-
-**Password**: `admin`
+A link to the dashboard and login credentials will be displayed after installation.
 :::
 
 ## Makefile commands

@@ -9,8 +9,8 @@ import { test as setup, expect } from "@playwright/test"
 import { gotoWithRetry } from "./api.js"
 
 const TEST_USER = {
-  login: process.env.TEST_LOGIN ?? "admin",
-  password: process.env.TEST_PASSWORD ?? "admin",
+  login: process.env.COBALT_LOGIN ?? "admin",
+  password: process.env.COBALT_PASSWORD ?? "admin",
 }
 
 setup("Authenticate", async ({ page }) => {

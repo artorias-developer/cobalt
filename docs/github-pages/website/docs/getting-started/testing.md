@@ -24,7 +24,9 @@ npm install
 cp .env.example .env
 ```
 
-4. Run all E2E tests:
+4. Fill in the `.env` file with your current login credentials and the link from your dashboard.
+
+5. Run all E2E tests:
 
 ```bash
 npm run test:e2e
