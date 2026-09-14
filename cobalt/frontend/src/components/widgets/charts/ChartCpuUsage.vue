@@ -172,15 +172,13 @@ onUnmounted(() => {
 
 <style scoped lang="scss">
 .cpu {
+  height: 100%;
   min-height: 220px;
+  max-height: 360px;
 
   .chart,
   .message {
-    flex: 1;
-  }
-
-  .chart {
-    min-height: 0;
+    height: 100%;
   }
 
   .message {

@@ -12,6 +12,8 @@ body, html {
 }
 
 body {
+  width: 100%;
+
   @include background-image(
     $image: "@/assets/images/background.jpg"
   );
@@ -42,6 +44,7 @@ a {
 }
 
 #app {
+  width: 100%;
   height: 100vh;
   height: 100dvh;
   display: flex;

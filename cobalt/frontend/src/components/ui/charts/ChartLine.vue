@@ -419,10 +419,3 @@ onUnmounted(() => {
   gradientCache.clear()
 })
 </script>
-
-<style scoped lang="scss">
-.chart {
-  width: 100%;
-  height: 100%;
-}
-</style>
