@@ -4,7 +4,7 @@
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from application.contracts.clients import AbstractContainersClient
-from infrastructure.clients.containers.docker import DockerClient
+from infrastructure.clients import DockerClient
 
 
 def create_docker_client() -> AbstractContainersClient:

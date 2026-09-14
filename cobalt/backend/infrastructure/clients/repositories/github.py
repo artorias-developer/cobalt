@@ -1,45 +1,51 @@
-#  Copyright (C) 2026 Artorias
-#  Author: Artorias
-#  Repository: https://github.com/artorias-developer/cobalt
+#  Copyright (C) 2026 ArtoriasCode
+#  Author: ArtoriasCode
+#  Repository: https://github.com/ArtoriasCode/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from typing import List, Optional
 
+from application.contracts.clients import (
+    AbstractHttpClient,
+    AbstractRepositoriesClient
+)
 from application.contracts.loggers import AbstractLogger
-from infrastructure.mixins.clients.http import HttpClientMixin
 
 
-class GithubClientMixin(HttpClientMixin):
+class GithubClient(AbstractRepositoriesClient):
     """
-    Mixin for GitHub API client.
+    Client for GitHub repositories.
     """
     GITHUB_API = "https://api.github.com/repos/{repository}"
 
+    http_client: AbstractHttpClient
+
     def __init__(
         self,
-        logger: AbstractLogger,
-        timeout: float = 60.0
+        http_client: AbstractHttpClient,
+        logger: AbstractLogger
     ):
-        super().__init__(logger, timeout)
+        self.http_client = http_client
+        self.logger = logger
 
-    async def get_repository_release_versions(
+    async def get_all_versions(
         self,
         repository: str,
-        prerelease: bool = False,
+        pre_release: bool = False,
         per_page: int = 100,
         stop_on_version: Optional[str] = None
     ) -> List[str]:
         """
-        Gets release version tags for a GitHub repository.
+        Gets all release versions from a GitHub repository.
 
         Parameters:
-        - repository: Repository in "owner/repository" format.
-        - prerelease: Whether to include prerelease versions.
+        - repository: Repository URL.
+        - pre_release: Whether to include prerelease versions.
         - per_page: Number of releases to fetch per page.
         - stop_on_version: Stop fetching once this version tag is reached.
 
         Returns:
-        - List: List of release version tags.
+        - List: List of versions.
         """
         url = self.GITHUB_API.format(
             repository=repository
@@ -51,7 +57,7 @@ class GithubClientMixin(HttpClientMixin):
 
         try:
             while True:
-                response = await self.request(
+                response = await self.http_client.request(
                     url=f"{url}/releases",
                     method="GET",
                     params={"per_page": per_page, "page": page},
@@ -66,7 +72,7 @@ class GithubClientMixin(HttpClientMixin):
                     if not tag_name:
                         continue
 
-                    if not prerelease and release.get("prerelease", False):
+                    if not pre_release and release.get("prerelease", False):
                         continue
 
                     if tag_name == stop_on_version:

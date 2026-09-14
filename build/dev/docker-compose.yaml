@@ -66,6 +66,8 @@ services:
     entrypoint: ["sh", "/app/backend-entrypoint.sh"]
     ports:
       - "8010:8010"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - dev_cobalt_network
     environment:

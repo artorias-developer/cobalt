@@ -11,8 +11,8 @@ import { gotoWithRetry, clickAndWaitForApi } from "./helpers/api.js"
 test.use({ storageState: { cookies: [], origins: [] } })
 
 const TEST_USER = {
-  login: process.env.TEST_LOGIN ?? "admin",
-  password: process.env.TEST_PASSWORD ?? "admin",
+  login: process.env.COBALT_LOGIN ?? "admin",
+  password: process.env.COBALT_PASSWORD ?? "admin",
 }
 
 test.describe("Login page", () => {
@@ -95,6 +95,6 @@ test.describe("Login page", () => {
     await expect(signInButton).toBeEnabled()
     await signInButton.click()
 
-    await expect(page).toHaveURL("/")
+    await expect(page).toHaveURL(/\/$/)
   })
 })

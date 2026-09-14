@@ -99,23 +99,9 @@ const labelsToShow = 4
 
     section {
       &.info {
+        min-height: unset;
         max-width: unset;
         overflow-y: unset;
-
-        :deep(.cpu),
-        :deep(.ram) {
-          flex: none;
-        }
-      }
-    }
-  }
-}
-
-@media (max-width: 1024px) {
-  .overview {
-    section {
-      &.info {
-        min-height: unset;
       }
     }
   }

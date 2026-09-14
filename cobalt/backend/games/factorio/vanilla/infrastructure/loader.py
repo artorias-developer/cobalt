@@ -11,24 +11,27 @@ from application.contracts.games import (
     AbstractLoader,
     AbstractServersService
 )
+from application.contracts.clients import AbstractHttpClient
 from application.contracts.loggers import AbstractLogger
-from infrastructure.mixins import HttpClientMixin
 
 
-class VanillaLoader(AbstractLoader, HttpClientMixin):
+class VanillaLoader(AbstractLoader):
     """
     Factorio Vanilla loader.
     """
     VERSIONS_LINK: str = "https://factorio.com/download/archive/"
     DOWNLOAD_LINK: str = "https://factorio.com/get-download/{version}/headless/linux64"
 
+    http_client: AbstractHttpClient
+    logger: AbstractLogger
+
     def __init__(
         self,
         game_id: int,
         name: str,
         servers_service: AbstractServersService,
-        logger: AbstractLogger,
-        timeout: float = 60.0
+        http_client: AbstractHttpClient,
+        logger: AbstractLogger
     ):
         AbstractLoader.__init__(
             self,
@@ -37,11 +40,8 @@ class VanillaLoader(AbstractLoader, HttpClientMixin):
             servers_service=servers_service
         )
 
-        HttpClientMixin.__init__(
-            self,
-            logger=logger,
-            timeout=timeout
-        )
+        self.http_client = http_client
+        self.logger = logger
 
     async def get_versions(self) -> List[str]:
         """
@@ -55,7 +55,7 @@ class VanillaLoader(AbstractLoader, HttpClientMixin):
         """
         versions = []
 
-        response = await self.request(
+        response = await self.http_client.request(
             url=self.VERSIONS_LINK,
             method="GET",
         )

@@ -4,13 +4,17 @@
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from application.contracts.loggers import AbstractLogger
-from application.contracts.clients import AbstractMetricsClient
-from infrastructure.clients.metrics.prometheus import PrometheusClient
+from application.contracts.clients import (
+    AbstractMetricsClient,
+    AbstractHttpClient
+)
+from infrastructure.clients import PrometheusClient
 from infrastructure.configs import ApplicationConfig
 
 
 def create_prometheus_client(
     config: ApplicationConfig,
+    http_client: AbstractHttpClient,
     logger: AbstractLogger
 ) -> AbstractMetricsClient:
     """
@@ -18,6 +22,7 @@ def create_prometheus_client(
 
     Parameters:
     - config: ApplicationConfig object.
+    - http_client: AbstractHttpClient object.
     - logger: AbstractLogger object.
 
     Returns:
@@ -25,5 +30,6 @@ def create_prometheus_client(
     """
     return PrometheusClient(
         base_url=config.prometheus.url,
+        http_client=http_client,
         logger=logger
     )

@@ -9,24 +9,27 @@ from application.contracts.games import (
     AbstractLoader,
     AbstractServersService
 )
+from application.contracts.clients import AbstractRepositoriesClient
 from application.contracts.loggers import AbstractLogger
-from infrastructure.mixins import GithubClientMixin
 
 
-class TogetherLoader(AbstractLoader, GithubClientMixin):
+class TogetherLoader(AbstractLoader):
     """
     RimWorld Together loader.
     """
     GITHUB_REPOSITORY = "RimWorld-Together/Rimworld-Together"
     DOWNLOAD_LINK = "https://github.com/RimWorld-Together/Rimworld-Together/releases/download/{version}/linux-x64.zip"
 
+    github_client: AbstractRepositoriesClient
+    logger: AbstractLogger
+
     def __init__(
         self,
         game_id: int,
         name: str,
-        logger: AbstractLogger,
         servers_service: AbstractServersService,
-        timeout: float = 60.0
+        github_client: AbstractRepositoriesClient,
+        logger: AbstractLogger
     ):
         AbstractLoader.__init__(
             self,
@@ -35,11 +38,8 @@ class TogetherLoader(AbstractLoader, GithubClientMixin):
             servers_service=servers_service
         )
 
-        GithubClientMixin.__init__(
-            self,
-            logger=logger,
-            timeout=timeout
-        )
+        self.github_client = github_client
+        self.logger = logger
 
     async def get_versions(self) -> List[str]:
         """
@@ -54,7 +54,7 @@ class TogetherLoader(AbstractLoader, GithubClientMixin):
         unsupported_versions = self.get_unsupported_versions()
         default_versions = self.get_default_versions()
 
-        all_versions = await self.get_repository_release_versions(
+        all_versions = await self.github_client.get_all_versions(
             repository=self.GITHUB_REPOSITORY,
             stop_on_version=default_versions[0]
         )

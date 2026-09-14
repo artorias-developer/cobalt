@@ -9,11 +9,9 @@ from application.contracts.games import (
     AbstractLoader,
     AbstractServersService
 )
-from application.contracts.loggers import AbstractLogger
-from infrastructure.mixins import HttpClientMixin
 
 
-class VanillaLoader(AbstractLoader, HttpClientMixin):
+class VanillaLoader(AbstractLoader):
     """
     Don't Starve Together Vanilla loader.
     """
@@ -22,21 +20,13 @@ class VanillaLoader(AbstractLoader, HttpClientMixin):
         self,
         game_id: int,
         name: str,
-        servers_service: AbstractServersService,
-        logger: AbstractLogger,
-        timeout: float = 60.0
+        servers_service: AbstractServersService
     ):
         AbstractLoader.__init__(
             self,
             game_id=game_id,
             name=name,
             servers_service=servers_service
-        )
-
-        HttpClientMixin.__init__(
-            self,
-            logger=logger,
-            timeout=timeout
         )
 
     async def get_versions(self) -> List[str]:

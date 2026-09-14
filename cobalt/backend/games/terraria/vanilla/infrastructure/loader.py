@@ -11,24 +11,27 @@ from application.contracts.games import (
     AbstractLoader,
     AbstractServersService
 )
+from application.contracts.clients import AbstractHttpClient
 from application.contracts.loggers import AbstractLogger
-from infrastructure.mixins import HttpClientMixin
 
 
-class VanillaLoader(AbstractLoader, HttpClientMixin):
+class VanillaLoader(AbstractLoader):
     """
     Terraria Vanilla loader.
     """
     WIKI_LINK: str = "https://terraria.wiki.gg/wiki/Server"
     DOWNLOAD_LINK: str = "https://terraria.org/api/download/pc-dedicated-server/terraria-server-{version}.zip"
 
+    http_client: AbstractHttpClient
+    logger: AbstractLogger
+
     def __init__(
         self,
         game_id: int,
         name: str,
         servers_service: AbstractServersService,
-        logger: AbstractLogger,
-        timeout: float = 60.0
+        http_client: AbstractHttpClient,
+        logger: AbstractLogger
     ):
         AbstractLoader.__init__(
             self,
@@ -37,11 +40,8 @@ class VanillaLoader(AbstractLoader, HttpClientMixin):
             servers_service=servers_service
         )
 
-        HttpClientMixin.__init__(
-            self,
-            logger=logger,
-            timeout=timeout
-        )
+        self.http_client = http_client
+        self.logger = logger
 
     async def get_versions(self) -> List[str]:
         """
@@ -56,7 +56,7 @@ class VanillaLoader(AbstractLoader, HttpClientMixin):
         versions = []
         unsupported_versions = self.get_unsupported_versions()
 
-        response = await self.request(
+        response = await self.http_client.request(
             url=self.WIKI_LINK,
             method="GET",
         )

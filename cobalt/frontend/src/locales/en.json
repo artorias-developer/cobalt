@@ -33,6 +33,9 @@
         "title": "Are you sure?",
         "message": "Are you sure you want to delete this item? This action is irreversible and cannot be undone."
       }
+    },
+    "table": {
+      "counter": "0 items | {count} item | {count} items"
     }
   },
   "auth": {

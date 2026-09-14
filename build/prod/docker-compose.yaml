@@ -9,6 +9,7 @@ services:
     restart: unless-stopped
     env_file:
       - ./nginx/.env
+      - ./frontend/.env
     entrypoint: ["sh", "/usr/local/bin/nginx-entrypoint.sh"]
     ports:
       - "${HTTPS_PORT:-443}:443"
@@ -16,6 +17,7 @@ services:
       - prod_cobalt_network
     volumes:
       - ../prod/nginx/configs/main.conf:/etc/nginx/nginx.conf.template:ro
+      - ../prod/nginx/configs/parts:/etc/nginx/parts:ro
       - ../prod/nginx/scripts/entrypoint.sh:/usr/local/bin/nginx-entrypoint.sh:ro
       - ../prod/nginx/ssl:/etc/nginx/ssl:ro
       - prod_frontend_dist:/usr/share/nginx/html:ro
@@ -36,6 +38,8 @@ services:
       labels:
         - managed_by=cobalt
     container_name: prod_cobalt_frontend
+    env_file:
+      - ./frontend/.env
     restart: "no"
     volumes:
       - prod_frontend_dist:/frontend-dist
@@ -53,6 +57,8 @@ services:
     env_file:
       - ./backend/.env
     entrypoint: ["sh", "/app/backend-entrypoint.sh"]
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - prod_cobalt_network
     environment:

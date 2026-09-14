@@ -11,11 +11,11 @@ from application.contracts.games import (
     AbstractLoader,
     AbstractServersService
 )
+from application.contracts.clients import AbstractHttpClient
 from application.contracts.loggers import AbstractLogger
-from infrastructure.mixins import HttpClientMixin
 
 
-class FabricLoader(AbstractLoader, HttpClientMixin):
+class FabricLoader(AbstractLoader):
     """
     Minecraft Fabric loader.
     """
@@ -27,13 +27,16 @@ class FabricLoader(AbstractLoader, HttpClientMixin):
     _installer_version: Optional[str]
     _cache_updated_at: Optional[datetime]
 
+    http_client: AbstractHttpClient
+    logger: AbstractLogger
+
     def __init__(
         self,
         game_id: int,
         name: str,
-        logger: AbstractLogger,
         servers_service: AbstractServersService,
-        timeout: float = 60.0
+        http_client: AbstractHttpClient,
+        logger: AbstractLogger
     ):
         AbstractLoader.__init__(
             self,
@@ -42,11 +45,8 @@ class FabricLoader(AbstractLoader, HttpClientMixin):
             servers_service=servers_service
         )
 
-        HttpClientMixin.__init__(
-            self,
-            logger=logger,
-            timeout=timeout
-        )
+        self.http_client = http_client
+        self.logger = logger
 
         self._loader_version = None
         self._installer_version = None
@@ -78,7 +78,7 @@ class FabricLoader(AbstractLoader, HttpClientMixin):
         - str: Latest loader version or None on failure.
         """
         try:
-            response = await self.request(
+            response = await self.http_client.request(
                 url=f"{self.FABRIC_META_API}/versions/loader",
                 method="GET",
             )
@@ -107,7 +107,7 @@ class FabricLoader(AbstractLoader, HttpClientMixin):
         - str: Latest installer version or None on failure.
         """
         try:
-            response = await self.request(
+            response = await self.http_client.request(
                 url=f"{self.FABRIC_META_API}/versions/installer",
                 method="GET",
             )
@@ -157,7 +157,7 @@ class FabricLoader(AbstractLoader, HttpClientMixin):
         - List: List of available versions.
         """
         try:
-            response = await self.request(
+            response = await self.http_client.request(
                 url=f"{self.FABRIC_META_API}/versions/game",
                 method="GET",
             )

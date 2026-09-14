@@ -94,18 +94,21 @@ class MinecraftGameModule(AbstractGameModule):
                 game_id=self.game_id,
                 name="fabric",
                 servers_service=fabric_servers_service,
+                http_client=self.container.clients.http,
                 logger=self.container.logger
             ),
             ForgeLoader(
                 game_id=self.game_id,
                 name="forge",
                 servers_service=forge_servers_service,
+                http_client=self.container.clients.http,
                 logger=self.container.logger
             ),
             PaperLoader(
                 game_id=self.game_id,
                 name="paper",
                 servers_service=paper_servers_service,
+                http_client=self.container.clients.http,
                 logger=self.container.logger
             )
         ]

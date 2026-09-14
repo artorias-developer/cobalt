@@ -3,3 +3,8 @@
 #  Repository: https://github.com/artorias-developer/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
+from .prometheus import PrometheusClient
+
+__all__ = [
+    "PrometheusClient"
+]

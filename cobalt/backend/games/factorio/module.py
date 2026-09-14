@@ -66,6 +66,7 @@ class FactorioGameModule(AbstractGameModule):
                 game_id=self.game_id,
                 name="vanilla",
                 servers_service=vanilla_servers_service,
+                http_client=self.container.clients.http,
                 logger=self.container.logger
             )
         ]

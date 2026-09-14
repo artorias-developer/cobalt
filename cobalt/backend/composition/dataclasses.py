@@ -17,7 +17,13 @@ from domain.repositories import (
     AbstractUsersRepository
 )
 from application.contracts.queues import AbstractQueue
-from application.contracts.clients import AbstractCacheClient
+from application.contracts.clients import (
+    AbstractCacheClient,
+    AbstractContainersClient,
+    AbstractMetricsClient,
+    AbstractHttpClient,
+    AbstractRepositoriesClient
+)
 from application.contracts.mappers import (
     AbstractAttributesServiceMapper,
     AbstractGamesServiceMapper,
@@ -49,8 +55,6 @@ from application.contracts.managers import (
     AbstractArchivesManager,
     AbstractI18nManager
 )
-from application.contracts.clients import AbstractMetricsClient
-from application.contracts.clients import AbstractContainersClient
 from application.contracts.loggers import AbstractLogger
 from infrastructure.contracts.schedulers import (
     AbstractScheduler,
@@ -98,6 +102,8 @@ class ClientsContainer:
     caches: AbstractCacheClient
     metrics: AbstractMetricsClient
     containers: AbstractContainersClient
+    http: AbstractHttpClient
+    github: AbstractRepositoriesClient
 
 @dataclass(slots=True)
 class RoutersMappersContainer:

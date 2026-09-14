@@ -5,17 +5,32 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
+import dotenv from "dotenv"
 import { defineConfig, devices } from "@playwright/test"
+
+import path from "node:path"
+import {fileURLToPath} from "node:url"
+
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+dotenv.config({ path: path.resolve(__dirname, ".env"), quiet: true })
+
+const isCI = process.env.CI === "true" || process.env.CI === "1"
 
 export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : 2,
-  reporter: "html",
+  forbidOnly: isCI,
+  retries: isCI ? 2 : 0,
+  workers: isCI ? 1 : 2,
+  reporter: [
+    ["list"],
+    ["html", { open: "on-failure" }]
+  ],
   use: {
-    baseURL: process.env.BASE_URL ?? "https://127.0.0.1",
+    baseURL: process.env.COBALT_URL,
     ignoreHTTPSErrors: true,
     screenshot: "only-on-failure",
     video: "retain-on-failure",

@@ -6,9 +6,13 @@
 from .caches import AbstractCacheClient
 from .containers import AbstractContainersClient
 from .metrics import AbstractMetricsClient
+from .http import AbstractHttpClient
+from .repositories import AbstractRepositoriesClient
 
 __all__ = [
     "AbstractCacheClient",
     "AbstractContainersClient",
-    "AbstractMetricsClient"
+    "AbstractMetricsClient",
+    "AbstractHttpClient",
+    "AbstractRepositoriesClient"
 ]

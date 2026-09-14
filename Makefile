@@ -4,9 +4,11 @@ export PYTHONPATH := $(shell pwd)/cobalt/backend
     docker-build-dev d\:b\:d \
     docker-rebuild-dev d\:r\:d \
     docker-down-dev d\:d\:d \
+    docker-prune-dev d\:p\:d \
     docker-build-prod d\:b\:p \
     docker-rebuild-prod d\:r\:p \
     docker-down-prod d\:d\:p \
+    docker-prune-prod d\:p\:p \
     alembic-init a\:i \
     alembic-revision a\:r \
     alembic-upgrade a\:u \
@@ -29,6 +31,15 @@ docker-down-dev:
 	docker compose -f build/dev/docker-compose.yaml down
 d\:d\:d: docker-down-dev
 
+docker-prune-dev:
+	@read -p "This will remove all dev containers, volumes and images. Type 'y' to continue: " confirm; \
+    if [ "$$confirm" != "y" ]; then \
+		echo "Aborted."; \
+		exit 1; \
+	fi
+	docker compose --all-resources -f build/dev/docker-compose.yaml down -v --rmi all --remove-orphans
+d\:p\:d: docker-prune-dev
+
 docker-build-prod:
 	docker compose --all-resources -f build/prod/docker-compose.yaml up -d
 d\:b\:p: docker-build-prod
@@ -40,6 +51,16 @@ d\:r\:p: docker-rebuild-prod
 docker-down-prod:
 	docker compose -f build/prod/docker-compose.yaml down
 d\:d\:p: docker-down-prod
+
+docker-prune-prod:
+	@read -p "This will remove all prod containers, volumes and images. Type 'y' to continue: " confirm; \
+    if [ "$$confirm" != "y" ]; then \
+		echo "Aborted."; \
+		exit 1; \
+	fi
+	docker compose --all-resources -f build/prod/docker-compose.yaml down -v --rmi all --remove-orphans
+d\:p\:p: docker-prune-prod
+
 
 alembic-init:
 	alembic -c cobalt/backend/alembic.ini init -t async cobalt/backend/infrastructure/databases/postgres/migrations

@@ -80,12 +80,14 @@ class TerrariaGameModule(AbstractGameModule):
                 game_id=self.game_id,
                 name="vanilla",
                 servers_service=vanilla_servers_service,
+                http_client=self.container.clients.http,
                 logger=self.container.logger
             ),
             TModLoaderLoader(
                 game_id=self.game_id,
                 name="tmodloader",
                 servers_service=tmodloader_servers_service,
+                github_client=self.container.clients.github,
                 logger=self.container.logger
             )
         ]

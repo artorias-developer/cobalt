@@ -7,7 +7,7 @@ from redis.asyncio import Redis
 
 from application.contracts.clients import AbstractCacheClient
 from application.contracts.loggers import AbstractLogger
-from infrastructure.clients.caches.redis import RedisClient
+from infrastructure.clients import RedisClient
 from infrastructure.configs import ApplicationConfig
 
 

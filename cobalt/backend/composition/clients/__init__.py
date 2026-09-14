@@ -10,6 +10,8 @@ from composition.dataclasses import ClientsContainer
 from .caches import create_redis_client
 from .containers import create_docker_client
 from .metrics import create_prometheus_client
+from .http import create_aiohttp_client
+from .repositories import create_github_client
 
 __all__ = [
     "create_clients_container"
@@ -30,6 +32,15 @@ def create_clients_container(
     Returns:
     - ClientsContainer: ClientsContainer object.
     """
+    http_client = create_aiohttp_client(
+        logger=logger
+    )
+
+    github_client = create_github_client(
+        http_client=http_client,
+        logger=logger
+    )
+
     cache_client = create_redis_client(
         config=config,
         logger=logger
@@ -37,6 +48,7 @@ def create_clients_container(
 
     metrics_client = create_prometheus_client(
         config=config,
+        http_client=http_client,
         logger=logger
     )
 
@@ -45,5 +57,7 @@ def create_clients_container(
     return ClientsContainer(
         caches=cache_client,
         metrics=metrics_client,
-        containers=containers_client
+        containers=containers_client,
+        http=http_client,
+        github=github_client
     )

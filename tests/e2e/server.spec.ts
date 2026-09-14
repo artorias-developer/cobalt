@@ -166,7 +166,7 @@ test.describe("Server files", () => {
     expect(response.status()).toBe(409)
   })
 
-  test("Should return 200 on reload", async ({ page }) => {
+  test("Should return 200 on files reload", async ({ page }) => {
     const response = await clickAndWaitForApi(
       page,
       'button[name="file-reload-popup"]',

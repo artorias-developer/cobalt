@@ -66,6 +66,7 @@ class RimWorldGameModule(AbstractGameModule):
                 game_id=self.game_id,
                 name="together",
                 servers_service=together_servers_service,
+                github_client=self.container.clients.github,
                 logger=self.container.logger
             )
         ]

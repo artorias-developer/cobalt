@@ -10,24 +10,27 @@ from application.contracts.games import (
     AbstractLoader,
     AbstractServersService
 )
+from application.contracts.clients import AbstractHttpClient
 from application.contracts.loggers import AbstractLogger
-from infrastructure.mixins import HttpClientMixin
 
 
-class PaperLoader(AbstractLoader, HttpClientMixin):
+class PaperLoader(AbstractLoader):
     """
     Minecraft Paper loader.
     """
     PAPER_API: str = "https://fill.papermc.io/v3"
     USER_AGENT: str = "cobalt (https://github.com/artorias-developer/cobalt)"
 
+    http_client: AbstractHttpClient
+    logger: AbstractLogger
+
     def __init__(
         self,
         game_id: int,
         name: str,
-        logger: AbstractLogger,
         servers_service: AbstractServersService,
-        timeout: float = 60.0
+        http_client: AbstractHttpClient,
+        logger: AbstractLogger
     ):
         AbstractLoader.__init__(
             self,
@@ -36,11 +39,8 @@ class PaperLoader(AbstractLoader, HttpClientMixin):
             servers_service=servers_service
         )
 
-        HttpClientMixin.__init__(
-            self,
-            logger=logger,
-            timeout=timeout
-        )
+        self.http_client = http_client
+        self.logger = logger
 
     async def get_versions(self) -> List[str]:
         """
@@ -53,7 +53,7 @@ class PaperLoader(AbstractLoader, HttpClientMixin):
         - List: List of available versions.
         """
         try:
-            response = await self.request(
+            response = await self.http_client.request(
                 url=f"{self.PAPER_API}/projects/paper",
                 method="GET",
                 headers={"User-Agent": self.USER_AGENT}
@@ -98,7 +98,7 @@ class PaperLoader(AbstractLoader, HttpClientMixin):
         - str: Download URL or None on failure.
         """
         try:
-            response = await self.request(
+            response = await self.http_client.request(
                 url=f"{self.PAPER_API}/projects/paper/versions/{version}/builds",
                 method="GET",
                 headers={"User-Agent": self.USER_AGENT}

@@ -9,8 +9,8 @@ import { test as setup, expect } from "@playwright/test"
 import { gotoWithRetry } from "./api.js"
 
 const TEST_USER = {
-  login: process.env.TEST_LOGIN ?? "admin",
-  password: process.env.TEST_PASSWORD ?? "admin",
+  login: process.env.COBALT_LOGIN ?? "admin",
+  password: process.env.COBALT_PASSWORD ?? "admin",
 }
 
 setup("Authenticate", async ({ page }) => {
@@ -29,7 +29,7 @@ setup("Authenticate", async ({ page }) => {
   await expect(signInButton).toBeEnabled()
   await signInButton.click()
 
-  await page.waitForURL("/")
+  await page.locator('button[name="logout"]').waitFor({ state: "visible" })
 
   await page.context().storageState({ path: ".auth/session.json" })
 })

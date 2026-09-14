@@ -64,14 +64,24 @@ const hasDashboardViewAccess = computed((): boolean =>
 
 <style scoped lang="scss">
 .page {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-
   section {
     display: flex;
     justify-content: space-between;
     gap: $space-xl;
+    box-sizing: border-box;
+
+    &.metrics {
+      :deep(.cpu),
+      :deep(.ram),
+      :deep(.disk) {
+        height: 265px;
+      }
+
+      :deep(.cpu),
+      :deep(.ram) {
+        min-width: 0;
+      }
+    }
 
     &.console {
       flex: 1;
@@ -84,11 +94,11 @@ const hasDashboardViewAccess = computed((): boolean =>
   .page {
     section {
       &.metrics {
+        height: unset;
         flex-wrap: wrap;
 
         :deep(.cpu) {
           order: 1;
-          width: 100%;
         }
 
         :deep(.ram) {
@@ -124,6 +134,12 @@ const hasDashboardViewAccess = computed((): boolean =>
   .page {
     section {
       gap: $space-md;
+
+      &.metrics {
+        :deep(.disk) {
+          height: max-content;
+        }
+      }
     }
   }
 }

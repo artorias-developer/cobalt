@@ -6,13 +6,15 @@
 from datetime import datetime, timedelta, timezone
 from typing import Optional, List, Tuple, Dict
 
-from application.contracts.clients import AbstractMetricsClient
-from application.contracts.loggers import AbstractLogger
+from application.contracts.clients import (
+    AbstractMetricsClient, 
+    AbstractHttpClient
+)
 from application.clients.metrics.shared import MetricPoint
-from infrastructure.mixins import HttpClientMixin
+from application.contracts.loggers import AbstractLogger
 
 
-class PrometheusClient(AbstractMetricsClient, HttpClientMixin):
+class PrometheusClient(AbstractMetricsClient):
     """
     Prometheus client.
     """
@@ -21,20 +23,18 @@ class PrometheusClient(AbstractMetricsClient, HttpClientMixin):
     DEFAULT_TIME_RANGE_MINUTES: int = 15
 
     base_url: str
+    http_client: AbstractHttpClient
+    logger: AbstractLogger
 
     def __init__(
         self,
         base_url: str,
-        logger: AbstractLogger,
-        timeout: float = 60.0
+        http_client: AbstractHttpClient,
+        logger: AbstractLogger
     ):
-        HttpClientMixin.__init__(
-            self,
-            logger=logger,
-            timeout=timeout
-        )
-
         self.base_url = base_url.rstrip("/")
+        self.http_client = http_client
+        self.logger = logger
 
     @staticmethod
     def _build_host_cpu_query(
@@ -225,7 +225,7 @@ class PrometheusClient(AbstractMetricsClient, HttpClientMixin):
         Returns:
         - float: Metric value.
         """
-        response = await self.request(
+        response = await self.http_client.request(
             url=f"{self.base_url}/api/v1/query",
             params={"query": query}
         )
@@ -258,7 +258,7 @@ class PrometheusClient(AbstractMetricsClient, HttpClientMixin):
         Returns:
         - Dict: Dictionary mapping name to metric value.
         """
-        response = await self.request(
+        response = await self.http_client.request(
             url=f"{self.base_url}/api/v1/query",
             params={"query": query}
         )
@@ -305,7 +305,7 @@ class PrometheusClient(AbstractMetricsClient, HttpClientMixin):
         Returns:
         - List: List of tuples.
         """
-        response = await self.request(
+        response = await self.http_client.request(
             url=f"{self.base_url}/api/v1/query_range",
             params={
                 "query": query,

@@ -6,7 +6,7 @@
   -->
 
 <template>
-  <span class="counter">{{ total }} {{ total === 1 ? 'item' : 'items' }}</span>
+  <span class="counter">{{ $t('common.table.counter', total) }}</span>
 </template>
 
 <script setup lang="ts">

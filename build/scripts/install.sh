@@ -13,6 +13,7 @@ ROOT="$SCRIPT_DIR/.."
 ENV="prod"
 DOMAIN_ARG=""
 HTTPS_PORT="443"
+NO_ADMIN_BASE=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -29,7 +30,7 @@ while [[ $# -gt 0 ]]; do
     --server)
       shift
       if [[ -z "$1" ]]; then
-        echo "Usage: $0 [--prod|--dev] [--local [domain]|--server <ip>] [--port <port>]"
+        echo "Usage: $0 [--prod|--dev] [--local [domain]|--server <ip>] [--port <port>] [--no-admin-base]"
         exit 1
       fi
       DOMAIN_ARG="--server $1"
@@ -37,7 +38,7 @@ while [[ $# -gt 0 ]]; do
     --port)
       shift
       if [[ -z "${1:-}" ]]; then
-        echo "Usage: $0 [--prod|--dev] [--local [domain]|--server <ip>] [--port <port>]"
+        echo "Usage: $0 [--prod|--dev] [--local [domain]|--server <ip>] [--port <port>] [--no-admin-base]"
         exit 1
       fi
       if ! [[ "$1" =~ ^[0-9]+$ ]] || (( 10#$1 < 1 || 10#$1 > 65535 )); then
@@ -46,8 +47,11 @@ while [[ $# -gt 0 ]]; do
       fi
       HTTPS_PORT="$1"
       ;;
+    --no-admin-base)
+      NO_ADMIN_BASE="--no-admin-base"
+      ;;
     *)
-      echo "Usage: $0 [--prod|--dev] [--local [domain]|--server <ip>] [--port <port>]"
+      echo "Usage: $0 [--prod|--dev] [--local [domain]|--server <ip>] [--port <port>] [--no-admin-base]"
       exit 1
       ;;
   esac
@@ -61,11 +65,28 @@ fi
 
 export HTTPS_PORT
 
+SUMMARY_FILE="$(mktemp)"
+export SUMMARY_FILE
+
 bash "$SCRIPT_DIR/helpers/setup-docker.sh"
-bash "$SCRIPT_DIR/helpers/setup-configs.sh" "--$ENV" $DOMAIN_ARG
+bash "$SCRIPT_DIR/helpers/setup-configs.sh" "--$ENV" $DOMAIN_ARG $NO_ADMIN_BASE
 bash "$SCRIPT_DIR/helpers/setup-ssl.sh" "--$ENV" $DOMAIN_ARG
 
 echo "Starting containers..."
 docker compose --all-resources -f "$ROOT/$ENV/docker-compose.yaml" up -d --build
 
-echo "Cobalt has been successfully launched."
+echo ""
+echo " Cobalt has been successfully launched."
+
+DOMAIN=$(grep -m1 '^DOMAIN=' "$SUMMARY_FILE" | cut -d'=' -f2-)
+APP_BASE_URL=$(grep -m1 '^APP_BASE_URL=' "$SUMMARY_FILE" | cut -d'=' -f2-)
+rm -f "$SUMMARY_FILE"
+
+echo ""
+if [[ -n "$APP_BASE_URL" ]]; then
+  echo " URL:      https://$DOMAIN/$APP_BASE_URL/login"
+else
+  echo " URL:      https://$DOMAIN/login"
+fi
+echo " Login:    admin"
+echo " Password: admin"

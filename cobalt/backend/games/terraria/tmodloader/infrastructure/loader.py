@@ -9,24 +9,27 @@ from application.contracts.games import (
     AbstractLoader,
     AbstractServersService
 )
+from application.contracts.clients import AbstractRepositoriesClient
 from application.contracts.loggers import AbstractLogger
-from infrastructure.mixins import GithubClientMixin
 
 
-class TModLoaderLoader(AbstractLoader, GithubClientMixin):
+class TModLoaderLoader(AbstractLoader):
     """
     Terraria TModLoader loader.
     """
     GITHUB_REPOSITORY = "tModLoader/tModLoader"
     DOWNLOAD_LINK = "https://github.com/tModLoader/tModLoader/releases/download/{version}/tModLoader.zip"
 
+    github_client: AbstractRepositoriesClient
+    logger: AbstractLogger
+
     def __init__(
         self,
         game_id: int,
         name: str,
-        logger: AbstractLogger,
         servers_service: AbstractServersService,
-        timeout: float = 60.0
+        github_client: AbstractRepositoriesClient,
+        logger: AbstractLogger
     ):
         AbstractLoader.__init__(
             self,
@@ -35,11 +38,8 @@ class TModLoaderLoader(AbstractLoader, GithubClientMixin):
             servers_service=servers_service
         )
 
-        GithubClientMixin.__init__(
-            self,
-            logger=logger,
-            timeout=timeout
-        )
+        self.github_client = github_client
+        self.logger = logger
 
     async def get_versions(self) -> List[str]:
         """
@@ -54,7 +54,7 @@ class TModLoaderLoader(AbstractLoader, GithubClientMixin):
         unsupported_versions = self.get_unsupported_versions()
         default_versions = self.get_default_versions()
 
-        all_versions = await self.get_repository_release_versions(
+        all_versions = await self.github_client.get_all_versions(
             repository=self.GITHUB_REPOSITORY,
             stop_on_version=default_versions[0]
         )

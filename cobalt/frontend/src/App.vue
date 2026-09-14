@@ -65,7 +65,8 @@ const menuOpen = ref(false)
 
 <style lang="scss">
 main {
-  width: calc(100% - 276px);
+  width: 100%;
+  min-width: 0;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -74,12 +75,15 @@ main {
   box-sizing: border-box;
 
   .header {
+    width: 100%;
+
     &.mobile-only {
       display: none;
     }
   }
 
   .page {
+    width: 100%;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -91,8 +95,6 @@ main {
 
 @media (max-width: 1024px) {
   main {
-    width: 100%;
-
     .header {
       &.mobile-only {
         display: flex;

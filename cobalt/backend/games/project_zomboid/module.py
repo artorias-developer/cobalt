@@ -65,7 +65,6 @@ class ProjectZomboidGameModule(AbstractGameModule):
             VanillaLoader(
                 game_id=self.game_id,
                 name="vanilla",
-                servers_service=vanilla_servers_service,
-                logger=self.container.logger
+                servers_service=vanilla_servers_service
             )
         ]
