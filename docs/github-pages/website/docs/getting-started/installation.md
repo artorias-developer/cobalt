@@ -54,21 +54,24 @@ chmod +x build/scripts/install.sh
 ./build/scripts/install.sh --prod --server <server_ip>
 ```
 
-:::tip
-If you need to bind Cobalt to a port other than the default `443`, you can add the `--port <custom_port>` option.
-:::
+:::details List of available flags
 
-The installer will automatically install Docker and Docker Compose if not present, generate SSL certificates and all config files, build and start the containers.
+<div class="table flags">
+
+| Flag                 | Required                | Description                                                                                                                                                        |
+|----------------------|-------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| --prod               | no                      | Use production environment. Defaults to `--prod` if neither `--prod` nor `--dev` is provided.                                                                      |
+| --dev                | no                      | Use development environment.                                                                                                                                       |
+| --local [domain]     | yes (or use `--server`) | Deploy locally. Defaults to `127.0.0.1` if domain is not provided.                                                                                                 |
+| --server &lt;ip&gt;  | yes (or use `--local`)  | An IP or a domain name of the VPS / VDS.                                                                                                                           |
+| --port &lt;port&gt;  | no                      | HTTPS port to use. Defaults to `443` if not provided.                                                                                                              |                                                                                                               |
+| --no-admin-base      | no                      | By default the dashboard is hidden behind a random, hard-to-guess URL for extra security. Use this flag to disable that and use a normal, predictable URL instead. |
+</div>
+:::
 
 ## Dashboard access
 
-Your dashboard will be accessible at `https://<server_ip>`.
-
-:::tip Credentials
-**Login**: `admin`
-
-**Password**: `admin`
-:::
+A link to the dashboard and login credentials will be displayed after installation.
 
 ::: warning
 Since the certificates are self-signed, you'll see a security warning the first time you open the dashboard. Click `Advanced` and then `Proceed to <server_ip> (unsafe)`.
@@ -77,3 +80,27 @@ Since the certificates are self-signed, you'll see a security warning the first 
 ::: warning
 Change the default password immediately after your first login to keep your dashboard secure.
 :::
+
+<style>
+table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+table td:nth-child(1),
+table td:nth-child(3) {
+   word-break: break-all;
+}
+
+table th:nth-child(1) { 
+   min-width: 150px; 
+}
+
+table th:nth-child(2) { 
+   min-width: 90px; 
+}
+
+table th:nth-child(3) { 
+   min-width: 150px; 
+}
+</style>
