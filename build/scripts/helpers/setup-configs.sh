@@ -13,6 +13,7 @@ echo "Checking config files..."
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENV="prod"
 DOMAIN=""
+NO_ADMIN_BASE="false"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -34,8 +35,11 @@ while [[ $# -gt 0 ]]; do
       fi
       DOMAIN="$1"
       ;;
+    --no-admin-base)
+      NO_ADMIN_BASE="true"
+      ;;
     *)
-      echo "Usage: $0 [--prod|--dev] [--local [domain]|--server <ip>]"
+      echo "Usage: $0 [--prod|--dev] [--local [domain]|--server <ip>] [--no-admin-base]"
       exit 1
       ;;
   esac
@@ -53,7 +57,12 @@ ROOT="$SCRIPT_DIR/../../.."
 PEPPER=$(openssl rand -hex 32)
 POSTGRES_PASSWORD=$(openssl rand -hex 24)
 REDIS_PASSWORD=$(openssl rand -hex 24)
-APP_BASE_URL=$(openssl rand -hex 16)
+
+if [[ "$NO_ADMIN_BASE" == "true" ]]; then
+  APP_BASE_URL=""
+else
+  APP_BASE_URL=$(openssl rand -hex 16)
+fi
 
 generate() {
   local dest="$1"
