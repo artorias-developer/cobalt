@@ -597,7 +597,7 @@
     "general": {
       "theme": {
         "title": "Тема",
-        "description": "Цветовая схема и визуальный стиль",
+        "description": "Цветовая схема",
         "placeholder": "Выберите тему...",
         "options": {
           "cobalt_dark": "Cobalt - Тёмная",
@@ -611,7 +611,7 @@
       },
       "language": {
         "title": "Язык",
-        "description": "Язык интерфейса и локализация",
+        "description": "Язык интерфейса",
         "placeholder": "Выберите язык...",
         "options": {
           "en": "English",
@@ -632,7 +632,7 @@
       },
       "password": {
         "title": "Пароль",
-        "description": "Учётные данные и аутентификация",
+        "description": "Пароль учётной записи",
         "old": {
           "placeholder": "Старый пароль"
         },
@@ -648,7 +648,7 @@
     "system": {
       "cache": {
         "title": "Кэш",
-        "description": "Кешированные данные админ панели",
+        "description": "Закешированные данные админ панели",
         "clear": {
           "success": "Кэш очищен",
           "error": "Ошибка очистки кэша"

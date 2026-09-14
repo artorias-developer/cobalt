@@ -597,7 +597,7 @@
     "general": {
       "theme": {
         "title": "Тема",
-        "description": "Кольорова схема та візуальний стиль",
+        "description": "Кольорова схема",
         "placeholder": "Оберіть тему...",
         "options": {
           "cobalt_dark": "Cobalt - Темна",
@@ -611,7 +611,7 @@
       },
       "language": {
         "title": "Мова",
-        "description": "Мова інтерфейсу та локалізація",
+        "description": "Мова інтерфейсу",
         "placeholder": "Оберіть мову...",
         "options": {
           "en": "English",
@@ -632,7 +632,7 @@
       },
       "password": {
         "title": "Пароль",
-        "description": "Облікові дані та автентифікація",
+        "description": "Пароль облікового запису",
         "old": {
           "placeholder": "Старий пароль"
         },
@@ -648,7 +648,7 @@
     "system": {
       "cache": {
         "title": "Кеш",
-        "description": "Кешовані дані адмін панелі",
+        "description": "Закешовані дані адмін панелі",
         "clear": {
           "success": "Кеш очищено",
           "error": "Помилка очищення кешу"
