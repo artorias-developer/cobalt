@@ -5,11 +5,7 @@ import vue from "@vitejs/plugin-vue"
 
 
 // https://vite.dev/config/
-export default defineConfig(({ mode }) => {
-  const isDev = process.env.APP_ENVIRONMENT === "dev"
-  const appBase = process.env.APP_BASE_URL
-  const appDomain = process.env.APP_DOMAIN
-
+export default defineConfig(() => {
   return {
     define: {
       __VUE_PROD_DEVTOOLS__: false,
@@ -22,7 +18,7 @@ export default defineConfig(({ mode }) => {
       vue(),
       blockRootRedirect()
     ],
-    base: getBase(appBase),
+    base: getBase(process.env.APP_BASE_URL),
     server: {
       host: "0.0.0.0",
       port: 8011,
@@ -32,7 +28,7 @@ export default defineConfig(({ mode }) => {
         host: "127.0.0.1",
         clientPort: 443,
       },
-      allowedHosts: getAllowedHosts(isDev, appDomain),
+      allowedHosts: ["localhost", "127.0.0.1", ".ngrok-free.app"],
     },
     build: {
       sourcemap: false,
@@ -97,34 +93,6 @@ export default defineConfig(({ mode }) => {
  */
 function getBase(appBase?: string): string {
   return appBase ? `/${appBase}/` : '/'
-}
-
-/**
- * Resolves the `allowedHosts` list for the Vite dev server.
- *
- * In dev mode, returns a fixed list of known local/tunnel hosts.
- * In non-dev mode, requires `appDomain` to be set and restricts access to that host only.
- *
- * Parameters:
- * - isDev: Whether the app is running in development mode.
- * - appDomain: The production domain (e.g. from `APP_DOMAIN` env var). Required when `isDev` is false.
- *
- * Returns:
- * - string[] | true: An array of allowed hosts.
- *
- * Throws:
- * - Error: If `isDev` is false and `appDomain` is not provided.
- */
-function getAllowedHosts(isDev: boolean, appDomain?: string): string[] | true {
-  if (isDev) {
-    return ["localhost", "127.0.0.1", ".ngrok-free.app"]
-  }
-
-  if (!appDomain) {
-    throw new Error("APP_DOMAIN is required in production")
-  }
-
-  return [appDomain]
 }
 
 /**
