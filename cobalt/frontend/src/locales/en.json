@@ -36,6 +36,11 @@
     },
     "table": {
       "counter": "0 items | {count} item | {count} items"
+    },
+    "404": {
+      "title": "Page not found",
+      "message": "The page does not exist or has been moved.",
+      "back": "Go back"
     }
   },
   "auth": {
