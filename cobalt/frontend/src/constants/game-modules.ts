@@ -14,6 +14,7 @@ import terrariaIcon from "@/assets/images/games/terraria/icon.png"
 import rimWorldIcon from "@/assets/images/games/rim-world/icon.png"
 import sevenDaysToDieIcon from "@/assets/images/games/seven-days-to-die/icon.png"
 import projectZomboidIcon from "@/assets/images/games/project-zomboid/icon.png"
+import barotraumaIcon from "@/assets/images/games/barotrauma/icon.png"
 
 export const GameModules: GameModulesMap = {
   minecraft: {
@@ -94,5 +95,15 @@ export const GameModules: GameModulesMap = {
       }
     },
     sort_number: 7
+  },
+  barotrauma: {
+    displayName: "Barotrauma",
+    icon: barotraumaIcon,
+    loaders: {
+      vanilla: {
+        displayName: "Vanilla"
+      }
+    },
+    sort_number: 8
   }
 }
