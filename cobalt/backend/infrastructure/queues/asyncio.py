@@ -3,7 +3,7 @@
 #  Repository: https://github.com/artorias-developer/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-from asyncio import Task, Queue, Semaphore, create_task
+from asyncio import Task, Queue, Semaphore, create_task, sleep
 from typing import Any, Callable
 
 from application.contracts.queues import AbstractQueue
@@ -63,6 +63,7 @@ class AsyncioQueue(AbstractQueue):
                 await self._execute_with_error_handling(function, *args, **kwargs)
 
             self._queue.task_done()
+            await sleep(0.01)
 
     async def _execute_with_error_handling(
         self,

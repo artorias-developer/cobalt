@@ -55,6 +55,7 @@ import type { Tag, ServerEntity, ServerStatusEntity } from "@/types"
 
 import NotFound from "@/components/widgets/NotFound.vue"
 
+import BarotraumaPageServer from "@/pages/games/barotrauma/PageServer.vue"
 import DontStarveTogetherPageServer from "@/pages/games/dont-starve-together/PageServer.vue"
 import FactorioPageServer from "@/pages/games/factorio/PageServer.vue"
 import MinecraftPageServer from "@/pages/games/minecraft/PageServer.vue"
@@ -64,6 +65,7 @@ import SevenDaysToDiePageServer from "@/pages/games/seven-days-to-die/PageServer
 import TerrariaPageServer from "@/pages/games/terraria/PageServer.vue"
 
 const gameComponents: Record<string, Component> = {
+  barotrauma: BarotraumaPageServer,
   dont_starve_together: DontStarveTogetherPageServer,
   factorio: FactorioPageServer,
   minecraft: MinecraftPageServer,

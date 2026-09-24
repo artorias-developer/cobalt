@@ -1,0 +1,27 @@
+FROM debian:bookworm-slim
+
+ARG SERVER_ROOT
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN dpkg --add-architecture i386 \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends --no-install-suggests \
+        bash \
+        tmux \
+        coreutils \
+        ca-certificates \
+        lib32gcc-s1 \
+        lib32stdc++6 \
+        libgcc-s1 \
+        libcurl4-gnutls-dev:i386 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /root/.steam/sdk64 \
+    && ln -sf ${SERVER_ROOT}/linux64/steamclient.so /root/.steam/sdk64/steamclient.so
+
+WORKDIR ${SERVER_ROOT}
+
+ENV LD_LIBRARY_PATH="/root/.steam/sdk64:${SERVER_ROOT}/linux64:${SERVER_ROOT}:${LD_LIBRARY_PATH}"
+
+ENTRYPOINT ["/bin/bash", "-c", "exec ./runtime.sh"]
