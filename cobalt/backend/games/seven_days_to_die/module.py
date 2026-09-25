@@ -29,7 +29,7 @@ class SevenDaysToDieGameModule(AbstractGameModule):
     ):
         super().__init__(
             name="seven_days_to_die",
-            has_logs_timestamp=False,
+            has_logs_timestamp=True,
             app_containers_dir=app_containers_dir,
             host_containers_dir=host_containers_dir,
             container=container

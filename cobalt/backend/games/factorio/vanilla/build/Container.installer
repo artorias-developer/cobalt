@@ -1,43 +1,28 @@
-FROM alpine:latest AS downloader
-
-ARG FACTORIO_LINK
-ARG SERVER_ROOT
-ARG HAS_SERVER_SETTINGS_OPTION
-ARG HAS_WHITELIST_OPTION
-ARG HAS_BANLIST_OPTION
-ARG HAS_ADMIN_LIST_OPTION
-
-RUN apk add --no-cache \
-        wget \
-        xz && \
-    mkdir -p ${SERVER_ROOT}
-
-WORKDIR ${SERVER_ROOT}
-
-RUN wget ${FACTORIO_LINK} -O server.tar.xz && \
-    tar -xf server.tar.xz --strip-components=1 && \
-    rm -f server.tar.xz && \
-    mkdir -p saves mods && \
-    [ -f data/map-gen-settings.example.json ] && mv data/map-gen-settings.example.json data/map-gen-settings.json || true && \
-    [ -f data/map-settings.example.json ] && mv data/map-settings.example.json data/map-settings.json || true && \
-    [ -f data/server-settings.example.json ] && mv data/server-settings.example.json data/server-settings.json || true && \
-    [ -f data/server-whitelist.example.json ] && mv data/server-whitelist.example.json data/server-whitelist.json || true
-
-RUN if [ "${HAS_SERVER_SETTINGS_OPTION}" != "true" ]; then rm -f data/server-settings.json; fi && \
-    if [ "${HAS_WHITELIST_OPTION}" != "true" ]; then rm -f data/server-whitelist.json; fi && \
-    if [ "${HAS_BANLIST_OPTION}" != "true" ]; then rm -f data/server-banlist.json; fi && \
-    if [ "${HAS_ADMIN_LIST_OPTION}" != "true" ]; then rm -f data/server-adminlist.json; fi
-
-COPY scripts/entrypoint.sh entrypoint.sh
-RUN chmod +x entrypoint.sh
-
 FROM alpine:latest
 
-ARG SERVER_ROOT
+ARG FACTORIO_LINK
+ARG INSTALLATION_DIR
 
-RUN apk add --no-cache rsync
+WORKDIR ${INSTALLATION_DIR}
 
-COPY --from=downloader ${SERVER_ROOT} /installer_src
-COPY data /installer_src/data/
+RUN apk add --no-cache \
+        bash \
+        rsync \
+        wget \
+        ca-certificates \
+        xz \
+    && wget ${FACTORIO_LINK} -O server.tar.xz \
+    && tar -xf server.tar.xz --strip-components=1 \
+    && rm -f server.tar.xz \
+    && mkdir -p saves mods \
+    && apk del \
+        wget \
+        ca-certificates \
+        xz
 
-CMD rsync -a /installer_src/. ${SERVER_ROOT}/
+COPY data/ ./
+COPY scripts/installer.sh scripts/runtime.sh ./
+
+RUN chmod +x installer.sh runtime.sh
+
+CMD ["/bin/bash", "-c", "exec ./installer.sh"]

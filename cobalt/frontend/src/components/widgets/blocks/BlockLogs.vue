@@ -49,23 +49,6 @@
         </div>
       </template>
     </TabsBlock>
-    <template v-if="mode === 'server' && hasConsoleExecuteAccess">
-      <div class="console-input-wrapper">
-        <input
-          class="console-input"
-          v-model="command"
-          :placeholder="$t('logs.placeholder')"
-          name="server-console"
-          @keydown.enter="handleExecute"
-          @keydown.up.prevent="handleHistoryUp"
-          @keydown.down.prevent="handleHistoryDown"
-        />
-        <div class="history-arrows">
-          <button type="button" class="arrow-btn" @click="handleHistoryUp" v-html="angleUpIcon" />
-          <button type="button" class="arrow-btn" @click="handleHistoryDown" v-html="angleDownIcon" />
-        </div>
-      </div>
-    </template>
   </Block>
 </template>
 
@@ -74,15 +57,14 @@ import { useI18n } from "vue-i18n"
 import { inject, onMounted, onUnmounted, ref, computed, nextTick, watch } from "vue"
 import { useNotification } from "@kyvg/vue3-notification"
 
-import { useServerConsoleStore, useUserStore } from "@/stores"
+import { useUserStore } from "@/stores"
 import {
   LOCALE_HELPER_KEY,
   HTTP_LOGS_API_SERVICE_KEY,
-  HTTP_SERVERS_API_SERVICE_KEY,
   WS_LOGS_API_SERVICE_KEY
 } from "@/constants"
 import { PermissionEnum } from "@/types"
-import type { UniversalBlockMode, ParsedLog } from "@/types"
+import type { BlockMode, ParsedLog } from "@/types"
 
 import Block from "@/components/ui/Block.vue"
 import Header from "@/components/ui/Header.vue"
@@ -92,33 +74,24 @@ import Message from "@/components/ui/Message.vue"
 import monitorIcon from "@/assets/images/svg/monitor.svg?raw"
 import padlockIcon from "@/assets/images/svg/padlock.svg?raw"
 import listIcon from "@/assets/images/svg/clipboard-blank.svg?raw"
-import angleUpIcon from "@/assets/images/svg/angle-up.svg?raw"
-import angleDownIcon from "@/assets/images/svg/angle-down.svg?raw"
 
-const props = withDefaults(defineProps<{
-  mode: UniversalBlockMode
-  serverId?: number
+const props = defineProps<{
+  mode: BlockMode
   title?: string
   description?: string
   maxLogs: number
-  logsRegex?: RegExp
-}>(), {
-  serverId: undefined
-})
+}>()
 
 const wsLogsApiService = inject(WS_LOGS_API_SERVICE_KEY)!
 const httpLogsApiService = inject(HTTP_LOGS_API_SERVICE_KEY)!
-const httpServersApiService = inject(HTTP_SERVERS_API_SERVICE_KEY)!
 const localeHelper = inject(LOCALE_HELPER_KEY)!
 const userStore = useUserStore()
-const serverConsoleStore = useServerConsoleStore()
 const { notify } = useNotification()
 const { t } = useI18n()
 
 const parsedLogs = ref<ParsedLog[]>([])
 const tabsRef = ref<InstanceType<typeof TabsBlock> | null>(null)
 const activeTab = ref<string | null>(null)
-const command = ref("")
 
 const LOG_REGEX = /^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2})\s+(INFO|ERROR|WARNING|WARN|DEBUG|CRITICAL)? (.*)/s
 const CONTINUATION_REGEX = /^\s/
@@ -163,8 +136,7 @@ function guessLevel(message: string): string {
  * - ParsedLog: Object with nullable date, level, and message body.
  */
 function parseLog(message: string, regex: RegExp): ParsedLog {
-  const stripped = message.replace(/\x1b\[[0-9;]*m/g, '')
-  const match = stripped.match(regex)
+  const match = message.match(regex)
 
   if (match) {
     const rawLevel = match[3]
@@ -276,7 +248,7 @@ function mergeIntoLast(target: ParsedLog[], text: string): void {
         : combined
     }
   } else {
-    target.push(parseLog(text, activeRegex.value))
+    target.push(parseLog(text, LOG_REGEX))
   }
 }
 
@@ -292,9 +264,13 @@ function mergeIntoLast(target: ParsedLog[], text: string): void {
  */
 function appendLogs(target: ParsedLog[], rawLogs: Array<{ message: string }>): void {
   for (const log of rawLogs) {
-    const parsed = parseLog(log.message, activeRegex.value)
+    const parsed = parseLog(log.message, LOG_REGEX)
 
     if (parsed.date !== null) {
+      if (!parsed.message.trim()) {
+        continue
+      }
+
       if (CONTINUATION_REGEX.test(parsed.message)) {
         mergeIntoLast(target, parsed.message)
       } else {
@@ -317,9 +293,7 @@ function appendLogs(target: ParsedLog[], rawLogs: Array<{ message: string }>): v
  */
 async function fetchInitialData(): Promise<void> {
   try {
-    const raw = props.mode === "server"
-      ? await httpLogsApiService.getServerAll(props.serverId!)
-      : await httpLogsApiService.getHostAll()
+    const raw = await httpLogsApiService.getHostAll()
 
     const result: ParsedLog[] = []
     appendLogs(result, raw)
@@ -334,83 +308,20 @@ async function fetchInitialData(): Promise<void> {
 
 /**
  * Handles real-time log updates received from WebSocket.
- * Ignores messages from other servers when in server mode.
  * Trims parsedLogs to maxLogs after appending.
  *
  * Parameters:
- * - message: Message object containing log data and optional server_id.
+ * - message: Message object containing log data.
  *
  * Returns:
  * - void.
  */
 function handleLogUpdate(message: any): void {
-  if (props.mode === "server" && message.server_id !== props.serverId) return
-
   appendLogs(parsedLogs.value, message.data)
 
   if (parsedLogs.value.length > props.maxLogs) {
     parsedLogs.value = parsedLogs.value.slice(-props.maxLogs)
   }
-}
-
-/**
- * Executes a command inside the server container.
- *
- * Parameters:
- * - null.
- *
- * Returns:
- * - Promise<void>.
- */
-async function handleExecute(): Promise<void> {
-  if (!command.value.trim() || props.mode !== "server") return
-
-  try {
-    await httpServersApiService.execute(props.serverId!, {
-      command: command.value
-    })
-
-    serverConsoleStore.push(props.serverId!, command.value)
-    serverConsoleStore.resetNavigation(props.serverId!)
-    command.value = ""
-  } catch (error: any) {
-    notify({
-      type: "error",
-      text: error?.response?.data?.message ?? t("logs.execute.error")
-    })
-  }
-}
-
-/**
- * Navigates to the previous command in history for the current server.
- *
- * Parameters:
- * - null.
- *
- * Returns:
- * - void.
- */
-function handleHistoryUp(): void {
-  if (props.mode !== "server" || props.serverId === undefined) return
-
-  const value = serverConsoleStore.navigateUp(props.serverId, command.value)
-  if (value !== null) command.value = value
-}
-
-/**
- * Navigates to the next command in history for the current server.
- *
- * Parameters:
- * - null.
- *
- * Returns:
- * - void.
- */
-function handleHistoryDown(): void {
-  if (props.mode !== "server" || props.serverId === undefined) return
-
-  const value = serverConsoleStore.navigateDown(props.serverId)
-  if (value !== null) command.value = value
 }
 
 /**
@@ -454,21 +365,7 @@ const filteredLogs = computed(() => {
 })
 
 /**
- * Returns the active regex.
- * Uses the custom logsRegex prop if provided, otherwise falls back to LOG_REGEX.
- *
- * Parameters:
- * - null.
- *
- * Returns:
- * - RegExp.
- */
-const activeRegex = computed((): RegExp =>
-  props.logsRegex ?? LOG_REGEX
-)
-
-/**
- * Checks whether the current user has access to view logs.
+ * Checks whether the current user has access to view host logs.
  *
  * Parameters:
  * - null.
@@ -477,22 +374,7 @@ const activeRegex = computed((): RegExp =>
  * - boolean: `true` if the user has the required permission, `false` otherwise.
  */
 const hasLogsViewAccess = computed((): boolean =>
-  props.mode === "server"
-    ? userStore.hasPermission(PermissionEnum.SERVER_LOGS_VIEW)
-    : userStore.hasPermission(PermissionEnum.DASHBOARD_LOGS_VIEW)
-)
-
-/**
- * Checks whether the current user has access to execute console commands.
- *
- * Parameters:
- * - null.
- *
- * Returns:
- * - boolean: `true` if the user has the required permission, `false` otherwise.
- */
-const hasConsoleExecuteAccess = computed((): boolean =>
-  userStore.hasPermission(PermissionEnum.SERVER_CONSOLE_EXECUTE)
+  userStore.hasPermission(PermissionEnum.DASHBOARD_LOGS_VIEW)
 )
 
 watch(parsedLogs, async () => {
@@ -515,21 +397,12 @@ watch(logTabs, (tabs) => {
 onMounted(() => {
   if (props.mode !== "empty" && hasLogsViewAccess.value) {
     fetchInitialData()
-
-    if (props.mode === "server") {
-      wsLogsApiService.subscribeServer(props.serverId!, handleLogUpdate)
-    } else {
-      wsLogsApiService.subscribeHost(handleLogUpdate)
-    }
+    wsLogsApiService.subscribeHost(handleLogUpdate)
   }
 })
 
 onUnmounted(() => {
-  if (props.mode === "server") {
-    wsLogsApiService.unsubscribeServer(props.serverId!, handleLogUpdate)
-  } else {
-    wsLogsApiService.unsubscribeHost(handleLogUpdate)
-  }
+  wsLogsApiService.unsubscribeHost(handleLogUpdate)
 })
 </script>
 
@@ -546,65 +419,6 @@ onUnmounted(() => {
   .tabs {
     :deep(.content) {
       padding: $space-xl;
-    }
-  }
-
-  .console-input-wrapper {
-    display: flex;
-    position: relative;
-
-    .console-input {
-      width: 100%;
-      background-color: var(--color-block-alt);
-      padding: $space-xl;
-      border-radius: 0 0 12px 12px;
-      border: none;
-      color: var(--color-description);
-      font-size: $font-md;
-      font-weight: 600;
-      font-family: "Montserrat", sans-serif;
-      box-sizing: border-box;
-      outline: none;
-
-      &::placeholder {
-        opacity: 1;
-        color: var(--color-description);
-      }
-    }
-
-    .history-arrows {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: $space-md;
-      position: absolute;
-      right: $space-xl;
-      bottom: 0;
-
-      .arrow-btn {
-        width: 11px;
-        height: 11px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--color-description);
-        background-color: transparent;
-        border: none;
-        padding: 0;
-        cursor: pointer;
-        transition: color 0.3s;
-
-        &:hover {
-          color: var(--color-title);
-        }
-
-        svg {
-          width: 100%;
-          height: 100%;
-          object-fit: contain;
-        }
-      }
     }
   }
 
@@ -676,22 +490,6 @@ onUnmounted(() => {
     .tabs {
       :deep(.content) {
         padding: $space-lg;
-      }
-    }
-
-    .console-input-wrapper {
-      .console-input {
-        font-size: $font-sm;
-        padding: $space-lg;
-      }
-
-      .history-arrows {
-        right: $space-lg;
-
-        .arrow-btn {
-          width: 9px;
-          height: 9px;
-        }
       }
     }
   }

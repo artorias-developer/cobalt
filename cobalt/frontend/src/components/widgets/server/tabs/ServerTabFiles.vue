@@ -10,7 +10,7 @@
     <section class="explorer">
       <BlockServerFiles
         :key="server?.id ?? 'none'"
-        :mode="server?.id ? 'server' : 'empty'"
+        :mode="server?.id ? 'filled' : 'empty'"
         :server-id="server?.id"
       />
     </section>

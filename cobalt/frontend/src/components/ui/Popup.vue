@@ -111,7 +111,7 @@ onUnmounted(() => {
     flex-direction: column;
     width: 100%;
     height: 700px;
-    max-width: 480px;
+    max-width: 485px;
     margin: auto;
 
     &.adaptive {

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  1.1.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-08-10 21:14+0300\n"
+"POT-Creation-Date: 2026-09-25 16:44+0300\n"
 "PO-Revision-Date: 2026-06-17 11:40+0300\n"
 "Last-Translator: Artorias artorias.code@gmail.com\n"
 "Language: uk\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 #: cobalt/backend/application/contracts/games/services.py:376
-#: cobalt/backend/application/contracts/games/services.py:536
+#: cobalt/backend/application/contracts/games/services.py:539
 msgid "The \"steam_app_id\" parameter is required if the value of \"is_steam_server\" is \"True\""
 msgstr "Параметр \"steam_app_id\" є обов'язковим, якщо значення \"is_steam_server\" дорівнює \"True\""
 
@@ -43,21 +43,21 @@ msgstr "Необхідно вказати принаймні одне поле (
 msgid "Server or attribute not found"
 msgstr "Сервер або атрибут не знайдено"
 
-#: cobalt/backend/application/services/auth.py:69
-#: cobalt/backend/application/services/auth.py:76
-#: cobalt/backend/application/services/users.py:220
+#: cobalt/backend/application/services/auth.py:73
+#: cobalt/backend/application/services/auth.py:80
+#: cobalt/backend/application/services/users.py:217
 msgid "Invalid login or password"
 msgstr "Невірний логін або пароль"
 
-#: cobalt/backend/application/services/auth.py:148
+#: cobalt/backend/application/services/auth.py:152
 msgid "User not found"
 msgstr "Користувача не знайдено"
 
-#: cobalt/backend/application/services/auth.py:152
+#: cobalt/backend/application/services/auth.py:156
 msgid "Current password is required"
 msgstr "Необхідно вказати поточний пароль"
 
-#: cobalt/backend/application/services/auth.py:161
+#: cobalt/backend/application/services/auth.py:167
 msgid "Invalid current password"
 msgstr "Невірний поточний пароль"
 
@@ -135,8 +135,8 @@ msgid "Game {game_id} not found"
 msgstr "Гру {game_id} не знайдено"
 
 #: cobalt/backend/application/services/games.py:176
-#: cobalt/backend/application/services/servers.py:98
-#: cobalt/backend/application/services/servers.py:130
+#: cobalt/backend/application/services/servers.py:99
+#: cobalt/backend/application/services/servers.py:131
 #, python-brace-format
 msgid "Game \"{name}\" not found"
 msgstr "Гру \"{name}\" не знайдено"
@@ -214,98 +214,153 @@ msgstr "Ролі не знайдено"
 msgid "Role {role_id} not found"
 msgstr "Роль {role_id} не знайдено"
 
-#: cobalt/backend/application/services/servers.py:103
+#: cobalt/backend/application/services/servers.py:104
 #, python-brace-format
 msgid "Loader \"{name}\" not found"
 msgstr "Завантажувач \"{name}\" не знайдено"
 
-#: cobalt/backend/application/services/servers.py:125
-#: cobalt/backend/application/services/servers.py:218
-#: cobalt/backend/application/services/servers.py:431
-#: cobalt/backend/application/services/servers.py:467
+#: cobalt/backend/application/services/servers.py:126
+#: cobalt/backend/application/services/servers.py:219
+#: cobalt/backend/application/services/servers.py:432
+#: cobalt/backend/application/services/servers.py:468
 #: cobalt/backend/infrastructure/databases/postgres/repositories/attributes.py:75
 #, python-brace-format
 msgid "Server {server_id} not found"
 msgstr "Сервер {server_id} не знайдено"
 
-#: cobalt/backend/application/services/servers.py:173
-#: cobalt/backend/application/services/servers.py:526
+#: cobalt/backend/application/services/servers.py:174
+#: cobalt/backend/application/services/servers.py:527
 msgid "Servers not found"
 msgstr "Сервери не знайдено"
 
-#: cobalt/backend/application/services/servers.py:258
-#: cobalt/backend/application/services/servers.py:336
-#: cobalt/backend/application/services/servers.py:339
+#: cobalt/backend/application/services/servers.py:259
+#: cobalt/backend/application/services/servers.py:337
+#: cobalt/backend/application/services/servers.py:340
 #, python-brace-format
 msgid "Version \"{version}\" not found"
 msgstr "Версію \"{version}\" не знайдено"
 
-#: cobalt/backend/application/services/servers.py:327
-#: cobalt/backend/application/services/servers.py:470
+#: cobalt/backend/application/services/servers.py:328
+#: cobalt/backend/application/services/servers.py:471
 #, python-brace-format
 msgid "Server {server_id} is still being installed"
 msgstr "Сервер {server_id} ще встановлюється"
 
-#: cobalt/backend/application/services/servers.py:330
+#: cobalt/backend/application/services/servers.py:331
 #, python-brace-format
 msgid "Server {server_id} is already being upgraded"
 msgstr "Сервер {server_id} вже оновлюється"
 
-#: cobalt/backend/application/services/servers.py:473
+#: cobalt/backend/application/services/servers.py:474
 #, python-brace-format
 msgid "Server {server_id} is still being upgraded"
 msgstr "Сервер {server_id} ще оновлюється"
 
-#: cobalt/backend/application/services/servers.py:534
+#: cobalt/backend/application/services/servers.py:535
 msgid "Some servers are still being installed"
 msgstr "Деякі сервери ще встановлюються"
 
-#: cobalt/backend/application/services/servers.py:542
+#: cobalt/backend/application/services/servers.py:543
 msgid "Some servers are still being upgraded"
 msgstr "Деякі сервери ще оновлюються"
 
-#: cobalt/backend/application/services/servers.py:342
+#: cobalt/backend/application/services/servers.py:343
 #, python-brace-format
 msgid "Server is already on version \"{version}\""
 msgstr "Сервер вже працює на версії \"{version}\""
 
-#: cobalt/backend/application/services/servers.py:352
+#: cobalt/backend/application/services/servers.py:353
 #, python-brace-format
 msgid "Version \"{version}\" is not newer than the current version \"{current_version}\""
 msgstr "Версія \"{version}\" не новіша за поточну версію \"{current_version}\""
 
-#: cobalt/backend/application/services/settings.py:207
+#: cobalt/backend/application/services/settings.py:208
 #, python-brace-format
 msgid "Settings for user with ID {user_id} not found"
 msgstr "Налаштування для користувача з ID {user_id} не знайдено"
 
-#: cobalt/backend/application/services/settings.py:284
+#: cobalt/backend/application/services/settings.py:289
 msgid "Cannot clear containers while servers are being created"
 msgstr "Неможливо очистити контейнери під час створення серверів"
 
-#: cobalt/backend/application/services/settings.py:292
+#: cobalt/backend/application/services/settings.py:297
 msgid "Cannot clear containers while servers are being upgraded"
 msgstr "Неможливо очистити контейнери під час оновлення серверів"
 
-#: cobalt/backend/application/services/users.py:123
-#: cobalt/backend/application/services/users.py:381
+#: cobalt/backend/application/services/users.py:120
+#: cobalt/backend/application/services/users.py:382
 msgid "Users not found"
 msgstr "Користувачів не знайдено"
 
-#: cobalt/backend/application/services/users.py:168
-#: cobalt/backend/application/services/users.py:313
-#: cobalt/backend/application/services/users.py:349
+#: cobalt/backend/application/services/users.py:165
+#: cobalt/backend/application/services/users.py:314
+#: cobalt/backend/application/services/users.py:350
 #, python-brace-format
 msgid "User {user_id} not found"
 msgstr "Користувача {user_id} не знайдено"
 
-#: cobalt/backend/games/minecraft/fabric/infrastructure/loader.py:272
+#: cobalt/backend/domain/value_objects/base.py:43
+#, python-brace-format
+msgid "\"{value}\" must be at least {min_length} characters"
+msgstr "\"{value}\" має містити щонайменше {min_length} символів"
+
+#: cobalt/backend/domain/value_objects/base.py:50
+#, python-brace-format
+msgid "\"{value}\" must be at most {max_length} characters"
+msgstr "\"{value}\" має містити не більше {max_length} символів"
+
+#: cobalt/backend/domain/value_objects/base.py:72
+#, python-brace-format
+msgid "\"{value}\" must match pattern {pattern}"
+msgstr "\"{value}\" має відповідати шаблону {pattern}"
+
+#: cobalt/backend/domain/value_objects/base.py:96
+#, python-brace-format
+msgid "\"{value}\" must be at least {min_value}"
+msgstr "\"{value}\" має бути не менше {min_value}"
+
+#: cobalt/backend/domain/value_objects/base.py:103
+#, python-brace-format
+msgid "\"{value}\" must be at most {max_value}"
+msgstr "\"{value}\" має бути не більше {max_value}"
+
+#: cobalt/backend/domain/value_objects/base.py:125
+#, python-brace-format
+msgid "\"{value}\" must be greater than {threshold}"
+msgstr "\"{value}\" має бути більшим за {threshold}"
+
+#: cobalt/backend/domain/value_objects/base.py:147
+#, python-brace-format
+msgid "\"{value}\" must be greater than or equal to {threshold}"
+msgstr "\"{value}\" має бути більшим або дорівнювати {threshold}"
+
+#: cobalt/backend/domain/value_objects/base.py:169
+#, python-brace-format
+msgid "\"{value}\" must be less than {threshold}"
+msgstr "\"{value}\" має бути меншим за {threshold}"
+
+#: cobalt/backend/domain/value_objects/base.py:191
+#, python-brace-format
+msgid "\"{value}\" must be less than or equal to {threshold}"
+msgstr "\"{value}\" має бути меншим або дорівнювати {threshold}"
+
+#: cobalt/backend/domain/value_objects/network.py:58
+#, python-brace-format
+msgid "Invalid IP address \"{ip_address}\""
+msgstr "Неправильна IP-адреса \"{ip_address}\""
+
+#: cobalt/backend/games/minecraft/fabric/infrastructure/loader.py:200
 msgid "Could not fetch Fabric loader or installer version"
 msgstr "Не вдалося отримати версію завантажувача або інсталятора Fabric"
 
-#: cobalt/backend/games/minecraft/forge/infrastructure/loader.py:287
+#: cobalt/backend/games/minecraft/forge/infrastructure/loader.py:185
 msgid "Could not fetch Forge version"
 msgstr "Не вдалося отримати версію Forge"
+
+#: cobalt/backend/games/minecraft/paper/infrastructure/loader.py:139
+#, python-brace-format
+msgid "Could not fetch stable Paper build for version {version}"
+msgstr "Не вдалося завантажити стабільну збірку Paper для версії {version}"
 
 #: cobalt/backend/infrastructure/clients/caches/redis.py:83
 msgid "Error while getting value from cache"
@@ -429,6 +484,7 @@ msgstr "Налаштування можна видалити лише разом
 #: cobalt/backend/infrastructure/databases/postgres/repositories/servers.py:97
 #: cobalt/backend/infrastructure/databases/postgres/repositories/users.py:95
 #: cobalt/backend/presentation/http/fastapi/v1/middlewares/errors.py:72
+#: cobalt/backend/presentation/ws/fastapi/v1/interceptors/errors.py:76
 msgid "Internal server error"
 msgstr "Внутрішня помилка сервера"
 
@@ -472,233 +528,233 @@ msgstr "Гру {game_id} або завантажувач {loader_id} не зна
 msgid "User \"{user_login}\" already exists"
 msgstr "Користувач \"{user_login}\" вже існує"
 
-#: cobalt/backend/infrastructure/locales/stub.py:9
+#: cobalt/backend/infrastructure/locales/babel/stub.py:9
 msgid "Id"
 msgstr "Ідентифікатор"
 
-#: cobalt/backend/infrastructure/locales/stub.py:10
-#: cobalt/backend/infrastructure/locales/stub.py:52
+#: cobalt/backend/infrastructure/locales/babel/stub.py:10
+#: cobalt/backend/infrastructure/locales/babel/stub.py:52
 msgid "Server id"
 msgstr "Ідентифікатор сервера"
 
-#: cobalt/backend/infrastructure/locales/stub.py:11
+#: cobalt/backend/infrastructure/locales/babel/stub.py:11
 msgid "Key"
 msgstr "Ключ"
 
-#: cobalt/backend/infrastructure/locales/stub.py:12
-#: cobalt/backend/infrastructure/locales/stub.py:42
+#: cobalt/backend/infrastructure/locales/babel/stub.py:12
+#: cobalt/backend/infrastructure/locales/babel/stub.py:42
 msgid "Value"
 msgstr "Значення"
 
-#: cobalt/backend/infrastructure/locales/stub.py:13
+#: cobalt/backend/infrastructure/locales/babel/stub.py:13
 msgid "Created at"
 msgstr "Дата створення"
 
-#: cobalt/backend/infrastructure/locales/stub.py:14
+#: cobalt/backend/infrastructure/locales/babel/stub.py:14
 msgid "Updated at"
 msgstr "Дата оновлення"
 
-#: cobalt/backend/infrastructure/locales/stub.py:15
+#: cobalt/backend/infrastructure/locales/babel/stub.py:15
 msgid "Attributes"
 msgstr "Атрибути"
 
-#: cobalt/backend/infrastructure/locales/stub.py:16
+#: cobalt/backend/infrastructure/locales/babel/stub.py:16
 msgid "Total"
 msgstr "Всього"
 
-#: cobalt/backend/infrastructure/locales/stub.py:17
+#: cobalt/backend/infrastructure/locales/babel/stub.py:17
 msgid "Page"
 msgstr "Сторінка"
 
-#: cobalt/backend/infrastructure/locales/stub.py:18
+#: cobalt/backend/infrastructure/locales/babel/stub.py:18
 msgid "Pages"
 msgstr "Сторінки"
 
-#: cobalt/backend/infrastructure/locales/stub.py:19
+#: cobalt/backend/infrastructure/locales/babel/stub.py:19
 msgid "Search"
 msgstr "Пошук"
 
-#: cobalt/backend/infrastructure/locales/stub.py:20
+#: cobalt/backend/infrastructure/locales/babel/stub.py:20
 msgid "Sort field"
 msgstr "Поле сортування"
 
-#: cobalt/backend/infrastructure/locales/stub.py:21
+#: cobalt/backend/infrastructure/locales/babel/stub.py:21
 msgid "Sort direction"
 msgstr "Напрямок сортування"
 
-#: cobalt/backend/infrastructure/locales/stub.py:22
+#: cobalt/backend/infrastructure/locales/babel/stub.py:22
 msgid "Limit"
 msgstr "Ліміт"
 
-#: cobalt/backend/infrastructure/locales/stub.py:23
+#: cobalt/backend/infrastructure/locales/babel/stub.py:23
 msgid "Root"
 msgstr "Кореневий елемент"
 
-#: cobalt/backend/infrastructure/locales/stub.py:24
+#: cobalt/backend/infrastructure/locales/babel/stub.py:24
 msgid "Login"
 msgstr "Логін"
 
-#: cobalt/backend/infrastructure/locales/stub.py:25
+#: cobalt/backend/infrastructure/locales/babel/stub.py:25
 msgid "Password"
 msgstr "Пароль"
 
-#: cobalt/backend/infrastructure/locales/stub.py:26
+#: cobalt/backend/infrastructure/locales/babel/stub.py:26
 msgid "Old password"
 msgstr "Старий пароль"
 
-#: cobalt/backend/infrastructure/locales/stub.py:27
+#: cobalt/backend/infrastructure/locales/babel/stub.py:27
 msgid "New password"
 msgstr "Новий пароль"
 
-#: cobalt/backend/infrastructure/locales/stub.py:28
+#: cobalt/backend/infrastructure/locales/babel/stub.py:28
 msgid "Name"
 msgstr "Назва"
 
-#: cobalt/backend/infrastructure/locales/stub.py:29
+#: cobalt/backend/infrastructure/locales/babel/stub.py:29
 msgid "Format"
 msgstr "Формат"
 
-#: cobalt/backend/infrastructure/locales/stub.py:30
+#: cobalt/backend/infrastructure/locales/babel/stub.py:30
 msgid "Size"
 msgstr "Розмір"
 
-#: cobalt/backend/infrastructure/locales/stub.py:31
+#: cobalt/backend/infrastructure/locales/babel/stub.py:31
 msgid "Modified at"
 msgstr "Дата зміни"
 
-#: cobalt/backend/infrastructure/locales/stub.py:32
+#: cobalt/backend/infrastructure/locales/babel/stub.py:32
 msgid "Files"
 msgstr "Файли"
 
-#: cobalt/backend/infrastructure/locales/stub.py:33
+#: cobalt/backend/infrastructure/locales/babel/stub.py:33
 msgid "Total files"
 msgstr "Всього файлів"
 
-#: cobalt/backend/infrastructure/locales/stub.py:34
+#: cobalt/backend/infrastructure/locales/babel/stub.py:34
 msgid "Total directories"
 msgstr "Всього директорій"
 
-#: cobalt/backend/infrastructure/locales/stub.py:35
+#: cobalt/backend/infrastructure/locales/babel/stub.py:35
 msgid "Paths"
 msgstr "Шляхи"
 
-#: cobalt/backend/infrastructure/locales/stub.py:36
+#: cobalt/backend/infrastructure/locales/babel/stub.py:36
 msgid "Destination path"
 msgstr "Шлях призначення"
 
-#: cobalt/backend/infrastructure/locales/stub.py:37
+#: cobalt/backend/infrastructure/locales/babel/stub.py:37
 msgid "New name"
 msgstr "Нова назва"
 
-#: cobalt/backend/infrastructure/locales/stub.py:38
+#: cobalt/backend/infrastructure/locales/babel/stub.py:38
 msgid "Games"
 msgstr "Ігри"
 
-#: cobalt/backend/infrastructure/locales/stub.py:39
+#: cobalt/backend/infrastructure/locales/babel/stub.py:39
 msgid "Loader id"
 msgstr "Ідентифікатор завантажувача"
 
-#: cobalt/backend/infrastructure/locales/stub.py:40
+#: cobalt/backend/infrastructure/locales/babel/stub.py:40
 msgid "Loader name"
 msgstr "Назва завантажувача"
 
-#: cobalt/backend/infrastructure/locales/stub.py:41
+#: cobalt/backend/infrastructure/locales/babel/stub.py:41
 msgid "Message"
 msgstr "Повідомлення"
 
-#: cobalt/backend/infrastructure/locales/stub.py:43
+#: cobalt/backend/infrastructure/locales/babel/stub.py:43
 msgid "Date"
 msgstr "Дата"
 
-#: cobalt/backend/infrastructure/locales/stub.py:44
+#: cobalt/backend/infrastructure/locales/babel/stub.py:44
 msgid "Free"
 msgstr "Вільно"
 
-#: cobalt/backend/infrastructure/locales/stub.py:45
+#: cobalt/backend/infrastructure/locales/babel/stub.py:45
 msgid "Last check"
 msgstr "Остання перевірка"
 
-#: cobalt/backend/infrastructure/locales/stub.py:46
+#: cobalt/backend/infrastructure/locales/babel/stub.py:46
 msgid "Next check"
 msgstr "Наступна перевірка"
 
-#: cobalt/backend/infrastructure/locales/stub.py:47
+#: cobalt/backend/infrastructure/locales/babel/stub.py:47
 msgid "Role id"
 msgstr "Ідентифікатор ролі"
 
-#: cobalt/backend/infrastructure/locales/stub.py:48
+#: cobalt/backend/infrastructure/locales/babel/stub.py:48
 msgid "Role name"
 msgstr "Назва ролі"
 
-#: cobalt/backend/infrastructure/locales/stub.py:49
+#: cobalt/backend/infrastructure/locales/babel/stub.py:49
 msgid "Permissions"
 msgstr "Права доступу"
 
-#: cobalt/backend/infrastructure/locales/stub.py:50
+#: cobalt/backend/infrastructure/locales/babel/stub.py:50
 msgid "Roles"
 msgstr "Ролі"
 
-#: cobalt/backend/infrastructure/locales/stub.py:51
+#: cobalt/backend/infrastructure/locales/babel/stub.py:51
 msgid "Role ids"
 msgstr "Ідентифікатори ролей"
 
-#: cobalt/backend/infrastructure/locales/stub.py:53
+#: cobalt/backend/infrastructure/locales/babel/stub.py:53
 msgid "Server name"
 msgstr "Назва сервера"
 
-#: cobalt/backend/infrastructure/locales/stub.py:54
+#: cobalt/backend/infrastructure/locales/babel/stub.py:54
 msgid "Server version"
 msgstr "Версія сервера"
 
-#: cobalt/backend/infrastructure/locales/stub.py:55
+#: cobalt/backend/infrastructure/locales/babel/stub.py:55
 msgid "Server status"
 msgstr "Статус сервера"
 
-#: cobalt/backend/infrastructure/locales/stub.py:56
+#: cobalt/backend/infrastructure/locales/babel/stub.py:56
 msgid "Servers"
 msgstr "Сервери"
 
-#: cobalt/backend/infrastructure/locales/stub.py:57
+#: cobalt/backend/infrastructure/locales/babel/stub.py:57
 msgid "Running"
 msgstr "Запущений"
 
-#: cobalt/backend/infrastructure/locales/stub.py:58
+#: cobalt/backend/infrastructure/locales/babel/stub.py:58
 msgid "Port"
 msgstr "Порт"
 
-#: cobalt/backend/infrastructure/locales/stub.py:59
+#: cobalt/backend/infrastructure/locales/babel/stub.py:59
 msgid "Server ids"
 msgstr "Ідентифікатори серверів"
 
-#: cobalt/backend/infrastructure/locales/stub.py:60
+#: cobalt/backend/infrastructure/locales/babel/stub.py:60
 msgid "Command"
 msgstr "Команда"
 
-#: cobalt/backend/infrastructure/locales/stub.py:61
+#: cobalt/backend/infrastructure/locales/babel/stub.py:61
 msgid "Settings id"
 msgstr "Ідентифікатор налаштувань"
 
-#: cobalt/backend/infrastructure/locales/stub.py:62
+#: cobalt/backend/infrastructure/locales/babel/stub.py:62
 msgid "Settings user id"
 msgstr "Ідентифікатор користувача налаштувань"
 
-#: cobalt/backend/infrastructure/locales/stub.py:63
+#: cobalt/backend/infrastructure/locales/babel/stub.py:63
 msgid "Language"
 msgstr "Мова"
 
-#: cobalt/backend/infrastructure/locales/stub.py:64
+#: cobalt/backend/infrastructure/locales/babel/stub.py:64
 msgid "Theme"
 msgstr "Тема"
 
-#: cobalt/backend/infrastructure/locales/stub.py:65
+#: cobalt/backend/infrastructure/locales/babel/stub.py:65
 msgid "Timezone"
 msgstr "Часовий пояс"
 
-#: cobalt/backend/infrastructure/locales/stub.py:66
+#: cobalt/backend/infrastructure/locales/babel/stub.py:66
 msgid "Users"
 msgstr "Користувачі"
 
-#: cobalt/backend/infrastructure/locales/stub.py:67
+#: cobalt/backend/infrastructure/locales/babel/stub.py:67
 msgid "User ids"
 msgstr "Ідентифікатори користувачів"
 
@@ -801,13 +857,12 @@ msgstr "{field_name} не пройшов перевірку"
 
 #: cobalt/backend/presentation/http/fastapi/v1/routers/base.py:50
 #: cobalt/backend/presentation/http/fastapi/v1/routers/base.py:75
-#: cobalt/backend/presentation/ws/fastapi/v1/routers/base.py:50
-#: cobalt/backend/presentation/ws/fastapi/v1/routers/base.py:75
+#: cobalt/backend/presentation/ws/fastapi/v1/routers/base.py:79
 msgid "Invalid session"
 msgstr "Недійсна сесія"
 
 #: cobalt/backend/presentation/http/fastapi/v1/routers/base.py:78
-#: cobalt/backend/presentation/ws/fastapi/v1/routers/base.py:78
+#: cobalt/backend/presentation/ws/fastapi/v1/routers/base.py:82
 msgid "Not enough permissions"
 msgstr "Недостатньо прав для доступу"
 

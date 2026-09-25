@@ -78,7 +78,11 @@ class VanillaServersService(AbstractServersService):
                 steam_app_id=self._STEAM_APP_ID,
                 container_name=container_name,
                 installation_dir=host_container_dir,
-                installation_marker=self._INSTALLATION_MARKER
+                installation_marker=self._INSTALLATION_MARKER,
+                container_environment={
+                    "CONTAINER_NAME": container_name,
+                    "CLUSTER_KEY": self.generate_random_key()
+                }
             )
 
             await self._create_runtime_container(
@@ -88,10 +92,6 @@ class VanillaServersService(AbstractServersService):
                 installation_dir=host_container_dir,
                 ports={
                     f"{self._INTERNAL_PORT}/udp": port
-                },
-                container_environment={
-                    "CONTAINER_NAME": container_name,
-                    "CLUSTER_KEY": self.generate_random_key()
                 }
             )
         except Exception:

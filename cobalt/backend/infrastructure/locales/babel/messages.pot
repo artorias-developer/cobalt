@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-08-10 21:14+0300\n"
+"POT-Creation-Date: 2026-09-25 16:44+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Generated-By: Babel 2.18.0\n"
 
 #: cobalt/backend/application/contracts/games/services.py:376
-#: cobalt/backend/application/contracts/games/services.py:536
+#: cobalt/backend/application/contracts/games/services.py:539
 msgid "The \"steam_app_id\" parameter is required if the value of \"is_steam_server\" is \"True\""
 msgstr ""
 
@@ -42,21 +42,21 @@ msgstr ""
 msgid "Server or attribute not found"
 msgstr ""
 
-#: cobalt/backend/application/services/auth.py:69
-#: cobalt/backend/application/services/auth.py:76
-#: cobalt/backend/application/services/users.py:220
+#: cobalt/backend/application/services/auth.py:73
+#: cobalt/backend/application/services/auth.py:80
+#: cobalt/backend/application/services/users.py:217
 msgid "Invalid login or password"
 msgstr ""
 
-#: cobalt/backend/application/services/auth.py:148
+#: cobalt/backend/application/services/auth.py:152
 msgid "User not found"
 msgstr ""
 
-#: cobalt/backend/application/services/auth.py:152
+#: cobalt/backend/application/services/auth.py:156
 msgid "Current password is required"
 msgstr ""
 
-#: cobalt/backend/application/services/auth.py:161
+#: cobalt/backend/application/services/auth.py:167
 msgid "Invalid current password"
 msgstr ""
 
@@ -134,8 +134,8 @@ msgid "Game {game_id} not found"
 msgstr ""
 
 #: cobalt/backend/application/services/games.py:176
-#: cobalt/backend/application/services/servers.py:98
-#: cobalt/backend/application/services/servers.py:130
+#: cobalt/backend/application/services/servers.py:99
+#: cobalt/backend/application/services/servers.py:131
 #, python-brace-format
 msgid "Game \"{name}\" not found"
 msgstr ""
@@ -213,97 +213,152 @@ msgstr ""
 msgid "Role {role_id} not found"
 msgstr ""
 
-#: cobalt/backend/application/services/servers.py:103
+#: cobalt/backend/application/services/servers.py:104
 #, python-brace-format
 msgid "Loader \"{name}\" not found"
 msgstr ""
 
-#: cobalt/backend/application/services/servers.py:125
-#: cobalt/backend/application/services/servers.py:218
-#: cobalt/backend/application/services/servers.py:431
-#: cobalt/backend/application/services/servers.py:467
+#: cobalt/backend/application/services/servers.py:126
+#: cobalt/backend/application/services/servers.py:219
+#: cobalt/backend/application/services/servers.py:432
+#: cobalt/backend/application/services/servers.py:468
 #: cobalt/backend/infrastructure/databases/postgres/repositories/attributes.py:75
 #, python-brace-format
 msgid "Server {server_id} not found"
 msgstr ""
 
-#: cobalt/backend/application/services/servers.py:173
-#: cobalt/backend/application/services/servers.py:526
+#: cobalt/backend/application/services/servers.py:174
+#: cobalt/backend/application/services/servers.py:527
 msgid "Servers not found"
 msgstr ""
 
-#: cobalt/backend/application/services/servers.py:258
-#: cobalt/backend/application/services/servers.py:336
-#: cobalt/backend/application/services/servers.py:339
+#: cobalt/backend/application/services/servers.py:259
+#: cobalt/backend/application/services/servers.py:337
+#: cobalt/backend/application/services/servers.py:340
 #, python-brace-format
 msgid "Version \"{version}\" not found"
 msgstr ""
 
-#: cobalt/backend/application/services/servers.py:327
-#: cobalt/backend/application/services/servers.py:470
+#: cobalt/backend/application/services/servers.py:328
+#: cobalt/backend/application/services/servers.py:471
 #, python-brace-format
 msgid "Server {server_id} is still being installed"
 msgstr ""
 
-#: cobalt/backend/application/services/servers.py:330
+#: cobalt/backend/application/services/servers.py:331
 #, python-brace-format
 msgid "Server {server_id} is already being upgraded"
 msgstr ""
 
-#: cobalt/backend/application/services/servers.py:473
+#: cobalt/backend/application/services/servers.py:474
 #, python-brace-format
 msgid "Server {server_id} is still being upgraded"
 msgstr ""
 
-#: cobalt/backend/application/services/servers.py:534
+#: cobalt/backend/application/services/servers.py:535
 msgid "Some servers are still being installed"
 msgstr ""
 
-#: cobalt/backend/application/services/servers.py:542
+#: cobalt/backend/application/services/servers.py:543
 msgid "Some servers are still being upgraded"
 msgstr ""
 
-#: cobalt/backend/application/services/servers.py:342
+#: cobalt/backend/application/services/servers.py:343
 #, python-brace-format
 msgid "Server is already on version \"{version}\""
 msgstr ""
 
-#: cobalt/backend/application/services/servers.py:352
+#: cobalt/backend/application/services/servers.py:353
 #, python-brace-format
 msgid "Version \"{version}\" is not newer than the current version \"{current_version}\""
 msgstr ""
 
-#: cobalt/backend/application/services/settings.py:207
+#: cobalt/backend/application/services/settings.py:208
 #, python-brace-format
 msgid "Settings for user with ID {user_id} not found"
 msgstr ""
 
-#: cobalt/backend/application/services/settings.py:284
+#: cobalt/backend/application/services/settings.py:289
 msgid "Cannot clear containers while servers are being created"
 msgstr ""
 
-#: cobalt/backend/application/services/settings.py:292
+#: cobalt/backend/application/services/settings.py:297
 msgid "Cannot clear containers while servers are being upgraded"
 msgstr ""
 
-#: cobalt/backend/application/services/users.py:123
-#: cobalt/backend/application/services/users.py:381
+#: cobalt/backend/application/services/users.py:120
+#: cobalt/backend/application/services/users.py:382
 msgid "Users not found"
 msgstr ""
 
-#: cobalt/backend/application/services/users.py:168
-#: cobalt/backend/application/services/users.py:313
-#: cobalt/backend/application/services/users.py:349
+#: cobalt/backend/application/services/users.py:165
+#: cobalt/backend/application/services/users.py:314
+#: cobalt/backend/application/services/users.py:350
 #, python-brace-format
 msgid "User {user_id} not found"
 msgstr ""
 
-#: cobalt/backend/games/minecraft/fabric/infrastructure/loader.py:272
+#: cobalt/backend/domain/value_objects/base.py:43
+#, python-brace-format
+msgid "\"{value}\" must be at least {min_length} characters"
+msgstr ""
+
+#: cobalt/backend/domain/value_objects/base.py:50
+#, python-brace-format
+msgid "\"{value}\" must be at most {max_length} characters"
+msgstr ""
+
+#: cobalt/backend/domain/value_objects/base.py:72
+#, python-brace-format
+msgid "\"{value}\" must match pattern {pattern}"
+msgstr ""
+
+#: cobalt/backend/domain/value_objects/base.py:96
+#, python-brace-format
+msgid "\"{value}\" must be at least {min_value}"
+msgstr ""
+
+#: cobalt/backend/domain/value_objects/base.py:103
+#, python-brace-format
+msgid "\"{value}\" must be at most {max_value}"
+msgstr ""
+
+#: cobalt/backend/domain/value_objects/base.py:125
+#, python-brace-format
+msgid "\"{value}\" must be greater than {threshold}"
+msgstr ""
+
+#: cobalt/backend/domain/value_objects/base.py:147
+#, python-brace-format
+msgid "\"{value}\" must be greater than or equal to {threshold}"
+msgstr ""
+
+#: cobalt/backend/domain/value_objects/base.py:169
+#, python-brace-format
+msgid "\"{value}\" must be less than {threshold}"
+msgstr ""
+
+#: cobalt/backend/domain/value_objects/base.py:191
+#, python-brace-format
+msgid "\"{value}\" must be less than or equal to {threshold}"
+msgstr ""
+
+#: cobalt/backend/domain/value_objects/network.py:58
+#, python-brace-format
+msgid "Invalid IP address \"{ip_address}\""
+msgstr ""
+
+#: cobalt/backend/games/minecraft/fabric/infrastructure/loader.py:200
 msgid "Could not fetch Fabric loader or installer version"
 msgstr ""
 
-#: cobalt/backend/games/minecraft/forge/infrastructure/loader.py:287
+#: cobalt/backend/games/minecraft/forge/infrastructure/loader.py:185
 msgid "Could not fetch Forge version"
+msgstr ""
+
+#: cobalt/backend/games/minecraft/paper/infrastructure/loader.py:139
+#, python-brace-format
+msgid "Could not fetch stable Paper build for version {version}"
 msgstr ""
 
 #: cobalt/backend/infrastructure/clients/caches/redis.py:83
@@ -428,6 +483,7 @@ msgstr ""
 #: cobalt/backend/infrastructure/databases/postgres/repositories/servers.py:97
 #: cobalt/backend/infrastructure/databases/postgres/repositories/users.py:95
 #: cobalt/backend/presentation/http/fastapi/v1/middlewares/errors.py:72
+#: cobalt/backend/presentation/ws/fastapi/v1/interceptors/errors.py:76
 msgid "Internal server error"
 msgstr ""
 
@@ -800,13 +856,12 @@ msgstr ""
 
 #: cobalt/backend/presentation/http/fastapi/v1/routers/base.py:50
 #: cobalt/backend/presentation/http/fastapi/v1/routers/base.py:75
-#: cobalt/backend/presentation/ws/fastapi/v1/routers/base.py:50
-#: cobalt/backend/presentation/ws/fastapi/v1/routers/base.py:75
+#: cobalt/backend/presentation/ws/fastapi/v1/routers/base.py:79
 msgid "Invalid session"
 msgstr ""
 
 #: cobalt/backend/presentation/http/fastapi/v1/routers/base.py:78
-#: cobalt/backend/presentation/ws/fastapi/v1/routers/base.py:78
+#: cobalt/backend/presentation/ws/fastapi/v1/routers/base.py:82
 msgid "Not enough permissions"
 msgstr ""
 

@@ -1,0 +1,15 @@
+{
+  "Name": "Cobalt Server",
+  "Description": "Launched with Cobalt - https://github.com/artorias-developer/cobalt",
+  "DiscordURL": "",
+  "SteamWorkshopURL": "",
+  "IP": "0.0.0.0",
+  "Port": 25555,
+  "MaxPlayers": 100,
+  "Verbosity": 0,
+  "DisplayChatInConsole": false,
+  "UseUPnP": false,
+  "UseClientSave": true,
+  "EnableServerBrowser": true,
+  "EnableServerTelemetry": true
+}

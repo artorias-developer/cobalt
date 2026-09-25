@@ -867,7 +867,9 @@ const loaderOptions = computed((): SelectOption[] => {
       value: loader.id,
       label: loaderModule.displayName
     }
-  })
+  }).sort(
+    (a, b) => a.label.localeCompare(b.label)
+  )
 })
 
 /**

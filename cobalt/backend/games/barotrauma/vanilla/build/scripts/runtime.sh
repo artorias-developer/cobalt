@@ -7,9 +7,6 @@
 
 set -u
 
-SERVER_ROOT="${SERVER_ROOT:-/opt/cobalt_server}"
-SERVER_FIFO="${SERVER_FIFO:-/tmp/cobalt_server_fifo}"
-
 SESSION_NAME="cobalt_server"
 DONE_CHANNEL="${SESSION_NAME}_done"
 

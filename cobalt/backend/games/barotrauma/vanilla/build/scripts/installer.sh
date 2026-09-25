@@ -7,15 +7,15 @@
 
 set -u
 
-INSTALLER_SRC="/installer_src"
 STEAMCMD_LOG="/tmp/steamcmd_output.log"
 MAX_ATTEMPTS=3
 
+SERVER_CONFIG="$INSTALLATION_DIR/serversettings.xml"
+
 function sync_files() {
     rsync -a \
-        --exclude 'serversettings.example.xml' \
         --exclude 'installer.sh' \
-        "$INSTALLER_SRC/." .
+        "$INSTALLATION_DIR/." "$SERVER_ROOT/"
 }
 
 function run_steamcmd() {
@@ -32,14 +32,13 @@ function install_succeeded() {
 }
 
 function setup_config() {
-    cp -f "$INSTALLER_SRC/serversettings.example.xml" "$SERVER_ROOT/serversettings.xml"
-    sed -i "s|{SERVER_PORT}|$SERVER_PORT|g" "$SERVER_ROOT/serversettings.xml"
-    sed -i "s|{QUERY_PORT}|$QUERY_PORT|g" "$SERVER_ROOT/serversettings.xml"
+    if [ -f "$SERVER_CONFIG" ]; then
+        sed -i "s|{SERVER_PORT}|$SERVER_PORT|g" "$SERVER_CONFIG"
+        sed -i "s|{QUERY_PORT}|$QUERY_PORT|g" "$SERVER_CONFIG"
+    fi
 }
 
 function main() {
-    sync_files
-
     for i in $(seq 1 "$MAX_ATTEMPTS"); do
         run_steamcmd
 
@@ -47,6 +46,7 @@ function main() {
             echo "Install successful."
             rm -f "$STEAMCMD_LOG"
             setup_config
+            sync_files
             exit 0
         fi
 

@@ -5,13 +5,18 @@
 # Repository: https://github.com/artorias-developer/cobalt
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-SERVER_ROOT="${SERVER_ROOT:-/opt/cobalt_server}"
-SERVER_FIFO="${SERVER_FIFO:-/tmp/cobalt_server_fifo}"
-
-SERVER_BIN="$SERVER_ROOT/LaunchUtils/ScriptCaller.sh"
+SERVER_BIN="$SERVER_ROOT/TerrariaServer.bin.x86_64"
 CONFIG_RUNTIME="$SERVER_ROOT/serverconfig.cfg"
 
 SERVER_PID=""
+FIFO_HOLDER_PID=""
+
+# Add any additional server arguments here.
+# WARNING: The following arguments are already handled and should not be added:
+# -config
+SERVER_ARGS=(
+
+)
 
 function stop_server() {
     if [ -p "$SERVER_FIFO" ] && [ -n "$SERVER_PID" ] && kill -0 "$SERVER_PID" 2>/dev/null; then
@@ -37,35 +42,36 @@ function stop_server() {
     exit 0
 }
 
-trap stop_server SIGINT SIGTERM
+function setup_fifo() {
+    rm -f "$SERVER_FIFO"
+    mkfifo "$SERVER_FIFO"
+}
 
-if [ -f "$CONFIG_RUNTIME" ]; then
-    sed -i "s|{SERVER_ROOT}|$SERVER_ROOT|g" "$CONFIG_RUNTIME"
-fi
+function start_fifo_holder() {
+    sleep infinity > "$SERVER_FIFO" &
+    FIFO_HOLDER_PID=$!
+}
 
-rm -f "$SERVER_FIFO"
-mkfifo "$SERVER_FIFO"
+function configure_server_args() {
+    if [ -f "$CONFIG_RUNTIME" ]; then
+        SERVER_ARGS+=(-config "$CONFIG_RUNTIME")
+    fi
+}
 
-sleep infinity > "$SERVER_FIFO" &
-FIFO_HOLDER_PID=$!
+function start_server() {
+    "$SERVER_BIN" "${SERVER_ARGS[@]}" < "$SERVER_FIFO" &
+    SERVER_PID=$!
+}
 
-# Add any additional server arguments here.
-# WARNING: The following arguments are already handled and should not be added:
-# -server
-# -nosteam
-# -tmlsavedirectory
-# -config
-SERVER_ARGS=(
-    -server
-    -nosteam
-    -tmlsavedirectory "$SERVER_ROOT/data"
-)
+function main() {
+    trap stop_server SIGINT SIGTERM
 
-if [ -f "$CONFIG_RUNTIME" ]; then
-    SERVER_ARGS+=(-config "$CONFIG_RUNTIME")
-fi
+    setup_fifo
+    start_fifo_holder
+    configure_server_args
+    start_server
 
-"$SERVER_BIN" "${SERVER_ARGS[@]}" < "$SERVER_FIFO" &
-SERVER_PID=$!
+    wait $SERVER_PID
+}
 
-wait $SERVER_PID
+main

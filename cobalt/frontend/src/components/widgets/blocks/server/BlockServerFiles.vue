@@ -334,7 +334,7 @@ import type {
   FileTypeEntry,
   SelectOption,
   TableColumn,
-  ServerBlockMode
+  BlockMode
 } from "@/types"
 
 import Block from "@/components/ui/Block.vue"
@@ -378,7 +378,7 @@ import iconLua from "@/assets/images/svg/files/lua.svg"
 import iconJar from "@/assets/images/svg/files/jar.svg"
 
 const props = withDefaults(defineProps<{
-  mode: ServerBlockMode
+  mode: BlockMode
   serverId?: number
   icon?: string
   iconColor?: Color

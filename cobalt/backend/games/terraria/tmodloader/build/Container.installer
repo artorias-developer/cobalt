@@ -1,37 +1,35 @@
-FROM alpine:latest AS downloader
-
-ARG TMODLOADER_LINK
-ARG SERVER_ROOT
-
-RUN apk add --no-cache \
-        wget \
-        unzip && \
-    mkdir -p ${SERVER_ROOT}
-
-WORKDIR ${SERVER_ROOT}
-
-RUN wget ${TMODLOADER_LINK} -O server.zip && \
-    unzip server.zip && \
-    if [ -d "Build" ]; then \
-        mv Build/* . && \
-        rm -rf Build; \
-    fi && \
-    chmod +x LaunchUtils/ScriptCaller.sh && \
-    rm -rf server.zip serverconfig.txt && \
-    mkdir -p data/Mods \
-             data/Mods/ModPacks \
-             data/ModConfigs
-
-COPY scripts/entrypoint.sh entrypoint.sh
-RUN chmod +x entrypoint.sh
-
 FROM alpine:latest
 
-ARG SERVER_ROOT
+ARG TMODLOADER_LINK
+ARG INSTALLATION_DIR
 
-RUN apk add --no-cache rsync
+WORKDIR ${INSTALLATION_DIR}
 
-COPY --from=downloader ${SERVER_ROOT} /installer_src
-COPY data /installer_src/
+RUN apk add --no-cache \
+        bash \
+        rsync \
+        wget \
+        ca-certificates \
+        unzip \
+    && wget ${TMODLOADER_LINK} -O server.zip \
+    && unzip server.zip \
+    && if [ -d "Build" ]; then \
+        mv Build/* . \
+        && rm -rf Build; \
+    fi \
+    && chmod +x LaunchUtils/ScriptCaller.sh \
+    && rm -rf server.zip serverconfig.txt \
+    && mkdir -p data/Mods \
+             data/Mods/ModPacks \
+             data/ModConfigs \
+    && apk del \
+        wget \
+        ca-certificates \
+        unzip
 
-CMD mkdir -p ${SERVER_ROOT} && rsync -a /installer_src/. ${SERVER_ROOT}/
+COPY data/ ./
+COPY scripts/installer.sh scripts/runtime.sh ./
+
+RUN chmod +x installer.sh runtime.sh
+
+CMD ["/bin/bash", "-c", "exec ./installer.sh"]

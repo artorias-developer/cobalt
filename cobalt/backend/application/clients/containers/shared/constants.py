@@ -13,5 +13,6 @@ class ContainersConstants:
 
     SERVER_ROOT: str = "/opt/cobalt_server"
     SERVER_FIFO: str = "/tmp/cobalt_server_fifo"
+    SERVER_INSTALLATION_DIR: str = "/installer_src"
 
     NETWORK_MODE: str = "{environment}_cobalt_servers_network"

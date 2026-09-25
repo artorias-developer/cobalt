@@ -5,11 +5,9 @@
 # Repository: https://github.com/artorias-developer/cobalt
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-SERVER_ROOT="${SERVER_ROOT:-/opt/cobalt_server}"
-SERVER_FIFO="${SERVER_FIFO:-/tmp/cobalt_server_fifo}"
-
 SERVER_BIN="$SERVER_ROOT/7DaysToDieServer.x86_64"
 SERVER_CONFIG="$SERVER_ROOT/serverconfig.xml"
+LOG_FILE="$SERVER_ROOT/output_log__`date +%Y-%m-%d__%H-%M-%S`.txt"
 
 TELNET_IN="/tmp/cobalt_telnet_in"
 
@@ -18,6 +16,21 @@ FIFO_READER_PID=""
 TELNET_HOLDER_PID=""
 TELNET_PID=""
 TELNET_MANAGER_PID=""
+
+# Add any additional server arguments here.
+# WARNING: The following arguments are already handled and should not be added:
+# -configfile
+# -batchmode
+# -nographics
+# -dedicated
+SERVER_ARGS=(
+    -configfile="$SERVER_CONFIG"
+    -logfile "$LOG_FILE"
+    -quit
+    -batchmode
+    -nographics
+    -dedicated
+)
 
 function connect_telnet() {
     while true; do
@@ -86,50 +99,57 @@ function stop_server() {
     exit 0
 }
 
-trap stop_server SIGINT SIGTERM
+function setup_fifo() {
+    rm -f "$SERVER_FIFO"
+    mkfifo "$SERVER_FIFO"
+}
 
-if [ -f "$SERVER_CONFIG" ]; then
-    sed -i "s|{SERVER_PORT}|$SERVER_PORT|g" "$SERVER_CONFIG"
-fi
+function filter_log() {
+    sed -u -E 's/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2} [0-9]+\.[0-9]+ [A-Z]{3} //'
+}
 
-rm -f "$SERVER_FIFO"
-mkfifo "$SERVER_FIFO"
+function start_server() {
+    cd "$SERVER_ROOT"
+    rm -f output_log__*.txt
 
-cd "$SERVER_ROOT"
+    "$SERVER_BIN" "${SERVER_ARGS[@]}" > >(filter_log) 2>&1 &
+    SERVER_PID=$!
+}
 
-# Add any additional server arguments here.
-# WARNING: The following arguments are already handled and should not be added:
-# -configfile
-# -batchmode
-# -nographics
-# -dedicated
-SERVER_ARGS=(
-    -configfile="$SERVER_CONFIG"
-    -quit
-    -batchmode
-    -nographics
-    -dedicated
-)
+function wait_for_telnet() {
+    echo "Waiting for Telnet to become available..."
+    until nc -z 127.0.0.1 8081 2>/dev/null; do
+        sleep 2
+    done
+    echo "Telnet is available, connecting..."
+}
 
-"$SERVER_BIN" "${SERVER_ARGS[@]}" &
-SERVER_PID=$!
+function start_telnet_manager() {
+    connect_telnet &
+    TELNET_MANAGER_PID=$!
+}
 
-echo "Waiting for Telnet to become available..."
-until nc -z 127.0.0.1 8081 2>/dev/null; do
-    sleep 2
-done
-echo "Telnet is available, connecting..."
-
-connect_telnet &
-TELNET_MANAGER_PID=$!
-
-while true; do
-    if read -r cmd < "$SERVER_FIFO"; then
-        if [ -p "$TELNET_IN" ]; then
-            echo "$cmd" > "$TELNET_IN"
+function start_fifo_reader() {
+    while true; do
+        if read -r cmd < "$SERVER_FIFO"; then
+            if [ -p "$TELNET_IN" ]; then
+                echo "$cmd" > "$TELNET_IN"
+            fi
         fi
-    fi
-done &
-FIFO_READER_PID=$!
+    done &
+    FIFO_READER_PID=$!
+}
 
-wait $SERVER_PID
+function main() {
+    trap stop_server SIGINT SIGTERM
+
+    setup_fifo
+    start_server
+    wait_for_telnet
+    start_telnet_manager
+    start_fifo_reader
+
+    wait $SERVER_PID
+}
+
+main
