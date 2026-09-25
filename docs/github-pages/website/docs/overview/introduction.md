@@ -8,52 +8,16 @@ Cobalt supports the creation of servers for a wide variety of games and their lo
 
 The following games are currently supported:
 
-<table>
-  <thead>
-    <tr>
-      <th style="text-align: center">Icon</th>
-      <th>Game</th>
-      <th>Loaders</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="display: flex;justify-content: center;"><img src="https://raw.githubusercontent.com/artorias-developer/cobalt/main/cobalt/frontend/src/assets/images/games/minecraft/icon.png" style="height: 30px"></td>
-      <td>Minecraft</td>
-      <td>Paper, Forge, Fabric</td>
-    </tr>
-    <tr>
-      <td style="display: flex;justify-content: center;"><img src="https://raw.githubusercontent.com/artorias-developer/cobalt/main/cobalt/frontend/src/assets/images/games/terraria/icon.png" style="height: 30px"></td>
-      <td>Terraria</td>
-      <td>Vanilla, tModLoader</td>
-    </tr>
-    <tr>
-      <td style="display: flex;justify-content: center;"><img src="https://raw.githubusercontent.com/artorias-developer/cobalt/main/cobalt/frontend/src/assets/images/games/dont-starve-together/icon.png" style="height: 30px"></td>
-      <td>Don't Starve Together</td>
-      <td>Vanilla</td>
-    </tr>
-    <tr>
-      <td style="display: flex;justify-content: center;"><img src="https://raw.githubusercontent.com/artorias-developer/cobalt/main/cobalt/frontend/src/assets/images/games/factorio/icon.png" style="height: 30px"></td>
-      <td>Factorio</td>
-      <td>Vanilla</td>
-    </tr>
-    <tr>
-      <td style="display: flex;justify-content: center;"><img src="https://raw.githubusercontent.com/artorias-developer/cobalt/main/cobalt/frontend/src/assets/images/games/rim-world/icon.png" style="height: 30px"></td>
-      <td>RimWorld</td>
-      <td>Together</td>
-    </tr>
-    <tr>
-      <td style="display: flex;justify-content: center;"><img src="https://raw.githubusercontent.com/artorias-developer/cobalt/main/cobalt/frontend/src/assets/images/games/seven-days-to-die/icon.png" style="height: 30px"></td>
-      <td>7 Days to Die</td>
-      <td>Vanilla</td>
-    </tr>
-    <tr>
-      <td style="display: flex;justify-content: center;"><img src="https://raw.githubusercontent.com/artorias-developer/cobalt/main/cobalt/frontend/src/assets/images/games/project-zomboid/icon.png" style="width: 30px"></td>
-      <td>Project Zomboid</td>
-      <td>Vanilla</td>
-    </tr>
-  </tbody>
-</table>
+| Icon                                                                                                                                               | Game                  | Loaders              |
+|----------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------|----------------------|
+| <img src="https://raw.githubusercontent.com/artorias-developer/cobalt/main/cobalt/frontend/src/assets/images/games/minecraft/icon.png">            | Minecraft             | Paper, Forge, Fabric |
+| <img src="https://raw.githubusercontent.com/artorias-developer/cobalt/main/cobalt/frontend/src/assets/images/games/terraria/icon.png">             | Terraria              | Vanilla, tModLoader  |
+| <img src="https://raw.githubusercontent.com/artorias-developer/cobalt/main/cobalt/frontend/src/assets/images/games/dont-starve-together/icon.png"> | Don't Starve Together | Vanilla              |
+| <img src="https://raw.githubusercontent.com/artorias-developer/cobalt/main/cobalt/frontend/src/assets/images/games/factorio/icon.png">             | Factorio              | Vanilla              |
+| <img src="https://raw.githubusercontent.com/artorias-developer/cobalt/main/cobalt/frontend/src/assets/images/games/rim-world/icon.png">            | RimWorld              | Together             |
+| <img src="https://raw.githubusercontent.com/artorias-developer/cobalt/main/cobalt/frontend/src/assets/images/games/seven-days-to-die/icon.png">    | 7 Days to Die         | Vanilla              |
+| <img src="https://raw.githubusercontent.com/artorias-developer/cobalt/main/cobalt/frontend/src/assets/images/games/project-zomboid/icon.png">      | Project Zomboid       | Vanilla              |
+| <img src="https://raw.githubusercontent.com/artorias-developer/cobalt/main/cobalt/frontend/src/assets/images/games/barotrauma/icon.png">           | Barotrauma            | Vanilla              |
 
 ## Features
 
@@ -69,6 +33,32 @@ Cobalt ships with everything you need to run and manage game servers without lea
 
 ## Core project team
 
-| Name         | Role                         | Links                                     |
-|--------------|------------------------------|-------------------------------------------|
+| Name     | Role                         | Links                                           |
+|----------|------------------------------|-------------------------------------------------|
 | Artorias | Founder & Project Maintainer | [GitHub](https://github.com/artorias-developer) |
+
+<style>
+table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+table th:nth-child(1) { 
+   min-width: 50px; 
+   text-align: center;
+}
+
+table th:nth-child(2) { 
+   min-width: 200px; 
+}
+
+table th:nth-child(3) { 
+   min-width: 200px; 
+}
+
+table td:nth-child(1) img {
+   width: 30px;
+   max-height: 30px;
+   object-fit: contain;
+}
+</style>
