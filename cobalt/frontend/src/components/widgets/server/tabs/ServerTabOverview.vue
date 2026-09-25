@@ -27,7 +27,7 @@
       />
     </section>
     <section class="console">
-      <BlockLogs
+      <BlockServerConsole
         :key="serverId ?? 'none'"
         :mode="serverId ? 'server' : 'empty'"
         :server-id="serverId"
@@ -43,7 +43,7 @@
 <script setup lang="ts">
 import ChartRamUsage from "@/components/widgets/charts/ChartRamUsage.vue"
 import ChartCpuUsage from "@/components/widgets/charts/ChartCpuUsage.vue"
-import BlockLogs from "@/components/widgets/blocks/BlockLogs.vue"
+import BlockServerConsole from "@/components/widgets/blocks/server/BlockServerConsole.vue"
 import BlockServerControl from "@/components/widgets/blocks/server/BlockServerControl.vue"
 
 defineProps<{

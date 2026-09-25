@@ -4,7 +4,7 @@
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from datetime import datetime
-from typing import Optional, List, Literal, Tuple
+from typing import Optional, List, Tuple
 
 from domain.enums import FileTypeEnum
 from application.dtos.base import BaseDto

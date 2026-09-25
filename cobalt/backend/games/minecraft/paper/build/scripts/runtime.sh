@@ -5,13 +5,18 @@
 # Repository: https://github.com/artorias-developer/cobalt
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-SERVER_ROOT="${SERVER_ROOT:-/opt/cobalt_server}"
-SERVER_FIFO="${SERVER_FIFO:-/tmp/cobalt_server_fifo}"
-
 SERVER_JAR="$SERVER_ROOT/paper-server.jar"
 LOG4J_CONFIG="$SERVER_ROOT/log4j2.xml"
 
 SERVER_PID=""
+FIFO_HOLDER_PID=""
+
+# Add any additional server arguments here.
+# WARNING: The following arguments are already handled and should not be added:
+# nogui
+SERVER_ARGS=(
+    nogui
+)
 
 function stop_server() {
     if [ -p "$SERVER_FIFO" ] && [ -n "$SERVER_PID" ] && kill -0 "$SERVER_PID" 2>/dev/null; then
@@ -37,26 +42,36 @@ function stop_server() {
     exit 0
 }
 
-trap stop_server SIGINT SIGTERM
+function setup_fifo() {
+    rm -f "$SERVER_FIFO"
+    mkfifo "$SERVER_FIFO"
+}
 
-rm -f "$SERVER_FIFO"
-mkfifo "$SERVER_FIFO"
+function start_fifo_holder() {
+    sleep infinity > "$SERVER_FIFO" &
+    FIFO_HOLDER_PID=$!
+}
 
-sleep infinity > "$SERVER_FIFO" &
-FIFO_HOLDER_PID=$!
+function configure_java() {
+    if [ -f "$LOG4J_CONFIG" ]; then
+        export JAVA_TOOL_OPTIONS="-Dlog4j.configurationFile=$LOG4J_CONFIG"
+    fi
+}
 
-# Add any additional server arguments here.
-# WARNING: The following arguments are already handled and should not be added:
-# nogui
-SERVER_ARGS=(
-    nogui
-)
+function start_server() {
+    java -jar "$SERVER_JAR" "${SERVER_ARGS[@]}" < "$SERVER_FIFO" &
+    SERVER_PID=$!
+}
 
-if [ -f "$LOG4J_CONFIG" ]; then
-    export JAVA_TOOL_OPTIONS="-Dlog4j.configurationFile=$LOG4J_CONFIG"
-fi
+function main() {
+    trap stop_server SIGINT SIGTERM
 
-java -jar "$SERVER_JAR" "${SERVER_ARGS[@]}" < "$SERVER_FIFO" &
-SERVER_PID=$!
+    setup_fifo
+    start_fifo_holder
+    configure_java
+    start_server
 
-wait $SERVER_PID
+    wait $SERVER_PID
+}
+
+main

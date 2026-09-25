@@ -3,7 +3,7 @@
 #  Repository: https://github.com/artorias-developer/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-from os import path
+from os import path, walk
 from re import compile
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -379,6 +379,7 @@ class AbstractServersService(ABC):
 
         prepared_image_build_args = {
             "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
+            "INSTALLATION_DIR": ContainersConstants.SERVER_INSTALLATION_DIR,
             **({"APP_ID": str(steam_app_id)} if is_steam_server else {}),
             **(image_build_args or {})
         }
@@ -407,6 +408,8 @@ class AbstractServersService(ABC):
 
         prepared_container_environment = {
             "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
+            "INSTALLATION_DIR": ContainersConstants.SERVER_INSTALLATION_DIR,
+            **({"APP_ID": str(steam_app_id)} if is_steam_server else {}),
             **(container_environment or {})
         }
 
@@ -539,6 +542,7 @@ class AbstractServersService(ABC):
 
         prepared_image_build_args = {
             "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
+            "INSTALLATION_DIR": ContainersConstants.SERVER_INSTALLATION_DIR,
             **({"APP_ID": str(steam_app_id)} if is_steam_server else {}),
             **(image_build_args or {})
         }
@@ -567,6 +571,8 @@ class AbstractServersService(ABC):
 
         prepared_container_environment = {
             "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
+            "INSTALLATION_DIR": ContainersConstants.SERVER_INSTALLATION_DIR,
+            **({"APP_ID": str(steam_app_id)} if is_steam_server else {}),
             **(container_environment or {})
         }
 

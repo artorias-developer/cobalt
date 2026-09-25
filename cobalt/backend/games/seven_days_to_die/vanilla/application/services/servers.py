@@ -80,7 +80,10 @@ class VanillaServersService(AbstractServersService):
                 steam_app_id=self._STEAM_APP_ID,
                 container_name=container_name,
                 installation_dir=host_container_dir,
-                installation_marker=self._INSTALLATION_MARKER
+                installation_marker=self._INSTALLATION_MARKER,
+                container_environment={
+                    "SERVER_PORT": str(port_1)
+                }
             )
 
             await self._create_runtime_container(
@@ -93,9 +96,6 @@ class VanillaServersService(AbstractServersService):
                     f"{port_1}/udp": port_1,
                     f"{port_2}/udp": port_2,
                     f"{port_3}/udp": port_3
-                },
-                container_environment={
-                    "SERVER_PORT": str(port_1)
                 }
             )
         except Exception:

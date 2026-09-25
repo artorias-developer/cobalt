@@ -224,6 +224,8 @@ class VanillaServersService(AbstractServersService):
                 installation_marker=self._INSTALLATION_MARKER,
                 image_build_args={
                     "FACTORIO_LINK": download_link,
+                },
+                container_environment={
                     "HAS_ADMIN_LIST_OPTION": str(has_admin_list).lower(),
                     "HAS_WHITELIST_OPTION": str(has_whitelist).lower(),
                     "HAS_BANLIST_OPTION": str(has_banlist).lower(),

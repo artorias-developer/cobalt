@@ -54,7 +54,8 @@ export default defineConfig({
               { text: "Factorio", link: "/docs/tutorials/games/factorio" },
               { text: "RimWorld", link: "/docs/tutorials/games/rim-world" },
               { text: "7 Days to Die", link: "/docs/tutorials/games/seven-days-to-die" },
-              { text: "Project Zomboid", link: "/docs/tutorials/games/project-zomboid" }
+              { text: "Project Zomboid", link: "/docs/tutorials/games/project-zomboid" },
+              { text: "Barotrauma", link: "/docs/tutorials/games/barotrauma" }
             ]
           }
         ]

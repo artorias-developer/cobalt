@@ -3,6 +3,7 @@
 #  Repository: https://github.com/artorias-developer/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
+from .barotrauma import BarotraumaGameModule
 from .dont_starve_together import DontStarveTogetherGameModule
 from .factorio import FactorioGameModule
 from .minecraft import MinecraftGameModule
@@ -12,6 +13,7 @@ from .seven_days_to_die import SevenDaysToDieGameModule
 from .terraria import TerrariaGameModule
 
 ENABLED_GAME_MODULES = [
+    BarotraumaGameModule,
     DontStarveTogetherGameModule,
     FactorioGameModule,
     MinecraftGameModule,
@@ -22,6 +24,7 @@ ENABLED_GAME_MODULES = [
 ]
 
 __all__ = [
+    "BarotraumaGameModule",
     "DontStarveTogetherGameModule",
     "FactorioGameModule",
     "MinecraftGameModule",

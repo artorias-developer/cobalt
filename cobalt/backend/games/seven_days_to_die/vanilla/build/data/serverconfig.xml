@@ -4,7 +4,7 @@
 
     <!-- Server representation -->
     <!-- Whatever you want the name of the server to be. -->
-    <property name="ServerName"                         value="Cobalt"/>
+    <property name="ServerName"                         value="Cobalt Server"/>
     <!-- Whatever you want the server description to be, will be shown in the server browser. -->
     <property name="ServerDescription"                  value="Launched with Cobalt - https://github.com/artorias-developer/cobalt"/>
     <!-- Website URL for the server, will be shown in the server browser as a clickable link -->
