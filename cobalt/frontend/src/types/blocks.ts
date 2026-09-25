@@ -6,7 +6,7 @@
  */
 
 export type BlockHeaderSize = "small" | "large"
-export type ServerBlockMode = "server" | "empty"
+export type BlockMode = "filled" | "empty"
 export type UniversalBlockMode = "host" | "server" | "empty"
 
 export type InfoField = {

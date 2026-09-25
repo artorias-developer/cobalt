@@ -22,7 +22,7 @@
     </section>
     <section class="console">
       <BlockLogs
-        mode="host"
+        mode="filled"
         :max-logs="maxLogs"
       />
     </section>
