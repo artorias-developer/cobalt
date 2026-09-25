@@ -55,6 +55,7 @@ The following games are currently supported:
 |      <img src="cobalt/frontend/src/assets/images/games/rim-world/icon.png" height="30">       | RimWorld              | Together             |
 |  <img src="cobalt/frontend/src/assets/images/games/seven-days-to-die/icon.png" height="30">   | 7 Days to Die         | Vanilla              |
 |    <img src="cobalt/frontend/src/assets/images/games/project-zomboid/icon.png" width="30">    | Project Zomboid       | Vanilla              |
+|      <img src="cobalt/frontend/src/assets/images/games/barotrauma/icon.png" width="30">       | Barotrauma            | Vanilla              |
 
 ## Features
 
@@ -73,7 +74,14 @@ Cobalt ships with everything you need to run and manage game servers without lea
 <details>
 <summary>Where can I get a VPS / VDS?</summary>
 
-Any VPS / VDS provider works. Just make sure it runs Ubuntu 22+ and meets the game's requirements. You can choose a flexible VPS / VDS, for example, one powered by an AMD Epyc or Ryzen CPU with 8+ gigabytes of RAM.
+Any VPS / VDS provider works. Just make sure it runs Ubuntu 22+ and meets the game's requirements.
+
+</details>
+
+<details>
+<summary>How to choose a VPS / VDS?</summary>
+
+Each game has its own requirements, so you'll need to check them yourself from official sources. But you can always choose a flexible VPS / VDS, for example, one powered by an AMD Epyc or Ryzen CPU with 8+ gigabytes of RAM, which is suitable for most servers.
 
 </details>
 
@@ -90,19 +98,18 @@ Any VPS / VDS provider works. Just make sure it runs Ubuntu 22+ and meets the ga
 
 </details>
 
-<details>
-<summary>How can I support the project financially?</summary>
+## Donate
 
-|                                  Icon                                   | Token | Network | Address |
-|:-----------------------------------------------------------------------:|-------|---------|---------|
-| <img src="cobalt/frontend/src/assets/images/svg/usdc.svg" height="20">  | USDC | ERC20 / BEP20 | `0x0C24ee1cDC35824390879Bd8A7235c473FCEcEDC` |
-| <img src="cobalt/frontend/src/assets/images/svg/usdc.svg" height="20">  | USDC | SPL | `7gUG9Xz94V7nBEdC37DD5fhH75L6qQxRmnpke19tQVZP` |
-| <img src="cobalt/frontend/src/assets/images/svg/usdt.svg" height="20">  | USDT | ERC20 / BEP20 | `0x0C24ee1cDC35824390879Bd8A7235c473FCEcEDC` |
-| <img src="cobalt/frontend/src/assets/images/svg/usdt.svg" height="20">  | USDT | SPL | `7gUG9Xz94V7nBEdC37DD5fhH75L6qQxRmnpke19tQVZP` |
-| <img src="cobalt/frontend/src/assets/images/svg/usdt.svg" height="20">  | USDT | TRC20 | `TK85QzUhftZmm3rfDreWnVi5Q5eE5t42e1` |
-|  <img src="cobalt/frontend/src/assets/images/svg/btc.svg" height="20">  | BTC | Bitcoin | `bc1qnw605zwkz6jz23fsydxmzms7tsh7jwp2kaumjw` |
-|  <img src="cobalt/frontend/src/assets/images/svg/eth.svg" height="20">  | ETH | Ethereum | `0x0C24ee1cDC35824390879Bd8A7235c473FCEcEDC` |
-|  <img src="cobalt/frontend/src/assets/images/svg/bnb.svg" height="20">  | BNB | BNB Smart Chain | `0x0C24ee1cDC35824390879Bd8A7235c473FCEcEDC` |
-|  <img src="cobalt/frontend/src/assets/images/svg/sol.svg" height="20">  | SOL | Solana | `7gUG9Xz94V7nBEdC37DD5fhH75L6qQxRmnpke19tQVZP` |
+You can support the project and help speed up its development by making a donation to one of the crypto wallets listed below. Thank you for your interest in the project!
 
-</details>
+|                                  Icon                                  | Token  | Network         | Address                                          |
+|:----------------------------------------------------------------------:|--------|-----------------|--------------------------------------------------|
+| <img src="cobalt/frontend/src/assets/images/svg/usdc.svg" height="20"> | USDC   | ERC20 / BEP20   | `0x0C24ee1cDC35824390879Bd8A7235c473FCEcEDC`     |
+| <img src="cobalt/frontend/src/assets/images/svg/usdc.svg" height="20"> | USDC   | SPL             | `7gUG9Xz94V7nBEdC37DD5fhH75L6qQxRmnpke19tQVZP`   |
+| <img src="cobalt/frontend/src/assets/images/svg/usdt.svg" height="20"> | USDT   | ERC20 / BEP20   | `0x0C24ee1cDC35824390879Bd8A7235c473FCEcEDC`     |
+| <img src="cobalt/frontend/src/assets/images/svg/usdt.svg" height="20"> | USDT   | SPL             | `7gUG9Xz94V7nBEdC37DD5fhH75L6qQxRmnpke19tQVZP`   |
+| <img src="cobalt/frontend/src/assets/images/svg/usdt.svg" height="20"> | USDT   | TRC20           | `TK85QzUhftZmm3rfDreWnVi5Q5eE5t42e1`             |
+| <img src="cobalt/frontend/src/assets/images/svg/btc.svg" height="20">  | BTC    | Bitcoin         | `bc1qnw605zwkz6jz23fsydxmzms7tsh7jwp2kaumjw`     |
+| <img src="cobalt/frontend/src/assets/images/svg/eth.svg" height="20">  | ETH    | Ethereum        | `0x0C24ee1cDC35824390879Bd8A7235c473FCEcEDC`     |
+| <img src="cobalt/frontend/src/assets/images/svg/bnb.svg" height="20">  | BNB    | BNB Smart Chain | `0x0C24ee1cDC35824390879Bd8A7235c473FCEcEDC`     |
+| <img src="cobalt/frontend/src/assets/images/svg/sol.svg" height="20">  | SOL    | Solana          | `7gUG9Xz94V7nBEdC37DD5fhH75L6qQxRmnpke19tQVZP`   |

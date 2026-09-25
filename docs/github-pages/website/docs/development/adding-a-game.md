@@ -56,25 +56,31 @@ If the loader's versions are parsed from GitHub releases, use `GithubClientMixin
 [Terraria's vanilla runtime](https://github.com/artorias-developer/cobalt/blob/main/cobalt/backend/games/terraria/vanilla/build/Container.runtime)
 :::
 
-9. Inside the loader package, create `build/scripts/entrypoint.sh`. This is the entrypoint for the runtime container from step 8 - it's responsible for starting the server, creating a FIFO file to pass commands from the dashboard, and gracefully shutting down the server on a stop command.
+9. Inside the loader package, create `build/scripts/installer.sh`. This entry point triggers additional actions for the container from step 7, such as configuring settings and mounting files to a server folder.
 
 :::info Example
-[Terraria's vanilla entrypoint](https://github.com/artorias-developer/cobalt/blob/main/cobalt/backend/games/terraria/vanilla/build/scripts/entrypoint.sh)
+[Terraria's vanilla installer](https://github.com/artorias-developer/cobalt/blob/main/cobalt/backend/games/terraria/vanilla/build/scripts/installer.sh)
 :::
 
-10. In the root of `new_game`, create `module.py`. This module initializes all of the game's loaders. Under the hood, it also automatically checks whether the game and its loaders already exist in the database, and adds them if they don't.
+10. Inside the loader package, create `build/scripts/runtime.sh`. This entry point is responsible for starting the container from step 8, configuring a safe shutdown of the server, and passing commands from the console.
+
+:::info Example
+[Terraria's vanilla runtime](https://github.com/artorias-developer/cobalt/blob/main/cobalt/backend/games/terraria/vanilla/build/scripts/runtime.sh)
+:::
+
+11. In the root of `new_game`, create `module.py`. This module initializes all of the game's loaders. Under the hood, it also automatically checks whether the game and its loaders already exist in the database, and adds them if they don't.
 
 :::info Example
 [Terraria module](https://github.com/artorias-developer/cobalt/blob/main/cobalt/backend/games/terraria/module.py)
 :::
 
-11. In the root of `new_game`, create `__init__.py` that exports the game module.
+12. In the root of `new_game`, create `__init__.py` that exports the game module.
 
 :::info Example
 [Terraria package](https://github.com/artorias-developer/cobalt/blob/main/cobalt/backend/games/terraria/__init__.py)
 :::
 
-12. Register the new game module in `cobalt/backend/games/__init__.py` by adding it to `ENABLED_GAME_MODULES`:
+13. Register the new game module in `cobalt/backend/games/__init__.py` by adding it to `ENABLED_GAME_MODULES`:
 
 ```python
 from .dont_starve_together import DontStarveTogetherGameModule
@@ -88,7 +94,7 @@ ENABLED_GAME_MODULES = [
 ]
 ```
 
-13. Restart the backend container:
+14. Restart the backend container:
 
 ```bash
 docker restart dev_cobalt_backend
