@@ -4,6 +4,8 @@ ARG SERVER_ROOT
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+WORKDIR ${SERVER_ROOT}
+
 RUN dpkg --add-architecture i386 \
     && apt-get update \
     && apt-get install -y --no-install-recommends --no-install-suggests \
@@ -19,8 +21,6 @@ RUN dpkg --add-architecture i386 \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /root/.steam/sdk64 \
     && ln -sf ${SERVER_ROOT}/linux64/steamclient.so /root/.steam/sdk64/steamclient.so
-
-WORKDIR ${SERVER_ROOT}
 
 ENV LD_LIBRARY_PATH="/root/.steam/sdk64:${SERVER_ROOT}/linux64:${SERVER_ROOT}:${LD_LIBRARY_PATH}"
 

@@ -10,7 +10,7 @@ set -u
 STEAMCMD_LOG="/tmp/steamcmd_output.log"
 MAX_ATTEMPTS=3
 
-SERVER_CONFIG="$INSTALLATION_DIR/serversettings.xml"
+SERVER_CONFIG="$INSTALLATION_DIR/Zomboid/Server/serverconfig.ini"
 
 function sync_files() {
     rsync -a \
@@ -33,8 +33,8 @@ function install_succeeded() {
 
 function setup_config() {
     if [ -f "$SERVER_CONFIG" ]; then
-        sed -i "s|{SERVER_PORT}|$SERVER_PORT|g" "$SERVER_CONFIG"
-        sed -i "s|{QUERY_PORT}|$QUERY_PORT|g" "$SERVER_CONFIG"
+        sed -i "s|{SERVER_DEFAULT_PORT}|$SERVER_DEFAULT_PORT|g" "$SERVER_CONFIG"
+        sed -i "s|{SERVER_UDP_PORT}|$SERVER_UDP_PORT|g" "$SERVER_CONFIG"
     fi
 }
 

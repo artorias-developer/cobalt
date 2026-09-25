@@ -3,18 +3,25 @@ FROM debian:bookworm-slim
 ARG JAVA_VERSION
 ARG SERVER_ROOT
 
-RUN apt-get update && \
-    apt-get install -y \
-        bash \
-        wget \
-        apt-transport-https \
-        gnupg && \
-    wget -qO - https://packages.adoptium.net/artifactory/api/gpg/key/public | gpg --dearmor -o /usr/share/keyrings/adoptium.gpg && \
-    echo "deb [signed-by=/usr/share/keyrings/adoptium.gpg] https://packages.adoptium.net/artifactory/deb bookworm main" > /etc/apt/sources.list.d/adoptium.list && \
-    apt-get update && \
-    apt-get install -y temurin-${JAVA_VERSION}-jdk && \
-    rm -rf /var/lib/apt/lists/*
+ENV DEBIAN_FRONTEND=noninteractive
 
 WORKDIR ${SERVER_ROOT}
 
-ENTRYPOINT ["/bin/bash", "-c", "exec ./entrypoint.sh"]
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends --no-install-suggests \
+        bash \
+        wget \
+        ca-certificates \
+        gnupg \
+    && wget -qO - https://packages.adoptium.net/artifactory/api/gpg/key/public | gpg --dearmor -o /usr/share/keyrings/adoptium.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/adoptium.gpg] https://packages.adoptium.net/artifactory/deb bookworm main" > /etc/apt/sources.list.d/adoptium.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends --no-install-suggests \
+        temurin-${JAVA_VERSION}-jdk \
+    && apt-get purge -y --auto-remove \
+        wget \
+        gnupg \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+ENTRYPOINT ["/bin/bash", "-c", "exec ./runtime.sh"]

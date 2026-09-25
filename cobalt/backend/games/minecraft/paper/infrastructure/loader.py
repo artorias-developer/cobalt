@@ -136,7 +136,7 @@ class PaperLoader(AbstractLoader):
 
         if not url:
             self.logger.error(f'Failed to resolve stable build URL for "{self.name}" version {version}')
-            raise UnexpectedError(f"Could not fetch stable Paper build for version {version}")
+            raise UnexpectedError("Could not fetch stable Paper build for version {version}", version=version)
 
         return url
 
