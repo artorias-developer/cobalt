@@ -57,13 +57,14 @@ def get_application_config() -> ApplicationConfig:
     else:
         environment = EnvironmentEnum.PRODUCTION
 
+    generated_dir = Path(__file__).parents[5] / "generated" / "backend"
+
     server = ServerSettings(
         host=getenv("BACKEND_HOST"),
         port=int(getenv("BACKEND_PORT")),
         domain=getenv("APP_DOMAIN"),
-        root_dir=Path(__file__).parents[1],
         host_containers_dir=Path(getenv("HOST_CONTAINERS_ROOT")),
-        app_containers_dir=Path(__file__).parents[3] / "generated" / "containers",
+        app_containers_dir=generated_dir / "containers",
         environment=environment
     )
 
@@ -96,7 +97,7 @@ def get_application_config() -> ApplicationConfig:
         date_fmt="%Y-%m-%d %H:%M:%S",
         max_size=10 * 1024 * 1024,
         backup_count=1,
-        log_dir=Path(__file__).parents[3] / "logs",
+        log_dir=generated_dir / "logs",
         log_file="cobalt.log"
     )
 

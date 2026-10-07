@@ -1,4 +1,4 @@
-FROM node:22-alpine as builder
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
@@ -6,7 +6,7 @@ COPY cobalt/frontend/package*.json ./
 RUN npm install
 
 COPY cobalt/frontend ./
-COPY build/prod/frontend/.env ./.env
+COPY generated/prod/build/frontend/.env ./.env
 
 RUN set -a && . ./.env && set +a && npm run build
 

@@ -8,16 +8,16 @@ services:
     container_name: dev_cobalt_nginx
     restart: unless-stopped
     env_file:
-      - ./nginx/.env
+      - ../../generated/dev/build/nginx/.env
     entrypoint: ["sh", "/usr/local/bin/nginx-entrypoint.sh"]
     ports:
       - "${HTTPS_PORT:-443}:443"
     networks:
       - dev_cobalt_network
     volumes:
-      - ../dev/nginx/configs/main.conf:/etc/nginx/nginx.conf.template:ro
+      - ../dev/nginx/configs:/etc/nginx/snippets:ro
       - ../dev/nginx/scripts/entrypoint.sh:/usr/local/bin/nginx-entrypoint.sh:ro
-      - ../dev/nginx/ssl:/etc/nginx/ssl:ro
+      - ../../generated/dev/build/nginx/ssl/self-signed:/etc/nginx/ssl:ro
     labels:
       - managed_by=cobalt
     depends_on:
@@ -37,7 +37,7 @@ services:
     container_name: dev_cobalt_frontend
     restart: unless-stopped
     env_file:
-      - ./frontend/.env
+      - ../../generated/dev/build/frontend/.env
     entrypoint: [ "sh", "/app/frontend-entrypoint.sh" ]
     ports:
       - "8011:8011"
@@ -62,7 +62,7 @@ services:
     container_name: dev_cobalt_backend
     restart: unless-stopped
     env_file:
-      - ./backend/.env
+      - ../../generated/dev/build/backend/.env
     entrypoint: ["sh", "/app/backend-entrypoint.sh"]
     ports:
       - "8010:8010"
@@ -71,12 +71,13 @@ services:
     networks:
       - dev_cobalt_network
     environment:
-      - HOST_CONTAINERS_ROOT=${PWD}/cobalt/backend/generated/containers
+      - HOST_CONTAINERS_ROOT=${PWD}/generated/dev/backend/containers
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ../shared/backend/scripts/entrypoint.sh:/app/backend-entrypoint.sh:ro
       - ../../Makefile:/app/Makefile:ro
       - ../../cobalt/backend:/app/cobalt/backend
+      - ../../generated/dev/backend:/app/generated/backend
     labels:
       - managed_by=cobalt
     depends_on:
@@ -99,7 +100,7 @@ services:
     container_name: dev_cobalt_postgres
     restart: unless-stopped
     env_file:
-      - ./postgres/.env
+      - ../../generated/dev/build/postgres/.env
     ports:
       - "5432:5432"
     networks:
@@ -122,7 +123,7 @@ services:
     container_name: dev_cobalt_redis
     restart: unless-stopped
     env_file:
-      - ./redis/.env
+      - ../../generated/dev/build/redis/.env
     entrypoint: ["sh", "/usr/local/bin/redis-entrypoint.sh"]
     ports:
       - "6379:6379"

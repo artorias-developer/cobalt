@@ -74,7 +74,7 @@ class CobaltApplication:
         - None.
         """
         app_containers_dir = self.config.server.app_containers_dir
-        app_containers_dir.mkdir(exist_ok=True)
+        app_containers_dir.mkdir(parents=True, exist_ok=True)
 
         for game_module in ENABLED_GAME_MODULES:
             module: AbstractGameModule = game_module(

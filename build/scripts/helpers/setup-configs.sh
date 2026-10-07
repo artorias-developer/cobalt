@@ -29,7 +29,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     --server)
       shift
-      if [[ -z "$1" ]]; then
+      if [[ -z "${1:-}" ]]; then
         echo "Usage: $0 --server <ip>"
         exit 1
       fi
@@ -51,8 +51,9 @@ if [[ -z "$DOMAIN" ]]; then
   exit 1
 fi
 
-TARGET="$SCRIPT_DIR/../../$ENV"
-ROOT="$SCRIPT_DIR/../../.."
+ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+SRC_DIR="$ROOT/build/$ENV"
+OUT_DIR="$ROOT/generated/$ENV/build"
 
 PEPPER=$(openssl rand -hex 32)
 POSTGRES_PASSWORD=$(openssl rand -hex 24)
@@ -65,38 +66,40 @@ else
 fi
 
 generate() {
-  local dest="$1"
-  local src="$2"
-  local args="${@:3}"
-  local name
-  name=$(basename "$(dirname "$dest")")/$(basename "$dest")
+  local service="$1"
+  local src="$SRC_DIR/$service/.env.example"
+  local dest="$OUT_DIR/$service/.env"
   local action="generated"
 
-  if [[ -f "$dest" ]]; then
-    action="replaced"
+  [[ -f "$dest" ]] && action="replaced"
+
+  mkdir -p "$(dirname "$dest")"
+  sed "${@:2}" "$src" > "$dest"
+
+  if [[ "$ENV" == "prod" ]]; then
+    chmod 600 "$dest"
   fi
 
-  sed $args "$src" > "$dest"
-  echo "  The $name file has been successfully $action."
+  echo "  The $service/.env file has been successfully $action."
 }
 
-generate "$TARGET/backend/.env" "$TARGET/backend/.env.example" \
+generate backend \
   -e "s/{{pepper}}/$PEPPER/" \
   -e "s/{{postgres_password}}/$POSTGRES_PASSWORD/" \
   -e "s/{{redis_password}}/$REDIS_PASSWORD/" \
   -e "s/{{domain}}/$DOMAIN/"
 
-generate "$TARGET/postgres/.env" "$TARGET/postgres/.env.example" \
+generate postgres \
   -e "s/{{postgres_password}}/$POSTGRES_PASSWORD/"
 
-generate "$TARGET/redis/.env" "$TARGET/redis/.env.example" \
+generate redis \
   -e "s/{{redis_password}}/$REDIS_PASSWORD/"
 
-generate "$TARGET/nginx/.env" "$TARGET/nginx/.env.example" \
+generate nginx \
   -e "s/{{domain}}/$DOMAIN/" \
   -e "s|{{base_url}}|$APP_BASE_URL|"
 
-generate "$TARGET/frontend/.env" "$TARGET/frontend/.env.example" \
+generate frontend \
   -e "s|{{domain}}|$DOMAIN|" \
   -e "s|{{base_url}}|$APP_BASE_URL|"
 
