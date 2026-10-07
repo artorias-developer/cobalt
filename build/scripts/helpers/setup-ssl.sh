@@ -28,7 +28,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     --server)
       shift
-      if [[ -z "$1" ]]; then
+      if [[ -z "${1:-}" ]]; then
         echo "Usage: $0 [--prod|--dev] [--local [domain]|--server <ip>]"
         exit 1
       fi
@@ -47,14 +47,14 @@ if [[ -z "$DOMAIN" ]]; then
   exit 1
 fi
 
-SSL_DIR="$SCRIPT_DIR/../../$ENV/nginx/ssl"
+SAFE_DOMAIN="${DOMAIN//:/_}"
+SSL_DIR="$SCRIPT_DIR/../../../generated/$ENV/build/nginx/ssl/self-signed/$SAFE_DOMAIN"
 
 mkdir -p "$SSL_DIR"
 chmod 755 "$SSL_DIR"
 
-SAFE_DOMAIN="${DOMAIN//:/_}"
-CERT_FILE="$SSL_DIR/$SAFE_DOMAIN.crt"
-KEY_FILE="$SSL_DIR/$SAFE_DOMAIN.key"
+CERT_FILE="$SSL_DIR/fullchain.pem"
+KEY_FILE="$SSL_DIR/privkey.pem"
 ACTION="generated"
 
 if [[ -f "$CERT_FILE" && -f "$KEY_FILE" ]]; then
@@ -74,4 +74,4 @@ openssl req -x509 -nodes -newkey rsa:4096 \
   -subj "/CN=$DOMAIN" \
   -addext "subjectAltName=$SAN"
 
-echo "  SSL certificates ($SAFE_DOMAIN.crt / $SAFE_DOMAIN.key) have been successfully $ACTION."
+echo "  SSL certificates ($SAFE_DOMAIN/fullchain.pem, $SAFE_DOMAIN/privkey.pem) have been successfully $ACTION."

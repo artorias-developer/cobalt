@@ -17,7 +17,6 @@ class ServerSettings:
     host: str
     port: int
     domain: str
-    root_dir: Path
     host_containers_dir: Path
     app_containers_dir: Path
     environment: EnvironmentEnum
