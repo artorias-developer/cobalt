@@ -15,8 +15,7 @@ export default defineConfig(() => {
       __SERVER_FORWARD_CONSOLE__: JSON.stringify(false),
     },
     plugins: [
-      vue(),
-      blockRootRedirect()
+      vue()
     ],
     base: getBase(process.env.APP_BASE_URL),
     server: {
@@ -93,30 +92,4 @@ export default defineConfig(() => {
  */
 function getBase(appBase?: string): string {
   return appBase ? `/${appBase}/` : '/'
-}
-
-/**
- * Vite plugin that blocks requests to the root path ("/") during development,
- * returning a 404 instead. Used to prevent access outside the app's base path.
- *
- * Parameters:
- * - null.
- *
- * Returns:
- * - Plugin: A Vite plugin instance.
- */
-function blockRootRedirect(): Plugin {
-  return {
-    name: "block-root-redirect",
-    configureServer(server) {
-      server.middlewares.use((req, res, next) => {
-        if (req.url === "/") {
-          res.statusCode = 404
-          res.end("Not Found")
-          return
-        }
-        next()
-      })
-    }
-  }
 }

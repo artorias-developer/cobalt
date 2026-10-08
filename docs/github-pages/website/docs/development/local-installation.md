@@ -4,13 +4,41 @@ This guide explains how to install Cobalt locally.
 
 ## Requirements
 
-**Operating system**: Linux or macOS is recommended. Windows users should use WSL2, since the project relies on Unix shell scripts and Make.
+#### Operating system
 
-**Git**: Required to clone the Cobalt repository. Install it via `apt install git` on Linux or `brew install git` on macOS.
+Ubuntu 22.04 LTS or newer, or macOS. Other distributions are not officially supported and may require manual adjustments to the installer.
 
-**Make**: Used to run common development commands. Install it via your package manager, e.g. `apt install make` on Ubuntu or `brew install make` on macOS.
+---
 
-**Docker and Docker Compose**: Required to build and run the project's containers locally. Follow the [official installation guide](https://docs.docker.com/engine/install/) for your platform.
+#### git
+
+Required for cloning the Cobalt repository.
+
+::: code-group
+```bash [Ubuntu]
+apt install git
+```
+
+```bash [macOS]
+brew install git
+```
+:::
+
+---
+
+#### make
+
+Used to run common development commands.
+
+::: code-group
+```bash [Ubuntu]
+apt install make
+```
+
+```bash [macOS]
+brew install make
+```
+:::
 
 ## First-time setup
 
@@ -41,28 +69,17 @@ chmod +x build/scripts/install.sh
 4. Run the installer in local mode:
 
 ```bash
-./build/scripts/install.sh --dev --local
+./build/scripts/install.sh
 ```
 
-:::details List of available flags
+The installer will ask you for some details, and then it will take care of everything automatically.
 
-<div class="table flags">
+## Dashboard access
 
-| Flag                 | Required                | Description                                                                                                                                                               |
-|----------------------|-------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| --prod               | no                      | Use production environment. Defaults to `--prod` if neither `--prod` nor `--dev` is provided.                                                                             |
-| --dev                | no                      | Use development environment.                                                                                                                                              |
-| --local [domain]     | yes (or use `--server`) | Deploy locally. Defaults to `127.0.0.1` if domain is not provided.                                                                                                        |
-| --server &lt;ip&gt;  | yes (or use `--local`)  | An IP or a domain name of the VPS / VDS.                                                                                                                                  |
-| --port &lt;port&gt;  | no                      | HTTPS port to use. Defaults to `443` if not provided.                                                                                                                     |                                                                                                               |
-| --no-admin-base      | no                      | By default the dashboard page is hidden behind a random, hard-to-guess URL for extra security. Use this flag to disable that and use a normal, predictable URL instead.   |
-</div>
-:::
-
-The installer will automatically install Docker and Docker Compose if not present, generate SSL certificates and all config files, build and start the containers.
-
-:::tip
 A link to the dashboard and login credentials will be displayed after installation.
+
+::: warning
+Since the certificates are self-signed, you'll see a security warning the first time you open the dashboard. Click `Advanced` and then `Proceed to <server_ip> (unsafe)`.
 :::
 
 ## Makefile commands

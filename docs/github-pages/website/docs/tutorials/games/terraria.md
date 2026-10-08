@@ -139,7 +139,9 @@ Mods can only be added for the `tModLoader` loader.
 
 2. Find the server you want to add mods in the table and click the first button in the actions column.
 
-3. Upload mods using one of the following methods:
+3. Click the stop button in the control block.
+
+4. Upload mods using one of the following methods:
 
 ::::details File manager
 1. Open the files tab at the top.
@@ -155,13 +157,12 @@ You can find mods on [Steam Workshop](https://steamcommunity.com/app/1281930/wor
 :::
 
 5. Click the upload button in the bottom right corner.
-::::
 
-4. Open the files tab at the top.
+6. Open the files tab at the top.
 
-5. Open the `data/Mods/enabled.json` file in the file editor.
+7. Open the `data/Mods/enabled.json` file in the file editor.
 
-6. Add the names of the mod files to the list, separating them with commas:
+8. Add the names of the mod files to the list, separating them with commas:
 
 ```json
 [
@@ -170,11 +171,12 @@ You can find mods on [Steam Workshop](https://steamcommunity.com/app/1281930/wor
 ]
 ```
 
-7. Click the save button in the bottom left corner.
+9. Click the save button in the bottom left corner.
+::::
 
-8. Open the overview tab at the top.
+5. Open the overview tab at the top.
 
-9. Click the restart button in the control block.
+6. Click the start button in the control block.
 
 
 <style>

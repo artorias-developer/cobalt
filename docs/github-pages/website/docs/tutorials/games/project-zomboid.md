@@ -370,7 +370,7 @@ Authors also often include the mod ID and Steam Workshop ID at the very bottom o
 
 5. Open the overview tab at the top.
 
-6. Click the restart button in the control block.
+6. Click the start button in the control block.
 
 
 <style>

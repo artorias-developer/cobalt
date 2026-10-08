@@ -8,18 +8,17 @@ services:
     container_name: prod_cobalt_nginx
     restart: unless-stopped
     env_file:
-      - ./nginx/.env
-      - ./frontend/.env
+      - ../../generated/prod/build/nginx/.env
+      - ../../generated/prod/build/frontend/.env
     entrypoint: ["sh", "/usr/local/bin/nginx-entrypoint.sh"]
     ports:
       - "${HTTPS_PORT:-443}:443"
     networks:
       - prod_cobalt_network
     volumes:
-      - ../prod/nginx/configs/main.conf:/etc/nginx/nginx.conf.template:ro
-      - ../prod/nginx/configs/parts:/etc/nginx/parts:ro
+      - ../prod/nginx/configs:/etc/nginx/snippets:ro
       - ../prod/nginx/scripts/entrypoint.sh:/usr/local/bin/nginx-entrypoint.sh:ro
-      - ../prod/nginx/ssl:/etc/nginx/ssl:ro
+      - ../../generated/prod/build/nginx/ssl/self-signed:/etc/nginx/ssl:ro
       - prod_frontend_dist:/usr/share/nginx/html:ro
     labels:
       - managed_by=cobalt
@@ -39,7 +38,7 @@ services:
         - managed_by=cobalt
     container_name: prod_cobalt_frontend
     env_file:
-      - ./frontend/.env
+      - ../../generated/prod/build/frontend/.env
     restart: "no"
     volumes:
       - prod_frontend_dist:/frontend-dist
@@ -55,18 +54,18 @@ services:
     container_name: prod_cobalt_backend
     restart: unless-stopped
     env_file:
-      - ./backend/.env
+      - ../../generated/prod/build/backend/.env
     entrypoint: ["sh", "/app/backend-entrypoint.sh"]
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
       - prod_cobalt_network
     environment:
-      - HOST_CONTAINERS_ROOT=${PWD}/cobalt/backend/generated/containers
+      - HOST_CONTAINERS_ROOT=${PWD}/generated/prod/backend/containers
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ../shared/backend/scripts/entrypoint.sh:/app/backend-entrypoint.sh:ro
-      - ../../cobalt/backend/generated:/app/cobalt/backend/generated
+      - ../../generated/prod/backend:/app/generated/backend
     labels:
       - managed_by=cobalt
     depends_on:
@@ -89,7 +88,7 @@ services:
     container_name: prod_cobalt_postgres
     restart: unless-stopped
     env_file:
-      - ./postgres/.env
+      - ../../generated/prod/build/postgres/.env
     networks:
       - prod_cobalt_network
     volumes:
@@ -110,7 +109,7 @@ services:
     container_name: prod_cobalt_redis
     restart: unless-stopped
     env_file:
-      - ./redis/.env
+      - ../../generated/prod/build/redis/.env
     entrypoint: ["sh", "/usr/local/bin/redis-entrypoint.sh"]
     networks:
       - prod_cobalt_network
