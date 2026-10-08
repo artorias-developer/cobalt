@@ -8,85 +8,34 @@
 set -e
 export DEBIAN_FRONTEND=noninteractive
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT="$SCRIPT_DIR/.."
-ENV="prod"
-DOMAIN_ARG=""
-HTTPS_PORT="443"
-NO_ADMIN_BASE=""
+SCRIPT_DIRECTORY="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+INSTALLER_DIRECTORY="$SCRIPT_DIRECTORY/installer"
+MINIMUM_NODE_MAJOR_VERSION=18
 
-while [[ $# -gt 0 ]]; do
-  case "$1" in
-    --prod) ENV="prod" ;;
-    --dev)  ENV="dev"  ;;
-    --local)
-      if [[ -n "${2:-}" && "${2:-}" != --* ]]; then
-        DOMAIN_ARG="--local $2"
-        shift
-      else
-        DOMAIN_ARG="--local"
-      fi
-      ;;
-    --server)
-      shift
-      if [[ -z "$1" ]]; then
-        echo "Usage: $0 [--prod|--dev] [--local [domain]|--server <ip>] [--port <port>] [--no-admin-base]"
-        exit 1
-      fi
-      DOMAIN_ARG="--server $1"
-      ;;
-    --port)
-      shift
-      if [[ -z "${1:-}" ]]; then
-        echo "Usage: $0 [--prod|--dev] [--local [domain]|--server <ip>] [--port <port>] [--no-admin-base]"
-        exit 1
-      fi
-      if ! [[ "$1" =~ ^[0-9]+$ ]] || (( 10#$1 < 1 || 10#$1 > 65535 )); then
-        echo "Error: --port must be a number between 1 and 65535"
-        exit 1
-      fi
-      HTTPS_PORT="$1"
-      ;;
-    --no-admin-base)
-      NO_ADMIN_BASE="--no-admin-base"
-      ;;
-    *)
-      echo "Usage: $0 [--prod|--dev] [--local [domain]|--server <ip>] [--port <port>] [--no-admin-base]"
-      exit 1
-      ;;
-  esac
-  shift
-done
-
-if [[ -z "$DOMAIN_ARG" ]]; then
-  echo "Error: specify --local [domain] or --server <ip>"
+if [[ ! -t 0 || ! -t 1 ]]; then
+  echo "Error: the installer must be run in an interactive terminal."
   exit 1
 fi
 
-export HTTPS_PORT
+is_node_available() {
+  command -v node &>/dev/null && command -v npm &>/dev/null || return 1
+  local major_version
+  major_version="$(node -p 'process.versions.node.split(".")[0]')"
+  (( major_version >= MINIMUM_NODE_MAJOR_VERSION ))
+}
 
-SUMMARY_FILE="$(mktemp)"
-export SUMMARY_FILE
-
-bash "$SCRIPT_DIR/helpers/setup-docker.sh"
-bash "$SCRIPT_DIR/helpers/setup-configs.sh" "--$ENV" $DOMAIN_ARG $NO_ADMIN_BASE
-bash "$SCRIPT_DIR/helpers/setup-ssl.sh" "--$ENV" $DOMAIN_ARG
-
-echo "Starting containers..."
-docker compose --all-resources -f "$ROOT/$ENV/docker-compose.yaml" up -d --build
-
-echo ""
-echo " Cobalt has been successfully launched."
-
-DOMAIN=$(grep -m1 '^DOMAIN=' "$SUMMARY_FILE" | cut -d'=' -f2-)
-APP_BASE_URL=$(grep -m1 '^APP_BASE_URL=' "$SUMMARY_FILE" | cut -d'=' -f2-)
-rm -f "$SUMMARY_FILE"
-
-echo ""
-if [[ -n "$APP_BASE_URL" ]]; then
-  echo " URL:      https://$DOMAIN/$APP_BASE_URL/login"
-else
-  echo " URL:      https://$DOMAIN/login"
+if ! is_node_available; then
+  echo "Installing Node.js..."
+  sudo apt-get update -qq
+  sudo apt-get install -y -qq ca-certificates curl gnupg
+  curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - >/dev/null
+  sudo apt-get install -y -qq nodejs
 fi
-echo " Login:    admin"
-echo " Password: admin"
+
+if [[ ! -d "$INSTALLER_DIRECTORY/node_modules/@clack/prompts" ]]; then
+  echo "Installing installer dependencies..."
+  npm install --prefix "$INSTALLER_DIRECTORY" --no-audit --no-fund --loglevel=error
+fi
+
+export COBALT_INSTALL_DIR="$SCRIPT_DIRECTORY"
+exec node "$INSTALLER_DIRECTORY/cli.mjs"
