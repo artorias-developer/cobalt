@@ -4,11 +4,25 @@ This guide explains how to install and run Cobalt on your own VPS / VDS.
 
 ## Requirements
 
-**Operating system**: Ubuntu 22.04 LTS or newer. Other distributions are not officially supported and may require manual adjustments to the installer.
+#### Operating system
 
-**Public IP address**: A static public IPv4 address is required so the dashboard and game servers are reachable from the internet. A dynamic IP may work but is not recommended for production use.
+Ubuntu 22.04 LTS or newer. Other distributions are not officially supported and may require manual adjustments to the installer.
 
-**Git**: Required to clone the Cobalt repository. Install it via `apt install git` if not already available on your system.
+---
+
+#### Public IP address 
+
+A static public IPv4 address is required so the dashboard and game servers are reachable from the internet. A dynamic IP may work but is not recommended for production use.
+
+---
+
+#### git
+
+Required for cloning the Cobalt repository.
+
+```bash
+apt install git
+```
 
 ## Quick start
 
@@ -51,23 +65,10 @@ chmod +x build/scripts/install.sh
 7. Run the installer:
 
 ```bash
-./build/scripts/install.sh --prod --server <server_ip>
+./build/scripts/install.sh
 ```
 
-:::details List of available flags
-
-<div class="table flags">
-
-| Flag                 | Required                | Description                                                                                                                                                        |
-|----------------------|-------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| --prod               | no                      | Use production environment. Defaults to `--prod` if neither `--prod` nor `--dev` is provided.                                                                      |
-| --dev                | no                      | Use development environment.                                                                                                                                       |
-| --local [domain]     | yes (or use `--server`) | Deploy locally. Defaults to `127.0.0.1` if domain is not provided.                                                                                                 |
-| --server &lt;ip&gt;  | yes (or use `--local`)  | An IP or a domain name of the VPS / VDS.                                                                                                                           |
-| --port &lt;port&gt;  | no                      | HTTPS port to use. Defaults to `443` if not provided.                                                                                                              |                                                                                                               |
-| --no-admin-base      | no                      | By default the dashboard is hidden behind a random, hard-to-guess URL for extra security. Use this flag to disable that and use a normal, predictable URL instead. |
-</div>
-:::
+The installer will ask you for some details, and then it will take care of everything automatically.
 
 ## Dashboard access
 

@@ -219,6 +219,10 @@ This tutorial explains how to set up a Barotrauma server in the Cobalt dashboard
 
 3. Click the upload button in the bottom left corner.
 
+:::tip
+You can find mods on [Steam Workshop](https://steamcommunity.com/app/602960/workshop/).
+:::
+
 4. Select the mods files from your device.
 
 5. Open the `config_player.xml` file in the file manager.
@@ -244,7 +248,7 @@ This tutorial explains how to set up a Barotrauma server in the Cobalt dashboard
 
 5. Open the overview tab at the top.
 
-6. Click the restart button in the control block.
+6. Click the start button in the control block.
 
 
 <style>

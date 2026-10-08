@@ -117,7 +117,9 @@ Plugins can only be added for the `Paper` loader.
 
 2. Find the server you want to add plugins in the table and click the first button in the actions column.
 
-3. Upload plugins using one of the following methods:
+3. Click the stop button in the control block.
+
+4. Upload plugins using one of the following methods:
 
 ::::details File manager
 1. Open the files tab at the top.
@@ -135,9 +137,9 @@ You can find plugins on [Hangar](https://hangar.papermc.io/) or [SpigotMC](https
 5. Click the upload button in the bottom right corner.
 ::::
 
-8. Open the overview tab at the top.
+5. Open the overview tab at the top.
 
-9. Click the restart button in the control block.
+6. Click the start button in the control block.
 
 ## Adding mods
 
@@ -149,7 +151,9 @@ Mods can only be added for the `Fabric` and `Forge` loaders.
 
 2. Find the server you want to add mods in the table and click the first button in the actions column.
 
-3. Upload mods using one of the following methods:
+3. Click the stop button in the control block.
+
+4. Upload mods using one of the following methods:
 
 ::::details File manager
 1. Open the files tab at the top.
@@ -167,6 +171,6 @@ You can find mods on [Modrinth](https://modrinth.com/mods) or [CurseForge](https
 5. Click the upload button in the bottom right corner.
 ::::
 
-4. Open the overview tab at the top.
+5. Open the overview tab at the top.
 
-5. Click the restart button in the control block.
+6. Click the start button in the control block.

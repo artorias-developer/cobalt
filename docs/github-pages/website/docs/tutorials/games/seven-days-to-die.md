@@ -145,20 +145,22 @@ Make sure you have disabled EAC (Easy Anti-Cheat) on your computer before launch
 
 2. Find the server you want to add mods in the table and click the first button in the actions column.
 
-3. Open the files tab at the top.
+3. Click the stop button in the control block.
 
-4. Open the `serverconfig.xml` file in the file editor.
+4. Open the files tab at the top.
 
-5. Update the server settings:
+5. Open the `serverconfig.xml` file in the file editor.
+
+6. Update the server settings:
 
 ```xml
 <!-- Set the value to false -->
 <property name="EACEnabled" value="false"/>
 ```
 
-6. Click the save button in the bottom left corner.
+7. Click the save button in the bottom left corner.
 
-7. Upload mods using one of the following methods:
+8. Upload mods using one of the following methods:
 
 ::::details File manager
 1. Open the files tab at the top.
@@ -178,9 +180,9 @@ You can find mods on [NexusMods](https://www.nexusmods.com/games/7daystodie) or 
 6. Unzip the archives using the extract button in the actions column.
 ::::
 
-8. Open the overview tab at the top.
+9. Open the overview tab at the top.
 
-9. Click the restart button in the control block.
+10. Click the start button in the control block.
 
 
 <style>

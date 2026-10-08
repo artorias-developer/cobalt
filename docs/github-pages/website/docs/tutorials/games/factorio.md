@@ -372,7 +372,7 @@ You can find mods on the [Factorio Mods Portal](https://mods.factorio.com).
 
 5. Open the overview tab at the top.
 
-6. Click the restart button in the control block.
+6. Click the start button in the control block.
 
 
 <style>
