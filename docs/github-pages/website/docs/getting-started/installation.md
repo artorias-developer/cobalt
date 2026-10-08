@@ -4,11 +4,25 @@ This guide explains how to install and run Cobalt on your own VPS / VDS.
 
 ## Requirements
 
-**Operating system**: Ubuntu 22.04 LTS or newer. Other distributions are not officially supported and may require manual adjustments to the installer.
+#### Operating system
 
-**Public IP address**: A static public IPv4 address is required so the dashboard and game servers are reachable from the internet. A dynamic IP may work but is not recommended for production use.
+Ubuntu 22.04 LTS or newer. Other distributions are not officially supported and may require manual adjustments to the installer.
 
-**Git**: Required to clone the Cobalt repository. Install it via `apt install git` if not already available on your system.
+---
+
+#### Public IP address 
+
+A static public IPv4 address is required so the dashboard and game servers are reachable from the internet. A dynamic IP may work but is not recommended for production use.
+
+---
+
+#### git
+
+Required for cloning the Cobalt repository.
+
+```bash
+apt install git
+```
 
 ## Quick start
 

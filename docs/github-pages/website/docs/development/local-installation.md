@@ -4,13 +4,41 @@ This guide explains how to install Cobalt locally.
 
 ## Requirements
 
-**Operating system**: Linux or macOS is recommended. Windows users should use WSL2, since the project relies on Unix shell scripts and Make.
+#### Operating system
 
-**Git**: Required to clone the Cobalt repository. Install it via `apt install git` on Linux or `brew install git` on macOS.
+Ubuntu 22.04 LTS or newer, or macOS. Other distributions are not officially supported and may require manual adjustments to the installer.
 
-**Make**: Used to run common development commands. Install it via your package manager, e.g. `apt install make` on Ubuntu or `brew install make` on macOS.
+---
 
-**Docker and Docker Compose**: Required to build and run the project's containers locally. Follow the [official installation guide](https://docs.docker.com/engine/install/) for your platform.
+#### git
+
+Required for cloning the Cobalt repository.
+
+::: code-group
+```bash [Ubuntu]
+apt install git
+```
+
+```bash [macOS]
+brew install git
+```
+:::
+
+---
+
+#### make
+
+Used to run common development commands.
+
+::: code-group
+```bash [Ubuntu]
+apt install make
+```
+
+```bash [macOS]
+brew install make
+```
+:::
 
 ## First-time setup
 
