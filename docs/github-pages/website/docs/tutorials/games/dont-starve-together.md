@@ -576,11 +576,16 @@ name=Caves
 
 2. Find the server you want to add mods in the table and click the first button in the actions column.
 
-3. Open the files tab at the top.
+3. Click the stop button in the control block.
 
-4. Open the `mods/dedicated_server_mods_setup.lua` file in the file editor.
+4. Upload mods using one of the following methods:
 
-5. Register the IDs of individual mods using `ServerModSetup` or the IDs of mod collections using `ServerModCollectionSetup`:
+::::details Built-in loader
+1. Open the files tab at the top.
+
+2. Open the `mods/dedicated_server_mods_setup.lua` file in the file editor.
+
+3. Register the IDs of individual mods using `ServerModSetup` or the IDs of mod collections using `ServerModCollectionSetup`:
 
 ```lua
 # Individual mod
@@ -598,11 +603,11 @@ Example: https://steamcommunity.com/sharedfiles/filedetails/?id=350811795
 In this case, the ID is `350811795`.
 :::
 
-6. Click the save button in the bottom left corner.
+4. Click the save button in the bottom left corner.
    
-7. Open the `DoNotStarveTogether/cluster/Main/modoverrides.lua` file in the file editor.
+5. Open the `DoNotStarveTogether/cluster/Main/modoverrides.lua` file in the file editor.
 
-8. Enable mods:
+6. Enable mods:
 
 ```lua
 return {
@@ -615,11 +620,12 @@ return {
 }
 ```
 
-9. Click the save button in the bottom left corner.
+7. Click the save button in the bottom left corner.
+::::
 
-10. Open the overview tab at the top.
+5. Open the overview tab at the top.
 
-11. Click the restart button in the control block.
+6. Click the start button in the control block.
 
 :::warning
 If you're playing with `Caves`, you'll need to do the same for the second server.

@@ -51,23 +51,10 @@ chmod +x build/scripts/install.sh
 7. Run the installer:
 
 ```bash
-./build/scripts/install.sh --prod --server <server_ip>
+./build/scripts/install.sh
 ```
 
-:::details List of available flags
-
-<div class="table flags">
-
-| Flag                 | Required                | Description                                                                                                                                                        |
-|----------------------|-------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| --prod               | no                      | Use production environment. Defaults to `--prod` if neither `--prod` nor `--dev` is provided.                                                                      |
-| --dev                | no                      | Use development environment.                                                                                                                                       |
-| --local [domain]     | yes (or use `--server`) | Deploy locally. Defaults to `127.0.0.1` if domain is not provided.                                                                                                 |
-| --server &lt;ip&gt;  | yes (or use `--local`)  | An IP or a domain name of the VPS / VDS.                                                                                                                           |
-| --port &lt;port&gt;  | no                      | HTTPS port to use. Defaults to `443` if not provided.                                                                                                              |                                                                                                               |
-| --no-admin-base      | no                      | By default the dashboard is hidden behind a random, hard-to-guess URL for extra security. Use this flag to disable that and use a normal, predictable URL instead. |
-</div>
-:::
+The installer will ask you for some details, and then it will take care of everything automatically.
 
 ## Dashboard access
 

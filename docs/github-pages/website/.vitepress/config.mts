@@ -8,8 +8,7 @@ export default defineConfig({
   },
   head: [
     ["link", { rel: "icon", href: "/assets/images/svg/logo.svg" }],
-    ["meta", { name: "google-site-verification", content: "RtxZJ237LBxMmW3QHsFhSu8rIBtkiPpK1JiDNfBG6yg" }],
-    ["meta", { name: "google-adsense-account", content: "ca-pub-2553125098165337" }]
+    ["meta", { name: "google-site-verification", content: "RtxZJ237LBxMmW3QHsFhSu8rIBtkiPpK1JiDNfBG6yg" }]
   ],
   themeConfig: {
     logo: "/assets/images/svg/logo.svg",

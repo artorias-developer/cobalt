@@ -8,6 +8,8 @@ Cobalt supports the creation of servers for a wide variety of games and their lo
 
 The following games are currently supported:
 
+<div class="table games">
+
 | Icon                                                                                                                                               | Game                  | Loaders              |
 |----------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------|----------------------|
 | <img src="https://raw.githubusercontent.com/artorias-developer/cobalt/main/cobalt/frontend/src/assets/images/games/minecraft/icon.png">            | Minecraft             | Paper, Forge, Fabric |
@@ -19,6 +21,7 @@ The following games are currently supported:
 | <img src="https://raw.githubusercontent.com/artorias-developer/cobalt/main/cobalt/frontend/src/assets/images/games/project-zomboid/icon.png">      | Project Zomboid       | Vanilla              |
 | <img src="https://raw.githubusercontent.com/artorias-developer/cobalt/main/cobalt/frontend/src/assets/images/games/barotrauma/icon.png">           | Barotrauma            | Vanilla              |
 
+</div>
 ## Features
 
 Cobalt ships with everything you need to run and manage game servers without leaving the browser:
@@ -33,32 +36,36 @@ Cobalt ships with everything you need to run and manage game servers without lea
 
 ## Core project team
 
-| Name     | Role                         | Links                                           |
-|----------|------------------------------|-------------------------------------------------|
-| Artorias | Founder & Project Maintainer | [GitHub](https://github.com/artorias-developer) |
+<div class="table team">
+
+| Name     | Role    | Links                                           |
+|----------|---------|-------------------------------------------------|
+| Artorias | Founder | [GitHub](https://github.com/artorias-developer) |
+
+</div>
+
 
 <style>
-table {
+.table.games table {
   table-layout: fixed;
   width: 100%;
 }
 
-table th:nth-child(1) { 
-   min-width: 50px; 
+.table.games table th:nth-child(1) {
    text-align: center;
 }
 
-table th:nth-child(2) { 
+.table.games table th:nth-child(2) { 
    min-width: 200px; 
 }
 
-table th:nth-child(3) { 
+.table.games table th:nth-child(3) { 
    min-width: 200px; 
 }
 
-table td:nth-child(1) img {
-   width: 30px;
-   max-height: 30px;
+.table.games table td:nth-child(1) img {
+   width: 36px;
+   height: 36px;
    object-fit: contain;
 }
 </style>
