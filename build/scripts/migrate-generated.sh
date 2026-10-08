@@ -19,9 +19,9 @@ move() {
   local src="$1"
   local dst="$2"
 
-  [[ -e "$src" ]] || return 0
+  [[ -e "$src" || -L "$src" ]] || return 0
 
-  if [[ -e "$dst" ]]; then
+  if [[ -e "$dst" || -L "$dst" ]]; then
     echo "  Skipped (target exists): ${dst#"$ROOT"/}"
     return 0
   fi
@@ -36,6 +36,24 @@ move() {
 
   echo "  Moved: ${src#"$ROOT"/} -> ${dst#"$ROOT"/}"
   MOVED=$((MOVED + 1))
+}
+
+merge_move() {
+  local src="$1"
+  local dst="$2"
+
+  [[ -e "$src" || -L "$src" ]] || return 0
+
+  if [[ -d "$src" && ! -L "$src" && -d "$dst" && ! -L "$dst" ]]; then
+    local item
+    for item in "$src"/*; do
+      merge_move "$item" "$dst/$(basename "$item")"
+    done
+    rmdir "$src" 2>/dev/null || true
+    return 0
+  fi
+
+  move "$src" "$dst"
 }
 
 echo "Checking project layout..."
@@ -75,10 +93,12 @@ new_generated="$ROOT/generated/dev/backend"
 
 if [[ -d "$old_generated" ]]; then
   for item in "$old_generated"/*; do
-    move "$item" "$new_generated/$(basename "$item")"
+    merge_move "$item" "$new_generated/$(basename "$item")"
   done
 
-  rmdir "$old_generated" 2>/dev/null || true
+  if ! rmdir "$old_generated" 2>/dev/null; then
+    echo "  Warning: ${old_generated#"$ROOT"/} still has files (conflicts with existing targets)."
+  fi
 fi
 
 if [[ "$MOVED" -eq 0 ]]; then
