@@ -42,8 +42,6 @@ brew install make
 
 ## First-time setup
 
-If you haven't installed Cobalt yet, use the installer with the `--local` flag:
-
 ::: warning
 The installer is officially tested on **Ubuntu 22.04+**. Other operating systems may work but aren't officially supported and could require manual adjustments.
 :::
