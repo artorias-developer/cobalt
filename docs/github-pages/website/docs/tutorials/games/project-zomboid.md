@@ -381,22 +381,22 @@ table {
 
 table td:nth-child(1),
 table td:nth-child(3) {
-   word-break: break-all;
+  word-break: break-all;
 }
 
 table th:nth-child(1) { 
-   min-width: 200px; 
+  min-width: 200px; 
 }
 
 table th:nth-child(2) { 
-   min-width: 90px; 
+  min-width: 90px; 
 }
 
 table th:nth-child(3) { 
-   min-width: 150px; 
+  min-width: 150px; 
 }
 
 table th:nth-child(4) { 
-   min-width: 300px; 
+  min-width: 300px; 
 }
 </style>
