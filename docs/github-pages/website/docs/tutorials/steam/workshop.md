@@ -18,19 +18,13 @@ Mods downloaded by Steam are stored in folders named after numeric IDs, not game
 
 </div>
 
-::: tip
 Games without Steam Workshop support are not covered by this guide. Install their mods using the method described in the game's own documentation.
-:::
 
 ## Downloading mods
 
 1. Open the mod's page in the Steam Workshop.
 
 2. Click the subscribe button.
-
-::: tip
-You don't need to launch the game. Steam downloads subscribed mods in the background, even if the game isn't running.
-:::
 
 3. Make sure Steam has finished downloading the mod. You can check the progress in the downloads tab of the Steam client.
 
@@ -46,7 +40,9 @@ Here, `1234567890` is the mod ID. Authors also sometimes include the mod ID and 
 
 There are two ways to find the downloaded mod files.
 
+::: warning
 The contents of a mod folder differ between games. In some games a mod is a whole folder, in others it is a single file that must be taken out of the folder and used on its own. Check the guide for your specific game to see what exactly you need to upload and how.
+:::
 
 ### Manually
 
@@ -56,7 +52,7 @@ Mods are stored locally in the following directory:
 <steam_folder>/steamapps/workshop/content/<game_id>/<mod_id>
 ```
 
-Default Steam folder locations:
+Below are the default Steam folder locations. If you installed Steam or the game to a custom location, the `steamapps` folder will be located in that library folder instead.
 
 <div class="table paths">
 
@@ -68,17 +64,13 @@ Default Steam folder locations:
 
 </div>
 
-For example, a Project Zomboid mod with the ID `1234567890` on Windows will be located at:
+For example, a Terraria mod with the ID `1234567890` on Windows will be located at:
 
 ```
-C:\Program Files (x86)\Steam\steamapps\workshop\content\108600\1234567890
+C:\Program Files (x86)\Steam\steamapps\workshop\content\1281930\1234567890
 ```
 
-The game ID `108600` is taken from the [Game IDs](#game-ids) table above, and the mod ID `1234567890` is the one you noted in the mod's page URL.
-
-::: warning
-If you installed Steam or the game on a different drive, the `steamapps` folder will be located in that library folder instead.
-:::
+The game ID `1281930` is taken from the [Game IDs](#game-ids) table above, and the mod ID `1234567890` is the one you noted in the mod's page URL.
 
 ### Via Steam
 

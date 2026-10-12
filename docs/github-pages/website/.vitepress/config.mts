@@ -12,6 +12,7 @@ export default defineConfig({
   ],
   themeConfig: {
     logo: "/assets/images/svg/logo.svg",
+    outline: [2, 3],
     nav: [
       { text: "Home", link: '/' },
       { text: "Documentation", link: "/docs/overview/introduction" }
