@@ -64,13 +64,11 @@ Below are the default Steam folder locations. If you installed Steam or the game
 
 </div>
 
-For example, a Terraria mod with the ID `1234567890` on Windows will be located at:
+For example, a Terraria mod with the ID `1234567890` on Windows will be located at the path below. The game ID `1281930` is taken from the [Game IDs](#game-ids) table above, and the mod ID `1234567890` is the one you noted in the mod's page URL.
 
 ```
 C:\Program Files (x86)\Steam\steamapps\workshop\content\1281930\1234567890
 ```
-
-The game ID `1281930` is taken from the [Game IDs](#game-ids) table above, and the mod ID `1234567890` is the one you noted in the mod's page URL.
 
 ### Via Steam
 
