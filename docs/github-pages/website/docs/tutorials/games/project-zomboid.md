@@ -355,14 +355,6 @@ WorkshopItems=3401134276;3360392628
 
 :::tip
 You can find mods on [Steam Workshop](https://steamcommunity.com/app/108600/workshop/).
-
-Example: https://steamcommunity.com/sharedfiles/filedetails/?id=3401134276
-
-In this case, the ID is `3401134276`.
-:::
-
-:::tip
-Authors also often include the mod ID and Steam Workshop ID at the very bottom of the description.
 :::
 
 4. Click the save button in the bottom right corner.

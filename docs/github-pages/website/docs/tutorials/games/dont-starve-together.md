@@ -597,10 +597,6 @@ ServerModCollectionSetup("379114180")
 
 :::tip
 You can find mods on [Steam Workshop](https://steamcommunity.com/app/322330/workshop/).
-
-Example: https://steamcommunity.com/sharedfiles/filedetails/?id=350811795
-
-In this case, the ID is `350811795`.
 :::
 
 4. Click the save button in the bottom left corner.

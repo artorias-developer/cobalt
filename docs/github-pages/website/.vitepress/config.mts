@@ -56,6 +56,13 @@ export default defineConfig({
               { text: "Project Zomboid", link: "/docs/tutorials/games/project-zomboid" },
               { text: "Barotrauma", link: "/docs/tutorials/games/barotrauma" }
             ]
+          },
+          {
+            text: "Steam",
+            collapsed: true,
+            items: [
+              { text: "Workshop", link: "/docs/tutorials/steam/workshop" },
+            ]
           }
         ]
       },
