@@ -25,7 +25,6 @@
     <div class="buttons">
       <template v-for="button in buttons" :key="button.text">
         <RouteGhost
-          type="router-link"
           v-if="button.isVisible && button.type === 'router-link'"
           :icon="button.icon"
           :base-color="button.baseColor"
