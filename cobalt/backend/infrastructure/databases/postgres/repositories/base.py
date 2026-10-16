@@ -17,7 +17,7 @@ class BaseRepository:
     """
     Base repository for all Postgres repositories.
     """
-    REGEX_DETAIL_KEY = compile(r"DETAIL:\s*Key \((.*?)\)=\((.*?)\)")
+    REGEX_DETAIL_KEY = compile(r"Key \((.*?)\)=\((.*?)\)")
 
     session_factory: async_sessionmaker
 
@@ -97,13 +97,19 @@ class BaseRepository:
         Returns:
         - Dict: Dictionary of key value pairs.
         """
-        message = e.orig.args[0] if hasattr(e, "orig") and e.orig.args else str(e)
-        match = self.REGEX_DETAIL_KEY.search(message)
+        orig = getattr(e, "orig", None)
+        pg_exc = getattr(orig, "__cause__", None) or orig
+        detail = getattr(pg_exc, "detail", None)
 
-        if match:
-            keys = match.group(1).split(", ")
-            values = match.group(2).split(", ")
+        if not detail:
+            detail = orig.args[0] if orig is not None and orig.args else str(e)
 
-            return dict(zip(keys, values))
+        match = self.REGEX_DETAIL_KEY.search(detail)
 
-        return {}
+        if not match:
+            return {}
+
+        keys = match.group(1).split(", ")
+        values = match.group(2).split(", ")
+
+        return dict(zip(keys, values))
