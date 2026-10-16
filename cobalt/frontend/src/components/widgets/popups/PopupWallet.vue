@@ -39,7 +39,6 @@
             :label="$t('nav.walletPopup.network')"
           />
           <ButtonSolid
-            type="button"
             :text="$t('common.close')"
             color="gray"
             @click="close"

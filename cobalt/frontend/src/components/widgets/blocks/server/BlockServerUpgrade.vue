@@ -40,7 +40,6 @@
         :required="true"
       />
       <ButtonSolid
-        type="button"
         :text="$t('common.upgrade')"
         color="blue"
         name="server-upgrade"

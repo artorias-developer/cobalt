@@ -1,10 +1,3 @@
-<!--
-  - Copyright (C) 2026 Artorias
-  - Author: Artorias
-  - Repository: https://github.com/artorias-developer/cobalt
-  - SPDX-License-Identifier: AGPL-3.0-or-later
-  -->
-
 <template>
   <Popup
     ref="popup"
@@ -13,6 +6,7 @@
   >
     <template #content="{ close }">
       <Form
+        id="confirm-popup"
         class="form"
         :on-submit="() => handleConfirm(close)"
       >
@@ -28,17 +22,17 @@
       </Form>
       <div class="actions">
         <ButtonSolid
-          type="button"
           :text="cancelText ?? $t('common.cancel')"
           color="gray"
           @click="close"
         />
         <ButtonSolid
-          type="button"
+          submit
+          form="confirm-popup"
           :text="confirmText ?? $t('common.confirm')"
           color="blue"
           name="confirm"
-          @click="handleConfirm(close)"
+          :is-loading="isPopupConfirming"
         />
       </div>
     </template>
@@ -63,12 +57,15 @@ defineProps<{
 }>()
 
 const popup = ref<InstanceType<typeof Popup> | null>(null)
-let pendingCallback: (() => void) | null = null
+const isPopupConfirming = ref<boolean>(false)
+
+let pendingCallback: (() => void | Promise<void>) | null = null
 
 defineExpose({ open, close })
 
 /**
  * Opens the confirm popup with a callback to invoke on confirmation.
+ * The callback may be async: the confirm button shows loading until it resolves.
  *
  * Parameters:
  * - onConfirm: Callback to invoke when the user confirms the action.
@@ -76,7 +73,7 @@ defineExpose({ open, close })
  * Returns:
  * - void.
  */
-function open(onConfirm: () => void): void {
+function open(onConfirm: () => void | Promise<void>): void {
   pendingCallback = onConfirm
   popup.value?.open()
 }
@@ -96,18 +93,27 @@ function close(): void {
 }
 
 /**
- * Handles confirm button click - invokes the pending callback and closes the popup.
+ * Handles confirmation - awaits the pending callback, then closes the popup.
+ * If the callback throws, the popup stays open and the loading state is reset.
  *
  * Parameters:
  * - closeFn: Popup close callback from slot.
  *
  * Returns:
- * - void.
+ * - Promise that resolves when the callback is finished.
  */
-function handleConfirm(closeFn: () => void): void {
-  pendingCallback?.()
-  pendingCallback = null
-  closeFn()
+async function handleConfirm(closeFn: () => void): Promise<void> {
+  if (isPopupConfirming.value) return
+
+  isPopupConfirming.value = true
+
+  try {
+    await pendingCallback?.()
+    pendingCallback = null
+    closeFn()
+  } finally {
+    isPopupConfirming.value = false
+  }
 }
 </script>
 

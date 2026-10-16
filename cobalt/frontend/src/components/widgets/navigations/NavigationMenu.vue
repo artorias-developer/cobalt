@@ -23,8 +23,7 @@
       <ul class="items">
         <template v-for="button in generalButtons" :key="button.text">
           <li class="item" v-if="button.isVisible">
-            <ButtonGhost
-              :type="button.type"
+            <RouteGhost
               :icon="button.icon"
               :text="button.text"
               :base-color="button.baseColor"
@@ -45,14 +44,22 @@
       <h3>{{ $t('nav.menu.other') }}</h3>
       <ul class="items">
         <li class="item" v-for="button in otherButtons" :key="button.text">
-          <ButtonGhost
-            :type="button.type"
+          <LinkGhost
+            v-if="button.type === 'a'"
             :icon="button.icon"
             :text="button.text"
             :base-color="button.baseColor"
             :hover-color="button.hoverColor"
-            :href="button.external ? button.url : undefined"
+            :href="button.url"
             :target="button.external ? '_blank' : undefined"
+            :name="button.name"
+          />
+          <ButtonGhost
+            v-else-if="button.type === 'button'"
+            :icon="button.icon"
+            :text="button.text"
+            :base-color="button.baseColor"
+            :hover-color="button.hoverColor"
             :name="button.name"
             @click="button.action"
           />
@@ -71,9 +78,17 @@ import { useNotification } from "@kyvg/vue3-notification"
 
 import { useUserStore } from "@/stores"
 import { HTTP_AUTH_API_SERVICE_KEY, WS_CLIENT_KEY } from "@/constants"
-import { type MenuButton, PermissionEnum, RouteEnum } from "@/types"
+import {
+  type RouteMenuButton,
+  type LinkMenuButton,
+  type ActionMenuButton,
+  PermissionEnum,
+  RouteEnum
+} from "@/types"
 
 import ButtonGhost from "@/components/ui/buttons/ButtonGhost.vue"
+import RouteGhost from "@/components/ui/routes/RouteGhost.vue"
+import LinkGhost from "@/components/ui/links/LinkGhost.vue"
 import BannerSources from "@/components/widgets/banners/BannerSources.vue"
 import BannerSupport from "@/components/widgets/banners/BannerSupport.vue"
 
@@ -101,11 +116,11 @@ const { notify } = useNotification()
 const { t } = useI18n()
 const router = useRouter()
 
-const generalButtons = computed((): Array<MenuButton> => [
+const generalButtons = computed((): Array<RouteMenuButton> => [
   {
     type: "router-link",
     text: t("nav.menu.dashboard"),
-    url: '/',
+    url: "/",
     icon: dashboardIcon,
     baseColor: "gray",
     hoverColor: "blue",
@@ -154,7 +169,7 @@ const generalButtons = computed((): Array<MenuButton> => [
   }
 ])
 
-const otherButtons = computed((): Array<MenuButton> => [
+const otherButtons = computed((): Array<LinkMenuButton | ActionMenuButton> => [
   {
     type: "a",
     text: t("nav.menu.help"),

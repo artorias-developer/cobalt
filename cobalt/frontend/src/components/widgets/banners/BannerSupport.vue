@@ -18,7 +18,6 @@
     <div class="wallets">
       <ButtonGhost
         v-for="wallet in wallets.slice(0, 4)"
-        type="button"
         :key="wallet.name"
         :icon="wallet.icon"
         :base-color="wallet.baseColor"

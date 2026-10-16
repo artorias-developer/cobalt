@@ -135,7 +135,8 @@
         "error": "Failed to fetch disk metrics"
       },
       "refresh": {
-        "success": "Disk metrics refreshed successfully"
+        "success": "Disk metrics refreshed successfully",
+        "error": "Failed to refresh disk metrics"
       }
     }
   },
@@ -305,7 +306,8 @@
           "error": "Failed to create file"
         },
         "reload": {
-          "success": "Files reloaded successfully"
+          "success": "Files reloaded successfully",
+          "error": "Failed to reload files"
         },
         "rename": {
           "success": "File renamed successfully",

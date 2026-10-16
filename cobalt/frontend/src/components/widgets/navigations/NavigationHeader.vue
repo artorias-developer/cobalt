@@ -24,9 +24,8 @@
     </nav>
     <div class="buttons">
       <template v-for="button in buttons" :key="button.text">
-        <ButtonGhost
-          type="router-link"
-          v-if="button.isVisible"
+        <RouteGhost
+          v-if="button.isVisible && button.type === 'router-link'"
           :icon="button.icon"
           :base-color="button.baseColor"
           :hover-color="button.hoverColor"
@@ -37,7 +36,6 @@
         />
       </template>
       <ButtonGhost
-        type="button"
         class="burger"
         :icon="menuIcon"
         base-color="gray"
@@ -57,10 +55,11 @@ import { useRoute } from "vue-router"
 
 import { useUserStore } from "@/stores"
 import { PermissionEnum } from "@/types"
-import type { MenuButton } from "@/types"
+import type { RouteMenuButton } from "@/types"
 
 import Block from "@/components/ui/Block.vue"
 import ButtonGhost from "@/components/ui/buttons/ButtonGhost.vue"
+import RouteGhost from "@/components/ui/routes/RouteGhost.vue"
 
 import logoIcon from "@/assets/images/svg/logo.svg"
 import settingsIcon from "@/assets/images/svg/settings.svg?raw"
@@ -75,7 +74,7 @@ const userStore = useUserStore()
 const { t } = useI18n()
 const route = useRoute()
 
-const buttons = computed((): Array<MenuButton> => [
+const buttons = computed((): Array<RouteMenuButton> => [
   {
     type: "router-link",
     url: "/settings?tab=security",

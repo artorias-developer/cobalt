@@ -28,7 +28,7 @@
       :text="$t('common.noData')"
     />
     <template v-else>
-      <template v-if="!isEditing">
+      <template v-if="!isFileEditing">
         <Table
           :access-denied="!hasServerFilesViewAccess"
           :table-id="tableStoreId"
@@ -47,23 +47,22 @@
             <template v-if="hasSelected">
               <ButtonSolid
                 v-if="hasServerFilesDownloadAccess"
-                type="button"
                 :text="$t('common.download')"
                 color="gray"
                 name="files-download"
+                :is-loading="isFilesDownloading"
                 @click="handleDownloadSelected"
               />
               <ButtonSolid
                 v-if="hasServerFilesCreateAccess"
-                type="button"
                 :text="$t('common.duplicate')"
                 color="gray"
                 name="files-duplicate"
+                :is-loading="isFilesDuplicating"
                 @click="handleDuplicateSelected"
               />
               <ButtonSolid
                 v-if="hasServerFilesUpdateAccess"
-                type="button"
                 :text="$t('common.move')"
                 color="gray"
                 name="files-move-popup"
@@ -71,7 +70,6 @@
               />
               <ButtonSolid
                 v-if="hasServerFilesDeleteAccess"
-                type="button"
                 :text="$t('common.delete')"
                 color="gray"
                 name="files-delete-popup"
@@ -81,7 +79,6 @@
             <template v-else>
               <ButtonSolid
                 v-if="hasServerFilesCreateAccess"
-                type="button"
                 :text="$t('common.create')"
                 color="gray"
                 name="file-create-popup"
@@ -89,7 +86,6 @@
               />
               <ButtonSolid
                 v-if="hasServerFilesUploadAccess"
-                type="button"
                 :text="$t('common.upload')"
                 color="gray"
                 name="file-upload-popup"
@@ -97,10 +93,10 @@
               />
               <ButtonSolid
                 v-if="hasServerFilesViewAccess"
-                type="button"
                 :text="$t('common.reload')"
                 color="gray"
                 name="file-reload-popup"
+                :is-loading="isFilesReloading"
                 @click="handleReload"
               />
             </template>
@@ -124,7 +120,6 @@
         />
         <div class="footer">
           <ButtonSolid
-            type="button"
             v-if="hasServerFilesUpdateAccess"
             :text="$t('common.save')"
             color="gray"
@@ -132,7 +127,6 @@
             @click="handleSaveContent"
           />
           <ButtonSolid
-            type="button"
             :text="$t('common.close')"
             color="gray"
             name="file-close"
@@ -153,6 +147,7 @@
         :icon-filled="true"
       />
       <Form
+        id="create-form"
         ref="createForm"
         class="form"
         :on-submit="() => createForm?.validate() && handleCreate(close)"
@@ -177,16 +172,17 @@
       </Form>
       <div class="actions">
         <ButtonSolid
-          type="button"
           :text="$t('common.close')"
           color="gray"
           @click="close"
         />
         <ButtonSolid
-          type="button"
+          submit
+          form="create-form"
           :text="$t('common.create')"
           color="blue"
           name="file-create"
+          :is-loading="isFileCreating"
           @click="createForm?.validate() && handleCreate(close)"
         />
       </div>
@@ -203,6 +199,7 @@
         :icon-filled="true"
       />
       <Form
+        id="rename-form"
         ref="renameForm"
         class="form"
         :on-submit="() => renameForm?.validate() && handleRename(close)"
@@ -218,16 +215,17 @@
       </Form>
       <div class="actions">
         <ButtonSolid
-          type="button"
           :text="$t('common.close')"
           color="gray"
           @click="close"
         />
         <ButtonSolid
-          type="button"
+          submit
+          form="rename-form"
           :text="$t('servers.server.files.popups.rename.submit')"
           color="blue"
           name="file-rename"
+          :is-loading="isFileRenaming"
           @click="renameForm?.validate() && handleRename(close)"
         />
       </div>
@@ -244,6 +242,7 @@
         :icon-filled="true"
       />
       <Form
+        id="move-form"
         ref="moveForm"
         class="form"
         :on-submit="() => moveForm?.validate() && handleMove(close)"
@@ -259,16 +258,17 @@
       </Form>
       <div class="actions">
         <ButtonSolid
-          type="button"
           :text="$t('common.close')"
           color="gray"
           @click="close"
         />
         <ButtonSolid
-          type="button"
+          submit
+          form="move-form"
           :text="$t('common.move')"
           color="blue"
           name="file-move"
+          :is-loading="isFileMoving"
           @click="moveForm?.validate() && handleMove(close)"
         />
       </div>
@@ -285,6 +285,7 @@
         :icon-filled="true"
       />
       <Form
+        id="upload-form"
         ref="uploadForm"
         class="form"
         :on-submit="() => uploadForm?.validate() && handleUpload(close)"
@@ -298,16 +299,16 @@
       </Form>
       <div class="actions">
         <ButtonSolid
-          type="button"
           :text="$t('common.close')"
           color="gray"
           @click="close"
         />
         <ButtonSolid
-          type="button"
+          submit
+          form="upload-form"
           :text="$t('common.upload')"
           color="blue"
-          :disabled="isUploadFormLoading"
+          :is-loading="isFileUploading"
           @click="uploadForm?.validate() && handleUpload(close)"
         />
       </div>
@@ -406,7 +407,10 @@ const listData = ref<FilesListEntity | null>(null)
 const currentPath = ref<string>("/")
 const pathHistory = ref<string[]>([])
 
-const isEditing = ref<boolean>(false)
+const isFilesReloading = ref<boolean>(false)
+const isFilesDownloading = ref<boolean>(false)
+const isFilesDuplicating = ref<boolean>(false)
+const isFileEditing = ref<boolean>(false)
 const openedFile = ref<FileContentEntity | null>(null)
 const fileEditorRef = ref<InstanceType<typeof Editor> | null>(null)
 
@@ -414,22 +418,25 @@ const createPopup = ref<InstanceType<typeof Popup> | null>(null)
 const createForm = ref<InstanceType<typeof Form> | null>(null)
 const createName = ref<string>("")
 const createType = ref<FileType>("file")
+const isFileCreating = ref<boolean>(false)
 
 const renamePopup = ref<InstanceType<typeof Popup> | null>(null)
 const renameForm = ref<InstanceType<typeof Form> | null>(null)
 const renameName = ref<string>("")
 const renameTargetPath = ref<string>("")
+const isFileRenaming = ref<boolean>(false)
 
 const movePopup = ref<InstanceType<typeof Popup> | null>(null)
 const moveForm = ref<InstanceType<typeof Form> | null>(null)
 const moveDestination = ref<string>("")
 const movePaths = ref<string[]>([])
+const isFileMoving = ref<boolean>(false)
 
 const uploadPopup = ref<InstanceType<typeof Popup> | null>(null)
 const uploadForm = ref<InstanceType<typeof Form> | null>(null)
 const uploadFiles = ref<File[]>([])
 const uploadProgress = ref<number | null>(null)
-const isUploadFormLoading = ref<boolean>(false)
+const isFileUploading = ref<boolean>(false)
 
 const confirmPopup = ref<InstanceType<typeof PopupConfirm> | null>(null)
 
@@ -730,7 +737,7 @@ async function openFile(row: Record<string, any>): Promise<void> {
     openedFile.value = await httpFilesApiService.getContent(props.serverId!, {
       path: row.path
     })
-    isEditing.value = true
+    isFileEditing.value = true
   } catch (error: any) {
     notify({
       type: "error",
@@ -780,7 +787,7 @@ async function handleSaveContent(): Promise<void> {
  * - void.
  */
 function closeEditor(): void {
-  isEditing.value = false
+  isFileEditing.value = false
   openedFile.value = null
 }
 
@@ -821,6 +828,10 @@ async function handleDownloadSelected(): Promise<void> {
  * - Promise<void>.
  */
 async function downloadPaths(paths: string[]): Promise<void> {
+  if (isFilesDownloading.value) return
+
+  isFilesDownloading.value = true
+
   try {
     const blob = await httpFilesApiService.download(props.serverId!, { paths })
     const url = URL.createObjectURL(blob)
@@ -834,6 +845,8 @@ async function downloadPaths(paths: string[]): Promise<void> {
       type: "error",
       text: error?.response?.data?.message ?? t("servers.server.files.download.error"),
     })
+  } finally {
+    isFilesDownloading.value = false
   }
 }
 
@@ -873,6 +886,10 @@ async function handleDuplicateSelected(): Promise<void> {
  * - Promise<void>.
  */
 async function duplicatePaths(paths: string[]): Promise<void> {
+  if (isFilesDuplicating.value) return
+
+  isFilesDuplicating.value = true
+
   try {
     await httpFilesApiService.duplicate(props.serverId!, { paths })
     notify({
@@ -885,6 +902,8 @@ async function duplicatePaths(paths: string[]): Promise<void> {
       type: "error",
       text: error?.response?.data?.message ?? t("servers.server.files.duplicate.error"),
     })
+  } finally {
+    isFilesDuplicating.value = false
   }
 }
 
@@ -898,7 +917,7 @@ async function duplicatePaths(paths: string[]): Promise<void> {
  * - void.
  */
 function handleDeleteOne(path: string): void {
-  confirmPopup.value?.open(() => deletePaths([path]))
+  confirmPopup.value?.open(async () => await deletePaths([path]))
 }
 
 /**
@@ -968,6 +987,10 @@ function openCreatePopup(): void {
  * - Promise<void>.
  */
 async function handleCreate(close: () => void): Promise<void> {
+  if (isFileCreating.value) return
+
+  isFileCreating.value = true
+
   const path = currentPath.value.replace(/\/$/, "") + "/" + createName.value
 
   try {
@@ -983,6 +1006,8 @@ async function handleCreate(close: () => void): Promise<void> {
       type: "error",
       text: error?.response?.data?.message ?? t("servers.server.files.create.error"),
     })
+  } finally {
+    isFileCreating.value = false
   }
 }
 
@@ -996,13 +1021,26 @@ async function handleCreate(close: () => void): Promise<void> {
  * - Promise<void>.
  */
 async function handleReload(): Promise<void> {
-  await fetchFiles()
+  if (isFilesReloading.value) return
 
-  if (listData.value) {
+  isFilesReloading.value = true
+
+  try {
+    await fetchFiles()
+
+    if (listData.value) {
+      notify({
+        type: "success",
+        text: t("servers.server.files.reload.success")
+      })
+    }
+  } catch (error: any) {
     notify({
-      type: "success",
-      text: t("servers.server.files.reload.success")
+      type: "error",
+      text: error?.response?.data?.message ?? t("servers.server.files.reload.error"),
     })
+  } finally {
+    isFilesReloading.value = false
   }
 }
 
@@ -1033,6 +1071,10 @@ function openRenamePopup(row: Record<string, any>): void {
  * - Promise<void>.
  */
 async function handleRename(close: () => void): Promise<void> {
+  if (isFileRenaming.value) return
+
+  isFileRenaming.value = true
+
   try {
     await httpFilesApiService.rename(props.serverId!, {
       path: renameTargetPath.value,
@@ -1049,6 +1091,8 @@ async function handleRename(close: () => void): Promise<void> {
       type: "error",
       text: error?.response?.data?.message ?? t("servers.server.files.rename.error"),
     })
+  } finally {
+    isFileRenaming.value = false
   }
 }
 
@@ -1079,6 +1123,10 @@ function openMovePopup(paths: string[]): void {
  * - Promise<void>.
  */
 async function handleMove(close: () => void): Promise<void> {
+  if (isFileMoving.value) return
+
+  isFileMoving.value = true
+
   try {
     await httpFilesApiService.move(props.serverId!, {
       paths: movePaths.value,
@@ -1096,6 +1144,8 @@ async function handleMove(close: () => void): Promise<void> {
       type: "error",
       text: error?.response?.data?.message ?? t("servers.server.files.move.error"),
     })
+  } finally {
+    isFileMoving.value = false
   }
 }
 
@@ -1149,9 +1199,9 @@ function openUploadPopup(): void {
  * - Promise<void>.
  */
 async function handleUpload(close: () => void): Promise<void> {
-  if (!uploadFiles.value.length) return
+  if (isFileUploading.value || !uploadFiles.value.length) return
 
-  isUploadFormLoading.value = true
+  isFileUploading.value = true
   uploadProgress.value = 0
 
   try {
@@ -1174,7 +1224,7 @@ async function handleUpload(close: () => void): Promise<void> {
     })
   } finally {
     uploadProgress.value = null
-    isUploadFormLoading.value = false
+    isFileUploading.value = false
   }
 }
 

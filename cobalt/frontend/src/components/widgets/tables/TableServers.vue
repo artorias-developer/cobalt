@@ -40,9 +40,8 @@
             <span class="hint">{{ statusMessages[row.state as ServerStateEnum] }}</span>
           </div>
         </template>
-        <ButtonGhost
+        <RouteGhost
           v-if="isServerAccessible(row.state) && hasServerViewAccess"
-          type="router-link"
           :icon="settingsIcon"
           base-color="gray"
           hover-color="gray"
@@ -53,7 +52,6 @@
         />
         <ButtonGhost
           v-if="isDeletable(row.state) && hasServersDeleteAccess"
-          type="button"
           :icon="trashIcon"
           base-color="red"
           hover-color="red"
@@ -66,7 +64,6 @@
       <template #footerActions>
         <ButtonSolid
           v-if="hasServersCreateAccess"
-          type="button"
           :text="$t('common.create')"
           color="blue"
           name="server-create-popup"
@@ -74,7 +71,6 @@
         />
         <ButtonSolid
           v-if="hasSelected && hasServersDeleteAccess"
-          type="button"
           :text="$t('common.delete')"
           color="gray"
           @click="handleDeleteSelected"
@@ -122,13 +118,11 @@
         </Form>
         <div class="actions">
           <ButtonSolid
-            type="button"
             :text="$t('common.close')"
             color="gray"
             @click="close"
           />
           <ButtonSolid
-            type="button"
             :text="$t('common.next')"
             color="blue"
             name="server-next-step"
@@ -146,6 +140,7 @@
           :icon-filled="true"
         />
         <Form
+          id="create-server-form"
           ref="step2Form"
           class="form"
           :on-submit="() => step2Form?.validate() && handleCreateServer(close)"
@@ -193,7 +188,6 @@
         <div class="actions">
           <div class="left">
             <ButtonSolid
-              type="button"
               :text="$t('common.close')"
               color="gray"
               @click="close"
@@ -201,16 +195,17 @@
           </div>
           <div class="right">
             <ButtonSolid
-              type="button"
               :text="$t('common.back')"
               color="gray"
               @click="createServerStep = 1"
             />
             <ButtonSolid
-              type="button"
+              submit
+              form="create-server-form"
               :text="$t('common.create')"
               color="blue"
               name="server-create"
+              :is-loading="isServerCreating"
               @click="step2Form?.validate() && handleCreateServer(close)"
             />
           </div>
@@ -253,6 +248,7 @@ import Popup from "@/components/ui/Popup.vue"
 import FormInput from "@/components/ui/forms/FormInput.vue"
 import FormSelect from "@/components/ui/forms/FormSelect.vue"
 import ButtonGhost from "@/components/ui/buttons/ButtonGhost.vue"
+import RouteGhost from "@/components/ui/routes/RouteGhost.vue"
 import ButtonSolid from "@/components/ui/buttons/ButtonSolid.vue"
 import Table from "@/components/ui/tables/Table.vue"
 import TablePagination from "@/components/ui/tables/TablePagination.vue"
@@ -306,6 +302,7 @@ const selectedGame = ref<number | undefined>(undefined)
 const selectedLoader = ref<number | undefined>(undefined)
 const selectedVersion = ref<string | undefined>(undefined)
 const serverName = ref<string>("")
+const isServerCreating = ref<boolean>(false)
 
 const confirmPopup = ref<InstanceType<typeof PopupConfirm> | null>(null)
 
@@ -516,7 +513,7 @@ function handleSearchChange(): void {
  * - void.
  */
 function handleDeleteServer(serverId: number): void {
-  confirmPopup.value?.open(() => deleteServer(serverId))
+  confirmPopup.value?.open(async () => await deleteServer(serverId))
 }
 
 /**
@@ -558,7 +555,7 @@ async function deleteServer(serverId: number): Promise<void> {
  * - void.
  */
 function handleDeleteSelected(): void {
-  confirmPopup.value?.open(() => deleteSelected())
+  confirmPopup.value?.open(async () => await deleteSelected())
 }
 
 /**
@@ -621,6 +618,10 @@ function resetCreateServerForm(): void {
  * - Promise<void>.
  */
 async function handleCreateServer(close: () => void): Promise<void> {
+  if (isServerCreating.value) return
+
+  isServerCreating.value = true
+
   try {
     await httpServersApiService.createOne({
       name: serverName.value,
@@ -642,6 +643,8 @@ async function handleCreateServer(close: () => void): Promise<void> {
       type: "error",
       text: error?.response?.data?.message ?? t("servers.list.create.error")
     })
+  } finally {
+    isServerCreating.value = false
   }
 }
 
