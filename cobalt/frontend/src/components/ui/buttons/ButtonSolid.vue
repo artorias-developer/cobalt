@@ -30,7 +30,7 @@ import { onBeforeUnmount, ref, watch } from "vue"
 
 import spinnerIcon from "@/assets/images/svg/spinner.svg?raw"
 
-const SPINNER_DELAY_MS = 1
+const SPINNER_DELAY_MS = 200
 
 const props = defineProps<{
   text: string
