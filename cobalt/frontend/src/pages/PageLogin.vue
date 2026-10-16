@@ -43,7 +43,6 @@
       </Form>
       <div class="actions">
         <ButtonSolid
-          type="button"
           :text="$t('login.signIn.label')"
           color="blue"
           name="sign-in"

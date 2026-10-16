@@ -47,7 +47,6 @@
             <template v-if="hasSelected">
               <ButtonSolid
                 v-if="hasServerFilesDownloadAccess"
-                type="button"
                 :text="$t('common.download')"
                 color="gray"
                 name="files-download"
@@ -55,7 +54,6 @@
               />
               <ButtonSolid
                 v-if="hasServerFilesCreateAccess"
-                type="button"
                 :text="$t('common.duplicate')"
                 color="gray"
                 name="files-duplicate"
@@ -63,7 +61,6 @@
               />
               <ButtonSolid
                 v-if="hasServerFilesUpdateAccess"
-                type="button"
                 :text="$t('common.move')"
                 color="gray"
                 name="files-move-popup"
@@ -71,7 +68,6 @@
               />
               <ButtonSolid
                 v-if="hasServerFilesDeleteAccess"
-                type="button"
                 :text="$t('common.delete')"
                 color="gray"
                 name="files-delete-popup"
@@ -81,7 +77,6 @@
             <template v-else>
               <ButtonSolid
                 v-if="hasServerFilesCreateAccess"
-                type="button"
                 :text="$t('common.create')"
                 color="gray"
                 name="file-create-popup"
@@ -89,7 +84,6 @@
               />
               <ButtonSolid
                 v-if="hasServerFilesUploadAccess"
-                type="button"
                 :text="$t('common.upload')"
                 color="gray"
                 name="file-upload-popup"
@@ -97,7 +91,6 @@
               />
               <ButtonSolid
                 v-if="hasServerFilesViewAccess"
-                type="button"
                 :text="$t('common.reload')"
                 color="gray"
                 name="file-reload-popup"
@@ -124,7 +117,6 @@
         />
         <div class="footer">
           <ButtonSolid
-            type="button"
             v-if="hasServerFilesUpdateAccess"
             :text="$t('common.save')"
             color="gray"
@@ -132,7 +124,6 @@
             @click="handleSaveContent"
           />
           <ButtonSolid
-            type="button"
             :text="$t('common.close')"
             color="gray"
             name="file-close"
@@ -178,7 +169,6 @@
       </Form>
       <div class="actions">
         <ButtonSolid
-          type="button"
           :text="$t('common.close')"
           color="gray"
           @click="close"
@@ -186,7 +176,6 @@
         <ButtonSolid
           submit
           form="create-form"
-          type="button"
           :text="$t('common.create')"
           color="blue"
           name="file-create"
@@ -223,7 +212,6 @@
       </Form>
       <div class="actions">
         <ButtonSolid
-          type="button"
           :text="$t('common.close')"
           color="gray"
           @click="close"
@@ -231,7 +219,6 @@
         <ButtonSolid
           submit
           form="rename-form"
-          type="button"
           :text="$t('servers.server.files.popups.rename.submit')"
           color="blue"
           name="file-rename"
@@ -268,7 +255,6 @@
       </Form>
       <div class="actions">
         <ButtonSolid
-          type="button"
           :text="$t('common.close')"
           color="gray"
           @click="close"
@@ -276,7 +262,6 @@
         <ButtonSolid
           submit
           form="move-form"
-          type="button"
           :text="$t('common.move')"
           color="blue"
           name="file-move"
@@ -311,7 +296,6 @@
       </Form>
       <div class="actions">
         <ButtonSolid
-          type="button"
           :text="$t('common.close')"
           color="gray"
           @click="close"
@@ -319,7 +303,6 @@
         <ButtonSolid
           submit
           form="upload-form"
-          type="button"
           :text="$t('common.upload')"
           color="blue"
           :is-loading="isFileUploading"

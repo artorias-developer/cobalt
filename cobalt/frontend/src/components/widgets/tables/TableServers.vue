@@ -66,7 +66,6 @@
       <template #footerActions>
         <ButtonSolid
           v-if="hasServersCreateAccess"
-          type="button"
           :text="$t('common.create')"
           color="blue"
           name="server-create-popup"
@@ -74,7 +73,6 @@
         />
         <ButtonSolid
           v-if="hasSelected && hasServersDeleteAccess"
-          type="button"
           :text="$t('common.delete')"
           color="gray"
           @click="handleDeleteSelected"
@@ -122,13 +120,11 @@
         </Form>
         <div class="actions">
           <ButtonSolid
-            type="button"
             :text="$t('common.close')"
             color="gray"
             @click="close"
           />
           <ButtonSolid
-            type="button"
             :text="$t('common.next')"
             color="blue"
             name="server-next-step"
@@ -194,7 +190,6 @@
         <div class="actions">
           <div class="left">
             <ButtonSolid
-              type="button"
               :text="$t('common.close')"
               color="gray"
               @click="close"
@@ -202,7 +197,6 @@
           </div>
           <div class="right">
             <ButtonSolid
-              type="button"
               :text="$t('common.back')"
               color="gray"
               @click="createServerStep = 1"
@@ -210,7 +204,6 @@
             <ButtonSolid
               submit
               form="create-server-form"
-              type="button"
               :text="$t('common.create')"
               color="blue"
               name="server-create"

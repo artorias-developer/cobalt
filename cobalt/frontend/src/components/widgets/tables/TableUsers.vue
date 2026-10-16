@@ -56,7 +56,6 @@
       <template #footerActions>
         <ButtonSolid
           v-if="hasUsersCreateAccess"
-          type="button"
           :text="$t('common.create')"
           color="blue"
           name="user-create-popup"
@@ -64,7 +63,6 @@
         />
         <ButtonSolid
           v-if="hasSelected && hasUsersDeleteAccess"
-          type="button"
           :text="$t('common.delete')"
           color="gray"
           @click="handleDeleteSelected"
@@ -130,7 +128,6 @@
       </Form>
       <div class="actions">
         <ButtonSolid
-          type="button"
           :text="$t('common.close')"
           color="gray"
           @click="close"
@@ -138,7 +135,6 @@
         <ButtonSolid
           submit
           form="create-user-form"
-          type="button"
           :text="$t('common.create')"
           color="blue"
           name="user-create"
@@ -193,7 +189,6 @@
       </Form>
       <div class="actions">
         <ButtonSolid
-          type="button"
           :text="$t('common.close')"
           color="gray"
           @click="close"
@@ -201,7 +196,6 @@
         <ButtonSolid
           submit
           form="edit-user-form"
-          type="button"
           :text="$t('common.save')"
           color="blue"
           name="user-update"

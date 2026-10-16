@@ -107,7 +107,6 @@
               :description="$t('settings.system.cache.description')"
             />
             <ButtonSolid
-              type="button"
               :text="$t('common.clear')"
               color="gray"
               name="clear-cache"
@@ -120,7 +119,6 @@
               :description="$t('settings.system.containers.description')"
             />
             <ButtonSolid
-              type="button"
               :text="$t('common.clear')"
               color="gray"
               name="clear-containers"
@@ -141,7 +139,6 @@
         submit
         form="edit-general-form"
         v-if="activeTab === 'general'"
-        type="button"
         :text="$t('common.save')"
         color="blue"
         name="settings-save-general"
@@ -152,7 +149,6 @@
         submit
         form="edit-security-form"
         v-if="activeTab === 'security'"
-        type="button"
         :text="$t('common.save')"
         color="blue"
         name="settings-save-security"

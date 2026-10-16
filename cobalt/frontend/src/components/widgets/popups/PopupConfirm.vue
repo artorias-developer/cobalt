@@ -22,7 +22,6 @@
       </Form>
       <div class="actions">
         <ButtonSolid
-          type="button"
           :text="cancelText ?? $t('common.cancel')"
           color="gray"
           @click="close"
@@ -30,7 +29,6 @@
         <ButtonSolid
           submit
           form="confirm-popup"
-          type="button"
           :text="confirmText ?? $t('common.confirm')"
           color="blue"
           name="confirm"

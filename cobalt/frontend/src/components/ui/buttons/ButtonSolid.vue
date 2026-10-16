@@ -6,52 +6,14 @@
   -->
 
 <template>
-  <router-link
-    v-if="type === 'router-link'"
-    class="button"
-    :class="[color, { loading:isLoading }]"
-    :to="to!"
-    :aria-label="name"
-    :aria-busy="isLoading"
-    :tabindex="isLoading ? -1 : 0"
-  >
-    <span :class="{ hidden: showSpinner }">{{ text }}</span>
-    <i
-      v-if="showSpinner"
-      class="spinner"
-      aria-hidden="true"
-      v-html="spinnerIcon"
-    />
-  </router-link>
-  <a
-    v-else-if="type === 'a'"
-    class="button"
-    :class="[color, { loading:isLoading }]"
-    :href="href"
-    :target="target"
-    :rel="target === '_blank' ? 'noopener noreferrer' : undefined"
-    :aria-label="name"
-    :aria-busy="isLoading"
-    :tabindex="isLoading ? -1 : 0"
-  >
-    <span :class="{ hidden: showSpinner }">{{ text }}</span>
-    <i
-      v-if="showSpinner"
-      class="spinner"
-      aria-hidden="true"
-      v-html="spinnerIcon"
-    />
-  </a>
   <button
-    v-else
     :type="submit ? 'submit' : 'button'"
     :form="form"
     class="button"
-    :class="[color, { loading:isLoading }]"
+    :class="[color, { loading: isLoading }]"
     :name="name"
     :disabled="isLoading"
     :aria-busy="isLoading"
-    tabindex="0"
   >
     <span :class="{ hidden: showSpinner }">{{ text }}</span>
     <i
@@ -65,22 +27,15 @@
 
 <script setup lang="ts">
 import { onBeforeUnmount, ref, watch } from "vue"
-import { type RouteLocationRaw } from "vue-router"
-
-import type { ButtonTarget, ButtonType } from "@/types"
 
 import spinnerIcon from "@/assets/images/svg/spinner.svg?raw"
 
 const SPINNER_DELAY_MS = 1
 
 const props = defineProps<{
-  type: ButtonType
   text: string
   color: "blue" | "gray"
   name?: string
-  href?: string
-  to?: RouteLocationRaw
-  target?: ButtonTarget
   submit?: boolean
   form?: string
   isLoading?: boolean
@@ -129,35 +84,10 @@ onBeforeUnmount(clearSpinnerTimer)
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/mixins" as *;
+
 .button {
-  position: relative;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  cursor: pointer;
-  outline: none;
-  text-decoration: none;
-  border-radius: 6px;
-  padding: 0 $space-xl;
-  transition: background-color 0.3s ease;
-  box-sizing: border-box;
-
-  &:hover {
-    &.blue {
-      background-color: color-mix(in srgb, var(--color-primary) 80%, transparent);
-    }
-
-    &.gray {
-      background-color: color-mix(in srgb, var(--color-gray-background) 65%, transparent);
-    }
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: -2px;
-  }
+  @include button-base;
 
   &:disabled {
     opacity: 0.5;
@@ -168,28 +98,8 @@ onBeforeUnmount(clearSpinnerTimer)
     pointer-events: none;
   }
 
-  &.blue {
-    background-color: var(--color-primary);
-    color: var(--color-white);
-
-    &:focus-visible {
-      outline: 2px solid var(--color-red);
-    }
-  }
-
-  &.gray {
-    background-color: var(--color-gray-background);
-    color: var(--color-gray);
-  }
-
-  span {
-    font-size: $font-md;
-    font-weight: 600;
-    white-space: nowrap;
-
-    &.hidden {
-      visibility: hidden;
-    }
+  span.hidden {
+    visibility: hidden;
   }
 
   .spinner {
@@ -216,19 +126,10 @@ onBeforeUnmount(clearSpinnerTimer)
 }
 
 @media (max-width: 768px) {
-  .button {
-    height: 36px;
-    padding: 0 $space-lg;
-
-    span {
-      font-size: $font-sm;
-    }
-
-    .spinner {
-      width: 18px;
-      height: 18px;
-      margin: -9px 0 0 -9px;
-    }
+  .button .spinner {
+    width: 18px;
+    height: 18px;
+    margin: -9px 0 0 -9px;
   }
 }
 </style>
