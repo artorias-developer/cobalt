@@ -96,6 +96,7 @@
         :icon-filled="true"
       />
       <Form
+        id="create-role-form"
         ref="createRoleForm"
         class="form"
         :on-submit="() => createRoleForm?.validate() && handleCreateRole(close)"
@@ -133,10 +134,13 @@
           @click="close"
         />
         <ButtonSolid
+          submit
+          form="create-role-form"
           type="button"
           :text="$t('common.create')"
           color="blue"
           name="role-create"
+          :is-loading="isRoleCreating"
           @click="createRoleForm?.validate() && handleCreateRole(close)"
         />
       </div>
@@ -153,6 +157,7 @@
         :icon-filled="true"
       />
       <Form
+        id="edit-role-form"
         ref="editRoleForm"
         class="form"
         :on-submit="() => editRoleForm?.validate() && handleEditRole(close)"
@@ -190,10 +195,13 @@
           @click="close"
         />
         <ButtonSolid
+          submit
+          form="edit-role-form"
           type="button"
           :text="$t('common.save')"
           color="blue"
           name="role-update"
+          :is-loading="isRoleEditing"
           @click="editRoleForm?.validate() && handleEditRole(close)"
         />
       </div>
@@ -258,12 +266,14 @@ const createRoleForm = ref<InstanceType<typeof Form> | null>(null)
 const createRolePopup = ref<InstanceType<typeof Popup> | null>(null)
 const roleName = ref<string>("")
 const selectedPermissions = ref<PermissionEnum[]>([])
+const isRoleCreating = ref<boolean>(false)
 
 const editRoleForm = ref<InstanceType<typeof Form> | null>(null)
 const editRolePopup = ref<InstanceType<typeof Popup> | null>(null)
 const editRoleId = ref<number | null>(null)
 const editRoleName = ref<string>("")
 const editSelectedPermissions = ref<PermissionEnum[]>([])
+const isRoleEditing = ref<boolean>(false)
 
 const confirmPopup = ref<InstanceType<typeof PopupConfirm> | null>(null)
 
@@ -509,7 +519,7 @@ function toggleGroup(group: PermissionGroup, permissions: PermissionEnum[]): voi
  * - void.
  */
 function handleDeleteRole(roleId: number): void {
-  confirmPopup.value?.open(() => deleteRole(roleId))
+  confirmPopup.value?.open(async () => await deleteRole(roleId))
 }
 
 /**
@@ -547,7 +557,7 @@ async function deleteRole(roleId: number): Promise<void> {
  * - void.
  */
 function handleDeleteSelected(): void {
-  confirmPopup.value?.open(() => deleteSelected())
+  confirmPopup.value?.open(async () => await deleteSelected())
 }
 
 /**
@@ -618,6 +628,10 @@ function resetEditRoleForm(): void {
  * - Promise<void>.
  */
 async function handleCreateRole(close: () => void): Promise<void> {
+  if (isRoleCreating.value) return
+
+  isRoleCreating.value = true
+
   try {
     await httpRolesApiService.createOne({
       name: roleName.value,
@@ -635,6 +649,8 @@ async function handleCreateRole(close: () => void): Promise<void> {
       type: "error",
       text: error?.response?.data?.message ?? t("roles.list.create.error")
     })
+  } finally {
+    isRoleCreating.value = false
   }
 }
 
@@ -649,7 +665,9 @@ async function handleCreateRole(close: () => void): Promise<void> {
  * - Promise<void>.
  */
 async function handleEditRole(close: () => void): Promise<void> {
-  if (!editRoleId.value) return
+  if (isRoleEditing.value || !editRoleId.value) return
+
+  isRoleEditing.value = true
 
   try {
     const updated = await httpRolesApiService.updateOne(editRoleId.value, {
@@ -673,6 +691,8 @@ async function handleEditRole(close: () => void): Promise<void> {
       type: "error",
       text: error?.response?.data?.message ?? t("roles.list.update.error")
     })
+  } finally {
+    isRoleEditing.value = false
   }
 }
 

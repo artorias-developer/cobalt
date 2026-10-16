@@ -138,8 +138,6 @@ const CONTINUATION_REGEX = /^\s/
 function parseLog(message: string): ServerLog {
   const match = message.match(LOG_REGEX)
 
-  console.log(message)
-
   if (match) {
     const date = `${match[1]} ${match[2]}Z`
     const time = localeHelper.formatTimeWithSeconds(date)

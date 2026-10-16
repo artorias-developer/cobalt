@@ -19,9 +19,10 @@
     <TabsBlock :tabs="tabs" v-model="activeTab">
       <template #general>
         <Form
+          id="edit-general-form"
           ref="generalSettingsForm"
           class="form"
-          :on-submit="() => generalSettingsForm?.validate() && handleSave()"
+          :on-submit="() => generalSettingsForm?.validate() && handleGeneralSettingsEdit()"
         >
           <div class="field">
             <FormFieldLabel
@@ -60,9 +61,10 @@
       </template>
       <template #security>
         <Form
+          id="edit-security-form"
           ref="securitySettingsForm"
           class="form"
-          :on-submit="() => securitySettingsForm?.validate() && handleChangeCredentials()"
+          :on-submit="() => securitySettingsForm?.validate() && handleSecuritySettingsEdit()"
         >
           <div class="field">
             <FormFieldLabel
@@ -136,20 +138,26 @@
     </TabsBlock>
     <div class="footer" v-if="activeTab !== 'system'">
       <ButtonSolid
+        submit
+        form="edit-general-form"
         v-if="activeTab === 'general'"
         type="button"
         :text="$t('common.save')"
         color="blue"
         name="settings-save-general"
-        @click="generalSettingsForm?.validate() && handleSave()"
+        :is-loading="isGeneralEditing"
+        @click="generalSettingsForm?.validate() && handleGeneralSettingsEdit()"
       />
       <ButtonSolid
+        submit
+        form="edit-security-form"
         v-if="activeTab === 'security'"
         type="button"
         :text="$t('common.save')"
         color="blue"
         name="settings-save-security"
-        @click="securitySettingsForm?.validate() && handleChangeCredentials()"
+        :is-loading="isSecurityEditing"
+        @click="securitySettingsForm?.validate() && handleSecuritySettingsEdit()"
       />
     </div>
   </Block>
@@ -187,8 +195,12 @@ const { t } = useI18n()
 const router = useRouter()
 
 const activeTab = ref<string | null>(null)
+
 const generalSettingsForm = ref<InstanceType<typeof Form> | null>(null)
+const isGeneralEditing = ref<boolean>(false)
+
 const securitySettingsForm = ref<InstanceType<typeof Form> | null>(null)
+const isSecurityEditing = ref<boolean>(false)
 
 const tabs = computed(() => [
   {
@@ -270,7 +282,11 @@ function loadSettings(): void {
  * Returns:
  * - Promise<void>.
  */
-async function handleSave(): Promise<void> {
+async function handleGeneralSettingsEdit(): Promise<void> {
+  if (isGeneralEditing.value) return
+
+  isGeneralEditing.value = true
+
   try {
     const updated = await httpSettingsApiService.updateMe({
       theme: generalSettings.value.theme,
@@ -289,6 +305,8 @@ async function handleSave(): Promise<void> {
       type: "error",
       text: error?.response?.data?.message ?? t("settings.general.save.error")
     })
+  } finally {
+    isGeneralEditing.value = false
   }
 }
 
@@ -302,7 +320,11 @@ async function handleSave(): Promise<void> {
  * Returns:
  * - Promise<void>.
  */
-async function handleChangeCredentials(): Promise<void> {
+async function handleSecuritySettingsEdit(): Promise<void> {
+  if (isSecurityEditing.value) return
+
+  isSecurityEditing.value = true
+
   const payload: AuthChangeCredentialsRequest = {
     login: securitySettings.value.login || undefined,
     old_password: securitySettings.value.old_password || undefined,
@@ -336,6 +358,8 @@ async function handleChangeCredentials(): Promise<void> {
       type: "error",
       text: error?.response?.data?.message ?? t("settings.security.save.error")
     })
+  } finally {
+    isSecurityEditing.value = false
   }
 }
 

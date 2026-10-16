@@ -96,6 +96,7 @@
         :icon-filled="true"
       />
       <Form
+        id="create-user-form"
         ref="createUserForm"
         class="form"
         :on-submit="() => createUserForm?.validate() && handleCreateUser(close)"
@@ -135,10 +136,13 @@
           @click="close"
         />
         <ButtonSolid
+          submit
+          form="create-user-form"
           type="button"
           :text="$t('common.create')"
           color="blue"
           name="user-create"
+          :is-loading="isUserCreating"
           @click="createUserForm?.validate() && handleCreateUser(close)"
         />
       </div>
@@ -155,6 +159,7 @@
         :icon-filled="true"
       />
       <Form
+        id="edit-user-form"
         ref="editUserForm"
         class="form"
         :on-submit="() => editUserForm?.validate() && handleEditUser(close)"
@@ -194,10 +199,13 @@
           @click="close"
         />
         <ButtonSolid
+          submit
+          form="edit-user-form"
           type="button"
           :text="$t('common.save')"
           color="blue"
           name="user-update"
+          :is-loading="isUserEditing"
           @click="editUserForm?.validate() && handleEditUser(close)"
         />
       </div>
@@ -273,6 +281,7 @@ const createUserPopup = ref<InstanceType<typeof Popup> | null>(null)
 const userLogin = ref<string>("")
 const userPassword = ref<string>("")
 const selectedRole = ref<number | undefined>(undefined)
+const isUserCreating = ref<boolean>(false)
 
 const editUserForm = ref<InstanceType<typeof Form> | null>(null)
 const editUserPopup = ref<InstanceType<typeof Popup> | null>(null)
@@ -280,6 +289,7 @@ const editUserId = ref<number | null>(null)
 const editUserLogin = ref<string>("")
 const editUserPassword = ref<string>("")
 const editSelectedRole = ref<number | undefined>(undefined)
+const isUserEditing = ref<boolean>(false)
 
 const confirmPopup = ref<InstanceType<typeof PopupConfirm> | null>(null)
 
@@ -449,7 +459,7 @@ function handleSearchChange(): void {
  * - void.
  */
 function handleDeleteUser(userId: number): void {
-  confirmPopup.value?.open(() => deleteUser(userId))
+  confirmPopup.value?.open(async () => await deleteUser(userId))
 }
 
 /**
@@ -487,7 +497,7 @@ async function deleteUser(userId: number): Promise<void> {
  * - void.
  */
 function handleDeleteSelected(): void {
-  confirmPopup.value?.open(() => deleteSelected())
+  confirmPopup.value?.open(async () => await deleteSelected())
 }
 
 /**
@@ -560,6 +570,10 @@ function resetEditUserForm(): void {
  * - Promise<void>.
  */
 async function handleCreateUser(close: () => void): Promise<void> {
+  if (isUserCreating.value) return
+
+  isUserCreating.value = true
+
   try {
     await httpUsersApiService.createOne({
       login: userLogin.value,
@@ -578,6 +592,8 @@ async function handleCreateUser(close: () => void): Promise<void> {
       type: "error",
       text: error?.response?.data?.message ?? t("users.list.create.error")
     })
+  } finally {
+    isUserCreating.value = false
   }
 }
 
@@ -592,7 +608,9 @@ async function handleCreateUser(close: () => void): Promise<void> {
  * - Promise<void>.
  */
 async function handleEditUser(close: () => void): Promise<void> {
-  if (!editUserId.value) return
+  if (isUserEditing.value || !editUserId.value) return
+
+  isUserEditing.value = true
 
   try {
     const updated = await httpUsersApiService.updateOne(editUserId.value, {
@@ -617,6 +635,8 @@ async function handleEditUser(close: () => void): Promise<void> {
       type: "error",
       text: error?.response?.data?.message ?? t("users.list.update.error")
     })
+  } finally {
+    isUserEditing.value = false
   }
 }
 

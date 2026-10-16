@@ -146,6 +146,7 @@
           :icon-filled="true"
         />
         <Form
+          id="create-server-form"
           ref="step2Form"
           class="form"
           :on-submit="() => step2Form?.validate() && handleCreateServer(close)"
@@ -207,10 +208,13 @@
               @click="createServerStep = 1"
             />
             <ButtonSolid
+              submit
+              form="create-server-form"
               type="button"
               :text="$t('common.create')"
               color="blue"
               name="server-create"
+              :is-loading="isServerCreating"
               @click="step2Form?.validate() && handleCreateServer(close)"
             />
           </div>
@@ -306,6 +310,7 @@ const selectedGame = ref<number | undefined>(undefined)
 const selectedLoader = ref<number | undefined>(undefined)
 const selectedVersion = ref<string | undefined>(undefined)
 const serverName = ref<string>("")
+const isServerCreating = ref<boolean>(false)
 
 const confirmPopup = ref<InstanceType<typeof PopupConfirm> | null>(null)
 
@@ -516,7 +521,7 @@ function handleSearchChange(): void {
  * - void.
  */
 function handleDeleteServer(serverId: number): void {
-  confirmPopup.value?.open(() => deleteServer(serverId))
+  confirmPopup.value?.open(async () => await deleteServer(serverId))
 }
 
 /**
@@ -558,7 +563,7 @@ async function deleteServer(serverId: number): Promise<void> {
  * - void.
  */
 function handleDeleteSelected(): void {
-  confirmPopup.value?.open(() => deleteSelected())
+  confirmPopup.value?.open(async () => await deleteSelected())
 }
 
 /**
@@ -621,6 +626,10 @@ function resetCreateServerForm(): void {
  * - Promise<void>.
  */
 async function handleCreateServer(close: () => void): Promise<void> {
+  if (isServerCreating.value) return
+
+  isServerCreating.value = true
+
   try {
     await httpServersApiService.createOne({
       name: serverName.value,
@@ -642,6 +651,8 @@ async function handleCreateServer(close: () => void): Promise<void> {
       type: "error",
       text: error?.response?.data?.message ?? t("servers.list.create.error")
     })
+  } finally {
+    isServerCreating.value = false
   }
 }
 
