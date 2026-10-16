@@ -87,7 +87,7 @@ onBeforeUnmount(clearSpinnerTimer)
 @use "@/assets/styles/mixins" as *;
 
 .button {
-  @include button-base;
+  @include button-solid-base;
 
   &:disabled {
     opacity: 0.5;

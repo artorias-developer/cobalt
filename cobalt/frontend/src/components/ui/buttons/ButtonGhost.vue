@@ -6,49 +6,13 @@
   -->
 
 <template>
-  <router-link
-    v-if="type === 'router-link'"
-    class="button"
-    :class="buttonClasses"
-    :to="to!"
-    :aria-label="name"
-    tabindex="0"
-  >
-    <Icon
-      v-if="icon"
-      :icon="icon"
-      :base-color="baseColor"
-      :hover-color="hoverColor"
-      :is-active="isActiveRoute"
-    />
-    <span v-if="text">{{ text }}</span>
-  </router-link>
-  <a
-    v-else-if="type === 'a'"
-    class="button"
-    :class="buttonClasses"
-    :href="href"
-    :target="target"
-    :rel="target === '_blank' ? 'noopener noreferrer' : undefined"
-    :aria-label="name"
-    tabindex="0"
-  >
-    <Icon
-      v-if="icon"
-      :icon="icon"
-      :base-color="baseColor"
-      :hover-color="hoverColor"
-      :is-active="false"
-    />
-    <span v-if="text">{{ text }}</span>
-  </a>
   <button
-    v-else
     type="button"
     class="button"
     :class="buttonClasses"
     :name="name"
-    tabindex="0"
+    :disabled="isLoading"
+    :aria-busy="isLoading"
   >
     <Icon
       v-if="icon"
@@ -58,20 +22,27 @@
       :is-active="false"
     />
     <span v-if="text">{{ text }}</span>
+    <i
+      v-if="showSpinner"
+      class="spinner"
+      aria-hidden="true"
+      v-html="spinnerIcon"
+    />
   </button>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue"
-import { useRoute } from "vue-router"
-import type { RouteLocationRaw } from "vue-router"
+import { computed, onBeforeUnmount, ref, watch } from "vue"
 
-import type { Color, ButtonAlign, ButtonTarget, ButtonType } from "@/types"
+import type { Color, ButtonAlign } from "@/types"
 
 import Icon from "@/components/ui/Icon.vue"
 
+import spinnerIcon from "@/assets/images/svg/spinner.svg?raw"
+
+const SPINNER_DELAY_MS = 1
+
 const props = defineProps<{
-  type: ButtonType
   icon?: string
   text?: string
   baseColor: Color
@@ -79,12 +50,12 @@ const props = defineProps<{
   name?: string
   align?: ButtonAlign
   filled?: boolean
-  href?: string
-  to?: RouteLocationRaw
-  target?: ButtonTarget
+  isLoading?: boolean
 }>()
 
-const route = useRoute()
+const showSpinner = ref(false)
+
+let spinnerTimer: ReturnType<typeof setTimeout> | null = null
 
 /**
  * Returns whether the button is in "filled with text" mode.
@@ -107,231 +78,104 @@ const isFilledWithText = computed((): boolean =>
  * - null.
  *
  * Returns:
- * - string[]: Array of CSS class names based on current props and route state.
+ * - string[]: Array of CSS class names based on current props and loading state.
  */
 const buttonClasses = computed((): string[] => [
   props.baseColor,
   props.hoverColor ? `hover-${props.hoverColor}` : "",
   props.filled && !props.text ? "background" : "",
   isFilledWithText.value ? "background-text" : "",
-  isActiveRoute.value ? "active" : "",
   props.align ? `align-${props.align}` : "align-start",
-  props.hoverColor && props.hoverColor === props.baseColor ? "same-color" : ""
+  props.hoverColor && props.hoverColor === props.baseColor ? "same-color" : "",
+  props.isLoading ? "loading" : "",
+  showSpinner.value ? "content-hidden" : ""
 ])
 
 /**
- * Checks if the current route matches the component's target route.
+ * Cancels the pending spinner timer if there is one.
  *
  * Parameters:
  * - null.
  *
  * Returns:
- * - boolean: `true` if the current route matches the target route, otherwise `false`.
+ * - void.
  */
-const isActiveRoute = computed((): boolean => {
-  if (!props.to || props.type !== "router-link") return false
-
-  if (typeof props.to === "string") {
-    return route.path === props.to
-  } else if (typeof props.to === "object" && "name" in props.to) {
-    return route.name === props.to.name
-  } else if (typeof props.to === "object" && "path" in props.to) {
-    return route.path === props.to.path
-  } else {
-    return false
+function clearSpinnerTimer(): void {
+  if (spinnerTimer !== null) {
+    clearTimeout(spinnerTimer)
+    spinnerTimer = null
   }
-})
+}
+
+watch(
+  () => props.isLoading,
+  (loading) => {
+    clearSpinnerTimer()
+
+    if (!loading) {
+      showSpinner.value = false
+
+      return
+    }
+
+    spinnerTimer = setTimeout(() => {
+      showSpinner.value = true
+      spinnerTimer = null
+    }, SPINNER_DELAY_MS)
+  },
+  { immediate: true }
+)
+
+onBeforeUnmount(clearSpinnerTimer)
 </script>
 
 <style scoped lang="scss">
-.button {
-  height: 40px;
-  min-width: 40px;
-  display: flex;
-  align-items: center;
-  border: none;
-  cursor: pointer;
-  outline: none;
-  text-decoration: none;
-  gap: $space-md;
-  padding: $space-md;
-  color: var(--color-description);
-  background-color: transparent;
-  border-radius: 6px;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  box-sizing: border-box;
+@use "@/assets/styles/mixins" as *;
 
-  &:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: -2px;
-  }
+.button {
+  @include button-ghost-base;
 
   &:disabled {
     opacity: 0.5;
     pointer-events: none;
   }
 
-  &.align-start {
-    justify-content: flex-start;
+  &.loading {
+    pointer-events: none;
   }
 
-  &.align-center {
-    justify-content: center;
+  &.content-hidden > :not(.spinner) {
+    visibility: hidden;
   }
 
-  &.background-text {
-    padding: 0 $space-xl;
+  .spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    display: flex;
+    animation: button-spin 0.8s linear infinite;
 
-    .icon {
-      width: 14px;
-      height: 14px;
-
-      svg {
-        width: 14px;
-        height: 14px;
-      }
+    :deep(svg) {
+      width: 100%;
+      height: 100%;
     }
   }
+}
 
-  span {
-    font-size: $font-md;
-    font-weight: 600;
-    white-space: nowrap;
-  }
-
-  &.gray {
-    color: var(--color-gray);
-
-    &.background {
-      background-color: var(--color-gray-background);
-    }
-
-    &.background-text {
-      background-color: var(--color-gray-background);
-    }
-  }
-
-  &.hover-gray:hover,
-  &.active.hover-gray {
-    color: var(--color-gray);
-    background-color: var(--color-gray-background);
-  }
-
-  &.same-color.hover-gray:hover {
-    background-color: color-mix(in srgb, var(--color-gray-background) 65%, transparent);
-  }
-
-  &.red {
-    color: var(--color-red);
-
-    &.background {
-      background-color: var(--color-red-background);
-    }
-
-    &.background-text {
-      background-color: var(--color-red-background);
-    }
-  }
-
-  &.hover-red:hover,
-  &.active.hover-red {
-    color: var(--color-red);
-    background-color: var(--color-red-background);
-  }
-
-  &.same-color.hover-red:hover {
-    background-color: color-mix(in srgb, var(--color-red-background) 65%, transparent);
-  }
-
-  &.blue {
-    color: var(--color-blue);
-
-    &.background {
-      background-color: var(--color-blue-background);
-    }
-
-    &.background-text {
-      background-color: var(--color-blue-background);
-    }
-  }
-
-  &.hover-blue:hover,
-  &.active.hover-blue {
-    color: var(--color-blue);
-    background-color: var(--color-blue-background);
-  }
-
-  &.same-color.hover-blue:hover {
-    background-color: color-mix(in srgb, var(--color-blue-background) 65%, transparent);
-  }
-
-  &.green {
-    color: var(--color-green);
-
-    &.background {
-      background-color: var(--color-green-background);
-    }
-
-    &.background-text {
-      background-color: var(--color-green-background);
-    }
-  }
-
-  &.hover-green:hover,
-  &.active.hover-green {
-    color: var(--color-green);
-    background-color: var(--color-green-background);
-  }
-
-  &.same-color.hover-green:hover {
-    background-color: color-mix(in srgb, var(--color-green-background) 65%, transparent);
-  }
-
-  &.yellow {
-    color: var(--color-yellow);
-
-    &.background {
-      background-color: var(--color-yellow-background);
-    }
-
-    &.background-text {
-      background-color: var(--color-yellow-background);
-    }
-  }
-
-  &.hover-yellow:hover,
-  &.active.hover-yellow {
-    color: var(--color-yellow);
-    background-color: var(--color-yellow-background);
-  }
-
-  &.same-color.hover-yellow:hover {
-    background-color: color-mix(in srgb, var(--color-yellow-background) 65%, transparent);
+@keyframes button-spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 
 @media (max-width: 768px) {
-  .button {
-    height: 36px;
-    min-width: 36px;
-
-    span {
-      font-size: $font-sm;
-    }
-
-    &.background-text {
-      padding: 0 $space-lg;
-
-      .icon {
-        width: 12px;
-        height: 12px;
-
-        svg {
-          width: 12px;
-          height: 12px;
-        }
-      }
-    }
+  .button .spinner {
+    width: 18px;
+    height: 18px;
+    margin: -9px 0 0 -9px;
   }
 }
 </style>

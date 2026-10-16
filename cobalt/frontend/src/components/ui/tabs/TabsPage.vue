@@ -9,7 +9,6 @@
   <div class="tabs">
     <div class="nav">
       <ButtonGhost
-        type="button"
         :class="{ active: modelValue === tab.value }"
         base-color="gray"
         hover-color="blue"

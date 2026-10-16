@@ -18,7 +18,6 @@
       />
       <div class="buttons" v-if="hasViewAccess">
         <ButtonGhost
-          type="button"
           :icon="reloadIcon"
           base-color="gray"
           hover-color="gray"

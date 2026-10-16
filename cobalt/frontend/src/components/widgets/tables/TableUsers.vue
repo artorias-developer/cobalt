@@ -32,7 +32,6 @@
       <template #tableRowActions="{ row }">
         <ButtonGhost
           v-if="hasUsersUpdateAccess"
-          type="button"
           :icon="editIcon"
           base-color="gray"
           hover-color="gray"
@@ -43,7 +42,6 @@
         />
         <ButtonGhost
           v-if="hasUsersDeleteAccess"
-          type="button"
           :icon="trashIcon"
           base-color="red"
           hover-color="red"

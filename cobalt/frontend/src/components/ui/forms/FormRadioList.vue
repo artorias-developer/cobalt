@@ -14,7 +14,6 @@
         @update:model-value="localSearch = $event"
       />
       <ButtonGhost
-        type="button"
         :icon="resetIcon"
         base-color="gray"
         hover-color="gray"

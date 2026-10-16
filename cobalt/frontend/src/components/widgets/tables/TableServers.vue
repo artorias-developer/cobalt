@@ -40,9 +40,8 @@
             <span class="hint">{{ statusMessages[row.state as ServerStateEnum] }}</span>
           </div>
         </template>
-        <ButtonGhost
+        <RouteGhost
           v-if="isServerAccessible(row.state) && hasServerViewAccess"
-          type="router-link"
           :icon="settingsIcon"
           base-color="gray"
           hover-color="gray"
@@ -53,7 +52,6 @@
         />
         <ButtonGhost
           v-if="isDeletable(row.state) && hasServersDeleteAccess"
-          type="button"
           :icon="trashIcon"
           base-color="red"
           hover-color="red"
@@ -250,6 +248,7 @@ import Popup from "@/components/ui/Popup.vue"
 import FormInput from "@/components/ui/forms/FormInput.vue"
 import FormSelect from "@/components/ui/forms/FormSelect.vue"
 import ButtonGhost from "@/components/ui/buttons/ButtonGhost.vue"
+import RouteGhost from "@/components/ui/routes/RouteGhost.vue"
 import ButtonSolid from "@/components/ui/buttons/ButtonSolid.vue"
 import Table from "@/components/ui/tables/Table.vue"
 import TablePagination from "@/components/ui/tables/TablePagination.vue"

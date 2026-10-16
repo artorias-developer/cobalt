@@ -34,7 +34,6 @@
     <div v-if="hasAnyVisibleButton" class="actions">
       <ButtonGhost
         v-if="!status?.running && hasServerStartAccess"
-        type="button"
         :icon="startIcon"
         :text="$t('servers.server.overview.control.start.label')"
         base-color="green"
@@ -47,7 +46,6 @@
       />
       <ButtonGhost
         v-if="status?.running && hasServerStopAccess"
-        type="button"
         :icon="stopIcon"
         :text="$t('servers.server.overview.control.stop.label')"
         base-color="red"
@@ -60,7 +58,6 @@
       />
       <ButtonGhost
         v-if="hasServerStartAccess"
-        type="button"
         :icon="restartIcon"
         :text="$t('servers.server.overview.control.restart.label')"
         base-color="gray"
