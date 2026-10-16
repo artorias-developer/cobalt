@@ -50,6 +50,7 @@
                 :text="$t('common.download')"
                 color="gray"
                 name="files-download"
+                :is-loading="isFilesDownloading"
                 @click="handleDownloadSelected"
               />
               <ButtonSolid
@@ -57,6 +58,7 @@
                 :text="$t('common.duplicate')"
                 color="gray"
                 name="files-duplicate"
+                :is-loading="isFilesDuplicating"
                 @click="handleDuplicateSelected"
               />
               <ButtonSolid
@@ -94,6 +96,7 @@
                 :text="$t('common.reload')"
                 color="gray"
                 name="file-reload-popup"
+                :is-loading="isFilesReloading"
                 @click="handleReload"
               />
             </template>
@@ -404,6 +407,9 @@ const listData = ref<FilesListEntity | null>(null)
 const currentPath = ref<string>("/")
 const pathHistory = ref<string[]>([])
 
+const isFilesReloading = ref<boolean>(false)
+const isFilesDownloading = ref<boolean>(false)
+const isFilesDuplicating = ref<boolean>(false)
 const isFileEditing = ref<boolean>(false)
 const openedFile = ref<FileContentEntity | null>(null)
 const fileEditorRef = ref<InstanceType<typeof Editor> | null>(null)
@@ -822,6 +828,10 @@ async function handleDownloadSelected(): Promise<void> {
  * - Promise<void>.
  */
 async function downloadPaths(paths: string[]): Promise<void> {
+  if (isFilesDownloading.value) return
+
+  isFilesDownloading.value = true
+
   try {
     const blob = await httpFilesApiService.download(props.serverId!, { paths })
     const url = URL.createObjectURL(blob)
@@ -835,6 +845,8 @@ async function downloadPaths(paths: string[]): Promise<void> {
       type: "error",
       text: error?.response?.data?.message ?? t("servers.server.files.download.error"),
     })
+  } finally {
+    isFilesDownloading.value = false
   }
 }
 
@@ -874,6 +886,10 @@ async function handleDuplicateSelected(): Promise<void> {
  * - Promise<void>.
  */
 async function duplicatePaths(paths: string[]): Promise<void> {
+  if (isFilesDuplicating.value) return
+
+  isFilesDuplicating.value = true
+
   try {
     await httpFilesApiService.duplicate(props.serverId!, { paths })
     notify({
@@ -886,6 +902,8 @@ async function duplicatePaths(paths: string[]): Promise<void> {
       type: "error",
       text: error?.response?.data?.message ?? t("servers.server.files.duplicate.error"),
     })
+  } finally {
+    isFilesDuplicating.value = false
   }
 }
 
@@ -1003,13 +1021,26 @@ async function handleCreate(close: () => void): Promise<void> {
  * - Promise<void>.
  */
 async function handleReload(): Promise<void> {
-  await fetchFiles()
+  if (isFilesReloading.value) return
 
-  if (listData.value) {
+  isFilesReloading.value = true
+
+  try {
+    await fetchFiles()
+
+    if (listData.value) {
+      notify({
+        type: "success",
+        text: t("servers.server.files.reload.success")
+      })
+    }
+  } catch (error: any) {
     notify({
-      type: "success",
-      text: t("servers.server.files.reload.success")
+      type: "error",
+      text: error?.response?.data?.message ?? t("servers.server.files.reload.error"),
     })
+  } finally {
+    isFilesReloading.value = false
   }
 }
 

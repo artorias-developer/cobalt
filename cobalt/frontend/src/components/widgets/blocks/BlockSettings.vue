@@ -110,6 +110,7 @@
               :text="$t('common.clear')"
               color="gray"
               name="clear-cache"
+              :is-loading="isCacheClearing"
               @click="handleClearCache"
             />
           </div>
@@ -122,6 +123,7 @@
               :text="$t('common.clear')"
               color="gray"
               name="clear-containers"
+              :is-loading="isContainersClearing"
               @click="handleClearContainers"
             />
           </div>
@@ -197,6 +199,9 @@ const isGeneralEditing = ref<boolean>(false)
 
 const securitySettingsForm = ref<InstanceType<typeof Form> | null>(null)
 const isSecurityEditing = ref<boolean>(false)
+
+const isCacheClearing = ref<boolean>(false)
+const isContainersClearing = ref<boolean>(false)
 
 const tabs = computed(() => [
   {
@@ -369,6 +374,10 @@ async function handleSecuritySettingsEdit(): Promise<void> {
  * - Promise<void>.
  */
 async function handleClearCache(): Promise<void> {
+  if (isCacheClearing.value) return
+
+  isCacheClearing.value = true
+
   try {
     await httpSettingsApiService.clearCache()
     userStore.clearUser()
@@ -386,6 +395,8 @@ async function handleClearCache(): Promise<void> {
       type: "error",
       text: error?.response?.data?.message ?? t("settings.system.cache.clear.error")
     })
+  } finally {
+    isCacheClearing.value = false
   }
 }
 
@@ -399,6 +410,10 @@ async function handleClearCache(): Promise<void> {
  * - Promise<void>.
  */
 async function handleClearContainers(): Promise<void> {
+  if (isContainersClearing.value) return
+
+  isContainersClearing.value = true
+
   try {
     await httpSettingsApiService.clearContainers()
 
@@ -411,6 +426,8 @@ async function handleClearContainers(): Promise<void> {
       type: "error",
       text: error?.response?.data?.message ?? t("settings.system.containers.clear.error")
     })
+  } finally {
+    isContainersClearing.value = false
   }
 }
 

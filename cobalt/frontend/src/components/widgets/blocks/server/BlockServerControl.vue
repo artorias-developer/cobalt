@@ -40,9 +40,10 @@
         hover-color="green"
         :filled="true"
         align="center"
-        :disabled="actionLoading"
         name="server-start"
-        @click="handleStart"
+        :disabled="isServerBusy"
+        :is-loading="isServerStarting"
+        @click="handleServerStart"
       />
       <ButtonGhost
         v-if="status?.running && hasServerStopAccess"
@@ -52,9 +53,10 @@
         hover-color="red"
         :filled="true"
         align="center"
-        :disabled="actionLoading"
         name="server-stop"
-        @click="handleStop"
+        :disabled="isServerBusy"
+        :is-loading="isServerStoping"
+        @click="handleServerStop"
       />
       <ButtonGhost
         v-if="hasServerStartAccess"
@@ -64,9 +66,10 @@
         hover-color="gray"
         :filled="true"
         align="center"
-        :disabled="actionLoading"
         name="server-restart"
-        @click="handleRestart"
+        :disabled="isServerBusy"
+        :is-loading="isServerRestarting"
+        @click="handleServerRestart"
       />
     </div>
     <slot/>
@@ -104,7 +107,9 @@ const userStore = useUserStore()
 const { notify } = useNotification()
 const { t } = useI18n()
 
-const actionLoading = ref(false)
+const isServerStarting = ref<boolean>(false)
+const isServerStoping = ref<boolean>(false)
+const isServerRestarting = ref<boolean>(false)
 
 /**
  * Fetches the server container status from the API and saves it to the store.
@@ -137,8 +142,10 @@ async function fetchServerStatus(): Promise<void> {
  * Returns:
  * - Promise<void>.
  */
-async function handleStart(): Promise<void> {
-  actionLoading.value = true
+async function handleServerStart(): Promise<void> {
+  if (isServerBusy.value) return
+
+  isServerStarting.value = true
 
   try {
     await httpServersApiService.start(props.serverId)
@@ -158,7 +165,7 @@ async function handleStart(): Promise<void> {
     })
   }
 
-  actionLoading.value = false
+  isServerStarting.value = false
 }
 
 /**
@@ -170,8 +177,10 @@ async function handleStart(): Promise<void> {
  * Returns:
  * - Promise<void>.
  */
-async function handleStop(): Promise<void> {
-  actionLoading.value = true
+async function handleServerStop(): Promise<void> {
+  if (isServerBusy.value) return
+
+  isServerStoping.value = true
 
   try {
     await httpServersApiService.stop(props.serverId)
@@ -191,7 +200,7 @@ async function handleStop(): Promise<void> {
     })
   }
 
-  actionLoading.value = false
+  isServerStoping.value = false
 }
 
 /**
@@ -203,8 +212,10 @@ async function handleStop(): Promise<void> {
  * Returns:
  * - Promise<void>.
  */
-async function handleRestart(): Promise<void> {
-  actionLoading.value = true
+async function handleServerRestart(): Promise<void> {
+  if (isServerBusy.value) return
+
+  isServerRestarting.value = true
 
   try {
     await httpServersApiService.restart(props.serverId)
@@ -224,7 +235,7 @@ async function handleRestart(): Promise<void> {
     })
   }
 
-  actionLoading.value = false
+  isServerRestarting.value = false
 }
 
 /**
@@ -295,6 +306,20 @@ const hasAnyVisibleButton = computed((): boolean => {
   if (hasServerStartAccess.value) return true
   return false
 })
+
+/**
+ * Checks whether any server action (start, stop, restart) is currently in progress.
+ * While `true`, all action buttons are disabled.
+ *
+ * Parameters:
+ * - null.
+ *
+ * Returns:
+ * - boolean: `true` if any action is running, `false` otherwise.
+ */
+const isServerBusy = computed((): boolean =>
+  isServerStarting.value || isServerStoping.value || isServerRestarting.value
+)
 
 /**
  * Returns the status entity from the store for the given server ID.
