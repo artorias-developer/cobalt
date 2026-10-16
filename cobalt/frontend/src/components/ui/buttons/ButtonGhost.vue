@@ -40,7 +40,7 @@ import Icon from "@/components/ui/Icon.vue"
 
 import spinnerIcon from "@/assets/images/svg/spinner.svg?raw"
 
-const SPINNER_DELAY_MS = 200
+const SPINNER_DELAY_MS = 150
 
 const props = defineProps<{
   icon?: string
