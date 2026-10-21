@@ -19,10 +19,10 @@
     <TabsBlock :tabs="tabs" v-model="activeTab">
       <template #general>
         <Form
-          id="edit-general-form"
-          ref="generalSettingsForm"
+          id="edit-general-settings-form"
+          ref="editGeneralSettingsForm"
           class="form"
-          :on-submit="() => generalSettingsForm?.validate() && handleGeneralSettingsEdit()"
+          :on-submit="() => editGeneralSettingsForm?.validate() && handleGeneralSettingsEdit()"
         >
           <div class="field">
             <FormFieldLabel
@@ -61,10 +61,10 @@
       </template>
       <template #security>
         <Form
-          id="edit-security-form"
-          ref="securitySettingsForm"
+          id="edit-security-settings-form"
+          ref="editSecuritySettingsForm"
           class="form"
-          :on-submit="() => securitySettingsForm?.validate() && handleSecuritySettingsEdit()"
+          :on-submit="() => editSecuritySettingsForm?.validate() && handleSecuritySettingsEdit()"
         >
           <div class="field">
             <FormFieldLabel
@@ -139,23 +139,21 @@
     <div class="footer" v-if="activeTab !== 'system'">
       <ButtonSolid
         submit
-        form="edit-general-form"
+        form="edit-general-settings-form"
         v-if="activeTab === 'general'"
         :text="$t('common.save')"
         color="blue"
         name="settings-save-general"
         :is-loading="isGeneralEditing"
-        @click="generalSettingsForm?.validate() && handleGeneralSettingsEdit()"
       />
       <ButtonSolid
         submit
-        form="edit-security-form"
+        form="edit-security-settings-form"
         v-if="activeTab === 'security'"
         :text="$t('common.save')"
         color="blue"
         name="settings-save-security"
         :is-loading="isSecurityEditing"
-        @click="securitySettingsForm?.validate() && handleSecuritySettingsEdit()"
       />
     </div>
   </Block>
@@ -194,10 +192,10 @@ const router = useRouter()
 
 const activeTab = ref<string | null>(null)
 
-const generalSettingsForm = ref<InstanceType<typeof Form> | null>(null)
+const editGeneralSettingsForm = ref<InstanceType<typeof Form> | null>(null)
 const isGeneralEditing = ref<boolean>(false)
 
-const securitySettingsForm = ref<InstanceType<typeof Form> | null>(null)
+const editSecuritySettingsForm = ref<InstanceType<typeof Form> | null>(null)
 const isSecurityEditing = ref<boolean>(false)
 
 const isCacheClearing = ref<boolean>(false)

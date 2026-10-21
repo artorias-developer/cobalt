@@ -138,7 +138,7 @@
   }
 }
 
-$ghost-colors: gray, red, blue, green, yellow;
+$ghost-colors: "gray", "red", "blue", "green", "yellow";
 
 @mixin button-ghost-base {
   position: relative;

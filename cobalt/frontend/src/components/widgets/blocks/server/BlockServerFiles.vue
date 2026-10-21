@@ -136,7 +136,7 @@
       </div>
     </template>
   </Block>
-  <Popup ref="createPopup" class="create-file-popup">
+  <Popup ref="createFilePopup" class="create-file-popup">
     <template #content="{ close }">
       <Header
         :icon="filesIcon"
@@ -147,13 +147,13 @@
         :icon-filled="true"
       />
       <Form
-        id="create-form"
-        ref="createForm"
+        id="create-file-form"
+        ref="createFileForm"
         class="form"
-        :on-submit="() => createForm?.validate() && handleCreate(close)"
+        :on-submit="() => createFileForm?.validate() && handleCreate(close)"
       >
         <FormInput
-          v-model="createName"
+          v-model="createFileName"
           :validationName="$t('servers.server.files.popups.create.name.label')"
           :label="$t('servers.server.files.popups.create.name.label')"
           :placeholder="$t('servers.server.files.popups.create.name.placeholder')"
@@ -161,7 +161,7 @@
           :required="true"
         />
         <FormSelect
-          v-model="createType"
+          v-model="createFileType"
           :options="createTypeOptions"
           :validationName="$t('servers.server.files.popups.create.type.label')"
           :label="$t('servers.server.files.popups.create.type.label')"
@@ -178,17 +178,16 @@
         />
         <ButtonSolid
           submit
-          form="create-form"
+          form="create-file-form"
           :text="$t('common.create')"
           color="blue"
           name="file-create"
           :is-loading="isFileCreating"
-          @click="createForm?.validate() && handleCreate(close)"
         />
       </div>
     </template>
   </Popup>
-  <Popup ref="renamePopup" class="rename-file-popup">
+  <Popup ref="renameFilePopup" class="rename-file-popup">
     <template #content="{ close }">
       <Header
         :icon="editIcon"
@@ -199,13 +198,13 @@
         :icon-filled="true"
       />
       <Form
-        id="rename-form"
-        ref="renameForm"
+        id="rename-file-form"
+        ref="renameFileForm"
         class="form"
-        :on-submit="() => renameForm?.validate() && handleRename(close)"
+        :on-submit="() => renameFileForm?.validate() && handleRename(close)"
       >
         <FormInput
-          v-model="renameName"
+          v-model="renameFileName"
           :validationName="$t('servers.server.files.popups.rename.name.label')"
           :label="$t('servers.server.files.popups.rename.name.label')"
           :placeholder="$t('servers.server.files.popups.rename.name.placeholder')"
@@ -221,17 +220,16 @@
         />
         <ButtonSolid
           submit
-          form="rename-form"
+          form="rename-file-form"
           :text="$t('servers.server.files.popups.rename.submit')"
           color="blue"
           name="file-rename"
           :is-loading="isFileRenaming"
-          @click="renameForm?.validate() && handleRename(close)"
         />
       </div>
     </template>
   </Popup>
-  <Popup ref="movePopup" class="move-file-popup">
+  <Popup ref="moveFilesPopup" class="move-file-popup">
     <template #content="{ close }">
       <Header
         :icon="moveIcon"
@@ -242,13 +240,13 @@
         :icon-filled="true"
       />
       <Form
-        id="move-form"
-        ref="moveForm"
+        id="move-files-form"
+        ref="moveFilesForm"
         class="form"
-        :on-submit="() => moveForm?.validate() && handleMove(close)"
+        :on-submit="() => moveFilesForm?.validate() && handleMove(close)"
       >
         <FormInput
-          v-model="moveDestination"
+          v-model="moveFilesDestination"
           :validationName="$t('servers.server.files.popups.move.destination.label')"
           :label="$t('servers.server.files.popups.move.destination.label')"
           :placeholder="$t('servers.server.files.popups.move.destination.placeholder')"
@@ -264,17 +262,16 @@
         />
         <ButtonSolid
           submit
-          form="move-form"
+          form="move-files-form"
           :text="$t('common.move')"
           color="blue"
           name="file-move"
-          :is-loading="isFileMoving"
-          @click="moveForm?.validate() && handleMove(close)"
+          :is-loading="isFilesMoving"
         />
       </div>
     </template>
   </Popup>
-  <Popup ref="uploadPopup" class="upload-file-popup">
+  <Popup ref="uploadFilesPopup" class="upload-file-popup">
     <template #content="{ close }">
       <Header
         :icon="filesIcon"
@@ -285,15 +282,15 @@
         :icon-filled="true"
       />
       <Form
-        id="upload-form"
-        ref="uploadForm"
+        id="upload-files-form"
+        ref="uploadFilesForm"
         class="form"
-        :on-submit="() => uploadForm?.validate() && handleUpload(close)"
+        :on-submit="() => uploadFilesForm?.validate() && handleUpload(close)"
       >
         <FormFileUpload
-          v-model="uploadFiles"
+          v-model="uploadFilesFiles"
           :validationName="$t('servers.server.files.popups.upload.label')"
-          :upload-progress="uploadProgress"
+          :upload-progress="uploadFilesProgress"
           :required="true"
         />
       </Form>
@@ -305,11 +302,10 @@
         />
         <ButtonSolid
           submit
-          form="upload-form"
+          form="upload-files-form"
           :text="$t('common.upload')"
           color="blue"
-          :is-loading="isFileUploading"
-          @click="uploadForm?.validate() && handleUpload(close)"
+          :is-loading="isFilesUploading"
         />
       </div>
     </template>
@@ -414,29 +410,29 @@ const isFileEditing = ref<boolean>(false)
 const openedFile = ref<FileContentEntity | null>(null)
 const fileEditorRef = ref<InstanceType<typeof Editor> | null>(null)
 
-const createPopup = ref<InstanceType<typeof Popup> | null>(null)
-const createForm = ref<InstanceType<typeof Form> | null>(null)
-const createName = ref<string>("")
-const createType = ref<FileType>("file")
+const createFilePopup = ref<InstanceType<typeof Popup> | null>(null)
+const createFileForm = ref<InstanceType<typeof Form> | null>(null)
+const createFileName = ref<string>("")
+const createFileType = ref<FileType>("file")
 const isFileCreating = ref<boolean>(false)
 
-const renamePopup = ref<InstanceType<typeof Popup> | null>(null)
-const renameForm = ref<InstanceType<typeof Form> | null>(null)
-const renameName = ref<string>("")
-const renameTargetPath = ref<string>("")
+const renameFilePopup = ref<InstanceType<typeof Popup> | null>(null)
+const renameFileForm = ref<InstanceType<typeof Form> | null>(null)
+const renameFileName = ref<string>("")
+const renameFileTargetPath = ref<string>("")
 const isFileRenaming = ref<boolean>(false)
 
-const movePopup = ref<InstanceType<typeof Popup> | null>(null)
-const moveForm = ref<InstanceType<typeof Form> | null>(null)
-const moveDestination = ref<string>("")
-const movePaths = ref<string[]>([])
-const isFileMoving = ref<boolean>(false)
+const moveFilesPopup = ref<InstanceType<typeof Popup> | null>(null)
+const moveFilesForm = ref<InstanceType<typeof Form> | null>(null)
+const moveFilesDestination = ref<string>("")
+const moveFilesPaths = ref<string[]>([])
+const isFilesMoving = ref<boolean>(false)
 
-const uploadPopup = ref<InstanceType<typeof Popup> | null>(null)
-const uploadForm = ref<InstanceType<typeof Form> | null>(null)
-const uploadFiles = ref<File[]>([])
-const uploadProgress = ref<number | null>(null)
-const isFileUploading = ref<boolean>(false)
+const uploadFilesPopup = ref<InstanceType<typeof Popup> | null>(null)
+const uploadFilesForm = ref<InstanceType<typeof Form> | null>(null)
+const uploadFilesFiles = ref<File[]>([])
+const uploadFilesProgress = ref<number | null>(null)
+const isFilesUploading = ref<boolean>(false)
 
 const confirmPopup = ref<InstanceType<typeof PopupConfirm> | null>(null)
 
@@ -971,9 +967,9 @@ async function deletePaths(paths: string[]): Promise<void> {
  * - void.
  */
 function openCreatePopup(): void {
-  createName.value = ""
-  createType.value = "file"
-  createPopup.value?.open()
+  createFileName.value = ""
+  createFileType.value = "file"
+  createFilePopup.value?.open()
 }
 
 /**
@@ -991,10 +987,10 @@ async function handleCreate(close: () => void): Promise<void> {
 
   isFileCreating.value = true
 
-  const path = currentPath.value.replace(/\/$/, "") + "/" + createName.value
+  const path = currentPath.value.replace(/\/$/, "") + "/" + createFileName.value
 
   try {
-    await httpFilesApiService.create(props.serverId!, { path, type: createType.value })
+    await httpFilesApiService.create(props.serverId!, { path, type: createFileType.value })
     notify({
       type: "success",
       text: t("servers.server.files.create.success")
@@ -1055,9 +1051,9 @@ async function handleReload(): Promise<void> {
  * - void.
  */
 function openRenamePopup(row: Record<string, any>): void {
-  renameTargetPath.value = row.path
-  renameName.value = row.name
-  renamePopup.value?.open()
+  renameFileTargetPath.value = row.path
+  renameFileName.value = row.name
+  renameFilePopup.value?.open()
 }
 
 /**
@@ -1077,8 +1073,8 @@ async function handleRename(close: () => void): Promise<void> {
 
   try {
     await httpFilesApiService.rename(props.serverId!, {
-      path: renameTargetPath.value,
-      name: renameName.value,
+      path: renameFileTargetPath.value,
+      name: renameFileName.value,
     })
     notify({
       type: "success",
@@ -1106,9 +1102,9 @@ async function handleRename(close: () => void): Promise<void> {
  * - void.
  */
 function openMovePopup(paths: string[]): void {
-  movePaths.value = paths
-  moveDestination.value = ""
-  movePopup.value?.open()
+  moveFilesPaths.value = paths
+  moveFilesDestination.value = ""
+  moveFilesPopup.value?.open()
 }
 
 /**
@@ -1123,14 +1119,14 @@ function openMovePopup(paths: string[]): void {
  * - Promise<void>.
  */
 async function handleMove(close: () => void): Promise<void> {
-  if (isFileMoving.value) return
+  if (isFilesMoving.value) return
 
-  isFileMoving.value = true
+  isFilesMoving.value = true
 
   try {
     await httpFilesApiService.move(props.serverId!, {
-      paths: movePaths.value,
-      destination_path: moveDestination.value,
+      paths: moveFilesPaths.value,
+      destination_path: moveFilesDestination.value,
     })
     notify({
       type: "success",
@@ -1145,7 +1141,7 @@ async function handleMove(close: () => void): Promise<void> {
       text: error?.response?.data?.message ?? t("servers.server.files.move.error"),
     })
   } finally {
-    isFileMoving.value = false
+    isFilesMoving.value = false
   }
 }
 
@@ -1184,8 +1180,8 @@ async function handleExtract(path: string): Promise<void> {
  * - void.
  */
 function openUploadPopup(): void {
-  uploadFiles.value = []
-  uploadPopup.value?.open()
+  uploadFilesFiles.value = []
+  uploadFilesPopup.value?.open()
 }
 
 /**
@@ -1199,17 +1195,17 @@ function openUploadPopup(): void {
  * - Promise<void>.
  */
 async function handleUpload(close: () => void): Promise<void> {
-  if (isFileUploading.value || !uploadFiles.value.length) return
+  if (isFilesUploading.value || !uploadFilesFiles.value.length) return
 
-  isFileUploading.value = true
-  uploadProgress.value = 0
+  isFilesUploading.value = true
+  uploadFilesProgress.value = 0
 
   try {
     await httpFilesApiService.upload(props.serverId!, {
       path: currentPath.value,
-      files: uploadFiles.value,
+      files: uploadFilesFiles.value,
     }, (percent) => {
-      uploadProgress.value = percent
+      uploadFilesProgress.value = percent
     })
     notify({
       type: "success",
@@ -1223,8 +1219,8 @@ async function handleUpload(close: () => void): Promise<void> {
       text: error?.response?.data?.message ?? t("servers.server.files.upload.error"),
     })
   } finally {
-    uploadProgress.value = null
-    isFileUploading.value = false
+    uploadFilesProgress.value = null
+    isFilesUploading.value = false
   }
 }
 

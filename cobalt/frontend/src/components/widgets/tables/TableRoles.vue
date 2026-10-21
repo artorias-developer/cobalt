@@ -135,7 +135,6 @@
           color="blue"
           name="role-create"
           :is-loading="isRoleCreating"
-          @click="createRoleForm?.validate() && handleCreateRole(close)"
         />
       </div>
     </template>
@@ -194,7 +193,6 @@
           color="blue"
           name="role-update"
           :is-loading="isRoleEditing"
-          @click="editRoleForm?.validate() && handleEditRole(close)"
         />
       </div>
     </template>

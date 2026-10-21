@@ -206,7 +206,6 @@
               color="blue"
               name="server-create"
               :is-loading="isServerCreating"
-              @click="step2Form?.validate() && handleCreateServer(close)"
             />
           </div>
         </div>

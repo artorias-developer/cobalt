@@ -1,6 +1,6 @@
 import { fileURLToPath, URL } from "node:url"
 
-import { defineConfig, Plugin } from "vite"
+import { defineConfig } from "vite"
 import vue from "@vitejs/plugin-vue"
 
 
@@ -34,15 +34,21 @@ export default defineConfig(() => {
       rolldownOptions: {
         output: {
           manualChunks: (id: string) => {
+            if (!id.includes("node_modules/")) return
+
             const chunks: Record<string, string[]> = {
-              vue: ["vue", "vue-router", "vue-i18n", "pinia", "@babel/runtime"],
-              echarts: ["echarts"],
+              vue: ["vue", "@vue", "vue-router", "vue-i18n", "@intlify", "pinia", "@babel/runtime"],
+              echarts: ["echarts", "zrender"],
               editor: ["codemirror", "@codemirror", "@lezer", "@uiw/codemirror-theme-github"],
               qrcode: ["qr-code-styling"],
             }
 
+            const path = id.split("node_modules/").pop()!
+            const parts = path.split("/")
+            const pkg = path.startsWith("@") ? `${parts[0]}/${parts[1]}` : parts[0]
+
             for (const [chunk, packages] of Object.entries(chunks)) {
-              if (packages.some(pkg => id.includes(pkg))) return chunk
+              if (packages.some(p => pkg === p || pkg.startsWith(`${p}/`))) return chunk
             }
           }
         }

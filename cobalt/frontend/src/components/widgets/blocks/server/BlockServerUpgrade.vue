@@ -26,9 +26,10 @@
     />
     <Form
       v-else
-      ref="upgradeForm"
+      id="server-upgrade-form"
+      ref="serverUpgradeForm"
       class="form"
-      :on-submit="() => upgradeForm?.validate() && handleUpgrade()"
+      :on-submit="() => serverUpgradeForm?.validate() && handleUpgrade()"
     >
       <FormSelect
         v-model="selectedVersion"
@@ -40,10 +41,12 @@
         :required="true"
       />
       <ButtonSolid
+        submit
+        form="server-upgrade-form"
         :text="$t('common.upgrade')"
         color="blue"
         name="server-upgrade"
-        @click="handleUpgrade()"
+        :is-loading="isServerUpgrading"
       />
     </Form>
   </Block>
@@ -79,8 +82,9 @@ const userStore = useUserStore()
 const { notify } = useNotification()
 const { t } = useI18n()
 
-const upgradeForm = ref<InstanceType<typeof Form> | null>(null)
+const serverUpgradeForm = ref<InstanceType<typeof Form> | null>(null)
 const selectedVersion = ref<string>("")
+const isServerUpgrading = ref<boolean>(false)
 
 /**
  * Returns the server entity from the store for the given server ID.
@@ -155,7 +159,9 @@ const hasServerUpgradeAccess = computed((): boolean =>
  * - Promise<void>.
  */
 async function handleUpgrade(): Promise<void> {
-  if (!selectedVersion.value) return
+  if (isServerUpgrading.value || !selectedVersion.value) return
+
+  isServerUpgrading.value = true
 
   try {
     await httpServersApiService.upgradeOne(props.serverId, {
@@ -173,6 +179,8 @@ async function handleUpgrade(): Promise<void> {
       type: "error",
       text: error?.response?.data?.message ?? t("servers.server.settings.upgrade.error")
     })
+  } finally {
+    isServerUpgrading.value = false
   }
 }
 </script>
