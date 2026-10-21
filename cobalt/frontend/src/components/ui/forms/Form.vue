@@ -49,6 +49,7 @@ const fields = ref<Map<symbol, FormField>>(new Map())
  * - void.
  */
 function handleSubmit(): void {
+  console.trace("form submit")
   props.onSubmit?.()
 }
 
@@ -67,6 +68,7 @@ function handleSubmit(): void {
  * - void.
  */
 function handleEnter(event: KeyboardEvent): void {
+  console.log("enter", event.target)
   if (event.shiftKey) {
     return
   }
@@ -117,6 +119,7 @@ function unregister(id: symbol): void {
  * - true if all fields are filled, false if any field is empty.
  */
 function validate(): boolean {
+  console.trace("validate")
   for (const field of fields.value.values()) {
     const value = field.getValue()
     const empty = value === undefined || value === null || value === "" || (Array.isArray(value) && value.length === 0)

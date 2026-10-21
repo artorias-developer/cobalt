@@ -137,7 +137,6 @@
           color="blue"
           name="user-create"
           :is-loading="isUserCreating"
-          @click="createUserForm?.validate() && handleCreateUser(close)"
         />
       </div>
     </template>
@@ -198,7 +197,6 @@
           color="blue"
           name="user-update"
           :is-loading="isUserEditing"
-          @click="editUserForm?.validate() && handleEditUser(close)"
         />
       </div>
     </template>
