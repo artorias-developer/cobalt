@@ -24,6 +24,7 @@ The following games are currently supported:
 | <img src="https://raw.githubusercontent.com/artorias-developer/cobalt/main/cobalt/frontend/src/assets/images/games/barotrauma/icon.png">           | Barotrauma            | Vanilla              |
 
 </div>
+
 ## Features
 
 Cobalt ships with everything you need to run and manage game servers without leaving the browser:
@@ -37,7 +38,7 @@ Cobalt ships with everything you need to run and manage game servers without lea
 - Several color themes (Dark, Light).
 - Full mobile devices support.
 
-## Core project team
+## Project team
 
 <div class="table team">
 
@@ -46,6 +47,17 @@ Cobalt ships with everything you need to run and manage game servers without lea
 | Artorias | Founder | [GitHub](https://github.com/artorias-developer) |
 
 </div>
+
+## Screenshots
+
+![Screenshot 1](https://raw.githubusercontent.com/artorias-developer/cobalt/main/docs/readme/images/cobalt/1.png)
+![Screenshot 2](https://raw.githubusercontent.com/artorias-developer/cobalt/main/docs/readme/images/cobalt/2.png)
+![Screenshot 3](https://raw.githubusercontent.com/artorias-developer/cobalt/main/docs/readme/images/cobalt/3.png)
+![Screenshot 4](https://raw.githubusercontent.com/artorias-developer/cobalt/main/docs/readme/images/cobalt/4.png)
+![Screenshot 5](https://raw.githubusercontent.com/artorias-developer/cobalt/main/docs/readme/images/cobalt/5.png)
+![Screenshot 6](https://raw.githubusercontent.com/artorias-developer/cobalt/main/docs/readme/images/cobalt/6.png)
+![Screenshot 7](https://raw.githubusercontent.com/artorias-developer/cobalt/main/docs/readme/images/cobalt/7.png)
+![Screenshot 8](https://raw.githubusercontent.com/artorias-developer/cobalt/main/docs/readme/images/cobalt/8.png)
 
 
 <style>
