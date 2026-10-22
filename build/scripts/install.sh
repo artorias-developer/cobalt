@@ -26,15 +26,14 @@ is_debian_based() (
 )
 
 case "$(uname -s)" in
-  Darwin) ;;
   Linux)
     if ! is_debian_based; then
-      echo "Error: unsupported Linux distribution. Only Debian/Ubuntu-based systems and macOS are supported."
+      echo "Error: unsupported Linux distribution. Only Ubuntu and Debian are supported."
       exit 1
     fi
     ;;
   *)
-    echo "Error: unsupported OS. Only Debian/Ubuntu-based systems and macOS are supported."
+    echo "Error: unsupported OS. Only Ubuntu and Debian are supported."
     exit 1
     ;;
 esac
