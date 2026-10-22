@@ -6,7 +6,12 @@ This guide explains how to run Cobalt's end-to-end (E2E) test suite locally.
 
 #### Operating system
 
-Ubuntu 22.04 LTS or newer, or macOS. Other distributions are not officially supported and may require manual adjustments to the installer.
+The following operating systems are supported. Other distributions are not officially supported and may not work or may require manual adjustments to the installer.
+
+| OS     | Supported versions      |
+|--------|-------------------------|
+| Ubuntu | 22.04 LTS or newer      |
+| Debian | 13 (Trixie) or newer    |
 
 ---
 
@@ -21,8 +26,10 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.8/install.sh | bash
 nvm install 24
 ```
 
-```bash [macOS]
-brew install node
+```bash [Debian]
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.8/install.sh | bash
+\. "$HOME/.nvm/nvm.sh"
+nvm install 24
 ```
 :::
 

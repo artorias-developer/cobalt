@@ -6,7 +6,12 @@ This guide explains how to install Cobalt locally.
 
 #### Operating system
 
-Ubuntu 22.04 LTS or newer, or macOS. Other distributions are not officially supported and may require manual adjustments to the installer.
+The following operating systems are supported. Other distributions are not officially supported and may not work or may require manual adjustments to the installer.
+
+| OS     | Supported versions      |
+|--------|-------------------------|
+| Ubuntu | 22.04 LTS or newer      |
+| Debian | 13 (Trixie) or newer    |
 
 ---
 
@@ -19,8 +24,8 @@ Required for cloning the Cobalt repository.
 apt install git
 ```
 
-```bash [macOS]
-brew install git
+```bash [Debian]
+apt install git
 ```
 :::
 
@@ -35,16 +40,12 @@ Used to run common development commands.
 apt install make
 ```
 
-```bash [macOS]
-brew install make
+```bash [Debian]
+apt install make
 ```
 :::
 
 ## First-time setup
-
-::: warning
-The installer is officially tested on **Ubuntu 22.04+**. Other operating systems may work but aren't officially supported and could require manual adjustments.
-:::
 
 1. Clone the repository:
 

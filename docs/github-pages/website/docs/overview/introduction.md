@@ -49,27 +49,9 @@ Cobalt ships with everything you need to run and manage game servers without lea
 
 
 <style>
-.table.games table {
-  table-layout: fixed;
-  width: 100%;
-}
-
-.table.games table th:nth-child(1) {
-  width: 36px;
-  text-align: center;
-}
-
-.table.games table th:nth-child(2) { 
-  min-width: 200px; 
-}
-
-.table.games table th:nth-child(3) { 
-  min-width: 200px; 
-}
-
 .table.games table td:nth-child(1) img {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   object-fit: contain;
 }
 </style>

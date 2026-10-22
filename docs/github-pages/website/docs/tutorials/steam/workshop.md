@@ -83,48 +83,9 @@ C:\Program Files (x86)\Steam\steamapps\workshop\content\1281930\1234567890
 5. Open the `workshop/content` folder in the file manager.
 
 <style>
-.table.games table {
-  table-layout: fixed;
-  width: 100%;
-}
-
-.table.games table th:nth-child(1) {
-  width: 36px;
-  text-align: center;
-}
-
-.table.games table th:nth-child(2) {
-  min-width: 200px;
-}
-
-.table.games table th:nth-child(3) {
-  min-width: 120px;
-}
-
-.table.games table th:nth-child(4) {
-  min-width: 100px;
-}
-
 .table.games table td:nth-child(1) img {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   object-fit: contain;
-}
-
-.table.paths table {
-  table-layout: fixed;
-  width: 100%;
-}
-
-.table.paths table td:nth-child(2) {
-  word-break: break-all;
-}
-
-.table.paths table th:nth-child(1) {
-  min-width: 100px;
-}
-
-.table.paths table th:nth-child(2) {
-  min-width: 200px;
 }
 </style>
