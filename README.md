@@ -25,6 +25,7 @@ Cobalt is a web dashboard for running game servers on your own VPS / VDS. It cut
 <img src="docs/readme/images/cobalt/5.png" width="100%">
 <img src="docs/readme/images/cobalt/6.png" width="100%">
 <img src="docs/readme/images/cobalt/7.png" width="100%">
+<img src="docs/readme/images/cobalt/8.png" width="100%">
 
 </details>
 
@@ -95,6 +96,7 @@ Each game has its own requirements, so you'll need to check them yourself from o
 <img src="docs/readme/images/cobalt/5.png" width="100%">
 <img src="docs/readme/images/cobalt/6.png" width="100%">
 <img src="docs/readme/images/cobalt/7.png" width="100%">
+<img src="docs/readme/images/cobalt/8.png" width="100%">
 
 </details>
 
