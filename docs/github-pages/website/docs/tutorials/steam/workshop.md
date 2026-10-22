@@ -84,8 +84,8 @@ C:\Program Files (x86)\Steam\steamapps\workshop\content\1281930\1234567890
 
 <style>
 .table.games table td:nth-child(1) img {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   object-fit: contain;
 }
 </style>

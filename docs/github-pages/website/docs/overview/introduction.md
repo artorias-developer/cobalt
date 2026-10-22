@@ -50,8 +50,8 @@ Cobalt ships with everything you need to run and manage game servers without lea
 
 <style>
 .table.games table td:nth-child(1) img {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   object-fit: contain;
 }
 </style>
