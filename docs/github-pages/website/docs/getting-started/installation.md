@@ -25,9 +25,15 @@ A static public IPv4 address is required so the dashboard and game servers are r
 
 Required for cloning the Cobalt repository.
 
-```bash
+::: code-group
+```bash [Ubuntu]
 apt install git
 ```
+
+```bash [Debian]
+apt install git
+```
+:::
 
 ## Quick start
 
