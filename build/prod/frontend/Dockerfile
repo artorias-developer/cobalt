@@ -7,7 +7,7 @@ RUN npm install
 
 COPY cobalt/frontend ./
 
-RUN --mount=type=secret,id=frontend_env,target=/app/.env \
+RUN --mount=type=bind,source=generated/prod/build/frontend/.env,target=/app/.env \
     set -a && . /app/.env && set +a && npm run build
 
 FROM alpine:3.24.2

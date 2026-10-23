@@ -36,8 +36,6 @@ services:
       dockerfile: build/prod/frontend/Dockerfile
       labels:
         - managed_by=cobalt
-      secrets:
-        - frontend_env
     container_name: prod_cobalt_frontend
     restart: "no"
     volumes:
@@ -231,7 +229,3 @@ volumes:
   prod_frontend_dist:
     labels:
       - managed_by=cobalt
-
-secrets:
-  frontend_env:
-    file: ../../generated/prod/build/frontend/.env
