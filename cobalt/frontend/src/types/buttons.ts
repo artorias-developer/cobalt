@@ -7,7 +7,6 @@
 
 import type { Color } from "@/types"
 
-export type ButtonType = "router-link" | "a" | "button"
 export type ButtonTarget = "_blank" | "_self" | "_parent" | "_top"
 export type ButtonAlign = "start" | "center"
 
@@ -25,18 +24,32 @@ export type WalletButton = {
   hoverColor: Color
 }
 
-export type MenuButton = {
-  type: ButtonType
+type MenuButtonBase = {
   text?: string
   icon: string
   baseColor: Color
   hoverColor: Color
   name?: string
   isVisible?: boolean
-  external?: boolean
-  url?: string
-  action?: () => void
 }
+
+export type RouteMenuButton = MenuButtonBase & {
+  type: "router-link"
+  url: string
+}
+
+export type LinkMenuButton = MenuButtonBase & {
+  type: "a"
+  url: string
+  external?: boolean
+}
+
+export type ActionMenuButton = MenuButtonBase & {
+  type: "button"
+  action: () => void
+}
+
+export type MenuButton = RouteMenuButton | LinkMenuButton | ActionMenuButton
 
 export type ActionsMenuButton = {
   label: string

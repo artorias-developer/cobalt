@@ -19,6 +19,7 @@
         </li>
       </ul>
       <Form
+        id="login-form"
         ref="loginForm"
         class="form"
         :on-submit="() => loginForm?.validate() && handleLogin()"
@@ -43,11 +44,12 @@
       </Form>
       <div class="actions">
         <ButtonSolid
-          type="button"
+          submit
+          form="login-form"
           :text="$t('login.signIn.label')"
           color="blue"
           name="sign-in"
-          @click="loginForm?.validate() && handleLogin()"
+          :is-loading="isLogin"
         />
       </div>
     </Block>
@@ -82,6 +84,7 @@ const { t } = useI18n()
 const loginForm = ref<InstanceType<typeof Form> | null>(null)
 const login = ref<string>("")
 const password = ref<string>("")
+const isLogin = ref<boolean>(false)
 
 /**
  * Handles the login form submission.
@@ -94,6 +97,10 @@ const password = ref<string>("")
  * - Promise<void>.
  */
 async function handleLogin(): Promise<void> {
+  if (isLogin.value) return
+
+  isLogin.value = true
+
   try {
     await httpAuthApiService.login({
       login: login.value,
@@ -115,6 +122,8 @@ async function handleLogin(): Promise<void> {
       type: "error",
       text: error?.response?.data?.message ?? t("login.signIn.error")
     })
+  } finally {
+    isLogin.value = false
   }
 }
 </script>

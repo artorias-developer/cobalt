@@ -32,7 +32,6 @@
       <template #tableRowActions="{ row }">
         <ButtonGhost
           v-if="hasUsersUpdateAccess"
-          type="button"
           :icon="editIcon"
           base-color="gray"
           hover-color="gray"
@@ -43,7 +42,6 @@
         />
         <ButtonGhost
           v-if="hasUsersDeleteAccess"
-          type="button"
           :icon="trashIcon"
           base-color="red"
           hover-color="red"
@@ -56,7 +54,6 @@
       <template #footerActions>
         <ButtonSolid
           v-if="hasUsersCreateAccess"
-          type="button"
           :text="$t('common.create')"
           color="blue"
           name="user-create-popup"
@@ -64,7 +61,6 @@
         />
         <ButtonSolid
           v-if="hasSelected && hasUsersDeleteAccess"
-          type="button"
           :text="$t('common.delete')"
           color="gray"
           @click="handleDeleteSelected"
@@ -96,6 +92,7 @@
         :icon-filled="true"
       />
       <Form
+        id="create-user-form"
         ref="createUserForm"
         class="form"
         :on-submit="() => createUserForm?.validate() && handleCreateUser(close)"
@@ -129,17 +126,17 @@
       </Form>
       <div class="actions">
         <ButtonSolid
-          type="button"
           :text="$t('common.close')"
           color="gray"
           @click="close"
         />
         <ButtonSolid
-          type="button"
+          submit
+          form="create-user-form"
           :text="$t('common.create')"
           color="blue"
           name="user-create"
-          @click="createUserForm?.validate() && handleCreateUser(close)"
+          :is-loading="isUserCreating"
         />
       </div>
     </template>
@@ -155,6 +152,7 @@
         :icon-filled="true"
       />
       <Form
+        id="edit-user-form"
         ref="editUserForm"
         class="form"
         :on-submit="() => editUserForm?.validate() && handleEditUser(close)"
@@ -188,17 +186,17 @@
       </Form>
       <div class="actions">
         <ButtonSolid
-          type="button"
           :text="$t('common.close')"
           color="gray"
           @click="close"
         />
         <ButtonSolid
-          type="button"
+          submit
+          form="edit-user-form"
           :text="$t('common.save')"
           color="blue"
           name="user-update"
-          @click="editUserForm?.validate() && handleEditUser(close)"
+          :is-loading="isUserEditing"
         />
       </div>
     </template>
@@ -273,6 +271,7 @@ const createUserPopup = ref<InstanceType<typeof Popup> | null>(null)
 const userLogin = ref<string>("")
 const userPassword = ref<string>("")
 const selectedRole = ref<number | undefined>(undefined)
+const isUserCreating = ref<boolean>(false)
 
 const editUserForm = ref<InstanceType<typeof Form> | null>(null)
 const editUserPopup = ref<InstanceType<typeof Popup> | null>(null)
@@ -280,6 +279,7 @@ const editUserId = ref<number | null>(null)
 const editUserLogin = ref<string>("")
 const editUserPassword = ref<string>("")
 const editSelectedRole = ref<number | undefined>(undefined)
+const isUserEditing = ref<boolean>(false)
 
 const confirmPopup = ref<InstanceType<typeof PopupConfirm> | null>(null)
 
@@ -449,7 +449,7 @@ function handleSearchChange(): void {
  * - void.
  */
 function handleDeleteUser(userId: number): void {
-  confirmPopup.value?.open(() => deleteUser(userId))
+  confirmPopup.value?.open(async () => await deleteUser(userId))
 }
 
 /**
@@ -487,7 +487,7 @@ async function deleteUser(userId: number): Promise<void> {
  * - void.
  */
 function handleDeleteSelected(): void {
-  confirmPopup.value?.open(() => deleteSelected())
+  confirmPopup.value?.open(async () => await deleteSelected())
 }
 
 /**
@@ -560,6 +560,10 @@ function resetEditUserForm(): void {
  * - Promise<void>.
  */
 async function handleCreateUser(close: () => void): Promise<void> {
+  if (isUserCreating.value) return
+
+  isUserCreating.value = true
+
   try {
     await httpUsersApiService.createOne({
       login: userLogin.value,
@@ -578,6 +582,8 @@ async function handleCreateUser(close: () => void): Promise<void> {
       type: "error",
       text: error?.response?.data?.message ?? t("users.list.create.error")
     })
+  } finally {
+    isUserCreating.value = false
   }
 }
 
@@ -592,7 +598,9 @@ async function handleCreateUser(close: () => void): Promise<void> {
  * - Promise<void>.
  */
 async function handleEditUser(close: () => void): Promise<void> {
-  if (!editUserId.value) return
+  if (isUserEditing.value || !editUserId.value) return
+
+  isUserEditing.value = true
 
   try {
     const updated = await httpUsersApiService.updateOne(editUserId.value, {
@@ -617,6 +625,8 @@ async function handleEditUser(close: () => void): Promise<void> {
       type: "error",
       text: error?.response?.data?.message ?? t("users.list.update.error")
     })
+  } finally {
+    isUserEditing.value = false
   }
 }
 

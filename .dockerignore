@@ -3,6 +3,9 @@
 **/*.pyd
 **/*.pyc
 
+# Configs
+**/*.env
+
 # Folders
 **/__pycache__
 **/node_modules
@@ -12,3 +15,7 @@
 **/.idea
 **/.vscode
 **/*.tsbuildinfo
+**/generated
+
+# Exceptions (must stay after the rules above)
+!generated/prod/build/frontend/.env

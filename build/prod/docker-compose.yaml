@@ -37,8 +37,6 @@ services:
       labels:
         - managed_by=cobalt
     container_name: prod_cobalt_frontend
-    env_file:
-      - ../../generated/prod/build/frontend/.env
     restart: "no"
     volumes:
       - prod_frontend_dist:/frontend-dist

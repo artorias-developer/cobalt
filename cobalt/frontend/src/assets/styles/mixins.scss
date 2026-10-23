@@ -1,4 +1,6 @@
 @use "@/assets/styles/variables/themes" as *;
+@use "@/assets/styles/variables/spacing" as *;
+@use "@/assets/styles/variables/fonts" as *;
 
 @mixin scrollbar(
   $width: 6px,
@@ -74,4 +76,162 @@
   background-size: cover;
   background-position: center, top;
   background-repeat: no-repeat;
+}
+
+@mixin button-solid-base {
+  position: relative;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  text-decoration: none;
+  border-radius: 6px;
+  padding: 0 $space-xl;
+  transition: background-color 0.3s ease;
+  box-sizing: border-box;
+
+  &:hover {
+    &.blue {
+      background-color: color-mix(in srgb, var(--color-primary) 80%, transparent);
+    }
+
+    &.gray {
+      background-color: color-mix(in srgb, var(--color-gray-background) 65%, transparent);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px;
+  }
+
+  &.blue {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+
+    &:focus-visible {
+      outline: 2px solid var(--color-red);
+    }
+  }
+
+  &.gray {
+    background-color: var(--color-gray-background);
+    color: var(--color-gray);
+  }
+
+  span {
+    font-size: $font-md;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 768px) {
+    height: 36px;
+    padding: 0 $space-lg;
+
+    span {
+      font-size: $font-sm;
+    }
+  }
+}
+
+$ghost-colors: "gray", "red", "blue", "green", "yellow";
+
+@mixin button-ghost-base {
+  position: relative;
+  height: 40px;
+  min-width: 40px;
+  display: flex;
+  align-items: center;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  text-decoration: none;
+  gap: $space-md;
+  padding: $space-md;
+  color: var(--color-description);
+  background-color: transparent;
+  border-radius: 6px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  box-sizing: border-box;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px;
+  }
+
+  &.align-start {
+    justify-content: flex-start;
+  }
+
+  &.align-center {
+    justify-content: center;
+  }
+
+  &.background-text {
+    padding: 0 $space-xl;
+
+    .icon {
+      width: 14px;
+      height: 14px;
+
+      svg {
+        width: 14px;
+        height: 14px;
+      }
+    }
+  }
+
+  span {
+    font-size: $font-md;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  @each $name in $ghost-colors {
+    &.#{$name} {
+      color: var(--color-#{$name});
+
+      &.background,
+      &.background-text {
+        background-color: var(--color-#{$name}-background);
+      }
+    }
+
+    &.hover-#{$name}:hover,
+    &.active.hover-#{$name} {
+      color: var(--color-#{$name});
+      background-color: var(--color-#{$name}-background);
+    }
+
+    &.same-color.hover-#{$name}:hover {
+      background-color: color-mix(in srgb, var(--color-#{$name}-background) 65%, transparent);
+    }
+  }
+
+  @media (max-width: 768px) {
+    height: 36px;
+    min-width: 36px;
+
+    span {
+      font-size: $font-sm;
+    }
+
+    &.background-text {
+      padding: 0 $space-lg;
+
+      .icon {
+        width: 12px;
+        height: 12px;
+
+        svg {
+          width: 12px;
+          height: 12px;
+        }
+      }
+    }
+  }
 }

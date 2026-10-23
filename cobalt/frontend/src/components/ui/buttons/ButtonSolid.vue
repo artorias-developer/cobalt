@@ -6,120 +6,130 @@
   -->
 
 <template>
-  <router-link
-    v-if="type === 'router-link'"
-    class="button"
-    :class="[color]"
-    :to="to!"
-    :aria-label="name"
-    tabindex="0"
-  >
-    <span>{{ text }}</span>
-  </router-link>
-  <a
-    v-else-if="type === 'a'"
-    class="button"
-    :class="[color]"
-    :href="href"
-    :target="target"
-    :rel="target === '_blank' ? 'noopener noreferrer' : undefined"
-    :aria-label="name"
-    tabindex="0"
-  >
-    <span>{{ text }}</span>
-  </a>
   <button
-    v-else
-    type="button"
+    :type="submit ? 'submit' : 'button'"
+    :form="form"
     class="button"
-    :class="[color]"
+    :class="[color, { loading: isLoading }]"
     :name="name"
-    tabindex="0"
+    :disabled="isLoading"
+    :aria-busy="isLoading"
   >
-    <span>{{ text }}</span>
+    <span :class="{ hidden: showSpinner }">{{ text }}</span>
+    <i
+      v-if="showSpinner"
+      class="spinner"
+      aria-hidden="true"
+      v-html="spinnerIcon"
+    />
   </button>
 </template>
 
 <script setup lang="ts">
-import { type RouteLocationRaw } from "vue-router"
+import { onBeforeUnmount, ref, watch } from "vue"
 
-import type { ButtonTarget, ButtonType } from "@/types"
+import spinnerIcon from "@/assets/images/svg/spinner.svg?raw"
 
-defineProps<{
-  type: ButtonType
+const SPINNER_DELAY_MS = 150
+
+const props = defineProps<{
   text: string
   color: "blue" | "gray"
   name?: string
-  href?: string
-  to?: RouteLocationRaw
-  target?: ButtonTarget
+  submit?: boolean
+  form?: string
+  isLoading?: boolean
 }>()
+
+const showSpinner = ref(false)
+
+let spinnerTimer: ReturnType<typeof setTimeout> | null = null
+
+/**
+ * Cancels the pending spinner timer if there is one.
+ *
+ * Parameters:
+ * - null.
+ *
+ * Returns:
+ * - void.
+ */
+function clearSpinnerTimer(): void {
+  if (spinnerTimer !== null) {
+    clearTimeout(spinnerTimer)
+    spinnerTimer = null
+  }
+}
+
+watch(
+  () => props.isLoading,
+  (loading) => {
+    clearSpinnerTimer()
+
+    if (!loading) {
+      showSpinner.value = false
+
+      return
+    }
+
+    spinnerTimer = setTimeout(() => {
+      showSpinner.value = true
+      spinnerTimer = null
+    }, SPINNER_DELAY_MS)
+  },
+  { immediate: true }
+)
+
+onBeforeUnmount(clearSpinnerTimer)
 </script>
 
 <style scoped lang="scss">
+@use "@/assets/styles/mixins" as *;
+
 .button {
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  cursor: pointer;
-  outline: none;
-  text-decoration: none;
-  border-radius: 6px;
-  padding: 0 $space-xl;
-  transition: background-color 0.3s ease;
-  box-sizing: border-box;
-
-  &:hover {
-    &.blue {
-      background-color: color-mix(in srgb, var(--color-primary) 80%, transparent);
-    }
-
-    &.gray {
-      background-color: color-mix(in srgb, var(--color-gray-background) 65%, transparent);
-    }
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: -2px;
-  }
+  @include button-solid-base;
 
   &:disabled {
     opacity: 0.5;
     pointer-events: none;
   }
 
-  &.blue {
-    background-color: var(--color-primary);
-    color: var(--color-white);
+  &.loading {
+    pointer-events: none;
+  }
 
-    &:focus-visible {
-      outline: 2px solid var(--color-red);
+  span.hidden {
+    visibility: hidden;
+  }
+
+  .spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    display: flex;
+    animation: button-spin 0.8s linear infinite;
+
+    :deep(svg) {
+      width: 100%;
+      height: 100%;
     }
   }
+}
 
-  &.gray {
-    background-color: var(--color-gray-background);
-    color: var(--color-gray);
-  }
-
-  span {
-    font-size: $font-md;
-    font-weight: 600;
-    white-space: nowrap;
+@keyframes button-spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 
 @media (max-width: 768px) {
-  .button {
-    height: 36px;
-    padding: 0 $space-lg;
-
-    span {
-      font-size: $font-sm;
-    }
+  .button .spinner {
+    width: 18px;
+    height: 18px;
+    margin: -9px 0 0 -9px;
   }
 }
 </style>

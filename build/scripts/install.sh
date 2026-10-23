@@ -18,22 +18,22 @@ if [[ ! -t 0 || ! -t 1 ]]; then
   exit 1
 fi
 
-is_ubuntu() {
-  [[ -r /etc/os-release ]] || return 1
+is_debian_based() (
+  [[ -r /etc/os-release ]] || exit 1
   . /etc/os-release
-  [[ "${ID:-}" == "ubuntu" || "${ID_LIKE:-}" == *ubuntu* ]]
-}
+  [[ "${ID:-}" == "debian" || "${ID:-}" == "ubuntu" \
+     || "${ID_LIKE:-}" == *debian* || "${ID_LIKE:-}" == *ubuntu* ]]
+)
 
 case "$(uname -s)" in
-  Darwin) ;;
   Linux)
-    if ! is_ubuntu; then
-      echo "Error: unsupported Linux distribution. Only Ubuntu and macOS are supported."
+    if ! is_debian_based; then
+      echo "Error: unsupported Linux distribution. Only Ubuntu and Debian are supported."
       exit 1
     fi
     ;;
   *)
-    echo "Error: unsupported OS. Only Ubuntu and macOS are supported."
+    echo "Error: unsupported OS. Only Ubuntu and Debian are supported."
     exit 1
     ;;
 esac
@@ -42,6 +42,10 @@ install_curl() {
   echo "Installing curl..."
   local sudo_cmd=""
   if [[ $EUID -ne 0 ]]; then
+    if ! command -v sudo &>/dev/null; then
+      echo "Error: curl is missing and sudo is not available. Run as root or install curl manually."
+      exit 1
+    fi
     sudo_cmd="sudo"
   fi
   $sudo_cmd apt-get update -qq

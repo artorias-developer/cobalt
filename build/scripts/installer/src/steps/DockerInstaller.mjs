@@ -13,6 +13,7 @@ import fs from "node:fs";
  */
 export class DockerInstaller {
   static PHASE_ID = "docker";
+  static DOCKER_REPOSITORY_URL = "https://download.docker.com/linux";
 
   /**
    * Creates an installer.
@@ -102,24 +103,22 @@ export class DockerInstaller {
    * - object[]: Steps with command, commandArguments and optional standardInput.
    */
   #buildFullInstallPlan() {
+    const repository = this.#resolveRepository();
+    const repositoryUrl = `${DockerInstaller.DOCKER_REPOSITORY_URL}/${repository.distribution}`;
+
     return [
       { command: "apt-get", commandArguments: ["update"] },
       { command: "apt-get", commandArguments: ["install", "-y", "ca-certificates", "curl"] },
       { command: "install", commandArguments: ["-m", "0755", "-d", "/etc/apt/keyrings"] },
       {
         command: "curl",
-        commandArguments: [
-          "-fsSL",
-          "https://download.docker.com/linux/ubuntu/gpg",
-          "-o",
-          "/etc/apt/keyrings/docker.asc",
-        ],
+        commandArguments: ["-fsSL", `${repositoryUrl}/gpg`, "-o", "/etc/apt/keyrings/docker.asc"],
       },
       { command: "chmod", commandArguments: ["a+r", "/etc/apt/keyrings/docker.asc"] },
       {
         command: "tee",
         commandArguments: ["/etc/apt/sources.list.d/docker.sources"],
-        standardInput: this.#buildSourcesFile(),
+        standardInput: this.#buildSourcesFile(repositoryUrl, repository.codename),
       },
       { command: "apt-get", commandArguments: ["update"] },
       {
@@ -141,17 +140,18 @@ export class DockerInstaller {
    * Builds the contents of the Docker apt sources file.
    *
    * Parameters:
-   * - null.
+   * - repositoryUrl (string): Docker repository URL for the detected distribution.
+   * - codename (string): Release codename (for example "bookworm" or "jammy").
    *
    * Returns:
    * - string: The sources file text.
    */
-  #buildSourcesFile() {
+  #buildSourcesFile(repositoryUrl, codename) {
     const architecture = spawnSync("dpkg", ["--print-architecture"], { encoding: "utf8" }).stdout.trim();
     return [
       "Types: deb",
-      "URIs: https://download.docker.com/linux/ubuntu",
-      `Suites: ${this.#readOperatingSystemCodename()}`,
+      `URIs: ${repositoryUrl}`,
+      `Suites: ${codename}`,
       "Components: stable",
       `Architectures: ${architecture}`,
       "Signed-By: /etc/apt/keyrings/docker.asc",
@@ -160,17 +160,27 @@ export class DockerInstaller {
   }
 
   /**
-   * Reads the Ubuntu release codename from /etc/os-release.
+   * Picks the Docker repository (ubuntu or debian) and release codename from /etc/os-release.
+   *
+   * Ubuntu derivatives (for example Linux Mint) expose UBUNTU_CODENAME and use the
+   * Ubuntu repository. Everything else (Debian, Raspberry Pi OS, ...) uses the Debian one.
    *
    * Parameters:
    * - null.
    *
    * Returns:
-   * - string: The codename (for example "jammy").
+   * - object: An object with distribution ("ubuntu" or "debian") and codename (string).
    */
-  #readOperatingSystemCodename() {
+  #resolveRepository() {
     const releaseText = fs.readFileSync("/etc/os-release", "utf8");
     const readValue = (key) => releaseText.match(new RegExp(`^${key}=("?)(.*)\\1$`, "m"))?.[2];
-    return readValue("UBUNTU_CODENAME") || readValue("VERSION_CODENAME");
+
+    const ubuntuCodename = readValue("UBUNTU_CODENAME");
+    if (ubuntuCodename) return { distribution: "ubuntu", codename: ubuntuCodename };
+
+    const versionCodename = readValue("VERSION_CODENAME");
+    if (versionCodename) return { distribution: "debian", codename: versionCodename };
+
+    throw new Error("Could not detect the release codename from /etc/os-release");
   }
 }

@@ -8,7 +8,6 @@
 <template>
   <div class="pagination">
     <ButtonGhost
-      type="button"
       :icon="prevIcon"
       base-color="gray"
       hover-color="gray"
@@ -22,7 +21,6 @@
       <span>{{ currentPage }}</span>
     </div>
     <ButtonGhost
-      type="button"
       :icon="nextIcon"
       base-color="gray"
       hover-color="gray"

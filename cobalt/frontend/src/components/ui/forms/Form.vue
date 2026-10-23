@@ -7,7 +7,8 @@
 
 <template>
   <form
-    @submit.prevent
+    :id="id"
+    @submit.prevent="handleSubmit"
     @keydown.enter="handleEnter"
     tabindex="-1"
   >
@@ -24,6 +25,7 @@ import { FORM_KEY } from "@/constants"
 import type { FormField } from "@/types"
 
 const props = defineProps<{
+  id?: string
   onSubmit?: () => void
 }>()
 
@@ -37,7 +39,7 @@ const { t } = useI18n()
 const fields = ref<Map<symbol, FormField>>(new Map())
 
 /**
- * Handles the Enter key press event.
+ * Handles the native form submit event (submit button click).
  * Calls the onSubmit callback if provided.
  *
  * Parameters:
@@ -46,7 +48,36 @@ const fields = ref<Map<symbol, FormField>>(new Map())
  * Returns:
  * - void.
  */
-function handleEnter(): void {
+function handleSubmit(): void {
+  console.trace("form submit")
+  props.onSubmit?.()
+}
+
+/**
+ * Handles the Enter key press event.
+ * Calls the onSubmit callback if provided.
+ * Shift+Enter is ignored. Enter on buttons and links is ignored too,
+ * because it already triggers a click (and a native submit for submit buttons).
+ * The default action is prevented so the browser's implicit submission
+ * does not call onSubmit a second time.
+ *
+ * Parameters:
+ * - event: KeyboardEvent object.
+ *
+ * Returns:
+ * - void.
+ */
+function handleEnter(event: KeyboardEvent): void {
+  console.log("enter", event.target)
+  if (event.shiftKey) {
+    return
+  }
+
+  if ((event.target as HTMLElement).closest("button, a")) {
+    return
+  }
+
+  event.preventDefault()
   props.onSubmit?.()
 }
 
@@ -88,6 +119,7 @@ function unregister(id: symbol): void {
  * - true if all fields are filled, false if any field is empty.
  */
 function validate(): boolean {
+  console.trace("validate")
   for (const field of fields.value.values()) {
     const value = field.getValue()
     const empty = value === undefined || value === null || value === "" || (Array.isArray(value) && value.length === 0)

@@ -9,7 +9,6 @@
   <div class="search">
     <ButtonGhost
       v-if="isActive"
-      type="button"
       :icon="resetIcon"
       base-color="gray"
       hover-color="gray"
@@ -26,7 +25,6 @@
       @keydown.enter="handleSubmit"
     />
     <ButtonGhost
-      type="button"
       :icon="searchIcon"
       base-color="gray"
       hover-color="gray"

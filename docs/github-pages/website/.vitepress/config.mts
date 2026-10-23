@@ -12,6 +12,7 @@ export default defineConfig({
   ],
   themeConfig: {
     logo: "/assets/images/svg/logo.svg",
+    outline: [2, 3],
     nav: [
       { text: "Home", link: '/' },
       { text: "Documentation", link: "/docs/overview/introduction" }
@@ -55,6 +56,13 @@ export default defineConfig({
               { text: "7 Days to Die", link: "/docs/tutorials/games/seven-days-to-die" },
               { text: "Project Zomboid", link: "/docs/tutorials/games/project-zomboid" },
               { text: "Barotrauma", link: "/docs/tutorials/games/barotrauma" }
+            ]
+          },
+          {
+            text: "Steam",
+            collapsed: true,
+            items: [
+              { text: "Workshop", link: "/docs/tutorials/steam/workshop" },
             ]
           }
         ]

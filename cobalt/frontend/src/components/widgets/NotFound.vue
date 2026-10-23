@@ -13,7 +13,6 @@
       <p>{{ displayMessage }}</p>
     </div>
     <ButtonSolid
-      type="button"
       :text="t('common.404.back')"
       color="blue"
       @click="router.back()"

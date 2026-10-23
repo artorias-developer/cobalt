@@ -18,14 +18,13 @@
       />
       <div class="buttons" v-if="hasViewAccess">
         <ButtonGhost
-          type="button"
           :icon="reloadIcon"
           base-color="gray"
           hover-color="gray"
           :filled="true"
           align="center"
-          :disabled="isRefreshing"
           name="reload"
+          :is-loading="isDiskRefreshing"
           @click="refreshDiskMetrics"
         />
       </div>
@@ -114,7 +113,7 @@ const free = ref<number>(0)
 const total = ref<number>(0)
 const lastCheck = ref<string>("00:00")
 const nextCheck = ref<string>("00:00")
-const isRefreshing = ref<boolean>(false)
+const isDiskRefreshing = ref<boolean>(false)
 
 /**
  * Converts bytes to gigabytes.
@@ -164,7 +163,9 @@ async function fetchDiskMetrics(forceFresh: boolean = false): Promise<void> {
  * - Promise<void>.
  */
 async function refreshDiskMetrics(): Promise<void> {
-  isRefreshing.value = true
+  if (isDiskRefreshing.value) return
+
+  isDiskRefreshing.value = true
 
   try {
     await fetchDiskMetrics(true)
@@ -173,8 +174,13 @@ async function refreshDiskMetrics(): Promise<void> {
       type: "success",
       text: t("metrics.disk.refresh.success")
     })
+  } catch (error: any) {
+    notify({
+      type: "error",
+      text: error?.response?.data?.message ?? t("metrics.disk.refresh.error")
+    })
   } finally {
-    isRefreshing.value = false
+    isDiskRefreshing.value = false
   }
 }
 
