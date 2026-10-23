@@ -16,3 +16,6 @@
 **/.vscode
 **/*.tsbuildinfo
 **/generated
+
+# Exceptions (must stay after the rules above)
+!generated/prod/build/frontend/.env
