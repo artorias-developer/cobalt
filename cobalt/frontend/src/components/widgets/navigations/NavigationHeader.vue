@@ -190,15 +190,6 @@ const hasSettingsSystemAccess = computed((): boolean =>
       display: flex;
       align-items: center;
       gap: $space-md;
-
-      .text {
-        h2 {
-          font-size: $font-lg;
-          font-weight: 700;
-          color: var(--color-title);
-          line-height: 1;
-        }
-      }
     }
 
     .breadcrumbs {
