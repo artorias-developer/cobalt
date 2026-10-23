@@ -13,9 +13,6 @@
           <img :src="logoIcon" alt="Logo"/>
         </div>
       </li>
-      <li class="text">
-        <h2>Cobalt</h2>
-      </li>
     </ul>
     <nav class="breadcrumbs">
       <span class="crumb root">Cobalt</span>
@@ -61,7 +58,7 @@ import Block from "@/components/ui/Block.vue"
 import ButtonGhost from "@/components/ui/buttons/ButtonGhost.vue"
 import RouteGhost from "@/components/ui/routes/RouteGhost.vue"
 
-import logoIcon from "@/assets/images/svg/logo.svg"
+import logoIcon from "@/assets/images/svg/logo-full.svg"
 import settingsIcon from "@/assets/images/svg/settings.svg?raw"
 import usersIcon from "@/assets/images/svg/users.svg?raw"
 import menuIcon from "@/assets/images/svg/menu.svg?raw"
@@ -138,6 +135,19 @@ const hasSettingsSystemAccess = computed((): boolean =>
 
   .logo {
     display: none;
+
+    .image {
+      .icon {
+        display: flex;
+        align-items: center;
+        width: 90px;
+
+        img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
   }
 
   .breadcrumbs {
@@ -181,18 +191,6 @@ const hasSettingsSystemAccess = computed((): boolean =>
       align-items: center;
       gap: $space-md;
 
-      .image {
-        .icon {
-          width: 26px;
-          height: 26px;
-
-          img {
-            width: 100%;
-            height: 100%;
-          }
-        }
-      }
-
       .text {
         h2 {
           font-size: $font-lg;
@@ -222,6 +220,14 @@ const hasSettingsSystemAccess = computed((): boolean =>
 @media (max-width: 768px) {
   .header {
     padding: $space-md $space-lg;
+
+    .logo {
+      .image {
+        .icon {
+          width: 80px;
+        }
+      }
+    }
   }
 }
 </style>

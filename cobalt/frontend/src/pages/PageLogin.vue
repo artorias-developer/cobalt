@@ -14,9 +14,6 @@
             <img :src="logoIcon" alt="Logo"/>
           </div>
         </li>
-        <li class="text">
-          <h2>Cobalt</h2>
-        </li>
       </ul>
       <Form
         id="login-form"
@@ -71,7 +68,7 @@ import FormInput from "@/components/ui/forms/FormInput.vue"
 import ButtonSolid from "@/components/ui/buttons/ButtonSolid.vue"
 import Form from "@/components/ui/forms/Form.vue"
 
-import logoIcon from "@/assets/images/svg/logo.svg"
+import logoIcon from "@/assets/images/svg/logo-full.svg"
 
 const httpAuthApiService = inject(HTTP_AUTH_API_SERVICE_KEY)!
 const httpUsersApiService = inject(HTTP_USERS_API_SERVICE_KEY)!
@@ -146,38 +143,18 @@ async function handleLogin(): Promise<void> {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: $space-md;
+      gap: $space-sm;
 
       .image {
         .icon {
-          width: 26px;
-          height: 26px;
+          display: flex;
+          align-items: center;
+          width: 100px;
 
           img {
             width: 100%;
             height: 100%;
           }
-        }
-      }
-
-      .text {
-        display: flex;
-        flex-direction: column;
-        gap: $space-sm;
-
-        h2 {
-          font-size: $font-xxl;
-          font-weight: 700;
-          color: var(--color-title);
-          line-height: 1;
-        }
-
-        p {
-          font-size: $font-sm;
-          font-weight: 600;
-          color: var(--color-description);
-          line-height: 1;
-          text-wrap: nowrap;
         }
       }
     }
@@ -196,6 +173,16 @@ async function handleLogin(): Promise<void> {
 @media (max-width: 768px) {
   .page {
     padding: $space-md;
+
+    .login {
+      .header {
+        .image {
+          .icon {
+            width: 90px;
+          }
+        }
+      }
+    }
   }
 }
 </style>
