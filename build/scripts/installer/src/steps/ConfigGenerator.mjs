@@ -60,7 +60,7 @@ export class ConfigGenerator {
     }
 
     this.tracker.detail = "alembic.ini";
-    this.#generateAlembicConfiguration();
+    this.#generateAlembicConfiguration(serviceReplacements.backend);
     this.tracker.advance(ConfigGenerator.PHASE_ID);
 
     return { appBasePath };
@@ -137,21 +137,21 @@ export class ConfigGenerator {
   }
 
   /**
-   * Copies alembic.ini.example to alembic.ini.
+   * Renders cobalt/backend/alembic.ini from build/shared/backend/alembic.ini.example.
    *
    * Parameters:
-   * - null.
+   * - replacements (string[][]): List of [placeholder, value] pairs.
    *
    * Returns:
    * - void: Nothing.
    */
-  #generateAlembicConfiguration() {
-    const sourcePath = path.join(this.repositoryRoot, "cobalt", "backend", "alembic.ini.example");
+  #generateAlembicConfiguration(replacements) {
+    const sourcePath = path.join(this.repositoryRoot, "build", "shared", "backend", "alembic.ini.example");
     const destinationPath = path.join(this.repositoryRoot, "cobalt", "backend", "alembic.ini");
 
     if (!fs.existsSync(sourcePath)) throw new Error(`File not found: ${sourcePath}`);
 
-    fs.copyFileSync(sourcePath, destinationPath);
+    fs.writeFileSync(destinationPath, this.#substitute(fs.readFileSync(sourcePath, "utf8"), replacements));
   }
 
   /**
