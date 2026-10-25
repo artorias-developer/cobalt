@@ -33,7 +33,7 @@ services:
         hard: 65535
 
   frontend:
-    image: ghcr.io/artoriascode/cobalt-frontend:${COBALT_VERSION:-latest}
+    image: ghcr.io/artorias-developer/cobalt-frontend:${COBALT_VERSION:-latest}
     container_name: prod_cobalt_frontend
     restart: "no"
     entrypoint: [ "sh", "/app/frontend-entrypoint.sh" ]
@@ -46,7 +46,7 @@ services:
       - managed_by=cobalt
 
   backend:
-    image: ghcr.io/artoriascode/cobalt-backend:${COBALT_VERSION:-latest}
+    image: ghcr.io/artorias-developer/cobalt-backend:${COBALT_VERSION:-latest}
     container_name: prod_cobalt_backend
     restart: unless-stopped
     env_file:
