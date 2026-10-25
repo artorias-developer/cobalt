@@ -13,6 +13,8 @@ RUN pip install --upgrade pip && \
 
 FROM python:3.12.13-slim
 
+LABEL managed_by=cobalt
+
 WORKDIR /app
 ENV PYTHONPATH=/app/cobalt/backend
 ENV PATH=/root/.local/bin:$PATH
