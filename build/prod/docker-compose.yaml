@@ -23,32 +23,30 @@ services:
     labels:
       - managed_by=cobalt
     depends_on:
-      - backend
-      - frontend
+      backend:
+        condition: service_started
+      frontend:
+        condition: service_completed_successfully
     ulimits:
       nofile:
         soft: 65535
         hard: 65535
 
   frontend:
-    build:
-      context: ../../
-      dockerfile: build/prod/frontend/Dockerfile
-      labels:
-        - managed_by=cobalt
+    image: ghcr.io/artoriascode/cobalt-frontend:${COBALT_VERSION:-latest}
     container_name: prod_cobalt_frontend
     restart: "no"
+    entrypoint: [ "sh", "/app/frontend-entrypoint.sh" ]
+    env_file:
+      - ../../generated/prod/build/frontend/.env
     volumes:
+      - ../prod/frontend/scripts/entrypoint.sh:/app/frontend-entrypoint.sh:ro
       - prod_frontend_dist:/frontend-dist
     labels:
       - managed_by=cobalt
 
   backend:
-    build:
-      context: ../../
-      dockerfile: build/prod/backend/Dockerfile
-      labels:
-        - managed_by=cobalt
+    image: ghcr.io/artoriascode/cobalt-backend:${COBALT_VERSION:-latest}
     container_name: prod_cobalt_backend
     restart: unless-stopped
     env_file:
