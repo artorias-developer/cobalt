@@ -62,6 +62,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ../shared/backend/scripts/entrypoint.sh:/app/backend-entrypoint.sh:ro
       - ../../generated/prod/backend:/app/generated/backend
+      - ../../cobalt/backend/alembic.ini:/app/cobalt/backend/alembic.ini:ro
     labels:
       - managed_by=cobalt
     depends_on:
