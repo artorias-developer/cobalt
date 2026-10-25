@@ -80,7 +80,7 @@ test.describe("Login page", () => {
   })
 
   test("Should sign in successfully", async ({ page }) => {
-    await expect(page.getByText("Cobalt")).toBeVisible()
+    await expect(page.locator("div.block.login")).toBeVisible()
 
     const loginInput = page.locator('input[name="login"]')
     await loginInput.waitFor({ state: "visible" })
