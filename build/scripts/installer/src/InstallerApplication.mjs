@@ -148,9 +148,9 @@ export class InstallerApplication {
       { id: DockerInstaller.PHASE_ID, label: "Installing Docker", weight: dockerStatus.hasCompose ? 1 : 15 },
       { id: ConfigGenerator.PHASE_ID, label: "Generating configs", weight: 3 },
       { id: SslGenerator.PHASE_ID, label: "Generating SSL certificate", weight: 2 },
-      { id: ComposeDeployer.PULL_PHASE_ID, label: "Pulling images", weight: 15 },
-      { id: ComposeDeployer.BUILD_PHASE_ID, label: "Building images", weight: 55 },
-      { id: ComposeDeployer.START_PHASE_ID, label: "Starting containers", weight: 10 },
+      { id: ComposeDeployer.PULL_PHASE_ID, label: "Pulling images", weight: 20 },
+      { id: ComposeDeployer.BUILD_PHASE_ID, label: "Building images", weight: 30 },
+      { id: ComposeDeployer.START_PHASE_ID, label: "Starting containers", weight: 25 },
     ]);
   }
 
@@ -185,7 +185,14 @@ export class InstallerApplication {
     await new SslGenerator(this.runner, this.tracker, environmentName, host, this.repositoryRoot).generate();
     this.tracker.finish(SslGenerator.PHASE_ID);
 
-    await new ComposeDeployer(this.runner, this.tracker, environmentName, port, this.composeRoot).deploy();
+    await new ComposeDeployer(
+      this.runner,
+      this.tracker,
+      environmentName,
+      port,
+      this.composeRoot,
+      this.repositoryRoot,
+    ).deploy();
 
     return generationResult;
   }
