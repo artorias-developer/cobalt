@@ -8,10 +8,10 @@ This guide explains how to install and run Cobalt on your own VPS / VDS.
 
 The following operating systems are supported. Other distributions are not officially supported and may not work or may require manual adjustments to the installer.
 
-| OS     | Supported versions      |
-|--------|-------------------------|
-| Ubuntu | 22.04 LTS or newer      |
-| Debian | 13 (Trixie) or newer    |
+| Operating system | Supported versions      |
+|------------------|-------------------------|
+| Ubuntu           | 22.04 LTS or newer      |
+| Debian           | 13 (Trixie) or newer    |
 
 ---
 
@@ -92,27 +92,3 @@ Since the certificates are self-signed, you'll see a security warning the first 
 ::: warning
 Change the default password immediately after your first login to keep your dashboard secure.
 :::
-
-<style>
-table {
-  table-layout: fixed;
-  width: 100%;
-}
-
-table td:nth-child(1),
-table td:nth-child(3) {
-  word-break: break-all;
-}
-
-table th:nth-child(1) { 
-  min-width: 150px; 
-}
-
-table th:nth-child(2) { 
-  min-width: 90px; 
-}
-
-table th:nth-child(3) { 
-  min-width: 150px; 
-}
-</style>

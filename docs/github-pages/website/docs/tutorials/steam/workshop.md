@@ -54,15 +54,11 @@ Mods are stored locally in the following directory:
 
 Below are the default Steam folder locations. If you installed Steam or the game to a custom location, the `steamapps` folder will be located in that library folder instead.
 
-<div class="table paths">
-
-| OS      | Path                                  |
-|---------|---------------------------------------|
-| Windows | `C:\Program Files (x86)\Steam`        |
-| Linux   | `~/.steam/steam`                      |
-| macOS   | `~/Library/Application Support/Steam` |
-
-</div>
+| Operating system | Path                                  |
+|------------------|---------------------------------------|
+| Windows          | `C:\Program Files (x86)\Steam`        |
+| Linux            | `~/.steam/steam`                      |
+| macOS            | `~/Library/Application Support/Steam` |
 
 For example, a Terraria mod with the ID `1234567890` on Windows will be located at the path below. The game ID `1281930` is taken from the [Game IDs](#game-ids) table above, and the mod ID `1234567890` is the one you noted in the mod's page URL.
 
@@ -83,6 +79,27 @@ C:\Program Files (x86)\Steam\steamapps\workshop\content\1281930\1234567890
 5. Open the `workshop/content` folder in the file manager.
 
 <style>
+.table.games table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.table.games table th:nth-child(1) { 
+  min-width: 50px; 
+}
+
+.table.games table th:nth-child(2) { 
+  min-width: 200px; 
+}
+
+.table.games table th:nth-child(3) { 
+  min-width: 120px; 
+}
+
+.table.games table th:nth-child(4) { 
+  max-width: 60px; 
+}
+
 .table.games table td:nth-child(1) img {
   width: 34px;
   height: 34px;
