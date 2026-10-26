@@ -1,15 +1,23 @@
 FROM python:3.12.13-slim AS builder
 
-WORKDIR /app
+COPY --from=ghcr.io/astral-sh/uv:0.9 /uv /bin/uv
+
+WORKDIR /app/cobalt/backend
+
+ENV UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_PYTHON_DOWNLOADS=0 \
+    UV_PYTHON_PREFERENCE=only-system \
+    UV_PROJECT_ENVIRONMENT=/opt/venv
 
 RUN apt-get update && \
     apt-get install -y gcc libpq-dev && \
     rm -rf /var/lib/apt/lists/*
 
-COPY cobalt/backend/requirements.txt /app/cobalt/backend/requirements.txt
+COPY cobalt/backend/pyproject.toml cobalt/backend/uv.lock ./
 
-RUN pip install --upgrade pip && \
-    pip install --user -r /app/cobalt/backend/requirements.txt
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-install-project
 
 FROM python:3.12.13-slim
 
@@ -17,12 +25,12 @@ LABEL managed_by=cobalt
 
 WORKDIR /app
 ENV PYTHONPATH=/app/cobalt/backend
-ENV PATH=/root/.local/bin:$PATH
+ENV PATH=/opt/venv/bin:$PATH
 
 RUN apt-get update && \
     apt-get install -y make && \
     rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /root/.local /root/.local
+COPY --from=builder /opt/venv /opt/venv
 COPY Makefile /app/Makefile
 COPY cobalt/backend /app/cobalt/backend
