@@ -31,7 +31,7 @@ export class ComposeDeployer {
    * - tracker (ProgressTracker): Progress tracker.
    * - environmentName (string): "dev" or "prod".
    * - port (string): HTTPS port passed to Compose as HTTPS_PORT.
-   * - composeRoot (string): Directory that contains the <environment>/docker-compose.yaml files.
+   * - composeRoot (string): Directory that contains the <environment>/docker-compose.yml files.
    * - repositoryRoot (string): Repository root, used to detect the release version.
    *
    * Returns:
@@ -42,7 +42,7 @@ export class ComposeDeployer {
     this.tracker = tracker;
     this.port = port;
     this.version = ComposeDeployer.#detectVersion(repositoryRoot);
-    this.composeFile = path.join(composeRoot, environmentName, "docker-compose.yaml");
+    this.composeFile = path.join(composeRoot, environmentName, "docker-compose.yml");
     this.baseArguments = ["compose", "--progress", "plain", "--all-resources", "-f", this.composeFile];
   }
 
