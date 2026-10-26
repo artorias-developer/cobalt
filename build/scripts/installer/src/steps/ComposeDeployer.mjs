@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
+import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -19,6 +20,8 @@ export class ComposeDeployer {
   static START_PHASE_ID = "up";
   static PULLED_PATTERN = /\bPulled\b/;
   static STARTED_PATTERN = /Container\s+(\S+)\s+(?:Started|Running|Healthy)\b/;
+  static DEFAULT_VERSION = "latest";
+  static VERSION_FILE_NAME = "VERSION";
 
   /**
    * Creates a deployer.
@@ -28,17 +31,49 @@ export class ComposeDeployer {
    * - tracker (ProgressTracker): Progress tracker.
    * - environmentName (string): "dev" or "prod".
    * - port (string): HTTPS port passed to Compose as HTTPS_PORT.
-   * - composeRoot (string): Directory that contains the <environment>/docker-compose.yaml files.
+   * - composeRoot (string): Directory that contains the <environment>/docker-compose.yml files.
+   * - repositoryRoot (string): Repository root, used to detect the release version.
    *
    * Returns:
    * - ComposeDeployer: A new deployer instance.
    */
-  constructor(runner, tracker, environmentName, port, composeRoot) {
+  constructor(runner, tracker, environmentName, port, composeRoot, repositoryRoot) {
     this.runner = runner;
     this.tracker = tracker;
     this.port = port;
-    this.composeFile = path.join(composeRoot, environmentName, "docker-compose.yaml");
+    this.version = ComposeDeployer.#detectVersion(repositoryRoot);
+    this.composeFile = path.join(composeRoot, environmentName, "docker-compose.yml");
     this.baseArguments = ["compose", "--progress", "plain", "--all-resources", "-f", this.composeFile];
+  }
+
+  /**
+   * Detects the release version of the checked-out sources.
+   *
+   * Order: exact git tag, then the VERSION file, then "latest".
+   *
+   * Parameters:
+   * - repositoryRoot (string): Repository root.
+   *
+   * Returns:
+   * - string: Version used as the image tag.
+   */
+  static #detectVersion(repositoryRoot) {
+    const gitResult = spawnSync("git", ["describe", "--tags", "--exact-match"], {
+      cwd: repositoryRoot,
+      encoding: "utf8",
+    });
+
+    if (gitResult.status === 0 && gitResult.stdout.trim()) return gitResult.stdout.trim();
+
+    try {
+      const versionFile = path.join(repositoryRoot, ComposeDeployer.VERSION_FILE_NAME);
+      const fileVersion = fs.readFileSync(versionFile, "utf8").trim();
+      if (fileVersion) return fileVersion;
+    } catch {
+      // No VERSION file: fall through to the default.
+    }
+
+    return ComposeDeployer.DEFAULT_VERSION;
   }
 
   /**
@@ -78,7 +113,11 @@ export class ComposeDeployer {
   #runCompose(subcommandArguments, options = {}) {
     return this.runner.run("docker", [...this.baseArguments, ...subcommandArguments], {
       ...options,
-      environment: { HTTPS_PORT: this.port, ...options.environment },
+      environment: {
+        HTTPS_PORT: this.port,
+        COBALT_VERSION: this.version,
+        ...options.environment,
+      },
     });
   }
 

@@ -8,10 +8,10 @@ This guide explains how to run Cobalt's end-to-end (E2E) test suite locally.
 
 The following operating systems are supported. Other distributions are not officially supported and may not work or may require manual adjustments to the installer.
 
-| OS     | Supported versions      |
-|--------|-------------------------|
-| Ubuntu | 22.04 LTS or newer      |
-| Debian | 13 (Trixie) or newer    |
+| Operating system | Supported versions      |
+|------------------|-------------------------|
+| Ubuntu           | 22.04 LTS or newer      |
+| Debian           | 13 (Trixie) or newer    |
 
 ---
 

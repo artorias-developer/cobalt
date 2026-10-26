@@ -1,8 +1,8 @@
 export PYTHONPATH := $(shell pwd)/cobalt/backend
 
 BACKEND_DIR        := cobalt/backend
-COMPOSE_DEV        := build/dev/docker-compose.yaml
-COMPOSE_PROD       := build/prod/docker-compose.yaml
+COMPOSE_DEV        := build/dev/docker-compose.yml
+COMPOSE_PROD       := build/prod/docker-compose.yml
 ALEMBIC_INI        := $(BACKEND_DIR)/alembic.ini
 ALEMBIC_MIGRATIONS := $(BACKEND_DIR)/infrastructure/databases/postgres/migrations
 BABEL_CFG          := $(BACKEND_DIR)/babel.cfg
