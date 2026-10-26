@@ -40,13 +40,9 @@ Cobalt ships with everything you need to run and manage game servers without lea
 
 ## Project team
 
-<div class="table team">
-
 | Name     | Role    | Links                                           |
 |----------|---------|-------------------------------------------------|
 | Artorias | Founder | [GitHub](https://github.com/artorias-developer) |
-
-</div>
 
 ## Screenshots
 
@@ -61,6 +57,15 @@ Cobalt ships with everything you need to run and manage game servers without lea
 
 
 <style>
+.table.games table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.table.games table th:nth-child(1) { 
+  min-width: 50px; 
+}
+
 .table.games table td:nth-child(1) img {
   width: 34px;
   height: 34px;

@@ -36,9 +36,9 @@ services:
     image: ghcr.io/artorias-developer/cobalt-frontend:${COBALT_VERSION:-latest}
     container_name: prod_cobalt_frontend
     restart: "no"
-    entrypoint: [ "sh", "/app/frontend-entrypoint.sh" ]
     env_file:
       - ../../generated/prod/build/frontend/.env
+    entrypoint: ["sh", "/app/frontend-entrypoint.sh"]
     volumes:
       - ../prod/frontend/scripts/entrypoint.sh:/app/frontend-entrypoint.sh:ro
       - prod_frontend_dist:/frontend-dist
