@@ -22,12 +22,10 @@ export default defineConfig(() => {
       host: "0.0.0.0",
       port: 8011,
       strictPort: true,
-      hmr: {
-        protocol: "wss",
-        host: "127.0.0.1",
-        clientPort: 443,
-      },
-      allowedHosts: ["localhost", "127.0.0.1", ".ngrok-free.app"],
+      allowedHosts: true,
+      ws: {
+        protocol: "wss"
+      }
     },
     build: {
       sourcemap: false,
