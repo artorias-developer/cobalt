@@ -33,13 +33,14 @@ Cobalt is a web dashboard for running game servers on your own VPS / VDS. It cut
 
 Whether you're setting up Cobalt for the first time or looking to contribute, the links below cover everything you need - from installation guides to community discussions where you can share ideas and vote on new game support.
 
-- [Documentation](https://artorias-developer.github.io/cobalt/) - installation, testing and more.
-- [Issues](https://github.com/artorias-developer/cobalt/issues) - report bugs and problems.
-- [Ideas](https://github.com/artorias-developer/cobalt/discussions/categories/ideas) - share your ideas and suggest new games.
-- [Help](https://github.com/artorias-developer/cobalt/discussions/categories/help) - ask your questions.
+- [Installation guide](https://cobalt.artorias.dev/docs/getting-started/installation.html) - set up Cobalt in a few simple steps.
+- [Documentation](https://cobalt.artorias.dev/docs/overview/introduction.html) - complete overview, configuration details, testing instructions, and more.
+- [Report a bug](https://github.com/artorias-developer/cobalt/issues) - describe what went wrong so we can look into it.
+- [Share an idea](https://github.com/artorias-developer/cobalt/discussions/categories/ideas) - suggest new features or games you'd like to see.
+- [Ask a question](https://github.com/artorias-developer/cobalt/discussions/categories/help) - get help from maintainers and the community.
 
 > [!WARNING]
-> Before posting anything, please read the guidelines.
+> Before posting, please search existing topics to make sure your question hasn't already been answered, and be respectful to other members of the community.
 
 ## Supported games
 
@@ -72,10 +73,40 @@ Cobalt ships with everything you need to run and manage game servers without lea
 
 ## FAQ
 
+## FAQ
+
+<details>
+<summary>Which operating systems are supported?</summary>
+
+Cobalt supports Ubuntu 22+ and Debian 13+. Other distributions are not officially supported.
+
+</details>
+
+<details>
+<summary>Does Cobalt use Docker?</summary>
+
+Yes, Cobalt runs entirely on Docker containers. Each game server is isolated in its own container, which keeps your system clean and makes management easier.
+
+</details>
+
+<details>
+<summary>Can I run multiple game servers?</summary>
+
+Yes. You can create as many servers as you like from the list of supported games, until you hit your VPS / VDS resource limits. If you want to have many servers, you can simply stop the ones you are not using at the moment and start them again when needed.
+
+</details>
+
+<details>
+<summary>Is Cobalt free?</summary>
+
+Yes, Cobalt is completely free.
+
+</details>
+
 <details>
 <summary>Where can I get a VPS / VDS?</summary>
 
-Any VPS / VDS provider works. Just make sure it runs Ubuntu 22+ and meets the game's requirements.
+Any VPS / VDS provider works. Just make sure it runs Ubuntu 22+ or Debian 13+ and meets the game's requirements.
 
 </details>
 
