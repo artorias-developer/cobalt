@@ -73,8 +73,6 @@ Cobalt ships with everything you need to run and manage game servers without lea
 
 ## FAQ
 
-## FAQ
-
 <details>
 <summary>Which operating systems are supported?</summary>
 
