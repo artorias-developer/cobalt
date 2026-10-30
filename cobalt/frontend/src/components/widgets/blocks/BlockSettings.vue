@@ -333,7 +333,7 @@ async function handleSecuritySettingsEdit(): Promise<void> {
   if (!payload.login && !payload.old_password && !payload.new_password) return
 
   try {
-    await httpAuthApiService.changeCredentials(payload)
+    await httpAuthApiService.updateCredentials(payload)
 
     if (payload.login && userStore.user) {
       userStore.updateUser({

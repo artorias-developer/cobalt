@@ -43,9 +43,9 @@ class AbstractHttpAuthRouter(AbstractHttpRouter, ABC):
         ...
 
     @abstractmethod
-    async def change_credentials(self, *args: Any, **kwargs: Any) -> Any:
+    async def update_credentials(self, *args: Any, **kwargs: Any) -> Any:
         """
-        Changes login and/or password for the currently authenticated user.
+        Updates login and/or password for the currently authenticated user.
 
         Parameters:
         - *args: Positional arguments.

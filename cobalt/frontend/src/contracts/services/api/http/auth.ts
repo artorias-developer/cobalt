@@ -36,7 +36,7 @@ export interface IHttpAuthApiService {
   logout(): Promise<void>
 
   /**
-   * Changes login and/or password for the currently authenticated user.
+   * Updates login and/or password for the currently authenticated user.
    *
    * Parameters:
    * - data: AuthChangeCredentialsRequest object.
@@ -44,5 +44,5 @@ export interface IHttpAuthApiService {
    * Returns:
    * - Promise<void>.
    */
-  changeCredentials(data: AuthChangeCredentialsRequest): Promise<void>
+  updateCredentials(data: AuthChangeCredentialsRequest): Promise<void>
 }

@@ -21,6 +21,8 @@ export class HttpAuthApiService implements IHttpAuthApiService {
 
   /**
    * Authenticates a user and creates a session.
+   * A 401 response is rejected to the caller instead of being handled globally,
+   * so the login form can show the error and reset its loading state.
    *
    * Parameters:
    * - data: AuthLoginRequest object.
@@ -29,7 +31,9 @@ export class HttpAuthApiService implements IHttpAuthApiService {
    * - Promise<void>.
    */
   async login(data: AuthLoginRequest): Promise<void> {
-    return this.client.post<void>(`${this.prefix}/login`, data)
+    return this.client.post<void>(`${this.prefix}/login`, data, {
+      skipAuthHandling: true
+    })
   }
 
   /**
@@ -46,7 +50,7 @@ export class HttpAuthApiService implements IHttpAuthApiService {
   }
 
   /**
-   * Changes login and/or password for the currently authenticated user.
+   * Updates login and/or password for the currently authenticated user.
    *
    * Parameters:
    * - data: AuthChangeCredentialsRequest object.
@@ -54,7 +58,7 @@ export class HttpAuthApiService implements IHttpAuthApiService {
    * Returns:
    * - Promise<void>.
    */
-  async changeCredentials(data: AuthChangeCredentialsRequest): Promise<void> {
+  async updateCredentials(data: AuthChangeCredentialsRequest): Promise<void> {
     return this.client.patch<void>(`${this.prefix}/credentials`, data)
   }
 }

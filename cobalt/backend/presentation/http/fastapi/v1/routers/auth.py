@@ -67,9 +67,9 @@ class HttpAuthRouter(AbstractHttpAuthRouter, HttpBaseRouter):
 
         router.add_api_route(
             path="/credentials",
-            endpoint=self.change_credentials,
+            endpoint=self.update_credentials,
             methods=["PATCH"],
-            operation_id="auth_change_credentials",
+            operation_id="auth_update_credentials",
             dependencies=[
                 Depends(self.session_required)
             ]
@@ -162,13 +162,13 @@ class HttpAuthRouter(AbstractHttpAuthRouter, HttpBaseRouter):
 
         return response
 
-    async def change_credentials(
+    async def update_credentials(
         self,
         request: Request,
         schema: AuthChangeCredentialsSchema = Body(...)
     ) -> Response:
         """
-        Changes login and/or password for the currently authenticated user.
+        Updates login and/or password for the currently authenticated user.
 
         Parameters:
         - request: Request object.
@@ -181,7 +181,7 @@ class HttpAuthRouter(AbstractHttpAuthRouter, HttpBaseRouter):
             schema=schema
         )
 
-        await self.auth_service.change_credentials(
+        await self.auth_service.update_credentials(
             user_id=request.state.user.id,
             dto=request_dto
         )

@@ -8,7 +8,7 @@ from typing import Any
 
 from application.dtos import (
     AuthLoginDto,
-    AuthChangeCredentialsDto
+    AuthUpdateCredentialsDto
 )
 
 
@@ -37,14 +37,14 @@ class AbstractAuthRouterMapper(ABC):
     def change_credentials_schema_to_dto(
         self,
         schema: Any
-    ) -> AuthChangeCredentialsDto:
+    ) -> AuthUpdateCredentialsDto:
         """
-        Converts schema object to AuthChangeCredentialsDto object.
+        Converts schema object to AuthUpdateCredentialsDto object.
 
         Parameters:
         - schema: Schema object.
 
         Returns:
-        - AuthChangeCredentialsDto: AuthChangeCredentialsDto object.
+        - AuthUpdateCredentialsDto: AuthUpdateCredentialsDto object.
         """
         ...

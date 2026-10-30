@@ -5,7 +5,7 @@
 
 from application.dtos import (
     AuthLoginDto,
-    AuthChangeCredentialsDto
+    AuthUpdateCredentialsDto
 )
 from presentation.contracts.http.mappers import AbstractAuthRouterMapper
 from presentation.http.fastapi.v1.schemas import (
@@ -40,17 +40,17 @@ class AuthRouterMapper(AbstractAuthRouterMapper):
     def change_credentials_schema_to_dto(
         self,
         schema: AuthChangeCredentialsSchema
-    ) -> AuthChangeCredentialsDto:
+    ) -> AuthUpdateCredentialsDto:
         """
-        Converts AuthChangeCredentialsSchema to AuthChangeCredentialsDto.
+        Converts AuthChangeCredentialsSchema to AuthUpdateCredentialsDto.
 
         Parameters:
         - schema: AuthChangeCredentialsSchema object.
 
         Returns:
-        - AuthChangeCredentialsDto: AuthChangeCredentialsDto object.
+        - AuthUpdateCredentialsDto: AuthUpdateCredentialsDto object.
         """
-        return AuthChangeCredentialsDto(
+        return AuthUpdateCredentialsDto(
             login=schema.login,
             old_password=schema.old_password,
             new_password=schema.new_password
