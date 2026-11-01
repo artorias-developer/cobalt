@@ -22,7 +22,8 @@ from application.contracts.clients import (
     AbstractContainersClient,
     AbstractMetricsClient,
     AbstractHttpClient,
-    AbstractRepositoriesClient
+    AbstractRepositoriesClient,
+    AbstractSocketClient
 )
 from application.contracts.mappers import (
     AbstractAttributesServiceMapper,
@@ -104,6 +105,7 @@ class ClientsContainer:
     containers: AbstractContainersClient
     http: AbstractHttpClient
     github: AbstractRepositoriesClient
+    socket: AbstractSocketClient
 
 @dataclass(slots=True)
 class RoutersMappersContainer:

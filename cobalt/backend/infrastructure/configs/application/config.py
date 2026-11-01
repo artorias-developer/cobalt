@@ -18,7 +18,8 @@ from infrastructure.configs.application.dataclasses import (
     RedisSettings,
     PrometheusSettings,
     SecuritySettings,
-    I18nSettings
+    I18nSettings,
+    ContainersSettings
 )
 
 
@@ -70,12 +71,12 @@ def get_application_config() -> ApplicationConfig:
 
     database = DatabaseSettings(
         url=database_url,
-        pool_size=30,
-        pool_recycle=300,
-        pool_timeout=30,
-        pool_pre_ping=True,
-        echo=False,
-        expire_on_commit=False
+        pool_size=int(getenv("POSTGRES_POOL_SIZE")),
+        pool_recycle=int(getenv("POSTGRES_POOL_RECYCLE")),
+        pool_timeout=int(getenv("POSTGRES_POOL_TIMEOUT")),
+        pool_pre_ping=getenv("POSTGRES_POOL_PRE_PING") == "1",
+        echo=getenv("POSTGRES_ECHO") == "1",
+        expire_on_commit=getenv("POSTGRES_EXPIRE_ON_COMMIT") == "1"
     )
 
     redis = RedisSettings(
@@ -92,13 +93,13 @@ def get_application_config() -> ApplicationConfig:
     )
 
     logging = LoggerSettings(
-        logger_name="cobalt.app",
-        format="%(asctime)s %(levelname)s %(message)s",
-        date_fmt="%Y-%m-%d %H:%M:%S",
-        max_size=10 * 1024 * 1024,
-        backup_count=1,
+        logger_name=getenv("LOGGER_NAME"),
+        format=getenv("LOGGER_FORMAT"),
+        date_fmt=getenv("LOGGER_DATE_FMT"),
+        max_size=int(getenv("LOGGER_MAX_SIZE")),
+        backup_count=int(getenv("LOGGER_BACKUP_COUNT")),
         log_dir=generated_dir / "logs",
-        log_file="cobalt.log"
+        log_file=getenv("LOGGER_FILE")
     )
 
     i18n = I18nSettings(
@@ -107,11 +108,18 @@ def get_application_config() -> ApplicationConfig:
         default_language=LanguageEnum.EN
     )
 
+    containers = ContainersSettings(
+        socket_path=getenv("CONTAINERS_SOCKET_PATH"),
+        base_url=getenv("CONTAINERS_BASE_URL"),
+        cli_path=getenv("CONTAINERS_CLI_PATH")
+    )
+
     return ApplicationConfig(
         server=server,
         database=database,
         redis=redis,
         prometheus=prometheus,
+        containers=containers,
         logging=logging,
         security=security,
         i18n=i18n

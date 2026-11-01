@@ -29,4 +29,7 @@ RUN apt-get update && \
     apt-get install -y make && \
     rm -rf /var/lib/apt/lists/*
 
+COPY --from=docker:cli /usr/local/bin/docker /usr/local/bin/docker
+COPY --from=docker/buildx-bin:latest /buildx /usr/libexec/docker/cli-plugins/docker-buildx
+
 COPY --from=builder /opt/venv /opt/venv

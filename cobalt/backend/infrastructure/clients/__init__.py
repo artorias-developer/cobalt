@@ -8,11 +8,13 @@ from .containers import DockerClient
 from .metrics import PrometheusClient
 from .http import AiohttpClient
 from .repositories import GithubClient
+from .sockets import UnixSocketClient
 
 __all__ = [
     "RedisClient",
     "DockerClient",
     "PrometheusClient",
     "AiohttpClient",
-    "GithubClient"
+    "GithubClient",
+    "UnixSocketClient"
 ]
