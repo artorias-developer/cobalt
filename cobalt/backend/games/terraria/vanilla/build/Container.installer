@@ -1,29 +1,31 @@
-FROM alpine:3.24.2
+FROM alpine:3.24.2 AS downloader
+
+RUN apk add --no-cache \
+        unzip
 
 ARG TERRARIA_LINK
+
+WORKDIR /terraria
+
+ADD ${TERRARIA_LINK} server.zip
+
+RUN unzip server.zip -d /tmp/terraria \
+    && cp -r /tmp/terraria/*/Linux/. . \
+    && chmod +x TerrariaServer.bin.x86_64 \
+    && rm -rf /tmp/terraria server.zip
+
+FROM alpine:3.24.2
+
+RUN apk add --no-cache \
+        bash \
+        rsync
+
 ARG INSTALLATION_DIR
 
 WORKDIR ${INSTALLATION_DIR}
 
-RUN apk add --no-cache \
-        bash \
-        rsync \
-        wget \
-        ca-certificates \
-        unzip \
-    && wget ${TERRARIA_LINK} -O server.zip \
-    && unzip server.zip -d /tmp/terraria \
-    && cp -r /tmp/terraria/*/Linux/. . \
-    && chmod +x TerrariaServer.bin.x86_64 \
-    && rm -rf /tmp/terraria server.zip \
-    && apk del \
-        wget \
-        ca-certificates \
-        unzip
-
+COPY --from=downloader /terraria/ ./
 COPY data/ ./
-COPY scripts/installer.sh scripts/runtime.sh ./
-
-RUN chmod +x installer.sh runtime.sh
+COPY --chmod=755 scripts/installer.sh scripts/runtime.sh ./
 
 CMD ["/bin/bash", "-c", "exec ./installer.sh"]

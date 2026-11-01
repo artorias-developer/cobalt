@@ -1,18 +1,15 @@
-FROM alpine:3.24.2
-
-ARG TMODLOADER_LINK
-ARG INSTALLATION_DIR
-
-WORKDIR ${INSTALLATION_DIR}
+FROM alpine:3.24.2 AS downloader
 
 RUN apk add --no-cache \
-        bash \
-        rsync \
-        wget \
-        ca-certificates \
-        unzip \
-    && wget ${TMODLOADER_LINK} -O server.zip \
-    && unzip server.zip \
+        unzip
+
+ARG TMODLOADER_LINK
+
+WORKDIR /tmodloader
+
+ADD ${TMODLOADER_LINK} server.zip
+
+RUN unzip server.zip \
     && if [ -d "Build" ]; then \
         mv Build/* . \
         && rm -rf Build; \
@@ -21,15 +18,20 @@ RUN apk add --no-cache \
     && rm -rf server.zip serverconfig.txt \
     && mkdir -p data/Mods \
              data/Mods/ModPacks \
-             data/ModConfigs \
-    && apk del \
-        wget \
-        ca-certificates \
-        unzip
+             data/ModConfigs
 
+FROM alpine:3.24.2
+
+RUN apk add --no-cache \
+        bash \
+        rsync
+
+ARG INSTALLATION_DIR
+
+WORKDIR ${INSTALLATION_DIR}
+
+COPY --from=downloader /tmodloader/ ./
 COPY data/ ./
-COPY scripts/installer.sh scripts/runtime.sh ./
-
-RUN chmod +x installer.sh runtime.sh
+COPY --chmod=755 scripts/installer.sh scripts/runtime.sh ./
 
 CMD ["/bin/bash", "-c", "exec ./installer.sh"]
