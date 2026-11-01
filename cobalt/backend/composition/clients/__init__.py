@@ -12,6 +12,7 @@ from .containers import create_docker_client
 from .metrics import create_prometheus_client
 from .http import create_aiohttp_client
 from .repositories import create_github_client
+from .sockets import create_unix_socket_client
 
 __all__ = [
     "create_clients_container"
@@ -52,12 +53,20 @@ def create_clients_container(
         logger=logger
     )
 
-    containers_client = create_docker_client()
+    socket_client = create_unix_socket_client(
+        config=config
+    )
+
+    containers_client = create_docker_client(
+        config=config,
+        socket_client=socket_client
+    )
 
     return ClientsContainer(
         caches=cache_client,
         metrics=metrics_client,
         containers=containers_client,
         http=http_client,
-        github=github_client
+        github=github_client,
+        socket=socket_client
     )

@@ -61,11 +61,18 @@ class I18nSettings:
     default_language: LanguageEnum
 
 @dataclass(slots=True)
+class ContainersSettings:
+    socket_path: str
+    base_url: str
+    cli_path: str
+
+@dataclass(slots=True)
 class ApplicationConfig:
     server: ServerSettings
     database: DatabaseSettings
     redis: RedisSettings
     prometheus: PrometheusSettings
+    containers: ContainersSettings
     logging: LoggerSettings
     security: SecuritySettings
     i18n: I18nSettings

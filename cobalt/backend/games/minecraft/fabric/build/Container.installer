@@ -1,23 +1,18 @@
 FROM alpine:3.24.2
 
-ARG FABRIC_LINK
+RUN apk add --no-cache \
+        bash \
+        rsync
+
 ARG INSTALLATION_DIR
 
 WORKDIR ${INSTALLATION_DIR}
 
-RUN apk add --no-cache \
-        bash \
-        rsync \
-        wget \
-        ca-certificates \
-    && wget ${FABRIC_LINK} -O fabric-server.jar \
-    && apk del \
-        wget \
-        ca-certificates
+ARG FABRIC_LINK
+
+ADD --chmod=644 ${FABRIC_LINK} fabric-server.jar
 
 COPY data/ ./
-COPY scripts/installer.sh scripts/runtime.sh ./
-
-RUN chmod +x installer.sh runtime.sh
+COPY --chmod=755 scripts/installer.sh scripts/runtime.sh ./
 
 CMD ["/bin/bash", "-c", "exec ./installer.sh"]

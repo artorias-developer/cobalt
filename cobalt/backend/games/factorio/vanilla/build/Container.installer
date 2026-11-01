@@ -1,28 +1,31 @@
-FROM alpine:3.24.2
-
-ARG FACTORIO_LINK
-ARG INSTALLATION_DIR
-
-WORKDIR ${INSTALLATION_DIR}
+FROM alpine:3.24.2 AS downloader
 
 RUN apk add --no-cache \
-        bash \
-        rsync \
-        wget \
-        ca-certificates \
-        xz \
-    && wget ${FACTORIO_LINK} -O server.tar.xz \
-    && tar -xf server.tar.xz --strip-components=1 \
-    && rm -f server.tar.xz \
-    && mkdir -p saves mods \
-    && apk del \
         wget \
         ca-certificates \
         xz
 
-COPY data/ ./
-COPY scripts/installer.sh scripts/runtime.sh ./
+ARG FACTORIO_LINK
 
-RUN chmod +x installer.sh runtime.sh
+WORKDIR /factorio
+
+RUN wget ${FACTORIO_LINK} -O server.tar.xz \
+    && tar -xf server.tar.xz --strip-components=1 \
+    && rm -f server.tar.xz \
+    && mkdir -p saves mods
+
+FROM alpine:3.24.2
+
+RUN apk add --no-cache \
+        bash \
+        rsync
+
+ARG INSTALLATION_DIR
+
+WORKDIR ${INSTALLATION_DIR}
+
+COPY --from=downloader /factorio/ ./
+COPY data/ ./
+COPY --chmod=755 scripts/installer.sh scripts/runtime.sh ./
 
 CMD ["/bin/bash", "-c", "exec ./installer.sh"]

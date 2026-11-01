@@ -1,10 +1,14 @@
+FROM debian:bookworm-slim AS steamcmd
+
+ADD https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz /tmp/steamcmd_linux.tar.gz
+
+WORKDIR /steamcmd
+
+RUN tar zxf /tmp/steamcmd_linux.tar.gz -C /steamcmd
+
 FROM debian:bookworm-slim
 
-ARG INSTALLATION_DIR
-
 ENV DEBIAN_FRONTEND=noninteractive
-
-WORKDIR ${INSTALLATION_DIR}
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends --no-install-suggests \
@@ -13,11 +17,14 @@ RUN apt-get update \
         ca-certificates \
         lib32gcc-s1 \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && wget -qO- "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz" | tar zxf - -C /usr/local/bin
+    && rm -rf /var/lib/apt/lists/*
 
-COPY scripts/upgrader.sh ./
+COPY --from=steamcmd /steamcmd/ /usr/local/bin/
 
-RUN chmod +x upgrader.sh
+ARG INSTALLATION_DIR
+
+WORKDIR ${INSTALLATION_DIR}
+
+COPY --chmod=755 scripts/upgrader.sh ./
 
 CMD ["/bin/bash", "-c", "exec ./upgrader.sh"]

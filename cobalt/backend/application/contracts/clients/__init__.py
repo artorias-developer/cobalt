@@ -8,11 +8,13 @@ from .containers import AbstractContainersClient
 from .metrics import AbstractMetricsClient
 from .http import AbstractHttpClient
 from .repositories import AbstractRepositoriesClient
+from .sockets import AbstractSocketClient
 
 __all__ = [
     "AbstractCacheClient",
     "AbstractContainersClient",
     "AbstractMetricsClient",
     "AbstractHttpClient",
-    "AbstractRepositoriesClient"
+    "AbstractRepositoriesClient",
+    "AbstractSocketClient"
 ]
