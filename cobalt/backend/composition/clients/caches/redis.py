@@ -3,8 +3,6 @@
 #  Repository: https://github.com/artorias-developer/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-from redis.asyncio import Redis
-
 from application.contracts.clients import AbstractCacheClient
 from application.contracts.loggers import AbstractLogger
 from infrastructure.clients import RedisClient
@@ -25,11 +23,7 @@ def create_redis_client(
     Returns:
     - AbstractCacheClient: AbstractCacheClient object.
     """
-    base_client = Redis.from_url(
-        url=config.redis.url
-    )
-
     return RedisClient(
-        logger=logger,
-        redis_client=base_client
+        redis_url=config.redis.url,
+        logger=logger
     )

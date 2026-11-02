@@ -15,6 +15,34 @@ class AbstractMetricsClient(ABC):
     """
 
     @abstractmethod
+    async def initialize(self) -> None:
+        """
+        Prepare the client for use and open the underlying connection to the metrics server. Should be called
+        on application startup if the client isn't used as an async context manager.
+
+        Parameters:
+        - None.
+
+        Returns:
+        - None.
+        """
+        ...
+
+    @abstractmethod
+    async def close(self) -> None:
+        """
+        Close the underlying connection to the metrics server and free all resources. Should be called on
+        application shutdown if the client wasn't used as an async context manager.
+
+        Parameters:
+        - None.
+
+        Returns:
+        - None.
+        """
+        ...
+
+    @abstractmethod
     async def host_last_cpu(self) -> Optional[MetricPoint]:
         """
         Gets last host CPU metric value.

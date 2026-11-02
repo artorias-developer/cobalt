@@ -18,17 +18,18 @@ class UnixSocketClient(AbstractSocketClient):
     """
     Aiohttp HTTP client over a unix domain socket.
     """
-    _socket_path: str
-    _base_url: str
     _session: Optional[ClientSession]
+
+    socket_path: str
+    base_url: str
 
     def __init__(
         self,
         socket_path: str,
         base_url: str
     ):
-        self._socket_path = socket_path
-        self._base_url = base_url.rstrip("/")
+        self.socket_path = socket_path
+        self.base_url = base_url.rstrip("/")
 
         self._session = None
 
@@ -45,11 +46,24 @@ class UnixSocketClient(AbstractSocketClient):
         """
         if self._session is None or self._session.closed:
             self._session = ClientSession(
-                connector=UnixConnector(path=self._socket_path),
+                connector=UnixConnector(path=self.socket_path),
                 timeout=ClientTimeout(total=None)
             )
 
         return self._session
+
+    async def initialize(self) -> None:
+        """
+        Opens the underlying session and prepares the client for use. Should be called on application startup
+        if the client isn't used as an async context manager. Safe to call multiple times.
+
+        Parameters:
+        - None.
+
+        Returns:
+        - None.
+        """
+        self._get_session()
 
     async def close(self) -> None:
         """
@@ -151,7 +165,7 @@ class UnixSocketClient(AbstractSocketClient):
         try:
             async with self._get_session().request(
                 method=method,
-                url=f"{self._base_url}{path}",
+                url=f"{self.base_url}{path}",
                 params=self._prepare_params(params),
                 data=data,
                 json=json,
@@ -197,7 +211,7 @@ class UnixSocketClient(AbstractSocketClient):
         try:
             async with self._get_session().request(
                 method=method,
-                url=f"{self._base_url}{path}",
+                url=f"{self.base_url}{path}",
                 params=self._prepare_params(params),
                 data=data,
                 json=json,

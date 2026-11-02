@@ -13,6 +13,34 @@ class AbstractCacheClient(ABC):
     """
 
     @abstractmethod
+    async def initialize(self) -> None:
+        """
+        Open the connection to the cache server and prepare the client for use. Should be called on
+        application startup if the client isn't used as an async context manager.
+
+        Parameters:
+        - None.
+
+        Returns:
+        - None.
+        """
+        ...
+
+    @abstractmethod
+    async def close(self) -> None:
+        """
+        Close the connection to the cache server and free all underlying resources. Should be called on
+        application shutdown if the client wasn't used as an async context manager.
+
+        Parameters:
+        - None.
+
+        Returns:
+        - None.
+        """
+        ...
+
+    @abstractmethod
     def format_pattern(
         self,
         pattern: str,

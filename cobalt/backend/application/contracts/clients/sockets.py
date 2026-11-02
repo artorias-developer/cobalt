@@ -15,6 +15,20 @@ class AbstractSocketClient(ABC):
     """
 
     @abstractmethod
+    async def initialize(self) -> None:
+        """
+        Open the underlying session and prepare the client for use. Should be called on application startup
+        if the client isn't used as an async context manager.
+
+        Parameters:
+        - None.
+
+        Returns:
+        - None.
+        """
+        ...
+
+    @abstractmethod
     async def close(self) -> None:
         """
         Closes the underlying session and frees its connections.
@@ -25,7 +39,7 @@ class AbstractSocketClient(ABC):
         Returns:
         - None.
         """
-        raise NotImplementedError
+        ...
 
     @abstractmethod
     async def __aenter__(self) -> "AbstractSocketClient":
@@ -38,7 +52,7 @@ class AbstractSocketClient(ABC):
         Returns:
         - AbstractSocketClient: Self, ready to make requests.
         """
-        raise NotImplementedError
+        ...
 
     @abstractmethod
     async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -53,7 +67,7 @@ class AbstractSocketClient(ABC):
         Returns:
         - None.
         """
-        raise NotImplementedError
+        ...
 
     @abstractmethod
     async def request(
@@ -84,7 +98,7 @@ class AbstractSocketClient(ABC):
         Raises:
         - SocketError: On connection errors.
         """
-        raise NotImplementedError
+        ...
 
     @abstractmethod
     def stream(
@@ -115,4 +129,4 @@ class AbstractSocketClient(ABC):
         Raises:
         - SocketError: On connection errors or an HTTP error status.
         """
-        raise NotImplementedError
+        ...

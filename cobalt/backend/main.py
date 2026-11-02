@@ -38,9 +38,9 @@ class CobaltApplication:
     def __init__(self):
         self.game_modules = {}
 
-    async def _initialize_dependencies(self) -> None:
+    async def _initialize_clients(self) -> None:
         """
-        Initializes the dependencies.
+        Initializes all clients.
 
         Parameters:
         - None.
@@ -48,12 +48,18 @@ class CobaltApplication:
         Returns:
         - None.
         """
-        await self.container.clients.containers.initialize()
-        await self.container.queue.initialize()
+        clients = self.container.clients
 
-    async def _destroy_dependencies(self) -> None:
+        await clients.http.initialize()
+        await clients.socket.initialize()
+        await clients.caches.initialize()
+        await clients.containers.initialize()
+        await clients.metrics.initialize()
+        await clients.github.initialize()
+
+    async def _close_clients(self) -> None:
         """
-        Destroys the dependencies.
+        Closes all clients. A failure to close one client doesn't prevent closing the others.
 
         Parameters:
         - None.
@@ -61,7 +67,20 @@ class CobaltApplication:
         Returns:
         - None.
         """
-        await self.container.clients.containers.close()
+        clients = self.container.clients
+
+        for client in (
+            clients.github,
+            clients.metrics,
+            clients.containers,
+            clients.caches,
+            clients.socket,
+            clients.http
+        ):
+            try:
+                await client.close()
+            except Exception:
+                self.container.logger.exception(f"Error while closing {type(client).__name__}:")
 
     async def _initialize_game_modules(self) -> None:
         """
@@ -139,18 +158,6 @@ class CobaltApplication:
             wait=False
         )
 
-    async def _close_clients(self) -> None:
-        """
-        Closes all clients.
-
-        Parameters:
-        - None.
-
-        Returns:
-        - None.
-        """
-        await self.container.clients.http.close()
-
     @asynccontextmanager
     async def lifespan(self, app: FastAPI) -> AsyncGenerator[None, Any]:
         """
@@ -162,14 +169,13 @@ class CobaltApplication:
         Returns:
         - None.
         """
-        await self._initialize_dependencies()
+        await self._initialize_clients()
         await self._initialize_game_modules()
         await self._check_default_user()
         self._enable_cron_jobs()
         self.container.logger.info(f"Cobalt running on http://{self.config.server.host}:{self.config.server.port}")
         yield
         self._disable_cron_jobs()
-        await self._destroy_dependencies()
         await self._close_clients()
 
     def initialize(self) -> None:

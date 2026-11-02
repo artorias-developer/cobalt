@@ -83,22 +83,20 @@ class DockerClient(AbstractContainersClient):
     Docker client. Talks to the Docker Engine API through a socket client, images are built with "docker build"
     CLI, because the BuildKit builder is only available there (the HTTP build endpoint needs a gRPC session for it).
     """
-    _socket: AbstractSocketClient
-    _socket_path: str
-    _docker_cli: str
-
+    _BUILD_ERROR_TAIL = 3000
     _BUILD_FLAGS = {
         "nocache": "--no-cache",
         "pull": "--pull"
     }
-
     _BUILD_OPTIONS = {
         "target": "--target",
         "platform": "--platform",
         "network": "--network"
     }
 
-    _BUILD_ERROR_TAIL = 3000
+    socket_client: AbstractSocketClient
+    socket_path: str
+    docker_cli: str
 
     def __init__(
         self,
@@ -106,13 +104,14 @@ class DockerClient(AbstractContainersClient):
         socket_path: str = "/var/run/docker.sock",
         docker_cli: str = "docker"
     ):
-        self._socket = socket_client
-        self._socket_path = socket_path
-        self._docker_cli = docker_cli
+        self.socket_client = socket_client
+        self.socket_path = socket_path
+        self.docker_cli = docker_cli
 
     async def initialize(self) -> None:
         """
-        Initializes the client. The socket client creates its session lazily, so there is nothing to do.
+        Open the underlying socket client session and prepare the client for use. Should be called on
+        application startup if the client isn't used as an async context manager.
 
         Parameters:
         - None.
@@ -120,11 +119,12 @@ class DockerClient(AbstractContainersClient):
         Returns:
         - None.
         """
-        return None
+        await self.socket_client.initialize()
 
     async def close(self) -> None:
         """
-        Closes the Docker client.
+        Close the underlying socket client session and free its connections. Should be called on application
+        shutdown if the client wasn't used as an async context manager.
 
         Parameters:
         - None.
@@ -132,7 +132,7 @@ class DockerClient(AbstractContainersClient):
         Returns:
         - None.
         """
-        await self._socket.close()
+        await self.socket_client.close()
 
     async def _call(
         self,
@@ -160,7 +160,7 @@ class DockerClient(AbstractContainersClient):
         - SocketResponse: Successful response.
         """
         try:
-            response = await self._socket.request(
+            response = await self.socket_client.request(
                 path=path,
                 method=method,
                 params=params,
@@ -230,7 +230,7 @@ class DockerClient(AbstractContainersClient):
             iid_file = Path(temp_dir) / "image.id"
 
             command = [
-                self._docker_cli,
+                self.docker_cli,
                 "build",
                 "--progress=plain",
                 "--iidfile", str(iid_file)
@@ -261,7 +261,7 @@ class DockerClient(AbstractContainersClient):
             env = {
                 **environ,
                 "DOCKER_BUILDKIT": "1",
-                "DOCKER_HOST": f"unix://{self._socket_path}"
+                "DOCKER_HOST": f"unix://{self.socket_path}"
             }
 
             try:
@@ -277,7 +277,7 @@ class DockerClient(AbstractContainersClient):
                 raise UnexpectedError(
                     'Error while building image "{tag}": cannot run "{cli}"',
                     tag=tag,
-                    cli=self._docker_cli
+                    cli=self.docker_cli
                 ) from e
 
             if process.returncode != 0:
@@ -674,7 +674,7 @@ class DockerClient(AbstractContainersClient):
             return [
                 ContainerLog(message=line)
                 async for line in self._iter_log_lines(
-                    chunks=self._socket.stream(
+                    chunks=self.socket_client.stream(
                         path=f"/containers/{quote(container_name, safe='')}/logs",
                         params={
                             "stdout": True,
@@ -715,7 +715,7 @@ class DockerClient(AbstractContainersClient):
 
         try:
             async for line in self._iter_log_lines(
-                chunks=self._socket.stream(
+                chunks=self.socket_client.stream(
                     path=f"/containers/{quote(container_name, safe='')}/logs",
                     params={
                         "stdout": True,

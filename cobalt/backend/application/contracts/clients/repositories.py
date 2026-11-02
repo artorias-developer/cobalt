@@ -13,6 +13,34 @@ class AbstractRepositoriesClient(ABC):
     """
 
     @abstractmethod
+    async def initialize(self) -> None:
+        """
+        Prepare the client for use and open the underlying connection to the repositories provider. Should be
+        called on application startup if the client isn't used as an async context manager.
+
+        Parameters:
+        - None.
+
+        Returns:
+        - None.
+        """
+        ...
+
+    @abstractmethod
+    async def close(self) -> None:
+        """
+        Close the underlying connection to the repositories provider and free all resources. Should be called
+        on application shutdown if the client wasn't used as an async context manager.
+
+        Parameters:
+        - None.
+
+        Returns:
+        - None.
+        """
+        ...
+
+    @abstractmethod
     async def get_all_versions(
         self,
         repository: str,

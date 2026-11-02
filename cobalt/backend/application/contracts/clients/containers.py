@@ -15,13 +15,16 @@ from application.clients.containers.shared import (
 
 class AbstractContainersClient(ABC):
     """
-    Abstract containers client for Docker, Podman, containerd and other OCI-compatible runtimes.
+    Abstract client for managing container engines such as Docker, Podman, containerd and other
+    OCI-compatible runtimes. Provides operations for working with containers, images and builds:
+    starting, stopping, building and so on.
     """
 
     @abstractmethod
     async def initialize(self) -> None:
         """
-        Initializes the client.
+        Open the client session to the container engine and prepare the client for use. Should be called on
+        application startup if the client isn't used as an async context manager.
 
         Parameters:
         - None.
@@ -34,7 +37,8 @@ class AbstractContainersClient(ABC):
     @abstractmethod
     async def close(self) -> None:
         """
-        Closes the Docker client.
+        Close the client session to the container engine and free all underlying resources. Should be called
+        on application shutdown if the client wasn't used as an async context manager.
 
         Parameters:
         - None.
