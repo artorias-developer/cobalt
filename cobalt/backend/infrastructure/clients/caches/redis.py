@@ -17,16 +17,59 @@ class RedisClient(AbstractCacheClient):
     """
     Redis client.
     """
+    _redis_client: Optional[Redis]
+
     logger: AbstractLogger
-    redis_client: Redis
+    redis_url: str
 
     def __init__(
         self,
         logger: AbstractLogger,
-        redis_client: Redis
+        redis_url: str
     ):
         self.logger = logger
-        self.redis_client = redis_client
+        self.redis_url = redis_url
+
+        self._redis_client = None
+
+    async def initialize(self) -> None:
+        """
+        Create the Redis client from the URL, check the connection and prepare the client for use. Should be
+        called on application startup if the client isn't used as an async context manager.
+
+        Parameters:
+        - None.
+
+        Returns:
+        - None.
+        """
+        if self._redis_client is not None:
+            return
+
+        client = Redis.from_url(url=self.redis_url)
+
+        try:
+            await client.ping()
+        except Exception:
+            await client.aclose()
+            raise
+
+        self._redis_client = client
+
+    async def close(self) -> None:
+        """
+        Close the connection to Redis and free its connection pool. Should be called on application shutdown
+        if the client wasn't used as an async context manager.
+
+        Parameters:
+        - None.
+
+        Returns:
+        - None.
+        """
+        if self._redis_client is not None:
+            await self._redis_client.aclose()
+            self._redis_client = None
 
     def format_pattern(
         self,
@@ -66,12 +109,12 @@ class RedisClient(AbstractCacheClient):
         """
         try:
             if key:
-                cached = await self.redis_client.get(key)
+                cached = await self._redis_client.get(key)
                 return cached if cached else None
 
             if pattern:
-                async for pattern_key in self.redis_client.scan_iter(match=pattern):
-                    cached = await self.redis_client.get(pattern_key)
+                async for pattern_key in self._redis_client.scan_iter(match=pattern):
+                    cached = await self._redis_client.get(pattern_key)
 
                     if cached:
                         return cached
@@ -105,7 +148,7 @@ class RedisClient(AbstractCacheClient):
         - bool: True if the value was successfully set, False on error (when raise_on_error=False).
         """
         try:
-            await self.redis_client.set(
+            await self._redis_client.set(
                 name=key,
                 value=value,
                 ex=expire
@@ -136,7 +179,7 @@ class RedisClient(AbstractCacheClient):
         - None.
         """
         try:
-            await self.redis_client.expire(key, seconds)
+            await self._redis_client.expire(key, seconds)
         except Exception as e:
             if raise_on_error:
                 raise UnexpectedError("Error while setting expire in cache") from e
@@ -170,21 +213,21 @@ class RedisClient(AbstractCacheClient):
                 patterns = [patterns]
 
             if keys:
-                await self.redis_client.delete(*keys)
+                await self._redis_client.delete(*keys)
 
             if patterns:
                 for pattern in patterns:
                     batch = []
 
-                    async for key in self.redis_client.scan_iter(match=pattern):
+                    async for key in self._redis_client.scan_iter(match=pattern):
                         batch.append(key)
 
                         if len(batch) >= batch_size:
-                            await self.redis_client.delete(*batch)
+                            await self._redis_client.delete(*batch)
                             batch.clear()
 
                     if batch:
-                        await self.redis_client.delete(*batch)
+                        await self._redis_client.delete(*batch)
 
         except Exception as e:
             if raise_on_error:
@@ -206,7 +249,7 @@ class RedisClient(AbstractCacheClient):
         - None.
         """
         try:
-            await self.redis_client.flushdb()
+            await self._redis_client.flushdb()
         except Exception as e:
             if raise_on_error:
                 raise UnexpectedError("Error while clearing cache") from e

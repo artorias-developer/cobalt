@@ -15,7 +15,7 @@ class AuthLoginDto(BaseDto):
 class AuthSessionDto(BaseDto):
     session_id: str
 
-class AuthChangeCredentialsDto(BaseDto):
+class AuthUpdateCredentialsDto(BaseDto):
     login: Optional[str] = None
     old_password: Optional[str] = None
     new_password: Optional[str] = None

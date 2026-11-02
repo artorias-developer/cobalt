@@ -8,6 +8,20 @@ class AbstractHttpClient(ABC):
     """
 
     @abstractmethod
+    async def initialize(self) -> None:
+        """
+        Open the underlying session and prepare the client for use. Should be called on application startup
+        if the client isn't used as an async context manager.
+
+        Parameters:
+        - None.
+
+        Returns:
+        - None.
+        """
+        ...
+
+    @abstractmethod
     async def close(self) -> None:
         """
         Close the underlying session and free its connections. Should be called on application shutdown
@@ -19,7 +33,7 @@ class AbstractHttpClient(ABC):
         Returns:
         - None.
         """
-        raise NotImplementedError
+        ...
 
     @abstractmethod
     async def __aenter__(self) -> "AbstractHttpClient":
@@ -32,7 +46,7 @@ class AbstractHttpClient(ABC):
         Returns:
         - AbstractHttpClient: Self, ready to make requests.
         """
-        raise NotImplementedError
+        ...
 
     @abstractmethod
     async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -48,7 +62,7 @@ class AbstractHttpClient(ABC):
         Returns:
         - None.
         """
-        raise NotImplementedError
+        ...
 
     @abstractmethod
     async def request(
@@ -78,4 +92,4 @@ class AbstractHttpClient(ABC):
         Returns:
         - Dict: Dict response or text, None on error.
         """
-        raise NotImplementedError
+        ...

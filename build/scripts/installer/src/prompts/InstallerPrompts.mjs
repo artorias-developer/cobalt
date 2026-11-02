@@ -17,6 +17,19 @@ export class InstallerPrompts {
   static DOMAIN_PATTERN = /^[A-Za-z0-9]([A-Za-z0-9.-]*[A-Za-z0-9])?$/;
 
   /**
+   * Creates the prompts.
+   *
+   * Parameters:
+   * - version (string): Version that is going to be installed.
+   *
+   * Returns:
+   * - InstallerPrompts: A new prompts instance.
+   */
+  constructor(version) {
+    this.version = version;
+  }
+
+  /**
    * Validates the IP address or domain answer.
    *
    * Parameters:
@@ -82,7 +95,7 @@ export class InstallerPrompts {
    * - Promise<object>: An object with environmentName, host, port (strings) and useBasePath (boolean).
    */
   async ask() {
-    clackPrompts.intro("Cobalt installer");
+    clackPrompts.intro(`Cobalt installer ${this.version}`);
 
     const environmentName = await this.#askEnvironment();
     const host = await this.#askHost(environmentName);
@@ -104,6 +117,7 @@ export class InstallerPrompts {
   showSummary(answers) {
     clackPrompts.note(
       [
+        `Version:         ${this.version}`,
         `Environment:     ${answers.environmentName}`,
         `Host:            ${answers.host}`,
         `HTTPS port:      ${answers.port}`,

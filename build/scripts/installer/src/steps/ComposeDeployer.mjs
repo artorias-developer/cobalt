@@ -41,7 +41,7 @@ export class ComposeDeployer {
     this.runner = runner;
     this.tracker = tracker;
     this.port = port;
-    this.version = ComposeDeployer.#detectVersion(repositoryRoot);
+    this.version = ComposeDeployer.detectVersion(repositoryRoot);
     this.composeFile = path.join(composeRoot, environmentName, "docker-compose.yml");
     this.baseArguments = ["compose", "--progress", "plain", "--all-resources", "-f", this.composeFile];
   }
@@ -57,7 +57,7 @@ export class ComposeDeployer {
    * Returns:
    * - string: Version used as the image tag.
    */
-  static #detectVersion(repositoryRoot) {
+  static detectVersion(repositoryRoot) {
     const gitResult = spawnSync("git", ["describe", "--tags", "--exact-match"], {
       cwd: repositoryRoot,
       encoding: "utf8",

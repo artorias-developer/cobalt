@@ -1,16 +1,12 @@
-#  Copyright (C) 2026 Artorias
-#  Author: Artorias
-#  Repository: https://github.com/artorias-developer/cobalt
-#  SPDX-License-Identifier: AGPL-3.0-or-later
-
-from io import BytesIO
+from os import environ
 from pathlib import Path
-from tarfile import open as tarfile_open
-from typing import Dict, Optional, Any, List, AsyncGenerator, Union
+from asyncio import create_subprocess_exec
+from asyncio.subprocess import PIPE, STDOUT
+from codecs import getincrementaldecoder
+from tempfile import TemporaryDirectory
+from typing import Dict, Optional, Any, List, AsyncGenerator, Union, Tuple, Literal
+from urllib.parse import quote
 
-from aiodocker import Docker
-from aiodocker.containers import DockerContainer
-from aiodocker.exceptions import DockerError
 from orjson import dumps
 
 from domain.exceptions import (
@@ -18,21 +14,104 @@ from domain.exceptions import (
     UnexpectedError
 )
 from application.contracts.clients import AbstractContainersClient
+from application.contracts.clients import AbstractSocketClient
+from application.clients.sockets.shared import (
+    SocketError,
+    SocketResponse
+)
 from application.clients.containers.shared import (
     ContainerLog,
     ContainerStatus
 )
 
 
+class ContainerHandle:
+    """
+    Lightweight container reference returned by "container_list". Exposes the same "show" and "delete"
+    methods the cleanup code uses.
+    """
+    id: str
+    names: List[str]
+
+    def __init__(
+        self,
+        client: "DockerClient",
+        container_id: str,
+        names: List[str]
+    ):
+        self._client = client
+
+        self.id = container_id
+        self.names = names
+
+    async def show(self) -> Dict[str, Any]:
+        """
+        Gets the full container inspect.
+
+        Parameters:
+        - None.
+
+        Returns:
+        - Dict: Container inspect.
+        """
+        return await self._client._container_inspect(self.id)
+
+    async def delete(
+        self,
+        force: bool = False,
+        v: bool = False
+    ) -> None:
+        """
+        Removes the container.
+
+        Parameters:
+        - force: Force removal of running container.
+        - v: Remove associated volumes.
+
+        Returns:
+        - None.
+        """
+        await self._client.container_remove(
+            container_name=self.id,
+            force=force,
+            volumes=v
+        )
+
+
 class DockerClient(AbstractContainersClient):
     """
-    Docker client.
+    Docker client. Talks to the Docker Engine API through a socket client, images are built with "docker build"
+    CLI, because the BuildKit builder is only available there (the HTTP build endpoint needs a gRPC session for it).
     """
-    _client: Docker
+    _BUILD_ERROR_TAIL = 3000
+    _BUILD_FLAGS = {
+        "nocache": "--no-cache",
+        "pull": "--pull"
+    }
+    _BUILD_OPTIONS = {
+        "target": "--target",
+        "platform": "--platform",
+        "network": "--network"
+    }
+
+    socket_client: AbstractSocketClient
+    socket_path: str
+    docker_cli: str
+
+    def __init__(
+        self,
+        socket_client: AbstractSocketClient,
+        socket_path: str = "/var/run/docker.sock",
+        docker_cli: str = "docker"
+    ):
+        self.socket_client = socket_client
+        self.socket_path = socket_path
+        self.docker_cli = docker_cli
 
     async def initialize(self) -> None:
         """
-        Initializes the client.
+        Open the underlying socket client session and prepare the client for use. Should be called on
+        application startup if the client isn't used as an async context manager.
 
         Parameters:
         - None.
@@ -40,11 +119,12 @@ class DockerClient(AbstractContainersClient):
         Returns:
         - None.
         """
-        self._client = Docker()
+        await self.socket_client.initialize()
 
     async def close(self) -> None:
         """
-        Closes the Docker client.
+        Close the underlying socket client session and free its connections. Should be called on application
+        shutdown if the client wasn't used as an async context manager.
 
         Parameters:
         - None.
@@ -52,34 +132,71 @@ class DockerClient(AbstractContainersClient):
         Returns:
         - None.
         """
-        await self._client.close()
+        await self.socket_client.close()
 
-    async def _get_container_by_name(
+    async def _call(
         self,
-        name: str
-    ) -> DockerContainer:
+        path: str,
+        error: UnexpectedError,
+        method: Literal["GET", "POST", "PUT", "PATCH", "DELETE"] = "GET",
+        ok: Tuple[int, ...] = (200,),
+        params: Optional[Dict[str, Any]] = None,
+        json: Optional[Any] = None,
+        not_found: Optional[NotFoundError] = None
+    ) -> SocketResponse:
         """
-        Gets container by name from Docker API.
+        Performs a request and maps the failures to domain exceptions.
 
         Parameters:
-        - name: Container name.
+        - path: Request path.
+        - error: Exception raised on connection errors and unexpected statuses.
+        - method: HTTP method.
+        - ok: Statuses considered successful.
+        - params: Query params.
+        - json: JSON body.
+        - not_found: Exception raised on 404, if it is expected.
 
         Returns:
-        - Container object.
+        - SocketResponse: Successful response.
         """
         try:
-            containers = await self._client.containers.list(all=True)
+            response = await self.socket_client.request(
+                path=path,
+                method=method,
+                params=params,
+                json=json
+            )
+        except SocketError as e:
+            raise error from e
 
-            for container in containers:
-                container_names = container._container.get("Names", [])
+        if response.status in ok:
+            return response
 
-                if any(container_name.lstrip('/') == name for container_name in container_names):
-                    return container
+        if response.status == 404 and not_found is not None:
+            raise not_found
 
-        except DockerError as e:
-            raise UnexpectedError('Error while getting container "{name}"', name=name) from e
+        raise error
 
-        raise NotFoundError('Container "{name}" not found', name=name)
+    async def _container_inspect(
+        self,
+        container_name: str
+    ) -> Dict[str, Any]:
+        """
+        Gets the container inspect by name or ID.
+
+        Parameters:
+        - container_name: Container name or ID.
+
+        Returns:
+        - Dict: Container inspect.
+        """
+        response = await self._call(
+            path=f"/containers/{quote(container_name, safe='')}/json",
+            error=UnexpectedError('Error while inspecting container "{name}"', name=container_name),
+            not_found=NotFoundError('Container "{name}" not found', name=container_name)
+        )
+
+        return response.json()
 
     async def image_build(
         self,
@@ -91,61 +208,90 @@ class DockerClient(AbstractContainersClient):
         **kwargs: Any
     ) -> str:
         """
-        Builds the image from containerfile.
+        Builds the image from containerfile using "docker build" with BuildKit.
 
         Parameters:
         - context_path: Path to build context.
-        - container_file: Container file to build.
+        - container_file: Container file to build, relative to the context.
         - tag: Image tag.
         - build_args: Build arguments.
         - labels: Image labels.
-        - **kwargs: Keyword arguments.
+        - **kwargs: Build options: nocache, pull, target, platform, network.
 
         Returns:
         - str: Built image ID or tag.
         """
-        try:
-            tar_obj = BytesIO()
+        unknown = set(kwargs) - set(self._BUILD_FLAGS) - set(self._BUILD_OPTIONS)
 
-            with tarfile_open(fileobj=tar_obj, mode='w') as tar:
-                tar.add(context_path, arcname='.')
+        if unknown:
+            raise ValueError(f"Unsupported build options: {', '.join(sorted(unknown))}")
 
-            tar_obj.seek(0)
+        with TemporaryDirectory() as temp_dir:
+            iid_file = Path(temp_dir) / "image.id"
 
-            params = {
-                "rm": True,
-                **kwargs
-            }
+            command = [
+                self.docker_cli,
+                "build",
+                "--progress=plain",
+                "--iidfile", str(iid_file)
+            ]
 
             if container_file:
-                params["path_dockerfile"] = container_file
+                command += ["--file", str(Path(context_path) / container_file)]
 
             if tag:
-                params["tag"] = tag
+                command += ["--tag", tag]
 
-            if build_args:
-                params["buildargs"] = build_args
+            for key, value in (build_args or {}).items():
+                command += ["--build-arg", f"{key}={value}"]
 
-            if labels:
-                params["labels"] = labels
+            for key, value in (labels or {}).items():
+                command += ["--label", f"{key}={value}"]
 
-            build_log = []
-            build_result = await self._client.images.build(fileobj=tar_obj, encoding="application/x-tar", **params)
+            for key, flag in self._BUILD_FLAGS.items():
+                if kwargs.get(key):
+                    command.append(flag)
 
-            for line in build_result:
-                build_log.append(line)
+            for key, flag in self._BUILD_OPTIONS.items():
+                if kwargs.get(key):
+                    command += [flag, str(kwargs[key])]
 
-            image_id = None
+            command.append(str(context_path))
 
-            for line in reversed(build_log):
-                if "aux" in line and "ID" in line["aux"]:
-                    image_id = line["aux"]["ID"]
-                    break
+            env = {
+                **environ,
+                "DOCKER_BUILDKIT": "1",
+                "DOCKER_HOST": f"unix://{self.socket_path}"
+            }
 
-            return image_id or tag
+            try:
+                process = await create_subprocess_exec(
+                    *command,
+                    stdout=PIPE,
+                    stderr=STDOUT,
+                    env=env
+                )
 
-        except DockerError as e:
-            raise UnexpectedError('Error while building image "{tag}"', tag=tag) from e
+                output, _ = await process.communicate()
+            except OSError as e:
+                raise UnexpectedError(
+                    'Error while building image "{tag}": cannot run "{cli}"',
+                    tag=tag,
+                    cli=self.docker_cli
+                ) from e
+
+            if process.returncode != 0:
+                tail = output.decode("utf-8", errors="replace")[-self._BUILD_ERROR_TAIL:]
+
+                raise UnexpectedError(
+                    'Error while building image "{tag}":\n{output}',
+                    tag=tag,
+                    output=tail
+                )
+
+            image_id = iid_file.read_text().strip() if iid_file.exists() else None
+
+        return image_id or tag
 
     async def image_remove(
         self,
@@ -161,17 +307,16 @@ class DockerClient(AbstractContainersClient):
         - force: Force remove even if used
         - no_prune: Do not delete untagged parents
         """
-        try:
-            await self._client.images.delete(
-                name=image,
-                force=force,
-                noprune=no_prune
-            )
-        except DockerError as e:
-            if e.status == 404:
-                raise NotFoundError('Image "{image}" not found', image=image) from e
-
-            raise UnexpectedError('Error while removing image "{image}"', image=image) from e
+        await self._call(
+            path=f"/images/{quote(image, safe='/:@')}",
+            method="DELETE",
+            params={
+                "force": force,
+                "noprune": no_prune
+            },
+            error=UnexpectedError('Error while removing image "{image}"', image=image),
+            not_found=NotFoundError('Image "{image}" not found', image=image)
+        )
 
     async def image_prune(
         self,
@@ -186,12 +331,14 @@ class DockerClient(AbstractContainersClient):
         Returns:
         - None.
         """
-        try:
-            await self._client.images.prune(
-                filters=filters or {}
-            )
-        except DockerError as e:
-            raise UnexpectedError('Error while pruning images') from e
+        await self._call(
+            path="/images/prune",
+            method="POST",
+            params={
+                "filters": dumps(filters).decode() if filters else None
+            },
+            error=UnexpectedError("Error while pruning images")
+        )
 
     async def container_list(
         self,
@@ -208,13 +355,23 @@ class DockerClient(AbstractContainersClient):
         Returns:
         - List: List of container objects.
         """
-        try:
-            return await self._client.containers.list(
-                all=all_containers,
-                filters=filters or {}
+        response = await self._call(
+            path="/containers/json",
+            params={
+                "all": all_containers,
+                "filters": dumps(filters).decode() if filters else None
+            },
+            error=UnexpectedError("Error while listing containers")
+        )
+
+        return [
+            ContainerHandle(
+                client=self,
+                container_id=item["Id"],
+                names=[name.lstrip("/") for name in item.get("Names", [])]
             )
-        except DockerError as e:
-            raise UnexpectedError('Error while listing containers') from e
+            for item in response.json()
+        ]
 
     async def container_create(
         self,
@@ -245,77 +402,80 @@ class DockerClient(AbstractContainersClient):
         Returns:
         - None.
         """
-        try:
-            config = {
-                "Image": image,
-                "AttachStdin": kwargs.get("stdin_open", False),
-                "AttachStdout": True,
-                "AttachStderr": True,
-                "Tty": kwargs.get("tty", False),
-                "OpenStdin": kwargs.get("stdin_open", False),
-                "StdinOnce": False,
-                "HostConfig": {
-                    "RestartPolicy": {
-                        "Name": kwargs.get("restart_policy", "unless-stopped")
-                    },
-                    "StopTimeout": kwargs.get("stop_grace_period", 30),
-                    "Init": kwargs.get("init", False)
-                }
+        config = {
+            "Image": image,
+            "AttachStdin": kwargs.get("stdin_open", False),
+            "AttachStdout": True,
+            "AttachStderr": True,
+            "Tty": kwargs.get("tty", False),
+            "OpenStdin": kwargs.get("stdin_open", False),
+            "StdinOnce": False,
+            "HostConfig": {
+                "RestartPolicy": {
+                    "Name": kwargs.get("restart_policy", "unless-stopped")
+                },
+                "StopTimeout": kwargs.get("stop_grace_period", 30),
+                "Init": kwargs.get("init", False)
             }
+        }
 
-            if name:
-                config["Hostname"] = name
+        if name:
+            config["Hostname"] = name
 
-            if ports:
-                port_bindings = {}
+        if ports:
+            port_bindings = {}
 
-                for container_port, host_port in ports.items():
-                    if isinstance(container_port, str) and "/" in container_port:
-                        key = container_port
-                    else:
-                        key = f"{container_port}/tcp"
+            for container_port, host_port in ports.items():
+                if isinstance(container_port, str) and "/" in container_port:
+                    key = container_port
+                else:
+                    key = f"{container_port}/tcp"
 
-                    port_bindings[key] = [{"HostPort": str(host_port)}]
+                port_bindings[key] = [{"HostPort": str(host_port)}]
 
-                config["HostConfig"]["PortBindings"] = port_bindings
+            config["HostConfig"]["PortBindings"] = port_bindings
 
-            if volumes:
-                binds = []
+        if volumes:
+            binds = []
 
-                for host_path, vol_config in volumes.items():
-                    container_path = vol_config.get("bind", vol_config)
-                    mode = vol_config.get("mode", "rw") if isinstance(vol_config, dict) else "rw"
-                    binds.append(f"{host_path}:{container_path}:{mode}")
+            for host_path, vol_config in volumes.items():
+                container_path = vol_config.get("bind", vol_config)
+                mode = vol_config.get("mode", "rw") if isinstance(vol_config, dict) else "rw"
+                binds.append(f"{host_path}:{container_path}:{mode}")
 
-                config["HostConfig"]["Binds"] = binds
+            config["HostConfig"]["Binds"] = binds
 
-            if environment:
-                config["Env"] = [f"{k}={v}" for k, v in environment.items()]
+        if environment:
+            config["Env"] = [f"{k}={v}" for k, v in environment.items()]
 
-            if labels:
-                config["Labels"] = labels
+        if labels:
+            config["Labels"] = labels
 
-            if command:
-                config["Cmd"] = command if isinstance(command, list) else ["/bin/sh", "-c", command]
+        if command:
+            config["Cmd"] = command if isinstance(command, list) else ["/bin/sh", "-c", command]
 
-            if entrypoint:
-                config["Entrypoint"] = entrypoint
+        if entrypoint:
+            config["Entrypoint"] = entrypoint
 
-            if "security_opt" in kwargs:
-                config["HostConfig"]["SecurityOpt"] = kwargs["security_opt"]
+        if "security_opt" in kwargs:
+            config["HostConfig"]["SecurityOpt"] = kwargs["security_opt"]
 
-            if "network_mode" in kwargs:
-                config["HostConfig"]["NetworkMode"] = kwargs["network_mode"]
+        if "network_mode" in kwargs:
+            config["HostConfig"]["NetworkMode"] = kwargs["network_mode"]
 
-            if "config_variables" in kwargs:
-                config.update(kwargs["config_variables"])
+        if "config_variables" in kwargs:
+            config.update(kwargs["config_variables"])
 
-            await self._client.containers.create(
-                config=config,
-                name=name
-            )
-        except DockerError as e:
-            raise UnexpectedError('Error while creating container "{name}"', name=name) from e
+        await self._call(
+            path="/containers/create",
+            method="POST",
+            params={
+                "name": name
+            },
+            json=config,
+            ok=(201,),
+            error=UnexpectedError('Error while creating container "{name}"', name=name)
+        )
 
     async def container_start(
         self,
@@ -330,13 +490,13 @@ class DockerClient(AbstractContainersClient):
         Returns:
         - None.
         """
-        try:
-            container = await self._get_container_by_name(container_name)
-            await container.start()
-        except (NotFoundError, UnexpectedError):
-            raise
-        except DockerError as e:
-            raise UnexpectedError('Error while starting container "{name}"', name=container_name) from e
+        await self._call(
+            path=f"/containers/{quote(container_name, safe='')}/start",
+            method="POST",
+            ok=(204, 304),
+            error=UnexpectedError('Error while starting container "{name}"', name=container_name),
+            not_found=NotFoundError('Container "{name}" not found', name=container_name)
+        )
 
     async def container_stop(
         self,
@@ -353,13 +513,16 @@ class DockerClient(AbstractContainersClient):
         Returns:
         - None.
         """
-        try:
-            container = await self._get_container_by_name(container_name)
-            await container.stop(timeout=float(timeout))
-        except (NotFoundError, UnexpectedError):
-            raise
-        except DockerError as e:
-            raise UnexpectedError('Error while stopping container "{name}"', name=container_name) from e
+        await self._call(
+            path=f"/containers/{quote(container_name, safe='')}/stop",
+            method="POST",
+            params={
+                "t": timeout
+            },
+            ok=(204, 304),
+            error=UnexpectedError('Error while stopping container "{name}"', name=container_name),
+            not_found=NotFoundError('Container "{name}" not found', name=container_name)
+        )
 
     async def container_remove(
         self,
@@ -378,13 +541,17 @@ class DockerClient(AbstractContainersClient):
         Returns:
         - None.
         """
-        try:
-            container = await self._get_container_by_name(container_name)
-            await container.delete(force=force, v=volumes)
-        except (NotFoundError, UnexpectedError):
-            raise
-        except DockerError as e:
-            raise UnexpectedError('Error while removing container "{name}"', name=container_name) from e
+        await self._call(
+            path=f"/containers/{quote(container_name, safe='')}",
+            method="DELETE",
+            params={
+                "force": force,
+                "v": volumes
+            },
+            ok=(204,),
+            error=UnexpectedError('Error while removing container "{name}"', name=container_name),
+            not_found=NotFoundError('Container "{name}" not found', name=container_name)
+        )
 
     async def container_restart(
         self,
@@ -401,13 +568,16 @@ class DockerClient(AbstractContainersClient):
         Returns:
         - None.
         """
-        try:
-            container = await self._get_container_by_name(container_name)
-            await container.restart(timeout=timeout)
-        except (NotFoundError, UnexpectedError):
-            raise
-        except DockerError as e:
-            raise UnexpectedError('Error while restarting container "{name}"', name=container_name) from e
+        await self._call(
+            path=f"/containers/{quote(container_name, safe='')}/restart",
+            method="POST",
+            params={
+                "t": timeout
+            },
+            ok=(204,),
+            error=UnexpectedError('Error while restarting container "{name}"', name=container_name),
+            not_found=NotFoundError('Container "{name}" not found', name=container_name)
+        )
 
     async def container_wait(
         self,
@@ -422,13 +592,61 @@ class DockerClient(AbstractContainersClient):
         Returns:
         - None.
         """
-        try:
-            container = await self._get_container_by_name(container_name)
-            await container.wait()
-        except (NotFoundError, UnexpectedError):
-            raise
-        except DockerError as e:
-            raise UnexpectedError('Error while waiting for container "{name}"', name=container_name) from e
+        await self._call(
+            path=f"/containers/{quote(container_name, safe='')}/wait",
+            method="POST",
+            error=UnexpectedError('Error while waiting for container "{name}"', name=container_name),
+            not_found=NotFoundError('Container "{name}" not found', name=container_name)
+        )
+
+    @staticmethod
+    async def _iter_log_lines(
+        chunks: AsyncGenerator[bytes, None],
+        tty: bool
+    ) -> AsyncGenerator[str, None]:
+        """
+        Turns the raw logs stream into text lines. Without TTY the stream is multiplexed: every frame is an
+        8-byte header (stream type, 3 zero bytes, big-endian payload size) followed by the payload.
+
+        Parameters:
+        - chunks: Raw chunks of the logs stream.
+        - tty: Whether the container has a TTY, then the stream is plain.
+
+        Returns:
+        - AsyncGenerator: Lines with their trailing newline.
+        """
+        decoder = getincrementaldecoder("utf-8")(errors="replace")
+        buffer = bytearray()
+        text = ""
+
+        async for chunk in chunks:
+            payloads = []
+
+            if tty:
+                payloads.append(chunk)
+            else:
+                buffer.extend(chunk)
+
+                while len(buffer) >= 8:
+                    size = int.from_bytes(buffer[4:8], "big")
+
+                    if len(buffer) < 8 + size:
+                        break
+
+                    payloads.append(bytes(buffer[8:8 + size]))
+                    del buffer[:8 + size]
+
+            for payload in payloads:
+                text += decoder.decode(payload)
+
+                while (index := text.find("\n")) != -1:
+                    yield text[:index + 1]
+                    text = text[index + 1:]
+
+        text += decoder.decode(b"", final=True)
+
+        if text:
+            yield text
 
     async def container_logs(
         self,
@@ -447,25 +665,33 @@ class DockerClient(AbstractContainersClient):
         Returns:
         - List: List of ContainerLog objects.
         """
+        error = UnexpectedError('Error while getting logs for container "{name}"', name=container_name)
+
+        inspect = await self._container_inspect(container_name)
+        tty = inspect.get("Config", {}).get("Tty", False)
+
         try:
-            container = await self._get_container_by_name(container_name)
-
-            logs = await container.log(
-                stdout=True,
-                stderr=True,
-                follow=False,
-                tail=tail,
-                timestamps=timestamps
-            )
-
             return [
-                ContainerLog(message=log)
-                for log in logs
+                ContainerLog(message=line)
+                async for line in self._iter_log_lines(
+                    chunks=self.socket_client.stream(
+                        path=f"/containers/{quote(container_name, safe='')}/logs",
+                        params={
+                            "stdout": True,
+                            "stderr": True,
+                            "follow": False,
+                            "tail": tail,
+                            "timestamps": timestamps
+                        }
+                    ),
+                    tty=tty
+                )
             ]
-        except (NotFoundError, UnexpectedError):
-            raise
-        except DockerError as e:
-            raise UnexpectedError('Error while getting logs for container "{name}"', name=container_name) from e
+        except SocketError as e:
+            if e.status == 404:
+                raise NotFoundError('Container "{name}" not found', name=container_name) from e
+
+            raise error from e
 
     async def container_stream_logs(
         self,
@@ -484,23 +710,34 @@ class DockerClient(AbstractContainersClient):
         Returns:
         - AsyncGenerator: ContainerLog object.
         """
-        try:
-            container = await self._get_container_by_name(container_name)
+        inspect = await self._container_inspect(container_name)
+        tty = inspect.get("Config", {}).get("Tty", False)
 
-            async for log in container.log(
-                stdout=True,
-                stderr=True,
-                follow=True,
-                tail=tail,
-                timestamps=timestamps
+        try:
+            async for line in self._iter_log_lines(
+                chunks=self.socket_client.stream(
+                    path=f"/containers/{quote(container_name, safe='')}/logs",
+                    params={
+                        "stdout": True,
+                        "stderr": True,
+                        "follow": True,
+                        "tail": tail,
+                        "timestamps": timestamps
+                    }
+                ),
+                tty=tty
             ):
                 yield ContainerLog(
-                    message=log
+                    message=line
                 )
-        except (NotFoundError, UnexpectedError):
-            raise
-        except DockerError as e:
-            raise UnexpectedError('Error while streaming logs for container "{name}"', name=container_name) from e
+        except SocketError as e:
+            if e.status == 404:
+                raise NotFoundError('Container "{name}" not found', name=container_name) from e
+
+            raise UnexpectedError(
+                'Error while streaming logs for container "{name}"',
+                name=container_name
+            ) from e
 
     async def container_status(
         self,
@@ -515,28 +752,22 @@ class DockerClient(AbstractContainersClient):
         Returns:
         - ContainerStatus: ContainerStatus object.
         """
-        try:
-            container = await self._get_container_by_name(container_name)
-            inspect = await container.show()
+        inspect = await self._container_inspect(container_name)
 
-            running = inspect["State"]["Running"]
+        running = inspect["State"]["Running"]
 
-            host_port = None
-            port_bindings = inspect.get("HostConfig", {}).get("PortBindings", {})
+        host_port = None
+        port_bindings = inspect.get("HostConfig", {}).get("PortBindings") or {}
 
-            for bindings in port_bindings.values():
-                if bindings:
-                    host_port = int(bindings[0]["HostPort"])
-                    break
+        for bindings in port_bindings.values():
+            if bindings:
+                host_port = int(bindings[0]["HostPort"])
+                break
 
-            return ContainerStatus(
-                running=running,
-                port=host_port
-            )
-        except (NotFoundError, UnexpectedError):
-            raise
-        except DockerError as e:
-            raise UnexpectedError('Error while getting status for container "{name}"', name=container_name) from e
+        return ContainerStatus(
+            running=running,
+            port=host_port
+        )
 
     async def container_execute(
         self,
@@ -553,22 +784,30 @@ class DockerClient(AbstractContainersClient):
         Returns:
         - None.
         """
-        try:
-            container = await self._get_container_by_name(container_name)
+        error = UnexpectedError('Error while executing command in container "{name}"', name=container_name)
 
-            exec_obj = await container.exec(
-                cmd=command,
-                stdout=True,
-                stderr=True
-            )
+        created = await self._call(
+            path=f"/containers/{quote(container_name, safe='')}/exec",
+            method="POST",
+            json={
+                "Cmd": command,
+                "AttachStdout": True,
+                "AttachStderr": True
+            },
+            ok=(201,),
+            error=error,
+            not_found=NotFoundError('Container "{name}" not found', name=container_name)
+        )
 
-            await exec_obj.start(
-                detach=True
-            )
-        except (NotFoundError, UnexpectedError):
-            raise
-        except DockerError as e:
-            raise UnexpectedError('Error while executing command in container "{name}"', name=container_name) from e
+        await self._call(
+            path=f"/exec/{created.json()['Id']}/start",
+            method="POST",
+            json={
+                "Detach": True,
+                "Tty": False
+            },
+            error=error
+        )
 
     async def volume_prune(
         self,
@@ -583,12 +822,14 @@ class DockerClient(AbstractContainersClient):
         Returns:
         - None.
         """
-        try:
-            await self._client.volumes.prune(
-                filters=filters or {}
-            )
-        except DockerError as e:
-            raise UnexpectedError("Error while pruning volumes") from e
+        await self._call(
+            path="/volumes/prune",
+            method="POST",
+            params={
+                "filters": dumps(filters).decode() if filters else None
+            },
+            error=UnexpectedError("Error while pruning volumes")
+        )
 
     async def builder_prune(
         self,
@@ -611,28 +852,15 @@ class DockerClient(AbstractContainersClient):
         Returns:
         - None.
         """
-        try:
-            params = {}
-
-            if reserved_space is not None:
-                params["reserved-space"] = str(reserved_space)
-
-            if max_used_space is not None:
-                params["max-used-space"] = str(max_used_space)
-
-            if min_free_space is not None:
-                params["min-free-space"] = str(min_free_space)
-
-            if all_cache:
-                params["all"] = "1"
-
-            if filters:
-                params["filters"] = dumps(filters)
-
-            await self._client._query_json(
-                "build/prune",
-                method="POST",
-                params=params
-            )
-        except DockerError as e:
-            raise UnexpectedError("Error while pruning builder cache") from e
+        await self._call(
+            path="/build/prune",
+            method="POST",
+            params={
+                "reserved-space": reserved_space,
+                "max-used-space": max_used_space,
+                "min-free-space": min_free_space,
+                "all": all_cache or None,
+                "filters": dumps(filters).decode() if filters else None
+            },
+            error=UnexpectedError("Error while pruning builder cache")
+        )

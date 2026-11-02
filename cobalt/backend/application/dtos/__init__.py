@@ -14,7 +14,7 @@ from .attributes import (
 from .auth import (
     AuthLoginDto,
     AuthSessionDto,
-    AuthChangeCredentialsDto
+    AuthUpdateCredentialsDto
 )
 from .files import (
     FileDto,
@@ -106,7 +106,7 @@ __all__ = [
     "FileCreateDto",
     "FilesUploadDto",
     "FilesExtractDto",
-    "AuthChangeCredentialsDto",
+    "AuthUpdateCredentialsDto",
     "GameDto",
     "GamesGetPageDto",
     "GamesPageDto",

@@ -10,10 +10,10 @@ class AiohttpClient(AbstractHttpClient):
     """
     Aiohttp HTTP client.
     """
-    _timeout: ClientTimeout
     _session: Optional[ClientSession]
 
     logger: AbstractLogger
+    timeout: ClientTimeout
 
     def __init__(
         self,
@@ -21,9 +21,9 @@ class AiohttpClient(AbstractHttpClient):
         timeout: float = 60.0,
     ):
         self.logger = logger
+        self.timeout = ClientTimeout(total=timeout)
 
         self._session = None
-        self._timeout = ClientTimeout(total=timeout)
 
     def _get_session(self) -> ClientSession:
         """
@@ -37,9 +37,22 @@ class AiohttpClient(AbstractHttpClient):
         - ClientSession: an open session ready for requests
         """
         if self._session is None or self._session.closed:
-            self._session = ClientSession(timeout=self._timeout)
+            self._session = ClientSession(timeout=self.timeout)
 
         return self._session
+
+    async def initialize(self) -> None:
+        """
+        Open the underlying session and prepare the client for use. Should be called on application startup
+        if the client isn't used as an async context manager.
+
+        Parameters:
+        - None.
+
+        Returns:
+        - None.
+        """
+        self._get_session()
 
     async def close(self) -> None:
         """
@@ -111,7 +124,7 @@ class AiohttpClient(AbstractHttpClient):
         - Dict: Dict response or text, None on error.
         """
         session = self._get_session()
-        request_timeout = ClientTimeout(total=timeout) if timeout is not None else self._timeout
+        request_timeout = ClientTimeout(total=timeout) if timeout is not None else self.timeout
 
         try:
             async with session.request(

@@ -13,8 +13,19 @@ import type { Router } from "vue-router"
 import { RouteEnum } from "@/types"
 import type { IHttpClient } from "@/contracts"
 
+declare module "axios" {
+  export interface AxiosRequestConfig {
+    /**
+     * When true, a 401 response is not handled globally (no notification,
+     * no redirect to login, no endless pending promise): the error is
+     * rejected to the caller as usual.
+     */
+    skipAuthHandling?: boolean
+  }
+}
+
 /**
- * HTTP Client class for Cobalt API requests with centralized error handling
+ * HTTP Client class for Synapse API requests with centralized error handling
  * and automatic authentication redirects.
  */
 export class HttpAxiosClient implements IHttpClient {
@@ -22,6 +33,7 @@ export class HttpAxiosClient implements IHttpClient {
   private router: Router
   private t: (key: string) => string
   private isRedirecting = false
+  private timezone: string
 
   /**
    * Creates a new HttpAxiosClient instance with configured axios client.
@@ -34,6 +46,7 @@ export class HttpAxiosClient implements IHttpClient {
   constructor(router: Router, t: (key: string) => string, baseURL?: string) {
     this.router = router
     this.t = t
+    this.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
 
     this.client = axios.create({
       baseURL,
@@ -61,6 +74,10 @@ export class HttpAxiosClient implements IHttpClient {
     this.client.interceptors.response.use(
       (response) => response,
       (error: AxiosError) => {
+        if (error.config?.skipAuthHandling) {
+          return Promise.reject(error)
+        }
+
         this.handleError(error)
 
         if (error.response?.status === 401) {
@@ -71,6 +88,11 @@ export class HttpAxiosClient implements IHttpClient {
         return Promise.reject(error)
       }
     )
+
+    this.client.interceptors.request.use((config) => {
+      config.headers.set("X-Timezone", this.timezone)
+      return config
+    })
   }
 
   /**

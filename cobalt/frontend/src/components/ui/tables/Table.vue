@@ -8,98 +8,99 @@
 <template>
   <div class="table">
     <div class="wrapper">
-      <table v-if="rows.length > 0 && !accessDenied">
+      <table v-if="rows.length > 0 && !accessDenied" :class="{ loading }">
         <thead>
-        <tr>
-          <th v-if="withCheckboxes">
-            <div class="label-checkbox">
-              <input
-                type="checkbox"
-                class="checkbox"
-                :checked="allSelected"
-                @change="handleToggleAllSelection"
-              />
-            </div>
-          </th>
-          <th
-            v-for="column in columns"
-            :key="column.field"
-            :data-sort-field="column.params.sorting?.sortable ? column.field : undefined"
-            :class="[
-                column.params.sorting?.sortable ? 'sortable' : '',
-                currentSort?.field === (column.params.sorting?.field ?? column.field)
-                  ? `sort-${currentSort.direction}`
-                  : ''
-              ]"
-            @click="column.params.sorting?.sortable && handleSortClick(column)"
-          >
-            <span>{{ column.params.label.value }}</span>
-          </th>
-          <th v-if="withActions && $slots.tableRowActions">{{ $t('common.actions') }}</th>
-        </tr>
+          <tr>
+            <th v-if="withCheckboxes">
+              <div class="label-checkbox">
+                <input
+                  type="checkbox"
+                  class="checkbox"
+                  :disabled="loading"
+                  :checked="allSelected"
+                  @change="handleToggleAllSelection"
+                />
+              </div>
+            </th>
+            <th
+              v-for="column in columns"
+              :key="column.field"
+              :data-sort-field="column.params.sorting?.sortable ? column.field : undefined"
+              :class="[
+                  column.params.sorting?.sortable ? 'sortable' : '',
+                  currentSort?.field === (column.params.sorting?.field ?? column.field)
+                    ? `sort-${currentSort.direction}`
+                    : ''
+                ]"
+              @click="column.params.sorting?.sortable && handleSortClick(column)"
+            >
+              <span>{{ column.params.label.value }}</span>
+            </th>
+            <th v-if="withActions && $slots.tableRowActions">{{ $t('common.actions') }}</th>
+          </tr>
         </thead>
         <tbody>
-        <tr v-for="row in rows" :key="row.id">
-          <td v-if="withCheckboxes">
-            <div class="label-checkbox">
-              <input
-                v-if="row.id !== '__back__'"
-                type="checkbox"
-                class="checkbox item"
-                :checked="tableStore.isSelected(tableId, row.id)"
-                @change="handleToggleItemSelection(row.id)"
-              />
-            </div>
-          </td>
-          <td
-            v-for="column in columns"
-            :key="column.field"
-            class="cell"
-            :class="{ clickable: !!column.params.action }"
-            @click="column.params.action?.(row)"
-          >
-            <div class="field">
-              <template v-if="column.type === 'text'">
-                <div class="text" :class="{ highlighted: column.params.label.highlighted }">
-                  <p class="value">
-                    {{ row[column.field] }}
-                    <span class="tooltip">{{ row[column.field] }}</span>
-                  </p>
-                </div>
-              </template>
-              <template v-else-if="column.type === 'tag'">
-                <div class="tag" :class="column.params.color">
-                  <p class="value">
-                    {{ row[column.field] }}
-                    <span class="tooltip">{{ row[column.field] }}</span>
-                  </p>
-                </div>
-              </template>
-              <template v-else-if="column.type === 'icon-text'">
-                <div class="icon-text" :class="{ highlighted: column.params.label.highlighted }">
-                  <div
-                    v-if="column.params.iconField && row[column.params.iconField]"
-                    class="icon"
-                    :class="column.params.iconSize"
-                  >
-                    <img
-                      :src="row[column.params.iconField]"
-                      :alt="row[column.field]"
-                    />
+          <tr v-for="row in rows" :key="row.id">
+            <td v-if="withCheckboxes">
+              <div class="label-checkbox">
+                <input
+                  v-if="row.id !== '__back__'"
+                  type="checkbox"
+                  class="checkbox item"
+                  :checked="tableStore.isSelected(tableId, row.id)"
+                  @change="handleToggleItemSelection(row.id)"
+                />
+              </div>
+            </td>
+            <td
+              v-for="column in columns"
+              :key="column.field"
+              class="cell"
+              :class="{ clickable: !!column.params.action }"
+              @click="column.params.action?.(row)"
+            >
+              <div class="field">
+                <template v-if="column.type === 'text'">
+                  <div class="text" :class="{ highlighted: column.params.label.highlighted }">
+                    <p class="value">
+                      {{ row[column.field] }}
+                      <span class="tooltip">{{ row[column.field] }}</span>
+                    </p>
                   </div>
-                  <p class="value">
-                    {{ row[column.field] }}
-                    <span class="tooltip">{{ row[column.field] }}</span>
-                  </p>
-                </div>
-              </template>
-            </div>
-          </td>
-          <td
-            v-if="withActions && $slots.tableRowActions" class="actions">
-            <slot name="tableRowActions" :row="row"/>
-          </td>
-        </tr>
+                </template>
+                <template v-else-if="column.type === 'tag'">
+                  <div class="tag" :class="column.params.color">
+                    <p class="value">
+                      {{ row[column.field] }}
+                      <span class="tooltip">{{ row[column.field] }}</span>
+                    </p>
+                  </div>
+                </template>
+                <template v-else-if="column.type === 'icon-text'">
+                  <div class="icon-text" :class="{ highlighted: column.params.label.highlighted }">
+                    <div
+                      v-if="column.params.iconField && row[column.params.iconField]"
+                      class="icon"
+                      :class="column.params.iconSize"
+                    >
+                      <img
+                        :src="row[column.params.iconField]"
+                        :alt="row[column.field]"
+                      />
+                    </div>
+                    <p class="value">
+                      {{ row[column.field] }}
+                      <span class="tooltip">{{ row[column.field] }}</span>
+                    </p>
+                  </div>
+                </template>
+              </div>
+            </td>
+            <td
+              v-if="withActions && $slots.tableRowActions" class="actions">
+              <slot name="tableRowActions" :row="row"/>
+            </td>
+          </tr>
         </tbody>
       </table>
       <div v-else-if="accessDenied" class="empty-state">
@@ -147,10 +148,12 @@ const props = withDefaults(defineProps<{
   withActions?: boolean
   withCheckboxes?: boolean
   accessDenied?: boolean
+  loading?: boolean
 }>(), {
   withActions: false,
   withCheckboxes: true,
-  accessDenied: false
+  accessDenied: false,
+  loading: false
 })
 
 const emit = defineEmits<{
@@ -195,6 +198,7 @@ function handleToggleItemSelection(id: string | number): void {
  * - void.
  */
 function handleSortClick(column: TableColumn): void {
+  if (props.loading) return
   const field = column.params.sorting?.field ?? column.field
   const sort = tableStore.toggleSort(props.tableId, field)
   emit("sort-change", sort.field, sort.direction)
@@ -306,6 +310,17 @@ table {
   width: 100%;
   white-space: nowrap;
   border-collapse: collapse;
+
+  &.loading {
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+
+    tbody {
+      opacity: 0.5;
+      transition: opacity 0.2s ease;
+    }
+  }
 
   thead {
     position: sticky;

@@ -1,23 +1,18 @@
 FROM alpine:3.24.2
 
-ARG PAPER_LINK
+RUN apk add --no-cache \
+        bash \
+        rsync
+
 ARG INSTALLATION_DIR
 
 WORKDIR ${INSTALLATION_DIR}
 
-RUN apk add --no-cache \
-        bash \
-        rsync \
-        wget \
-        ca-certificates \
-    && wget ${PAPER_LINK} -O paper-server.jar \
-    && apk del \
-        wget \
-        ca-certificates
+ARG PAPER_LINK
+
+ADD --chmod=644 ${PAPER_LINK} paper-server.jar
 
 COPY data/ ./
-COPY scripts/installer.sh scripts/runtime.sh ./
-
-RUN chmod +x installer.sh runtime.sh
+COPY --chmod=755 scripts/installer.sh scripts/runtime.sh ./
 
 CMD ["/bin/bash", "-c", "exec ./installer.sh"]

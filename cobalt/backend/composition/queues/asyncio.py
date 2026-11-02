@@ -21,6 +21,6 @@ def create_asyncio_queue(
     - AbstractQueue: AbstractQueue object.
     """
     return AsyncioQueue(
-        max_workers=2,
+        max_workers=1,
         logger=logger
     )

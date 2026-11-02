@@ -61,7 +61,8 @@ export class InstallerApplication {
    * - Promise<void>: Resolves on success; exits the process on failure.
    */
   async run() {
-    const prompts = new InstallerPrompts();
+    const version = ComposeDeployer.detectVersion(this.repositoryRoot);
+    const prompts = new InstallerPrompts(version);
     const answers = await prompts.ask();
     prompts.showSummary(answers);
 

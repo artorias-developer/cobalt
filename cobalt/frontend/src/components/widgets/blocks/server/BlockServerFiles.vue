@@ -31,6 +31,7 @@
       <template v-if="!isFileEditing">
         <Table
           :access-denied="!hasServerFilesViewAccess"
+          :loading="isFilesLoading"
           :table-id="tableStoreId"
           :columns="columns"
           :rows="rows"
@@ -402,7 +403,10 @@ const tableStoreId = "files"
 const listData = ref<FilesListEntity | null>(null)
 const currentPath = ref<string>("/")
 const pathHistory = ref<string[]>([])
+const listedDepth = ref<number>(0)
 
+const isFileLoading = ref<boolean>(false)
+const isFilesLoading = ref<boolean>(false)
 const isFilesReloading = ref<boolean>(false)
 const isFilesDownloading = ref<boolean>(false)
 const isFilesDuplicating = ref<boolean>(false)
@@ -638,6 +642,9 @@ function getEditorLanguage(name: string): string {
  * - Promise<void>.
  */
 async function fetchFiles(): Promise<void> {
+  if (isFilesLoading.value) return
+
+  isFilesLoading.value = true
   const search = tableStore.getSearch(tableStoreId)
 
   try {
@@ -660,6 +667,9 @@ async function fetchFiles(): Promise<void> {
       text: error?.response?.data?.message ?? t("servers.server.files.fetch.error"),
     })
     listData.value = null
+  } finally {
+    listedDepth.value = pathHistory.value.length
+    isFilesLoading.value = false
   }
 }
 
@@ -729,6 +739,10 @@ function handleOpen(row: Record<string, any>): void {
  * - Promise<void>.
  */
 async function openFile(row: Record<string, any>): Promise<void> {
+  if (isFileLoading.value) return
+
+  isFileLoading.value = true
+
   try {
     openedFile.value = await httpFilesApiService.getContent(props.serverId!, {
       path: row.path
@@ -739,6 +753,8 @@ async function openFile(row: Record<string, any>): Promise<void> {
       type: "error",
       text: error?.response?.data?.message ?? t("servers.server.files.open.error"),
     })
+  } finally {
+    isFileLoading.value = false
   }
 }
 
@@ -764,7 +780,6 @@ async function handleSaveContent(): Promise<void> {
       type: "success",
       text: t("servers.server.files.save.success")
     })
-    closeEditor()
   } catch (error: any) {
     notify({
       type: "error",
@@ -892,7 +907,7 @@ async function duplicatePaths(paths: string[]): Promise<void> {
       type: "success",
       text: t("servers.server.files.duplicate.success")
     })
-    fetchFiles()
+    await fetchFiles()
   } catch (error: any) {
     notify({
       type: "error",
@@ -1294,7 +1309,7 @@ const rows = computed((): Array<Record<string, any>> => {
     modified_at: localeHelper.formatDateTime(file.modified_at),
   })) ?? []
 
-  if (pathHistory.value.length === 0) return fileRows
+  if (listedDepth.value === 0) return fileRows
 
   return [
     {

@@ -10,7 +10,7 @@ from application.dtos import (
     UserDto,
     AuthLoginDto,
     AuthSessionDto,
-    AuthChangeCredentialsDto
+    AuthUpdateCredentialsDto
 )
 
 
@@ -54,17 +54,17 @@ class AbstractAuthService(ABC):
         ...
 
     @abstractmethod
-    async def change_credentials(
+    async def update_credentials(
         self,
         user_id: int,
-        dto: AuthChangeCredentialsDto
+        dto: AuthUpdateCredentialsDto
     ) -> None:
         """
-        Changes user login and/or password.
+        Updates user login and/or password.
 
         Parameters:
         - user_id: User ID.
-        - dto: AuthChangeCredentialsDto object.
+        - dto: AuthUpdateCredentialsDto object.
 
         Returns:
         - None.

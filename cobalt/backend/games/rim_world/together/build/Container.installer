@@ -1,28 +1,30 @@
-FROM alpine:3.24.2
+FROM alpine:3.24.2 AS downloader
+
+RUN apk add --no-cache \
+        unzip
 
 ARG TOGETHER_LINK
+
+WORKDIR /together
+
+ADD ${TOGETHER_LINK} server.zip
+
+RUN unzip server.zip \
+    && rm -f server.zip \
+    && chmod +x GameServer
+
+FROM alpine:3.24.2
+
+RUN apk add --no-cache \
+        bash \
+        rsync
+
 ARG INSTALLATION_DIR
 
 WORKDIR ${INSTALLATION_DIR}
 
-RUN apk add --no-cache \
-        bash \
-        rsync \
-        wget \
-        ca-certificates \
-        unzip \
-    && wget ${TOGETHER_LINK} -O server.zip \
-    && unzip server.zip \
-    && rm -f server.zip \
-    && chmod +x GameServer \
-    && apk del \
-        wget \
-        ca-certificates \
-        unzip
-
+COPY --from=downloader /together/ ./
 COPY data/ ./
-COPY scripts/installer.sh scripts/runtime.sh ./
-
-RUN chmod +x installer.sh runtime.sh
+COPY --chmod=755 scripts/installer.sh scripts/runtime.sh ./
 
 CMD ["/bin/bash", "-c", "exec ./installer.sh"]

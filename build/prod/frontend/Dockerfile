@@ -1,10 +1,11 @@
 FROM node:22-alpine
 
-LABEL managed_by=cobalt
-
 WORKDIR /app
 
 COPY cobalt/frontend/package*.json ./
-RUN npm install
+RUN --mount=type=cache,target=/root/.npm \
+    npm install
 
 COPY cobalt/frontend ./
+
+LABEL managed_by=cobalt
