@@ -16,7 +16,7 @@ class GithubClient(AbstractRepositoriesClient):
     """
     Client for GitHub repositories.
     """
-    GITHUB_API = "https://api.github.com/repos/{repository}"
+    _GITHUB_API_URL = "https://api.github.com/repos/{repository}"
 
     http_client: AbstractHttpClient
 
@@ -27,6 +27,32 @@ class GithubClient(AbstractRepositoriesClient):
     ):
         self.http_client = http_client
         self.logger = logger
+
+    async def initialize(self) -> None:
+        """
+        Open the underlying HTTP client session and prepare the client for use. Should be called on
+        application startup if the client isn't used as an async context manager.
+
+        Parameters:
+        - None.
+
+        Returns:
+        - None.
+        """
+        await self.http_client.initialize()
+
+    async def close(self) -> None:
+        """
+        Close the underlying HTTP client session and free its connections. Should be called on application
+        shutdown if the client wasn't used as an async context manager.
+
+        Parameters:
+        - None.
+
+        Returns:
+        - None.
+        """
+        await self.http_client.close()
 
     async def get_all_versions(
         self,
@@ -47,7 +73,7 @@ class GithubClient(AbstractRepositoriesClient):
         Returns:
         - List: List of versions.
         """
-        url = self.GITHUB_API.format(
+        url = self._GITHUB_API_URL.format(
             repository=repository
         )
 

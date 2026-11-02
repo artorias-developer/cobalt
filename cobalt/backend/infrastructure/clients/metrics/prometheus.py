@@ -18,9 +18,9 @@ class PrometheusClient(AbstractMetricsClient):
     """
     Prometheus client.
     """
-    DEFAULT_INTERVAL: str = "1m"
-    DEFAULT_STEP: int = 3
-    DEFAULT_TIME_RANGE_MINUTES: int = 15
+    _DEFAULT_INTERVAL: str = "1m"
+    _DEFAULT_STEP: int = 3
+    _DEFAULT_TIME_RANGE_MINUTES: int = 15
 
     base_url: str
     http_client: AbstractHttpClient
@@ -35,6 +35,32 @@ class PrometheusClient(AbstractMetricsClient):
         self.base_url = base_url.rstrip("/")
         self.http_client = http_client
         self.logger = logger
+
+    async def initialize(self) -> None:
+        """
+        Open the underlying HTTP client session and prepare the client for use. Should be called on
+        application startup if the client isn't used as an async context manager.
+
+        Parameters:
+        - None.
+
+        Returns:
+        - None.
+        """
+        await self.http_client.initialize()
+
+    async def close(self) -> None:
+        """
+        Close the underlying HTTP client session and free its connections. Should be called on application
+        shutdown if the client wasn't used as an async context manager.
+
+        Parameters:
+        - None.
+
+        Returns:
+        - None.
+        """
+        await self.http_client.close()
 
     @staticmethod
     def _build_host_cpu_query(
@@ -186,8 +212,8 @@ class PrometheusClient(AbstractMetricsClient):
         - Tuple: Start and end datetime objects.
         """
         end_time = datetime.now(timezone.utc)
-        start_time = end_time - timedelta(minutes=self.DEFAULT_TIME_RANGE_MINUTES) + timedelta(
-            seconds=self.DEFAULT_STEP)
+        start_time = end_time - timedelta(minutes=self._DEFAULT_TIME_RANGE_MINUTES) + timedelta(
+            seconds=self._DEFAULT_STEP)
 
         return start_time, end_time
 
@@ -345,7 +371,7 @@ class PrometheusClient(AbstractMetricsClient):
         - MetricPoint: MetricPoint object.
         """
         cpu_query = self._build_host_cpu_query(
-            interval=self.DEFAULT_INTERVAL
+            interval=self._DEFAULT_INTERVAL
         )
 
         cpu_value = await self._query_instant(
@@ -371,7 +397,7 @@ class PrometheusClient(AbstractMetricsClient):
         - MetricPoint: MetricPoint object.
         """
         memory_query = self._build_host_memory_query(
-            interval=self.DEFAULT_INTERVAL
+            interval=self._DEFAULT_INTERVAL
         )
 
         memory_value = await self._query_instant(
@@ -399,14 +425,14 @@ class PrometheusClient(AbstractMetricsClient):
         start_time, end_time = self._get_time_range()
 
         cpu_query = self._build_host_cpu_query(
-            interval=self.DEFAULT_INTERVAL
+            interval=self._DEFAULT_INTERVAL
         )
 
         cpu_series = await self._query_range(
             query=cpu_query,
             start_time=start_time,
             end_time=end_time,
-            step=self.DEFAULT_STEP
+            step=self._DEFAULT_STEP
         )
 
         if not cpu_series:
@@ -429,14 +455,14 @@ class PrometheusClient(AbstractMetricsClient):
         start_time, end_time = self._get_time_range()
 
         memory_query = self._build_host_memory_query(
-            interval=self.DEFAULT_INTERVAL
+            interval=self._DEFAULT_INTERVAL
         )
 
         memory_series = await self._query_range(
             query=memory_query,
             start_time=start_time,
             end_time=end_time,
-            step=self.DEFAULT_STEP
+            step=self._DEFAULT_STEP
         )
 
         if not memory_series:
@@ -460,7 +486,7 @@ class PrometheusClient(AbstractMetricsClient):
         - MetricPoint: MetricPoint object.
         """
         cpu_query = self._build_container_cpu_query(
-            interval=self.DEFAULT_INTERVAL,
+            interval=self._DEFAULT_INTERVAL,
             container=container
         )
 
@@ -521,7 +547,7 @@ class PrometheusClient(AbstractMetricsClient):
         start_time, end_time = self._get_time_range()
 
         cpu_query = self._build_container_cpu_query(
-            interval=self.DEFAULT_INTERVAL,
+            interval=self._DEFAULT_INTERVAL,
             container=container
         )
 
@@ -529,7 +555,7 @@ class PrometheusClient(AbstractMetricsClient):
             query=cpu_query,
             start_time=start_time,
             end_time=end_time,
-            step=self.DEFAULT_STEP
+            step=self._DEFAULT_STEP
         )
 
         if not cpu_series:
@@ -562,7 +588,7 @@ class PrometheusClient(AbstractMetricsClient):
             query=memory_query,
             start_time=start_time,
             end_time=end_time,
-            step=self.DEFAULT_STEP
+            step=self._DEFAULT_STEP
         )
 
         if not memory_series:
@@ -590,7 +616,7 @@ class PrometheusClient(AbstractMetricsClient):
 
         cpu_values = await self._query_instant_multiple(
             query=self._build_containers_cpu_query(
-                interval=self.DEFAULT_INTERVAL,
+                interval=self._DEFAULT_INTERVAL,
                 containers=containers
             )
         )
