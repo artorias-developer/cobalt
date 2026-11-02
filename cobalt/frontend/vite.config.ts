@@ -22,7 +22,7 @@ export default defineConfig(() => {
       host: "0.0.0.0",
       port: 8011,
       strictPort: true,
-      allowedHosts: true,
+      allowedHosts: true as const,
       ws: {
         protocol: "wss"
       }
