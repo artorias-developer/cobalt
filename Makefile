@@ -8,6 +8,9 @@ ALEMBIC_MIGRATIONS := $(BACKEND_DIR)/infrastructure/databases/postgres/migration
 BABEL_CFG          := $(BACKEND_DIR)/babel.cfg
 LOCALES_DIR        := $(BACKEND_DIR)/infrastructure/locales/babel
 LOCALES_POT        := $(LOCALES_DIR)/messages.pot
+IMAGE_BACKEND      := ghcr.io/artorias-developer/cobalt-backend
+IMAGE_FRONTEND     := ghcr.io/artorias-developer/cobalt-frontend
+LOCAL_VERSION      := local
 
 .PHONY: \
 	docker-build-dev d\:b\:d \
@@ -50,26 +53,29 @@ docker-prune-dev:
 d\:p\:d: docker-prune-dev
 
 docker-build-prod:
-	docker compose --all-resources -f $(COMPOSE_PROD) up -d
+	docker build -f build/prod/backend/Dockerfile -t $(IMAGE_BACKEND):$(LOCAL_VERSION) .
+	docker build -f build/prod/frontend/Dockerfile -t $(IMAGE_FRONTEND):$(LOCAL_VERSION) .
+	COBALT_VERSION=$(LOCAL_VERSION) docker compose --all-resources -f $(COMPOSE_PROD) up -d
 d\:b\:p: docker-build-prod
 
 docker-rebuild-prod:
-	docker compose --all-resources -f $(COMPOSE_PROD) up -d --build
+	docker build --no-cache -f build/prod/backend/Dockerfile -t $(IMAGE_BACKEND):$(LOCAL_VERSION) .
+	docker build --no-cache -f build/prod/frontend/Dockerfile -t $(IMAGE_FRONTEND):$(LOCAL_VERSION) .
+	COBALT_VERSION=$(LOCAL_VERSION) docker compose --all-resources -f $(COMPOSE_PROD) up -d --build
 d\:r\:p: docker-rebuild-prod
 
 docker-down-prod:
-	docker compose -f $(COMPOSE_PROD) down
+	COBALT_VERSION=$(LOCAL_VERSION) docker compose -f $(COMPOSE_PROD) down
 d\:d\:p: docker-down-prod
 
 docker-prune-prod:
 	@read -p "This will remove all prod containers, volumes and images. Type 'y' to continue: " confirm; \
 	if [ "$$confirm" != "y" ]; then \
-	   echo "Aborted."; \
-	   exit 1; \
+		echo "Aborted."; \
+		exit 1; \
 	fi
-	docker compose --all-resources -f $(COMPOSE_PROD) down -v --rmi all --remove-orphans
+	COBALT_VERSION=$(LOCAL_VERSION) docker compose --all-resources -f $(COMPOSE_PROD) down -v --rmi all --remove-orphans
 d\:p\:p: docker-prune-prod
-
 
 alembic-init:
 	alembic -c $(ALEMBIC_INI) init -t async $(ALEMBIC_MIGRATIONS)

@@ -38,7 +38,7 @@ services:
     restart: unless-stopped
     env_file:
       - ../../generated/dev/build/frontend/.env
-    entrypoint: [ "sh", "/app/frontend-entrypoint.sh" ]
+    entrypoint: ["sh", "/app/frontend-entrypoint.sh"]
     ports:
       - "8011:8011"
     networks:

@@ -1,0 +1,29 @@
+# Files
+**/.gitignore
+**/.gitattributes
+**/.env
+**/.env.*
+**/*.pyc
+**/*.log
+**/*.swp
+**/.DS_Store
+**/Thumbs.db
+
+# Folders
+**/.git
+**/.github
+**/.venv
+**/node_modules
+**/__pycache__
+**/.idea
+**/.vscode
+**/generated
+**/dist
+**/.next
+**/.nuxt
+**/build
+docs
+tests
+cobalt/backend
+
+# Exceptions

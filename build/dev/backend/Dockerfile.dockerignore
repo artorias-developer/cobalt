@@ -1,0 +1,30 @@
+# Files
+**/.gitignore
+**/.gitattributes
+**/.env
+**/.env.*
+**/*.pyc
+**/*.pyo
+**/*.log
+**/*.swp
+**/.DS_Store
+**/Thumbs.db
+
+# Folders
+**/.git
+**/.github
+**/.venv
+**/node_modules
+**/__pycache__
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+**/.idea
+**/.vscode
+**/generated
+build
+docs
+tests
+cobalt/frontend
+
+# Exceptions
