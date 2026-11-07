@@ -1,4 +1,4 @@
-name: Publish images
+name: Create and publish Cobalt images
 
 on:
   push:
