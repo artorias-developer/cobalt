@@ -524,10 +524,13 @@ function handleDeleteRole(roleId: number): void {
 async function deleteRole(roleId: number): Promise<void> {
   try {
     await httpRolesApiService.deleteOne(roleId)
+
     notify({
       type: "success",
       text: t("roles.list.delete.success")
     })
+
+    tableStore.removeSelected(tableStoreId, [roleId])
     fetchRoles()
   } catch (error: any) {
     notify({
@@ -564,10 +567,12 @@ async function deleteSelected(): Promise<void> {
 
   try {
     await httpRolesApiService.deleteMany(selected)
+
     notify({
       type: "success",
       text: t("roles.list.deleteSelected.success")
     })
+
     tableStore.clearSelected(tableStoreId)
     fetchRoles()
   } catch (error: any) {

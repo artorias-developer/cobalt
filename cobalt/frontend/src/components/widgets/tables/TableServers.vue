@@ -528,13 +528,13 @@ async function deleteServer(serverId: number): Promise<void> {
   try {
     await httpServersApiService.deleteOne(serverId)
 
-    serverConsoleStore.clear(serverId)
-
     notify({
       type: "success",
       text: t("servers.list.delete.success")
     })
 
+    serverConsoleStore.clear(serverId)
+    tableStore.removeSelected(tableStoreId, [serverId])
     fetchServers()
   } catch (error: any) {
     notify({
