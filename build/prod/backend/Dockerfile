@@ -1,4 +1,4 @@
-FROM python:3.12.13-slim AS builder
+FROM python:3.12.15-slim AS builder
 
 COPY --from=ghcr.io/astral-sh/uv:0.13.7 /uv /bin/uv
 
@@ -10,6 +10,8 @@ ENV UV_COMPILE_BYTECODE=1 \
     UV_PYTHON_PREFERENCE=only-system \
     UV_PROJECT_ENVIRONMENT=/opt/venv
 
+ARG UV_SYNC_ARGS="--no-dev"
+
 RUN apt-get update && \
     apt-get install -y \
         gcc \
@@ -19,9 +21,9 @@ RUN apt-get update && \
 COPY cobalt/backend/pyproject.toml cobalt/backend/uv.lock ./
 
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-install-project
+    uv sync --frozen --no-install-project ${UV_SYNC_ARGS}
 
-FROM python:3.12.13-slim
+FROM python:3.12.15-slim
 
 WORKDIR /app
 ENV PYTHONPATH=/app/cobalt/backend
