@@ -16,7 +16,7 @@
       class="upload-area"
       @dragover.prevent
       @drop.prevent="handleDrop"
-      @click="inputRef?.click()"
+      @click="openDialog"
     >
       <input
         ref="inputRef"
@@ -25,10 +25,17 @@
         :multiple="multiple"
         :accept="accept"
         @change="handleChange"
+        @cancel="processing = false"
       />
       <div class="placeholder">
         <span>{{ placeholder ?? $t("servers.server.files.popups.upload.placeholder") }}</span>
-        <span v-if="modelValue.length" class="count">
+        <i
+          v-if="processing"
+          class="spinner"
+          aria-hidden="true"
+          v-html="spinnerIcon"
+        />
+        <span v-else-if="modelValue.length" class="count">
           {{ $t('servers.server.files.popups.upload.selected', { n: modelValue.length }) }}
         </span>
       </div>
@@ -43,12 +50,14 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onMounted, onUnmounted, ref } from "vue"
+import { inject, nextTick, onMounted, onUnmounted, ref } from "vue"
 
 import { FORM_KEY } from "@/constants"
 import type { FormContext } from "@/types"
 
 import FormFieldLabel from "@/components/ui/forms/FormFieldLabel.vue"
+
+import spinnerIcon from "@/assets/images/svg/spinner.svg?raw"
 
 const props = withDefaults(defineProps<{
   modelValue: File[]
@@ -70,8 +79,68 @@ const emit = defineEmits<{
 
 const form = inject<FormContext | null>(FORM_KEY, null)
 const inputRef = ref<HTMLInputElement | null>(null)
+const processing = ref(false)
 
 const id = Symbol()
+
+/**
+ * Shows the processing spinner. Used as a one-time window focus listener
+ * after the native file dialog closes, while the browser builds the file list.
+ *
+ * Parameters:
+ * - null.
+ *
+ * Returns:
+ * - void.
+ */
+function showProcessing(): void {
+  processing.value = true
+}
+
+/**
+ * Opens the native file dialog and arms a one-time window focus listener
+ * that shows the processing spinner once the dialog closes.
+ *
+ * Parameters:
+ * - null.
+ *
+ * Returns:
+ * - void.
+ */
+function openDialog(): void {
+  processing.value = false
+  window.addEventListener("focus", showProcessing, { once: true })
+  inputRef.value?.click()
+}
+
+/**
+ * Shows the processing spinner, waits for it to be painted, then converts
+ * the FileList to an array and publishes it to the parent. When `multiple`
+ * is disabled, only the first file is kept. Resets the native input so the
+ * same files can be selected again.
+ *
+ * Parameters:
+ * - files: FileList from the input or the drop event, or null.
+ *
+ * Returns:
+ * - Promise<void>.
+ */
+async function applyFiles(files: FileList | null): Promise<void> {
+  processing.value = true
+
+  await nextTick()
+  await new Promise<void>(resolve => requestAnimationFrame(() => setTimeout(resolve, 0)))
+
+  const list = files ? Array.from(files) : []
+  emit("update:modelValue", props.multiple ? list : list.slice(0, 1))
+
+  if (inputRef.value) {
+    inputRef.value.value = ""
+  }
+
+  await nextTick()
+  processing.value = false
+}
 
 /**
  * Populates the file list from a native file input change event.
@@ -84,7 +153,7 @@ const id = Symbol()
  */
 function handleChange(event: Event): void {
   const input = event.target as HTMLInputElement
-  emit("update:modelValue", input.files ? Array.from(input.files) : [])
+  void applyFiles(input.files)
 }
 
 /**
@@ -97,10 +166,7 @@ function handleChange(event: Event): void {
  * - void.
  */
 function handleDrop(event: DragEvent): void {
-  emit("update:modelValue", event.dataTransfer?.files
-    ? Array.from(event.dataTransfer.files)
-    : []
-  )
+  void applyFiles(event.dataTransfer?.files ?? null)
 }
 
 onMounted(() => {
@@ -113,6 +179,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  window.removeEventListener("focus", showProcessing)
   form?.unregister(id)
 })
 </script>
@@ -157,6 +224,18 @@ onUnmounted(() => {
         font-weight: 600;
         font-size: $font-sm;
       }
+
+      .spinner {
+        width: 20px;
+        height: 20px;
+        display: flex;
+        animation: file-upload-spin 0.8s linear infinite;
+
+        :deep(svg) {
+          width: 100%;
+          height: 100%;
+        }
+      }
     }
   }
 
@@ -189,6 +268,12 @@ onUnmounted(() => {
   }
 }
 
+@keyframes file-upload-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @media (max-width: 768px) {
   .file-upload-wrapper {
     .upload-area {
@@ -196,6 +281,11 @@ onUnmounted(() => {
 
       .placeholder {
         font-size: $font-sm;
+
+        .spinner {
+          width: 18px;
+          height: 18px;
+        }
       }
     }
   }

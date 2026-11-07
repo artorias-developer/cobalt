@@ -464,10 +464,13 @@ function handleDeleteUser(userId: number): void {
 async function deleteUser(userId: number): Promise<void> {
   try {
     await httpUsersApiService.deleteOne(userId)
+
     notify({
       type: "success",
       text: t("users.list.delete.success")
     })
+
+    tableStore.removeSelected(tableStoreId, [userId])
     fetchUsers()
   } catch (error: any) {
     notify({
@@ -504,10 +507,12 @@ async function deleteSelected(): Promise<void> {
 
   try {
     await httpUsersApiService.deleteMany(selected)
+
     notify({
       type: "success",
       text: t("users.list.deleteSelected.success")
     })
+
     tableStore.clearSelected(tableStoreId)
     fetchUsers()
   } catch (error: any) {

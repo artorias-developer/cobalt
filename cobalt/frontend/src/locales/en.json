@@ -323,7 +323,8 @@
         },
         "upload": {
           "success": "Files uploaded successfully",
-          "error": "Failed to upload files"
+          "error": "Failed to upload files",
+          "background": "Upload will continue in the background"
         },
         "columns": {
           "name": "Name",

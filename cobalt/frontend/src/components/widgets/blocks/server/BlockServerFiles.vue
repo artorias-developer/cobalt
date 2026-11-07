@@ -74,6 +74,7 @@
                 :text="$t('common.delete')"
                 color="gray"
                 name="files-delete-popup"
+                :is-loading="isFilesDeleting"
                 @click="handleDeleteSelected"
               />
             </template>
@@ -272,7 +273,11 @@
       </div>
     </template>
   </Popup>
-  <Popup ref="uploadFilesPopup" class="upload-file-popup">
+  <Popup
+    ref="uploadFilesPopup"
+    class="upload-file-popup"
+    @before-close="handleUploadPopupBeforeClose"
+  >
     <template #content="{ close }">
       <Header
         :icon="filesIcon"
@@ -316,7 +321,7 @@
 
 <script setup lang="ts">
 import { useI18n } from "vue-i18n"
-import { computed, inject, onMounted, onUnmounted, ref } from "vue"
+import { computed, inject, onMounted, onUnmounted, ref, shallowRef } from "vue"
 import { useNotification } from "@kyvg/vue3-notification"
 
 import { useTableStore, useUserStore } from "@/stores"
@@ -410,6 +415,8 @@ const isFilesLoading = ref<boolean>(false)
 const isFilesReloading = ref<boolean>(false)
 const isFilesDownloading = ref<boolean>(false)
 const isFilesDuplicating = ref<boolean>(false)
+const isFilesDeleting = ref<boolean>(false)
+const isFileExtracting = ref<boolean>(false)
 const isFileEditing = ref<boolean>(false)
 const openedFile = ref<FileContentEntity | null>(null)
 const fileEditorRef = ref<InstanceType<typeof Editor> | null>(null)
@@ -434,7 +441,7 @@ const isFilesMoving = ref<boolean>(false)
 
 const uploadFilesPopup = ref<InstanceType<typeof Popup> | null>(null)
 const uploadFilesForm = ref<InstanceType<typeof Form> | null>(null)
-const uploadFilesFiles = ref<File[]>([])
+const uploadFilesFiles = shallowRef<File[]>([])
 const uploadFilesProgress = ref<number | null>(null)
 const isFilesUploading = ref<boolean>(false)
 
@@ -518,7 +525,7 @@ const FILE_TYPE_MAP: Record<string, FileTypeEntry> = {
   "jpeg": { icon: iconImage, language: "plaintext" },
   "ico": { icon: iconImage, language: "plaintext" },
   "lua": { icon: iconLua, language: "lua" },
-  "jar": { icon: iconJar, language: "lua" }
+  "jar": { icon: iconJar, language: "plaintext" }
 }
 
 /**
@@ -633,7 +640,8 @@ function getEditorLanguage(name: string): string {
 
 /**
  * Fetches the file list for the current path from the API and applies
- * any active search filter from the table store.
+ * any active search filter from the table store. When a search filter is
+ * active, the file and directory counters reflect the filtered list.
  *
  * Parameters:
  * - null.
@@ -654,11 +662,15 @@ async function fetchFiles(): Promise<void> {
 
     if (search) {
       const searchLower = search.toLowerCase()
+      const filtered = listData.value.files.filter(
+        file => file.name.toLowerCase().includes(searchLower)
+      )
+
       listData.value = {
         ...listData.value,
-        files: listData.value.files.filter(
-          file => file.name.toLowerCase().includes(searchLower)
-        ),
+        files: filtered,
+        total_files: filtered.filter(file => file.type !== "directory").length,
+        total_directories: filtered.filter(file => file.type === "directory").length,
       }
     }
   } catch (error: any) {
@@ -675,7 +687,8 @@ async function fetchFiles(): Promise<void> {
 
 /**
  * Pushes the current path onto the history stack and navigates into a
- * subdirectory, then refreshes the file list.
+ * subdirectory, then refreshes the file list. Ignored while a list
+ * request is in progress.
  *
  * Parameters:
  * - path: Absolute path of the directory to navigate into.
@@ -684,6 +697,8 @@ async function fetchFiles(): Promise<void> {
  * - void.
  */
 function navigateInto(path: string): void {
+  if (isFilesLoading.value) return
+
   pathHistory.value.push(currentPath.value)
   currentPath.value = path
   tableStore.clearSelected(tableStoreId)
@@ -692,7 +707,8 @@ function navigateInto(path: string): void {
 
 /**
  * Pops the most recent path from the history stack and navigates back to
- * it, then refreshes the file list.
+ * it, then refreshes the file list. Ignored while a list request is in
+ * progress.
  *
  * Parameters:
  * - null.
@@ -701,6 +717,8 @@ function navigateInto(path: string): void {
  * - void.
  */
 function navigateBack(): void {
+  if (isFilesLoading.value) return
+
   const prev = pathHistory.value.pop()
   if (prev !== undefined) {
     currentPath.value = prev
@@ -759,8 +777,8 @@ async function openFile(row: Record<string, any>): Promise<void> {
 }
 
 /**
- * Persists the current editor content back to the server,
- * then closes the editor on success.
+ * Persists the current editor content back to the server and shows
+ * a notification with the result. The editor stays open.
  *
  * Parameters:
  * - null.
@@ -849,8 +867,10 @@ async function downloadPaths(paths: string[]): Promise<void> {
     const element = document.createElement("a")
     element.href = url
     element.download = `cobalt_server_${props.serverId}_files.zip`
+    document.body.appendChild(element)
     element.click()
-    URL.revokeObjectURL(url)
+    element.remove()
+    setTimeout(() => URL.revokeObjectURL(url), 1000)
   } catch (error: any) {
     notify({
       type: "error",
@@ -941,14 +961,12 @@ function handleDeleteOne(path: string): void {
  * - void.
  */
 function handleDeleteSelected(): void {
-  confirmPopup.value?.open(async () => {
-    await deletePaths(selectedPaths.value)
-    tableStore.clearSelected(tableStoreId)
-  })
+  confirmPopup.value?.open(async () => await deletePaths(selectedPaths.value))
 }
 
 /**
- * Sends a delete request for the given paths and refreshes the file list.
+ * Sends a delete request for the given paths, removes them from the
+ * selection and refreshes the file list.
  *
  * Parameters:
  * - paths: Array of absolute paths to delete.
@@ -957,18 +975,25 @@ function handleDeleteSelected(): void {
  * - Promise<void>.
  */
 async function deletePaths(paths: string[]): Promise<void> {
+  if (isFilesDeleting.value) return
+
+  isFilesDeleting.value = true
+
   try {
     await httpFilesApiService.delete(props.serverId!, { paths })
     notify({
       type: "success",
       text: t("servers.server.files.delete.success")
     })
+    tableStore.removeSelected(tableStoreId, paths)
     fetchFiles()
   } catch (error: any) {
     notify({
       type: "error",
       text: error?.response?.data?.message ?? t("servers.server.files.delete.error"),
     })
+  } finally {
+    isFilesDeleting.value = false
   }
 }
 
@@ -1161,7 +1186,8 @@ async function handleMove(close: () => void): Promise<void> {
 }
 
 /**
- * Extracts a ZIP archive in place.
+ * Extracts a ZIP archive in place. Ignored while another extraction is
+ * in progress.
  *
  * Parameters:
  * - path: Absolute path to the ZIP archive.
@@ -1170,6 +1196,10 @@ async function handleMove(close: () => void): Promise<void> {
  * - Promise<void>.
  */
 async function handleExtract(path: string): Promise<void> {
+  if (isFileExtracting.value) return
+
+  isFileExtracting.value = true
+
   try {
     await httpFilesApiService.extract(props.serverId!, { path })
     notify({
@@ -1182,11 +1212,14 @@ async function handleExtract(path: string): Promise<void> {
       type: "error",
       text: error?.response?.data?.message ?? t("servers.server.files.extract.error"),
     })
+  } finally {
+    isFileExtracting.value = false
   }
 }
 
 /**
- * Resets the upload popup state and opens the popup.
+ * Opens the upload popup. The selected files are reset only when no upload
+ * is currently running, so an in-progress upload keeps its state.
  *
  * Parameters:
  * - null.
@@ -1195,8 +1228,29 @@ async function handleExtract(path: string): Promise<void> {
  * - void.
  */
 function openUploadPopup(): void {
-  uploadFilesFiles.value = []
+  if (!isFilesUploading.value) {
+    uploadFilesFiles.value = []
+  }
   uploadFilesPopup.value?.open()
+}
+
+/**
+ * Shows a warning that the upload continues in the background when the
+ * upload popup is closed during an active upload.
+ *
+ * Parameters:
+ * - null.
+ *
+ * Returns:
+ * - void.
+ */
+function handleUploadPopupBeforeClose(): void {
+  if (isFilesUploading.value) {
+    notify({
+      type: "warn",
+      text: t("servers.server.files.upload.background")
+    })
+  }
 }
 
 /**
@@ -1226,6 +1280,8 @@ async function handleUpload(close: () => void): Promise<void> {
       type: "success",
       text: t("servers.server.files.upload.success")
     })
+    isFilesUploading.value = false
+    uploadFilesProgress.value = null
     close()
     fetchFiles()
   } catch (error: any) {
