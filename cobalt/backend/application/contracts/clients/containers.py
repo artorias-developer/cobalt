@@ -270,7 +270,8 @@ class AbstractContainersClient(ABC):
         self,
         container_name: str,
         tail: int = 0,
-        timestamps: bool = False
+        timestamps: bool = False,
+        since_nanoseconds: Optional[int] = None
     ) -> AsyncGenerator[ContainerLog, Any]:
         """
         Streams the container logs in real-time.
@@ -279,6 +280,7 @@ class AbstractContainersClient(ABC):
         - container_name: Container name.
         - tail: Number of lines from end to start with.
         - timestamps: Show timestamps.
+        - since_nanoseconds: Only logs since this time (nanoseconds since epoch).
 
         Returns:
         - AsyncGenerator: ContainerLog object.

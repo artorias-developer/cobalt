@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from os import environ
 from pathlib import Path
 from asyncio import create_subprocess_exec
@@ -83,6 +84,8 @@ class DockerClient(AbstractContainersClient):
     Docker client. Talks to the Docker Engine API through a socket client, images are built with "docker build"
     CLI, because the BuildKit builder is only available there (the HTTP build endpoint needs a gRPC session for it).
     """
+    _NANOSECONDS_IN_SECOND = 1_000_000_000
+    _CATCHUP_LIMIT = 500
     _BUILD_ERROR_TAIL = 3000
     _BUILD_FLAGS = {
         "nocache": "--no-cache",
@@ -197,6 +200,109 @@ class DockerClient(AbstractContainersClient):
         )
 
         return response.json()
+
+    def _parse_docker_timestamp(
+        self,
+        raw_timestamp: str
+    ) -> Optional[int]:
+        """
+        Parses Docker log timestamp to nanoseconds since epoch.
+
+        Docker returns timestamps in RFC3339Nano format, for example
+        "2026-11-07T19:46:12.123456789Z". Trailing zeros of the fractional part
+        are trimmed by Docker, and the fractional part is absent when it is zero.
+
+        Parameters:
+        - raw_timestamp: Timestamp string as returned by Docker.
+
+        Returns:
+        - int: Nanoseconds since epoch, or None if the string is not a valid timestamp.
+        """
+        try:
+            date_part, _, fractional_part = raw_timestamp.rstrip("Z").partition(".")
+
+            parsed_datetime = datetime.strptime(
+                date_part,
+                "%Y-%m-%dT%H:%M:%S"
+            ).replace(tzinfo=timezone.utc)
+
+            fractional_nanoseconds = int(fractional_part.ljust(9, "0")[:9])
+
+            return int(parsed_datetime.timestamp()) * self._NANOSECONDS_IN_SECOND + fractional_nanoseconds
+        except ValueError:
+            return None
+
+    def _parse_log_line(
+        self,
+        line: str,
+        keep_timestamp: bool
+    ) -> ContainerLog:
+        """
+        Converts raw Docker log line to ContainerLog object.
+
+        The line is expected to start with the Docker timestamp followed by a space.
+        If the timestamp can not be parsed, the line is returned as is without timestamp.
+
+        Parameters:
+        - line: Raw log line with Docker timestamp prefix.
+        - keep_timestamp: Whether to keep the Docker timestamp prefix in the message.
+
+        Returns:
+        - ContainerLog: ContainerLog object.
+        """
+        raw_timestamp, separator, message_without_timestamp = line.partition(" ")
+
+        timestamp_nanoseconds = (
+            self._parse_docker_timestamp(raw_timestamp)
+            if separator
+            else None
+        )
+
+        if timestamp_nanoseconds is None:
+            return ContainerLog(message=line)
+
+        return ContainerLog(
+            message=line if keep_timestamp else message_without_timestamp,
+            timestamp_nanoseconds=timestamp_nanoseconds
+        )
+
+    def _build_logs_params(
+        self,
+        tail: int,
+        follow: bool,
+        since_nanoseconds: Optional[int]
+    ) -> Dict[str, Any]:
+        """
+        Builds query parameters for Docker logs endpoint.
+
+        Docker timestamps are always requested, because they are used as a cursor.
+        When since is set, tail is limited to the catch-up limit, since Docker applies
+        tail after the since filter.
+
+        Parameters:
+        - tail: Number of lines from end.
+        - follow: Whether to follow the log stream.
+        - since_nanoseconds: Only logs since this time (nanoseconds since epoch).
+
+        Returns:
+        - Dict: Query parameters.
+        """
+        params: Dict = {
+            "stdout": True,
+            "stderr": True,
+            "follow": follow,
+            "tail": tail,
+            "timestamps": True
+        }
+
+        if since_nanoseconds is not None:
+            params["tail"] = min(tail or self._CATCHUP_LIMIT, self._CATCHUP_LIMIT)
+            params["since"] = (
+                f"{since_nanoseconds // self._NANOSECONDS_IN_SECOND}"
+                f".{since_nanoseconds % self._NANOSECONDS_IN_SECOND:09d}"
+            )
+
+        return params
 
     async def image_build(
         self,
@@ -652,7 +758,8 @@ class DockerClient(AbstractContainersClient):
         self,
         container_name: str,
         tail: int = 300,
-        timestamps: bool = False
+        timestamps: bool = False,
+        since_nanoseconds: Optional[int] = None
     ) -> List[ContainerLog]:
         """
         Gets the container logs.
@@ -660,7 +767,8 @@ class DockerClient(AbstractContainersClient):
         Parameters:
         - container_name: Container name.
         - tail: Number of lines from end.
-        - timestamps: Show timestamps.
+        - timestamps: Keep Docker timestamps in message.
+        - since_nanoseconds: Only logs since this time (nanoseconds since epoch).
 
         Returns:
         - List: List of ContainerLog objects.
@@ -672,17 +780,15 @@ class DockerClient(AbstractContainersClient):
 
         try:
             return [
-                ContainerLog(message=line)
+                self._parse_log_line(line, keep_timestamp=timestamps)
                 async for line in self._iter_log_lines(
                     chunks=self.socket_client.stream(
                         path=f"/containers/{quote(container_name, safe='')}/logs",
-                        params={
-                            "stdout": True,
-                            "stderr": True,
-                            "follow": False,
-                            "tail": tail,
-                            "timestamps": timestamps
-                        }
+                        params=self._build_logs_params(
+                            tail=tail,
+                            follow=False,
+                            since_nanoseconds=since_nanoseconds
+                        )
                     ),
                     tty=tty
                 )
@@ -697,7 +803,8 @@ class DockerClient(AbstractContainersClient):
         self,
         container_name: str,
         tail: int = 0,
-        timestamps: bool = False
+        timestamps: bool = False,
+        since_nanoseconds: Optional[int] = None
     ) -> AsyncGenerator[ContainerLog, Any]:
         """
         Streams the container logs in real-time.
@@ -705,7 +812,9 @@ class DockerClient(AbstractContainersClient):
         Parameters:
         - container_name: Container name.
         - tail: Number of lines from end to start with.
-        - timestamps: Show timestamps.
+        - timestamps: Keep Docker timestamps in message.
+        - since_nanoseconds: Only logs since this time (nanoseconds since epoch).
+          When set, up to the catch-up limit of the latest missed lines is returned first.
 
         Returns:
         - AsyncGenerator: ContainerLog object.
@@ -717,19 +826,15 @@ class DockerClient(AbstractContainersClient):
             async for line in self._iter_log_lines(
                 chunks=self.socket_client.stream(
                     path=f"/containers/{quote(container_name, safe='')}/logs",
-                    params={
-                        "stdout": True,
-                        "stderr": True,
-                        "follow": True,
-                        "tail": tail,
-                        "timestamps": timestamps
-                    }
+                    params=self._build_logs_params(
+                        tail=tail,
+                        follow=True,
+                        since_nanoseconds=since_nanoseconds
+                    )
                 ),
                 tty=tty
             ):
-                yield ContainerLog(
-                    message=line
-                )
+                yield self._parse_log_line(line, keep_timestamp=timestamps)
         except SocketError as e:
             if e.status == 404:
                 raise NotFoundError('Container "{name}" not found', name=container_name) from e
