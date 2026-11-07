@@ -6,21 +6,27 @@
 **/*.pyc
 **/*.log
 **/*.swp
+**/*.pem
+**/*.key
+**/*.p12
+**/*.pfx
 **/.DS_Store
 **/Thumbs.db
+**/credentials*.json
 
 # Folders
 **/.git
 **/.github
 **/.venv
-**/node_modules
-**/__pycache__
 **/.idea
 **/.vscode
-**/generated
-**/dist
 **/.next
 **/.nuxt
+**/__pycache__
+**/node_modules
+**/secrets
+**/generated
+**/dist
 **/build
 docs
 tests

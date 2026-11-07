@@ -1,6 +1,6 @@
 FROM python:3.12.13-slim AS builder
 
-COPY --from=ghcr.io/astral-sh/uv:0.9 /uv /bin/uv
+COPY --from=ghcr.io/astral-sh/uv:0.13.7 /uv /bin/uv
 
 WORKDIR /app/cobalt/backend
 
@@ -32,8 +32,8 @@ RUN apt-get update && \
         make && \
     rm -rf /var/lib/apt/lists/*
 
-COPY --from=docker:cli /usr/local/bin/docker /usr/local/bin/docker
-COPY --from=docker/buildx-bin:latest /buildx /usr/libexec/docker/cli-plugins/docker-buildx
+COPY --from=docker:29.9.3-cli /usr/local/bin/docker /usr/local/bin/docker
+COPY --from=docker/buildx-bin:0.38.2 /buildx /usr/libexec/docker/cli-plugins/docker-buildx
 
 COPY --from=builder /opt/venv /opt/venv
 
