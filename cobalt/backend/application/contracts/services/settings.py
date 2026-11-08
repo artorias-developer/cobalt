@@ -59,3 +59,17 @@ class AbstractSettingsService(ABC):
         - None.
         """
         ...
+
+    @abstractmethod
+    async def reset_stuck_containers(self) -> None:
+        """
+        Moves servers stuck in an in-progress state to the matching failed state:
+        PENDING and PROCESSING become FAILED, UPGRADING becomes UPGRADE_FAILED.
+
+        Parameters:
+        - None.
+
+        Returns:
+        - None.
+        """
+        ...

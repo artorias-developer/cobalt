@@ -3,8 +3,8 @@
 #  Repository: https://github.com/artorias-developer/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-from os import path, walk
-from re import compile
+from os import path
+from re import compile as re_compile
 from abc import ABC, abstractmethod
 from pathlib import Path
 from secrets import choice
@@ -37,7 +37,7 @@ class AbstractServersService(ABC):
     _CONTAINER_INSTALLER_FILE = "Container.installer"
     _CONTAINER_RUNTIME_FILE = "Container.runtime"
     _CONTAINER_UPGRADER_FILE = "Container.upgrader"
-    _STEAM_BUILD_ID_PATTERN = compile(r'"buildid"\s+"(\d+)"')
+    _STEAM_BUILD_ID_PATTERN = re_compile(r'"buildid"\s+"(\d+)"')
 
     build_dir: Path
     app_containers_dir: Path
@@ -147,6 +147,7 @@ class AbstractServersService(ABC):
         - server_id: Server ID.
         - state: Server state.
         - version: Server version.
+        - with_container_status: Whether to include the container running status.
         """
         request_dto = ServerUpdateDto(
             state=state,
@@ -178,6 +179,7 @@ class AbstractServersService(ABC):
                     container_name=container_name
                 )
             except Exception:
+                self.logger.exception(f'Error while getting status of container "{container_name}":')
                 status = None
 
             if status is not None:
@@ -275,11 +277,12 @@ class AbstractServersService(ABC):
         """
         app_container_dir = path.join(self.app_containers_dir, container_name)
 
-        if await os.path.exists(app_container_dir):
-            try:
-                await rmtree(app_container_dir)
-            except Exception:
-                self.logger.exception(f'Error while removing files "{container_name}":')
+        try:
+            await rmtree(app_container_dir)
+        except FileNotFoundError:
+            pass
+        except Exception:
+            self.logger.exception(f'Error while removing files "{container_name}":')
 
     async def _verify_installation(
         self,
@@ -295,11 +298,44 @@ class AbstractServersService(ABC):
 
         Returns:
         - None.
+
+        Raises:
+        - RuntimeError: If the installation marker is not found.
         """
         app_container_dir = path.join(self.app_containers_dir, container_name)
 
         if not await os.path.exists(path.join(app_container_dir, installation_marker)):
-            raise Exception(f'Installation failed: "{installation_marker}" not found in "{app_container_dir}"')
+            raise RuntimeError(f'Installation failed: "{installation_marker}" not found in "{app_container_dir}"')
+
+    @staticmethod
+    def _verify_exit_code(
+        container_name: str,
+        wait_result: Any
+    ) -> None:
+        """
+        Verifies that a finished container exited successfully.
+        Understands the Docker wait result ({"StatusCode": int}) or a plain int exit code.
+        If the result carries no exit code, nothing is checked.
+
+        Parameters:
+        - container_name: Container name.
+        - wait_result: Result returned by the container wait call.
+
+        Returns:
+        - None.
+
+        Raises:
+        - RuntimeError: If the container exited with a non-zero code.
+        """
+        if isinstance(wait_result, dict):
+            exit_code = wait_result.get("StatusCode")
+        elif isinstance(wait_result, int):
+            exit_code = wait_result
+        else:
+            exit_code = None
+
+        if exit_code:
+            raise RuntimeError(f'Container "{container_name}" exited with code {exit_code}')
 
     async def _read_steam_version(
         self,
@@ -314,7 +350,7 @@ class AbstractServersService(ABC):
         - app_id: Steam application ID.
 
         Returns:
-        - str: Steam build version string.
+        - str: Steam build version string, or "Unknown" if it cannot be determined.
         """
         manifest_file = path.join(
             self.app_containers_dir,
@@ -323,8 +359,11 @@ class AbstractServersService(ABC):
             f"appmanifest_{app_id}.acf"
         )
 
-        async with open(manifest_file, "r") as f:
-            content = await f.read()
+        try:
+            async with open(manifest_file, "r", encoding="utf-8") as f:
+                content = await f.read()
+        except FileNotFoundError:
+            return "Unknown"
 
         match = self._STEAM_BUILD_ID_PATTERN.search(content)
 
@@ -515,6 +554,8 @@ class AbstractServersService(ABC):
     ) -> None:
         """
         Creates an upgrader container that upgrades existing server.
+        The server is started again after the upgrade only if it was running before it.
+        If the upgrade fails, the server stays stopped.
 
         Parameters:
         - server_id: Server ID.
@@ -592,9 +633,16 @@ class AbstractServersService(ABC):
         )
 
         try:
-            await self.containers_client.container_stop(
+            status = await self.containers_client.container_status(
                 container_name=container_name
             )
+
+            was_running = status.running
+
+            if was_running:
+                await self.containers_client.container_stop(
+                    container_name=container_name
+                )
 
             await self._update_server_state(
                 server_id=server_id,
@@ -625,26 +673,32 @@ class AbstractServersService(ABC):
                 container_name=upgrader_name
             )
 
-            await self.containers_client.container_wait(
+            wait_result = await self.containers_client.container_wait(
                 container_name=upgrader_name
             )
 
-            await self.containers_client.container_start(
-                container_name=container_name
+            self._verify_exit_code(
+                container_name=upgrader_name,
+                wait_result=wait_result
             )
 
+            if was_running:
+                await self.containers_client.container_start(
+                    container_name=container_name
+                )
+
             if is_steam_server:
-                version = await self._read_steam_version(
+                installed_version = await self._read_steam_version(
                     container_name=container_name,
                     app_id=steam_app_id
                 )
             else:
-                version = None
+                installed_version = None
 
             await self._update_server_state(
                 server_id=server_id,
                 state=ServerStateEnum.CREATED,
-                version=version,
+                version=installed_version,
                 with_container_status=True
             )
         except Exception:

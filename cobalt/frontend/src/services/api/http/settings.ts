@@ -57,4 +57,17 @@ export class HttpSettingsApiService implements IHttpSettingsApiService {
   async clearContainers(): Promise<void> {
     return this.client.delete<void>(`${this.prefix}/containers`)
   }
+
+  /**
+   * Moves servers stuck in an in-progress state to the matching failed state.
+   *
+   * Parameters:
+   * - null.
+   *
+   * Returns:
+   * - Promise<void>: Empty promise.
+   */
+  async resetStuckContainers(): Promise<void> {
+    return this.client.post<void>(`${this.prefix}/containers/reset-stuck`)
+  }
 }

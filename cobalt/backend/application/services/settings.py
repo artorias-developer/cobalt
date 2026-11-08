@@ -5,7 +5,7 @@
 
 from asyncio import gather
 from pathlib import Path
-from typing import List, Coroutine
+from typing import Awaitable, Coroutine, Dict, List, Optional, Set
 
 from aioshutil import rmtree
 from aiofiles import os
@@ -29,10 +29,13 @@ from application.contracts.services import (
 from application.contracts.mappers import AbstractSettingsServiceMapper
 from application.clients.caches.shared import CacheConstants
 from application.clients.containers.shared import ContainersConstants
+from application.managers.events.shared import ServerEventEnum
+from application.managers.connections.shared import RoomsConstants
 from application.dtos import (
     SettingsDto,
     SettingsUpdateDto,
-    ServersGetPageDto
+    ServersGetPageDto,
+    ServerUpdateDto
 )
 
 
@@ -40,6 +43,12 @@ class SettingsService(AbstractSettingsService):
     """
     Settings service.
     """
+    _STUCK_STATES_MAP = {
+        ServerStateEnum.PENDING: ServerStateEnum.FAILED,
+        ServerStateEnum.PROCESSING: ServerStateEnum.FAILED,
+        ServerStateEnum.UPGRADING: ServerStateEnum.UPGRADE_FAILED
+    }
+
     cache_client: AbstractCacheClient
     settings_repository: AbstractSettingsRepository
     settings_mapper: AbstractSettingsServiceMapper
@@ -98,12 +107,153 @@ class SettingsService(AbstractSettingsService):
 
         return results
 
+    async def _get_all_servers(self) -> List:
+        """
+        Gets all servers by walking through all pages.
+
+        Parameters:
+        - None.
+
+        Returns:
+        - List: List of servers.
+        """
+        servers = []
+        current_page = 1
+        total_pages = 1
+
+        while current_page <= total_pages:
+            servers_page_dto = ServersGetPageDto(
+                page=current_page,
+                limit=100
+            )
+
+            try:
+                servers_page = await self.servers_service.get_page(
+                    dto=servers_page_dto
+                )
+            except NotFoundError:
+                break
+
+            servers.extend(servers_page.servers)
+
+            total_pages = servers_page.pages
+            current_page += 1
+
+        return servers
+
+    async def _run_cleanup_step(
+        self,
+        description: str,
+        step: Awaitable
+    ) -> None:
+        """
+        Runs a single cleanup step so that its failure does not interrupt the following ones.
+
+        Parameters:
+        - description: Step description used in the error log.
+        - step: Awaitable to run.
+
+        Returns:
+        - None.
+        """
+        try:
+            await step
+        except Exception:
+            self.logger.exception(f'Error during cleanup ({description}):')
+
+    async def _inspect_container(
+        self,
+        container
+    ) -> Optional[Dict]:
+        """
+        Inspects a container. Returns None if the container cannot be inspected
+        (for example, it was removed in the meantime).
+
+        Parameters:
+        - container: Container object.
+
+        Returns:
+        - Optional[Dict]: Container inspect data or None.
+        """
+        try:
+            return await container.show()
+        except Exception:
+            self.logger.exception("Error while inspecting container:")
+            return None
+
+    async def _remove_unused_containers(
+        self,
+        protected: Set[str]
+    ) -> None:
+        """
+        Removes all managed server containers except the protected ones.
+
+        Parameters:
+        - protected: Set of container names to protect from removal.
+
+        Returns:
+        - None.
+        """
+        containers = await self.containers_client.container_list(
+            all_containers=True,
+            filters={
+                "label": [
+                    f"managed_by={ContainersConstants.MANAGED_BY}",
+                    "cobalt_server=true"
+                ]
+            }
+        )
+
+        inspects = await self._gather_in_batches(
+            coroutines=[self._inspect_container(container) for container in containers]
+        )
+
+        for container, inspect in zip(containers, inspects):
+            if inspect is None:
+                continue
+
+            name = inspect.get("Name", "").lstrip("/")
+
+            if name in protected:
+                continue
+
+            try:
+                await container.delete(force=True)
+            except Exception:
+                self.logger.exception(f'Error while removing container "{name}":')
+
+    async def _remove_unused_directories(
+        self,
+        protected: Set[str]
+    ) -> None:
+        """
+        Removes all server directories except the protected ones.
+
+        Parameters:
+        - protected: Set of directory names to protect from removal.
+
+        Returns:
+        - None.
+        """
+        container_dir = await os.scandir(self.app_containers_dir)
+
+        for directory in container_dir:
+            if directory.name in protected:
+                continue
+
+            if await os.path.isdir(directory.path):
+                try:
+                    await rmtree(directory.path)
+                except Exception:
+                    self.logger.exception(f'Error removing folder "{directory.path}":')
+
     async def _cleanup_containers(
         self,
         protected_names: List[str]
     ) -> None:
         """
         Performs the cleanup of unused containers, images, volumes and directories.
+        Every step runs independently: a failure in one does not stop the others.
 
         Parameters:
         - protected_names: List of container names to protect from removal.
@@ -111,35 +261,16 @@ class SettingsService(AbstractSettingsService):
         Returns:
         - None.
         """
-        try:
-            protected = set(protected_names)
+        protected = set(protected_names)
 
-            containers = await self.containers_client.container_list(
-                all_containers=True,
-                filters={
-                    "label": [
-                        f"managed_by={ContainersConstants.MANAGED_BY}",
-                        "cobalt_server=true"
-                    ]
-                }
-            )
+        await self._run_cleanup_step(
+            description="containers",
+            step=self._remove_unused_containers(protected)
+        )
 
-            inspects = await self._gather_in_batches(
-                coroutines=[container.show() for container in containers]
-            )
-
-            for container, inspect in zip(containers, inspects):
-                name = inspect.get("Name", "").lstrip("/")
-
-                if name in protected:
-                    continue
-
-                try:
-                    await container.delete(force=True)
-                except Exception:
-                    self.logger.exception(f'Error while removing container "{name}":')
-
-            await self.containers_client.image_prune(
+        await self._run_cleanup_step(
+            description="images",
+            step=self.containers_client.image_prune(
                 filters={
                     "label": [
                         f"managed_by={ContainersConstants.MANAGED_BY}"
@@ -149,8 +280,11 @@ class SettingsService(AbstractSettingsService):
                     ]
                 }
             )
+        )
 
-            await self.containers_client.volume_prune(
+        await self._run_cleanup_step(
+            description="volumes",
+            step=self.containers_client.volume_prune(
                 filters={
                     "label": [
                         f"managed_by={ContainersConstants.MANAGED_BY}"
@@ -160,25 +294,19 @@ class SettingsService(AbstractSettingsService):
                     ]
                 }
             )
+        )
 
-            await self.containers_client.builder_prune(
+        await self._run_cleanup_step(
+            description="builder cache",
+            step=self.containers_client.builder_prune(
                 all_cache=True
             )
+        )
 
-            container_dir = await os.scandir(self.app_containers_dir)
-
-            for directory in container_dir:
-                if directory.name in protected:
-                    continue
-
-                if await os.path.isdir(directory.path):
-                    try:
-                        await rmtree(directory.path)
-                    except Exception:
-                        self.logger.exception(f'Error removing folder "{directory.path}":')
-
-        except Exception:
-            self.logger.exception("Error during cleanup:")
+        await self._run_cleanup_step(
+            description="directories",
+            step=self._remove_unused_directories(protected)
+        )
 
     async def update_one(
         self,
@@ -195,6 +323,10 @@ class SettingsService(AbstractSettingsService):
         Returns:
         - SettingsDto: SettingsDto object.
         """
+        previous_user = await self.users_service.get_one_by_id(
+            user_id=user_id
+        )
+
         mapped_entity = self.settings_mapper.update_dto_to_entity(
             dto=dto
         )
@@ -223,13 +355,9 @@ class SettingsService(AbstractSettingsService):
             ]
         )
 
-        received_user = await self.users_service.get_one_by_id(
-            user_id=user_id
-        )
-
-        if received_user.settings.language.value != updated_entity.language.value:
+        if previous_user.settings.language.value != updated_entity.language.value:
             await self.connections_manager.disconnect(
-                connection_id=received_user.id
+                connection_id=previous_user.id
             )
 
         return self.settings_mapper.entity_to_dto(
@@ -258,27 +386,7 @@ class SettingsService(AbstractSettingsService):
         Returns:
         - None.
         """
-        servers = []
-        current_page = 1
-        total_pages = 1
-
-        while current_page <= total_pages:
-            servers_page_dto = ServersGetPageDto(
-                page=current_page,
-                limit=100
-            )
-
-            try:
-                servers_page = await self.servers_service.get_page(
-                    dto=servers_page_dto
-                )
-            except NotFoundError:
-                break
-
-            servers.extend(servers_page.servers)
-
-            total_pages = servers_page.pages
-            current_page += 1
+        servers = await self._get_all_servers()
 
         installing = any(
             server.state in (ServerStateEnum.PENDING, ServerStateEnum.PROCESSING)
@@ -307,3 +415,45 @@ class SettingsService(AbstractSettingsService):
             self._cleanup_containers,
             protected_names=server_container_names
         )
+
+    async def reset_stuck_containers(self) -> None:
+        """
+        Moves servers stuck in an in-progress state to the matching failed state:
+        PENDING and PROCESSING become FAILED, UPGRADING becomes UPGRADE_FAILED.
+
+        Parameters:
+        - None.
+
+        Returns:
+        - None.
+        """
+        servers = await self._get_all_servers()
+
+        for server in servers:
+            failed_state = self._STUCK_STATES_MAP.get(server.state)
+
+            if failed_state is None:
+                continue
+
+            try:
+                await self.servers_service.update_one(
+                    server_id=server.id,
+                    dto=ServerUpdateDto(
+                        state=failed_state,
+                        version=None
+                    )
+                )
+            except NotFoundError:
+                continue
+
+            await self.connections_manager.send_to_room(
+                room_name=RoomsConstants.SERVERS_STATES_KEY,
+                data={
+                    "type": "message",
+                    "event": ServerEventEnum.SERVER_STATE,
+                    "data": {
+                        "server_id": server.id,
+                        "state": failed_state
+                    }
+                }
+            )

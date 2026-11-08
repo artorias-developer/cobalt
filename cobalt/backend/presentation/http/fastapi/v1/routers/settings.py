@@ -96,6 +96,20 @@ class HttpSettingsRouter(AbstractHttpSettingsRouter, HttpBaseRouter):
             ]
         )
 
+        router.add_api_route(
+            path="/containers/reset-stuck",
+            endpoint=self.reset_stuck_containers,
+            methods=["POST"],
+            operation_id="settings_reset_stuck_containers",
+            dependencies=[
+                Depends(self.one_of_permissions_required(
+                    permissions=[
+                        PermissionEnum.SETTINGS_CONTAINERS_RESET_STUCK
+                    ]
+                ))
+            ]
+        )
+
         self.router.include_router(router)
 
     async def update_me(
@@ -169,6 +183,22 @@ class HttpSettingsRouter(AbstractHttpSettingsRouter, HttpBaseRouter):
         - Response: Response object.
         """
         await self.settings_service.clear_containers()
+
+        return Response(
+            status_code=status.HTTP_204_NO_CONTENT
+        )
+
+    async def reset_stuck_containers(self) -> Response:
+        """
+        Moves servers stuck in an in-progress state to the matching failed state.
+
+        Parameters:
+        - None.
+
+        Returns:
+        - Response: Response object.
+        """
+        await self.settings_service.reset_stuck_containers()
 
         return Response(
             status_code=status.HTTP_204_NO_CONTENT

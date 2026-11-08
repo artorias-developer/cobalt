@@ -116,8 +116,8 @@
           </div>
           <div v-if="hasSettingsContainersClearAccess" class="field">
             <FormFieldLabel
-              :text="$t('settings.system.containers.title')"
-              :description="$t('settings.system.containers.description')"
+              :text="$t('settings.system.containers.clear.title')"
+              :description="$t('settings.system.containers.clear.description')"
             />
             <ButtonSolid
               :text="$t('common.clear')"
@@ -125,6 +125,19 @@
               name="clear-containers"
               :is-loading="isContainersClearing"
               @click="handleClearContainers"
+            />
+          </div>
+          <div v-if="hasSettingsContainersResetStuckAccess" class="field">
+            <FormFieldLabel
+              :text="$t('settings.system.containers.reset.title')"
+              :description="$t('settings.system.containers.reset.description')"
+            />
+            <ButtonSolid
+              :text="$t('common.reset')"
+              color="gray"
+              name="reset-stuck-containers"
+              :is-loading="isStuckContainersResetting"
+              @click="handleResetStuckContainers"
             />
           </div>
         </div>
@@ -200,6 +213,7 @@ const isSecurityEditing = ref<boolean>(false)
 
 const isCacheClearing = ref<boolean>(false)
 const isContainersClearing = ref<boolean>(false)
+const isStuckContainersResetting = ref<boolean>(false)
 
 const tabs = computed(() => [
   {
@@ -430,6 +444,37 @@ async function handleClearContainers(): Promise<void> {
 }
 
 /**
+ * Moves servers stuck in an in-progress state to the failed state via the API.
+ *
+ * Parameters:
+ * - null.
+ *
+ * Returns:
+ * - Promise<void>.
+ */
+async function handleResetStuckContainers(): Promise<void> {
+  if (isStuckContainersResetting.value) return
+
+  isStuckContainersResetting.value = true
+
+  try {
+    await httpSettingsApiService.resetStuckContainers()
+
+    notify({
+      type: "success",
+      text: t("settings.system.containers.reset.success")
+    })
+  } catch (error: any) {
+    notify({
+      type: "error",
+      text: error?.response?.data?.message ?? t("settings.system.containers.reset.error")
+    })
+  } finally {
+    isStuckContainersResetting.value = false
+  }
+}
+
+/**
  * Checks whether the current has access to at least one system setting.
  *
  * Parameters:
@@ -441,7 +486,8 @@ async function handleClearContainers(): Promise<void> {
 const hasSettingsSystemAccess = computed((): boolean =>
   userStore.hasAnyPermission([
     PermissionEnum.SETTINGS_CACHE_CLEAR,
-    PermissionEnum.SETTINGS_CONTAINERS_CLEAR
+    PermissionEnum.SETTINGS_CONTAINERS_CLEAR,
+    PermissionEnum.SETTINGS_CONTAINERS_RESET_STUCK
   ])
 )
 
@@ -469,6 +515,19 @@ const hasSettingsCacheClearAccess = computed((): boolean =>
  */
 const hasSettingsContainersClearAccess = computed((): boolean =>
   userStore.hasPermission(PermissionEnum.SETTINGS_CONTAINERS_CLEAR)
+)
+
+/**
+ * Checks whether the current user has access to reset stuck containers.
+ *
+ * Parameters:
+ * - null.
+ *
+ * Returns:
+ * - boolean: `true` if the user has the required permission, `false` otherwise.
+ */
+const hasSettingsContainersResetStuckAccess = computed((): boolean =>
+  userStore.hasPermission(PermissionEnum.SETTINGS_CONTAINERS_RESET_STUCK)
 )
 
 onMounted(() => {
