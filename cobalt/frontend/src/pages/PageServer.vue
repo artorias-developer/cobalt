@@ -373,6 +373,7 @@ onUnmounted(() => {
   .page {
     .heading {
       gap: $space-md;
+      margin-top: $space-md;
 
       .info {
         gap: $space-md;
