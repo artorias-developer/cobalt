@@ -68,7 +68,7 @@ class FilesService(AbstractFilesService):
         Returns:
         - Path: Resolved absolute root path.
         """
-        container_name = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
+        container_name = ContainersConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 

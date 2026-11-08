@@ -289,7 +289,7 @@ class ServersService(AbstractServersService):
             ]
         )
 
-        container_name = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
+        container_name = ContainersConstants.SERVER_RUNTIME_KEY.format(
             server_id=created_entity.id
         )
 
@@ -392,7 +392,7 @@ class ServersService(AbstractServersService):
             ]
         )
 
-        container_name = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
+        container_name = ContainersConstants.SERVER_RUNTIME_KEY.format(
             server_id=updated_entity.id
         )
 
@@ -497,7 +497,7 @@ class ServersService(AbstractServersService):
             server=received_entity
         )
 
-        container_name = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
+        container_name = ContainersConstants.SERVER_RUNTIME_KEY.format(
             server_id=received_entity.id
         )
 
@@ -583,7 +583,7 @@ class ServersService(AbstractServersService):
                 self.logger.warning(f'Loader "{loader_name}" not found')
                 continue
 
-            container_name = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
+            container_name = ContainersConstants.SERVER_RUNTIME_KEY.format(
                 server_id=entity.id
             )
 
@@ -609,7 +609,7 @@ class ServersService(AbstractServersService):
             server_id=server_id
         )
 
-        container = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
+        container = ContainersConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 
@@ -634,7 +634,7 @@ class ServersService(AbstractServersService):
             server_id=server_id
         )
 
-        container = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
+        container = ContainersConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 
@@ -659,7 +659,7 @@ class ServersService(AbstractServersService):
             server_id=server_id
         )
 
-        container = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
+        container = ContainersConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 
@@ -686,7 +686,7 @@ class ServersService(AbstractServersService):
             server_id=server_id
         )
 
-        container = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
+        container = ContainersConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 
@@ -714,7 +714,7 @@ class ServersService(AbstractServersService):
             server_id=server_id
         )
 
-        container = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
+        container = ContainersConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 

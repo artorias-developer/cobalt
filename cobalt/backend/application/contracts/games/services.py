@@ -78,7 +78,7 @@ class AbstractServersService(ABC):
         Returns:
         - str: Game container name.
         """
-        return ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
+        return ContainersConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 
@@ -95,7 +95,9 @@ class AbstractServersService(ABC):
         Returns:
         - str: Installer container name.
         """
-        return f"{container_name}_installer"
+        return ContainersConstants.SERVER_INSTALLER_KEY.format(
+            container_name=container_name
+        )
 
     @staticmethod
     def _get_upgrader_name(
@@ -110,7 +112,9 @@ class AbstractServersService(ABC):
         Returns:
         - str: Upgrader container name.
         """
-        return f"{container_name}_upgrader"
+        return ContainersConstants.SERVER_UPGRADER_KEY.format(
+            container_name=container_name
+        )
 
     async def _remove_container(
         self,

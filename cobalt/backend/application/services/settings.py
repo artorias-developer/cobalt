@@ -405,7 +405,7 @@ class SettingsService(AbstractSettingsService):
             raise ConflictError("Cannot clear containers while servers are being upgraded")
 
         server_container_names = [
-            ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
+            ContainersConstants.SERVER_RUNTIME_KEY.format(
                 server_id=server.id
             )
             for server in servers
