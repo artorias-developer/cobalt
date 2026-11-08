@@ -170,6 +170,11 @@
           "error": "Failed to fetch games"
         }
       },
+      "server": {
+        "fetch": {
+          "error": "Failed to fetch server"
+        }
+      },
       "delete": {
         "success": "Server deleted successfully",
         "error": "Failed to delete server"
@@ -181,6 +186,10 @@
       "create": {
         "success": "Server added to queue",
         "error": "Failed to create server"
+      },
+      "update": {
+        "success": "Server updated successfully",
+        "error": "Failed to update server"
       },
       "state": {
         "pending": "Server is in queue",
@@ -221,6 +230,10 @@
               "placeholder": "Select version..."
             }
           }
+        },
+        "edit": {
+          "title": "Server",
+          "description": "Edit server"
         }
       }
     },

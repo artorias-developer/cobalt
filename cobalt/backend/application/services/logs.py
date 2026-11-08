@@ -99,7 +99,7 @@ class LogsService(AbstractLogsService):
     async def _flush(
         self,
         room_name: str,
-        batch: list,
+        batch: List,
         event: str,
         server_id: Optional[int] = None
     ) -> None:
@@ -193,7 +193,7 @@ class LogsService(AbstractLogsService):
     async def _periodic_flush(
         self,
         room_name: str,
-        batch: list,
+        batch: List,
         batch_lock: Lock,
         stop_flusher: Event,
         event: str,
