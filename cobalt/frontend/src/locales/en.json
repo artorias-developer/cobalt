@@ -686,8 +686,8 @@
         },
         "reset": {
           "title": "States",
-          "description": "Servers in queue and during installation",
-          "success": "Server states have been reset to error",
+          "description": "Servers state in queue and during installation",
+          "success": "Servers state have been reset to error",
           "error": "Failed to reset servers state"
         }
       }
