@@ -40,6 +40,16 @@
             <span class="hint">{{ statusMessages[row.state as ServerStateEnum] }}</span>
           </div>
         </template>
+        <ButtonGhost
+          v-if="isServerAccessible(row.state) && hasServerUpdateAccess"
+          :icon="editIcon"
+          base-color="gray"
+          hover-color="gray"
+          :filled="true"
+          align="center"
+          name="server-edit-popup"
+          @click="openEditServer(row.id)"
+        />
         <RouteGhost
           v-if="isServerAccessible(row.state) && hasServerViewAccess"
           :icon="settingsIcon"
@@ -108,7 +118,7 @@
           :on-submit="() => step1Form?.validate() && (createServerStep = 2)"
         >
           <FormRadioList
-            v-model="selectedGame"
+            v-model="createSelectedGame"
             :options="gameOptions"
             :searchable="true"
             :required="true"
@@ -157,7 +167,7 @@
             </div>
           </div>
           <FormInput
-            v-model="serverName"
+            v-model="createServerName"
             :validationName="$t('servers.list.popups.create.step2.name.label')"
             :label="$t('servers.list.popups.create.step2.name.label')"
             :placeholder="$t('servers.list.popups.create.step2.name.placeholder')"
@@ -165,23 +175,23 @@
             :required="true"
           />
           <FormSelect
-            v-model="selectedLoader"
+            v-model="createSelectedLoader"
             :options="loaderOptions"
             :validationName="$t('servers.list.popups.create.step2.loader.label')"
             :label="$t('servers.list.popups.create.step2.loader.label')"
             :placeholder="$t('servers.list.popups.create.step2.loader.placeholder')"
             :required="true"
             name="server-loader"
-            @update:model-value="selectedVersion = undefined"
+            @update:model-value="createSelectedVersion = undefined"
           />
           <FormSelect
-            v-model="selectedVersion"
+            v-model="createSelectedVersion"
             :options="versionOptions"
             :validationName="$t('servers.list.popups.create.step2.version.label')"
             :label="$t('servers.list.popups.create.step2.version.label')"
             :placeholder="$t('servers.list.popups.create.step2.version.placeholder')"
             :required="true"
-            :disabled="!selectedLoader"
+            :disabled="!createSelectedLoader"
             name="server-version"
           />
         </Form>
@@ -210,6 +220,48 @@
           </div>
         </div>
       </template>
+    </template>
+  </Popup>
+  <Popup ref="editServerPopup" class="edit-server-popup">
+    <template #content="{ close }">
+      <Header
+        :icon="serversIcon"
+        icon-color="blue"
+        :title="$t('servers.list.popups.edit.title')"
+        :description="$t('servers.list.popups.edit.description')"
+        size="large"
+        :icon-filled="true"
+      />
+      <Form
+        id="edit-server-form"
+        ref="editServerForm"
+        class="form"
+        :on-submit="() => editServerForm?.validate() && handleEditServer(close)"
+      >
+        <FormInput
+          v-model="editServerName"
+          :validationName="$t('servers.list.popups.create.step2.name.label')"
+          :label="$t('servers.list.popups.create.step2.name.label')"
+          :placeholder="$t('servers.list.popups.create.step2.name.placeholder')"
+          name="server-name"
+          :required="true"
+        />
+      </Form>
+      <div class="actions">
+        <ButtonSolid
+          :text="$t('common.close')"
+          color="gray"
+          @click="close"
+        />
+        <ButtonSolid
+          submit
+          form="edit-server-form"
+          :text="$t('common.save')"
+          color="blue"
+          name="server-update"
+          :is-loading="isServerEditing"
+        />
+      </div>
     </template>
   </Popup>
   <PopupConfirm ref="confirmPopup"/>
@@ -258,8 +310,9 @@ import Form from "@/components/ui/forms/Form.vue"
 import PopupConfirm from "@/components/widgets/popups/PopupConfirm.vue"
 
 import serversIcon from "@/assets/images/svg/servers.svg?raw"
-import trashIcon from "@/assets/images/svg/trash.svg?raw"
+import editIcon from "@/assets/images/svg/edit.svg?raw"
 import settingsIcon from "@/assets/images/svg/settings.svg?raw"
+import trashIcon from "@/assets/images/svg/trash.svg?raw"
 import errorIcon from "@/assets/images/svg/error.svg?raw"
 import clockIcon from "@/assets/images/svg/clock.svg?raw"
 
@@ -297,11 +350,17 @@ const step2Form = ref<InstanceType<typeof Form> | null>(null)
 const createServerPopup = ref<InstanceType<typeof Popup> | null>(null)
 const createServerStep = ref(1)
 
-const selectedGame = ref<number | undefined>(undefined)
-const selectedLoader = ref<number | undefined>(undefined)
-const selectedVersion = ref<string | undefined>(undefined)
-const serverName = ref<string>("")
+const createSelectedGame = ref<number | undefined>(undefined)
+const createSelectedLoader = ref<number | undefined>(undefined)
+const createSelectedVersion = ref<string | undefined>(undefined)
+const createServerName = ref<string>("")
 const isServerCreating = ref<boolean>(false)
+
+const editServerForm = ref<InstanceType<typeof Form> | null>(null)
+const editServerPopup = ref<InstanceType<typeof Popup> | null>(null)
+const editServerId = ref<number | null>(null)
+const editServerName = ref<string>("")
+const isServerEditing = ref<boolean>(false)
 
 const confirmPopup = ref<InstanceType<typeof PopupConfirm> | null>(null)
 
@@ -600,10 +659,24 @@ async function deleteSelected(): Promise<void> {
  */
 function resetCreateServerForm(): void {
   createServerStep.value = 1
-  selectedGame.value = undefined
-  selectedLoader.value = undefined
-  selectedVersion.value = undefined
-  serverName.value = ""
+  createSelectedGame.value = undefined
+  createSelectedLoader.value = undefined
+  createSelectedVersion.value = undefined
+  createServerName.value = ""
+}
+
+/**
+ * Resets the edit server popup form state to its initial values.
+ *
+ * Parameters:
+ * - null.
+ *
+ * Returns:
+ * - void.
+ */
+function resetEditServerForm(): void {
+  editServerId.value = null
+  editServerName.value = ""
 }
 
 /**
@@ -623,10 +696,10 @@ async function handleCreateServer(close: () => void): Promise<void> {
 
   try {
     await httpServersApiService.createOne({
-      name: serverName.value,
-      game_id: selectedGame.value as number,
-      loader_id: selectedLoader.value as number,
-      version: selectedVersion.value!
+      name: createServerName.value,
+      game_id: createSelectedGame.value as number,
+      loader_id: createSelectedLoader.value as number,
+      version: createSelectedVersion.value!
     })
 
     notify({
@@ -648,6 +721,44 @@ async function handleCreateServer(close: () => void): Promise<void> {
 }
 
 /**
+ * Updates an existing server from the edit popup form data.
+ * On success resets the form state, closes the popup, and refreshes the table.
+ *
+ * Parameters:
+ * - close: Popup close callback.
+ *
+ * Returns:
+ * - Promise<void>.
+ */
+async function handleEditServer(close: () => void): Promise<void> {
+  if (isServerEditing.value || !editServerId.value) return
+
+  isServerEditing.value = true
+
+  try {
+    await httpServersApiService.updateOne(editServerId.value, {
+      name: editServerName.value
+    })
+
+    notify({
+      type: "success",
+      text: t("servers.list.update.success")
+    })
+
+    close()
+    resetEditServerForm()
+    fetchServers()
+  } catch (error: any) {
+    notify({
+      type: "error",
+      text: error?.response?.data?.message ?? t("servers.list.update.error")
+    })
+  } finally {
+    isServerEditing.value = false
+  }
+}
+
+/**
  * Opens the create server popup and resets the step to 1.
  *
  * Parameters:
@@ -660,6 +771,32 @@ function openCreateServer(): void {
   createServerStep.value = 1
   createServerPopup.value?.open()
 }
+
+/**
+ * Opens the edit server popup and fetches current server data from the API.
+ *
+ * Parameters:
+ * - serverId: ID of the server to edit.
+ *
+ * Returns:
+ * - Promise<void>.
+ */
+async function openEditServer(serverId: number): Promise<void> {
+  try {
+    const server = await httpServersApiService.getOne(serverId)
+
+    editServerId.value = server.id
+    editServerName.value = server.name
+
+    editServerPopup.value?.open()
+  } catch (error: any) {
+    notify({
+      type: "error",
+      text: error?.response?.data?.message ?? t("servers.list.server.fetch.error")
+    })
+  }
+}
+
 
 /**
  * Handles servers state updates received from WebSocket.
@@ -802,7 +939,7 @@ const hasSelected = computed((): boolean => {
  * - GameEntity | undefined: The matched game entity, or undefined if no game is selected.
  */
 const selectedGameEntity = computed((): GameEntity | undefined =>
-  games.value.find(game => game.id === selectedGame.value)
+  games.value.find(game => game.id === createSelectedGame.value)
 )
 
 /**
@@ -884,7 +1021,7 @@ const loaderOptions = computed((): SelectOption[] => {
  * - SelectOption[]: List of select options derived from the selected loader's versions, or empty array if no loader is selected.
  */
 const versionOptions = computed((): SelectOption[] => {
-  const loader = selectedGameEntity.value?.loaders.find(loader => loader.id === selectedLoader.value)
+  const loader = selectedGameEntity.value?.loaders.find(loader => loader.id === createSelectedLoader.value)
   return loader?.versions.map(version => ({
     value: version,
     label: version
@@ -915,6 +1052,19 @@ const hasServersViewAccess = computed((): boolean =>
  */
 const hasServersCreateAccess = computed((): boolean =>
   userStore.hasPermission(PermissionEnum.SERVERS_CREATE)
+)
+
+/**
+ * Checks whether the current user has access to update server.
+ *
+ * Parameters:
+ * - null.
+ *
+ * Returns:
+ * - boolean: `true` if the user has the required permission, `false` otherwise.
+ */
+const hasServerUpdateAccess = computed((): boolean =>
+  userStore.hasPermission(PermissionEnum.SERVER_UPDATE)
 )
 
 /**
@@ -1057,6 +1207,20 @@ onUnmounted(() => {
   }
 }
 
+.edit-server-popup {
+  .form {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .actions {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    gap: $space-xl;
+  }
+}
+
 @media (max-width: 768px) {
   .create-server-popup {
     .selected-game {
@@ -1064,6 +1228,12 @@ onUnmounted(() => {
       padding: $space-lg;
     }
 
+    .actions {
+      gap: $space-md;
+    }
+  }
+
+  .edit-server-popup {
     .actions {
       gap: $space-md;
     }
