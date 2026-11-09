@@ -233,7 +233,7 @@ class AbstractContainersClient(ABC):
     async def container_wait(
         self,
         container_name: str
-    ) -> None:
+    ) -> Dict[str, Any]:
         """
         Waits for the container to stop.
 
@@ -241,7 +241,7 @@ class AbstractContainersClient(ABC):
         - container_name: Container name.
 
         Returns:
-        - None.
+        - Dict: Wait result.
         """
         ...
 

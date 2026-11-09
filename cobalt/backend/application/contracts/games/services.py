@@ -270,11 +270,11 @@ class AbstractServersService(ABC):
             ServerStateEnum.UPGRADE_CANCELED
         )
 
-    async def _mark_server_failed(
+    async def _mark_server_failed_unless_canceled(
         self,
         server_id: int,
         state: ServerStateEnum
-    ) -> None:
+    ) -> bool:
         """
         Sets a failed state unless the operation was canceled.
 
@@ -283,10 +283,10 @@ class AbstractServersService(ABC):
         - state: ServerStateEnum value.
 
         Returns:
-        - None.
+        - bool: `False` if the operation was canceled (the state is left untouched), `True` otherwise.
         """
         if await self._is_canceled(server_id=server_id):
-            return
+            return False
 
         try:
             await self._update_server_state(
@@ -295,6 +295,8 @@ class AbstractServersService(ABC):
             )
         except NotFoundError:
             pass
+
+        return True
 
     @staticmethod
     def _is_port_free(
@@ -627,10 +629,11 @@ class AbstractServersService(ABC):
                 container_name=container_name
             )
 
-            await self._mark_server_failed(
+            if not await self._mark_server_failed_unless_canceled(
                 server_id=server_id,
                 state=ServerStateEnum.INSTALL_FAILED
-            )
+            ):
+                return
 
             raise
         finally:
@@ -805,10 +808,11 @@ class AbstractServersService(ABC):
                 with_container_status=True
             )
         except Exception:
-            await self._mark_server_failed(
+            if not await self._mark_server_failed_unless_canceled(
                 server_id=server_id,
                 state=ServerStateEnum.UPGRADE_FAILED
-            )
+            ):
+                return
 
             raise
         finally:
@@ -942,10 +946,11 @@ class AbstractServersService(ABC):
                 container_name=container_name
             )
 
-            await self._mark_server_failed(
+            if not await self._mark_server_failed_unless_canceled(
                 server_id=server_id,
                 state=ServerStateEnum.INSTALL_FAILED
-            )
+            ):
+                return
 
             raise
 
