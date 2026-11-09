@@ -654,7 +654,7 @@ class DockerClient(AbstractContainersClient):
                 "force": force,
                 "v": volumes
             },
-            ok=(204,),
+            ok=(204, 409) if force else (204,),
             error=UnexpectedError('Error while removing container "{name}"', name=container_name),
             not_found=NotFoundError('Container "{name}" not found', name=container_name)
         )
@@ -688,7 +688,7 @@ class DockerClient(AbstractContainersClient):
     async def container_wait(
         self,
         container_name: str
-    ) -> None:
+    ) -> Dict[str, Any]:
         """
         Waits for the container to stop.
 
@@ -696,14 +696,16 @@ class DockerClient(AbstractContainersClient):
         - container_name: Container name.
 
         Returns:
-        - None.
+        - Dict: Wait result with the "StatusCode" exit code.
         """
-        await self._call(
+        response = await self._call(
             path=f"/containers/{quote(container_name, safe='')}/wait",
             method="POST",
             error=UnexpectedError('Error while waiting for container "{name}"', name=container_name),
             not_found=NotFoundError('Container "{name}" not found', name=container_name)
         )
+
+        return response.json()
 
     @staticmethod
     async def _iter_log_lines(
