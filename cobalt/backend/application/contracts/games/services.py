@@ -3,8 +3,8 @@
 #  Repository: https://github.com/artorias-developer/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-from os import path, walk
-from re import compile
+from os import path
+from re import compile as re_compile
 from abc import ABC, abstractmethod
 from pathlib import Path
 from secrets import choice
@@ -37,7 +37,7 @@ class AbstractServersService(ABC):
     _CONTAINER_INSTALLER_FILE = "Container.installer"
     _CONTAINER_RUNTIME_FILE = "Container.runtime"
     _CONTAINER_UPGRADER_FILE = "Container.upgrader"
-    _STEAM_BUILD_ID_PATTERN = compile(r'"buildid"\s+"(\d+)"')
+    _STEAM_BUILD_ID_PATTERN = re_compile(r'"buildid"\s+"(\d+)"')
 
     build_dir: Path
     app_containers_dir: Path
@@ -64,6 +64,57 @@ class AbstractServersService(ABC):
         self.connections_manager = connections_manager
         self.logger = logger
         self.app_environment = app_environment
+
+    @staticmethod
+    def _get_container_name(
+        server_id: int
+    ) -> str:
+        """
+        Returns the game container (and image) name.
+
+        Parameters:
+        - server_id: Server ID.
+
+        Returns:
+        - str: Game container name.
+        """
+        return ContainersConstants.SERVER_RUNTIME_KEY.format(
+            server_id=server_id
+        )
+
+    @staticmethod
+    def _get_installer_name(
+        container_name: str
+    ) -> str:
+        """
+        Returns the installer container (and image) name.
+
+        Parameters:
+        - container_name: Container name.
+
+        Returns:
+        - str: Installer container name.
+        """
+        return ContainersConstants.SERVER_INSTALLER_KEY.format(
+            container_name=container_name
+        )
+
+    @staticmethod
+    def _get_upgrader_name(
+        container_name: str
+    ) -> str:
+        """
+        Returns the upgrader container (and image) name.
+
+        Parameters:
+        - container_name: Container name.
+
+        Returns:
+        - str: Upgrader container name.
+        """
+        return ContainersConstants.SERVER_UPGRADER_KEY.format(
+            container_name=container_name
+        )
 
     async def _remove_container(
         self,
@@ -147,6 +198,7 @@ class AbstractServersService(ABC):
         - server_id: Server ID.
         - state: Server state.
         - version: Server version.
+        - with_container_status: Whether to include the container running status.
         """
         request_dto = ServerUpdateDto(
             state=state,
@@ -169,7 +221,7 @@ class AbstractServersService(ABC):
             server_data["version"] = version
 
         if with_container_status:
-            container_name = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
+            container_name = self._get_container_name(
                 server_id=server_id
             )
 
@@ -178,6 +230,7 @@ class AbstractServersService(ABC):
                     container_name=container_name
                 )
             except Exception:
+                self.logger.exception(f'Error while getting status of container "{container_name}":')
                 status = None
 
             if status is not None:
@@ -191,6 +244,57 @@ class AbstractServersService(ABC):
                 "data": server_data
             }
         )
+
+    async def _is_canceled(
+        self,
+        server_id: int
+    ) -> bool:
+        """
+        Checks whether the current install/upgrade of the server was canceled.
+
+        Parameters:
+        - server_id: Server ID.
+
+        Returns:
+        - bool: True if the server is in a canceled state.
+        """
+        try:
+            server = await self.core_servers_service.get_one_by_id(
+                server_id=server_id
+            )
+        except NotFoundError:
+            return False
+
+        return server.state in (
+            ServerStateEnum.INSTALL_CANCELED,
+            ServerStateEnum.UPGRADE_CANCELED
+        )
+
+    async def _mark_server_failed(
+        self,
+        server_id: int,
+        state: ServerStateEnum
+    ) -> None:
+        """
+        Sets a failed state unless the operation was canceled.
+
+        Parameters:
+        - server_id: Server ID.
+        - state: ServerStateEnum value.
+
+        Returns:
+        - None.
+        """
+        if await self._is_canceled(server_id=server_id):
+            return
+
+        try:
+            await self._update_server_state(
+                server_id=server_id,
+                state=state
+            )
+        except NotFoundError:
+            pass
 
     @staticmethod
     def _is_port_free(
@@ -275,11 +379,12 @@ class AbstractServersService(ABC):
         """
         app_container_dir = path.join(self.app_containers_dir, container_name)
 
-        if await os.path.exists(app_container_dir):
-            try:
-                await rmtree(app_container_dir)
-            except Exception:
-                self.logger.exception(f'Error while removing files "{container_name}":')
+        try:
+            await rmtree(app_container_dir)
+        except FileNotFoundError:
+            pass
+        except Exception:
+            self.logger.exception(f'Error while removing files "{container_name}":')
 
     async def _verify_installation(
         self,
@@ -295,11 +400,44 @@ class AbstractServersService(ABC):
 
         Returns:
         - None.
+
+        Raises:
+        - RuntimeError: If the installation marker is not found.
         """
         app_container_dir = path.join(self.app_containers_dir, container_name)
 
         if not await os.path.exists(path.join(app_container_dir, installation_marker)):
-            raise Exception(f'Installation failed: "{installation_marker}" not found in "{app_container_dir}"')
+            raise RuntimeError(f'Installation failed: "{installation_marker}" not found in "{app_container_dir}"')
+
+    @staticmethod
+    def _verify_exit_code(
+        container_name: str,
+        wait_result: Any
+    ) -> None:
+        """
+        Verifies that a finished container exited successfully.
+        Understands the Docker wait result ({"StatusCode": int}) or a plain int exit code.
+        If the result carries no exit code, nothing is checked.
+
+        Parameters:
+        - container_name: Container name.
+        - wait_result: Result returned by the container wait call.
+
+        Returns:
+        - None.
+
+        Raises:
+        - RuntimeError: If the container exited with a non-zero code.
+        """
+        if isinstance(wait_result, dict):
+            exit_code = wait_result.get("StatusCode")
+        elif isinstance(wait_result, int):
+            exit_code = wait_result
+        else:
+            exit_code = None
+
+        if exit_code:
+            raise RuntimeError(f'Container "{container_name}" exited with code {exit_code}')
 
     async def _read_steam_version(
         self,
@@ -314,7 +452,7 @@ class AbstractServersService(ABC):
         - app_id: Steam application ID.
 
         Returns:
-        - str: Steam build version string.
+        - str: Steam build version string, or "Unknown" if it cannot be determined.
         """
         manifest_file = path.join(
             self.app_containers_dir,
@@ -323,8 +461,11 @@ class AbstractServersService(ABC):
             f"appmanifest_{app_id}.acf"
         )
 
-        async with open(manifest_file, "r") as f:
-            content = await f.read()
+        try:
+            async with open(manifest_file, "r", encoding="utf-8") as f:
+                content = await f.read()
+        except FileNotFoundError:
+            return "Unknown"
 
         match = self._STEAM_BUILD_ID_PATTERN.search(content)
 
@@ -375,7 +516,7 @@ class AbstractServersService(ABC):
         if is_steam_server and steam_app_id is None:
             raise ValueError('The "steam_app_id" parameter is required if the value of "is_steam_server" is "True"')
 
-        installer_name = f"{container_name}_installer"
+        installer_name = self._get_installer_name(container_name)
 
         prepared_image_build_args = {
             "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
@@ -431,7 +572,7 @@ class AbstractServersService(ABC):
         try:
             await self._update_server_state(
                 server_id=server_id,
-                state=ServerStateEnum.PROCESSING
+                state=ServerStateEnum.INSTALLATION
             )
 
             await self._create_container_dir(
@@ -486,10 +627,11 @@ class AbstractServersService(ABC):
                 container_name=container_name
             )
 
-            await self._update_server_state(
+            await self._mark_server_failed(
                 server_id=server_id,
-                state=ServerStateEnum.FAILED
+                state=ServerStateEnum.INSTALL_FAILED
             )
+
             raise
         finally:
             await self._cleanup_container_resources(
@@ -515,6 +657,8 @@ class AbstractServersService(ABC):
     ) -> None:
         """
         Creates an upgrader container that upgrades existing server.
+        The server is started again after the upgrade only if it was running before it.
+        If the upgrade fails, the server stays stopped.
 
         Parameters:
         - server_id: Server ID.
@@ -538,7 +682,7 @@ class AbstractServersService(ABC):
         if is_steam_server and steam_app_id is None:
             raise ValueError('The "steam_app_id" parameter is required if the value of "is_steam_server" is "True"')
 
-        upgrader_name = f"{container_name}_upgrader"
+        upgrader_name = self._get_upgrader_name(container_name)
 
         prepared_image_build_args = {
             "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
@@ -592,9 +736,16 @@ class AbstractServersService(ABC):
         )
 
         try:
-            await self.containers_client.container_stop(
+            status = await self.containers_client.container_status(
                 container_name=container_name
             )
+
+            was_running = status.running
+
+            if was_running:
+                await self.containers_client.container_stop(
+                    container_name=container_name
+                )
 
             await self._update_server_state(
                 server_id=server_id,
@@ -625,33 +776,40 @@ class AbstractServersService(ABC):
                 container_name=upgrader_name
             )
 
-            await self.containers_client.container_wait(
+            wait_result = await self.containers_client.container_wait(
                 container_name=upgrader_name
             )
 
-            await self.containers_client.container_start(
-                container_name=container_name
+            self._verify_exit_code(
+                container_name=upgrader_name,
+                wait_result=wait_result
             )
 
+            if was_running:
+                await self.containers_client.container_start(
+                    container_name=container_name
+                )
+
             if is_steam_server:
-                version = await self._read_steam_version(
+                installed_version = await self._read_steam_version(
                     container_name=container_name,
                     app_id=steam_app_id
                 )
             else:
-                version = None
+                installed_version = None
 
             await self._update_server_state(
                 server_id=server_id,
-                state=ServerStateEnum.CREATED,
-                version=version,
+                state=ServerStateEnum.INSTALLED,
+                version=installed_version,
                 with_container_status=True
             )
         except Exception:
-            await self._update_server_state(
+            await self._mark_server_failed(
                 server_id=server_id,
                 state=ServerStateEnum.UPGRADE_FAILED
             )
+
             raise
         finally:
             await self._cleanup_container_resources(
@@ -773,7 +931,7 @@ class AbstractServersService(ABC):
 
             await self._update_server_state(
                 server_id=server_id,
-                state=ServerStateEnum.CREATED
+                state=ServerStateEnum.INSTALLED
             )
         except Exception:
             await self._cleanup_container_resources(
@@ -784,10 +942,11 @@ class AbstractServersService(ABC):
                 container_name=container_name
             )
 
-            await self._update_server_state(
+            await self._mark_server_failed(
                 server_id=server_id,
-                state=ServerStateEnum.FAILED
+                state=ServerStateEnum.INSTALL_FAILED
             )
+
             raise
 
     def get_available_port(
@@ -908,7 +1067,8 @@ class AbstractServersService(ABC):
         container_name: str
     ) -> None:
         """
-        Deletes an existing server container.
+        Deletes an existing server container together with its installer and upgrader
+        containers, images and files.
 
         Parameters:
         - container_name: Container name.
@@ -916,14 +1076,58 @@ class AbstractServersService(ABC):
         Returns:
         - None.
         """
-        await self._remove_container(
-            container_name=container_name
-        )
-
-        await self._remove_image(
-            image_name=container_name
-        )
+        for name in (
+            self._get_installer_name(container_name),
+            self._get_upgrader_name(container_name),
+            container_name
+        ):
+            await self._cleanup_container_resources(
+                container_name=name
+            )
 
         await self._remove_container_dir(
             container_name=container_name
         )
+
+    async def cancel(
+        self,
+        server_id: int,
+        container_name: str,
+        state: ServerStateEnum
+    ) -> None:
+        """
+        Cancels a running install or upgrade.
+        The canceled state is written first, so the running job sees it and
+        does not mark the server as failed.
+        Install: everything is removed (containers, images, files).
+        Upgrade: only the upgrader is removed, server files are kept and the server stays stopped.
+
+        Parameters:
+        - server_id: Server ID.
+        - container_name: Container name.
+        - state: INSTALL_CANCELED or UPGRADE_CANCELED.
+
+        Returns:
+        - None.
+        """
+        if state == ServerStateEnum.INSTALL_CANCELED:
+            await self._update_server_state(
+                server_id=server_id,
+                state=state
+            )
+
+            await self.delete(
+                container_name=container_name
+            )
+        elif state == ServerStateEnum.UPGRADE_CANCELED:
+            await self._update_server_state(
+                server_id=server_id,
+                state=state,
+                with_container_status=True
+            )
+
+            await self._cleanup_container_resources(
+                container_name=self._get_upgrader_name(container_name)
+            )
+        else:
+            raise ValueError(f'Unsupported cancel state "{state}"')

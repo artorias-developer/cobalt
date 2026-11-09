@@ -113,6 +113,20 @@ class AbstractHttpServersRouter(AbstractHttpRouter, ABC):
         ...
 
     @abstractmethod
+    async def cancel_one(self, *args: Any, **kwargs: Any) -> Any:
+        """
+        Cancels a running installation or upgrade of an existing server.
+
+        Parameters:
+        - *args: Positional arguments.
+        - **kwargs: Keyword arguments.
+
+        Returns:
+        - Any: Response object.
+        """
+        ...
+
+    @abstractmethod
     async def start(self, *args: Any, **kwargs: Any) -> Any:
         """
         Starts an existing server.
@@ -130,6 +144,20 @@ class AbstractHttpServersRouter(AbstractHttpRouter, ABC):
     async def stop(self, *args: Any, **kwargs: Any) -> Any:
         """
         Stops an existing server.
+
+        Parameters:
+        - *args: Positional arguments.
+        - **kwargs: Keyword arguments.
+
+        Returns:
+        - Any: Response object.
+        """
+        ...
+
+    @abstractmethod
+    async def restart(self, *args: Any, **kwargs: Any) -> Any:
+        """
+        Restarts an existing server.
 
         Parameters:
         - *args: Positional arguments.

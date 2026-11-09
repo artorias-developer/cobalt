@@ -20,8 +20,10 @@ class ServerStateEnum(StrEnum):
     Server state enum.
     """
     PENDING = "pending"
-    PROCESSING = "processing"
+    INSTALLATION = "installation"
+    INSTALL_FAILED = "install_failed"
+    INSTALL_CANCELED = "install_canceled"
+    INSTALLED = "installed"
     UPGRADING = "upgrading"
-    CREATED = "created"
-    FAILED = "failed"
     UPGRADE_FAILED = "upgrade_failed"
+    UPGRADE_CANCELED = "upgrade_canceled"

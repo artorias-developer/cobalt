@@ -11,6 +11,7 @@
     "upgrade": "Upgrade",
     "save": "Save",
     "clear": "Clear",
+    "reset": "Reset",
     "download": "Download",
     "duplicate": "Duplicate",
     "move": "Move",
@@ -191,12 +192,22 @@
         "success": "Server updated successfully",
         "error": "Failed to update server"
       },
+      "cancel": {
+        "success": "Server operation canceled successfully",
+        "error": "Failed to cancel server operation"
+      },
       "state": {
         "pending": "Server is in queue",
-        "processing": "Server is being created",
-        "upgrading": "Server is being upgraded",
-        "failed": "Error while creating server",
-        "upgradeFailed": "Error while upgrading server"
+        "installation": {
+          "started": "Server is being created",
+          "failed": "Failed to create server",
+          "canceled": "Server creation canceled"
+        },
+        "upgrading": {
+          "started": "Server is being upgraded",
+          "failed": "Failed to upgrade server",
+          "canceled": "Server update canceled"
+        }
       },
       "columns": {
         "game": "Game",
@@ -601,7 +612,8 @@
             "clear": "Clear cached data"
           },
           "containers": {
-            "clear": "Clear unused containers data"
+            "clear": "Clear unused containers data",
+            "reset": "Reset server states"
           }
         }
       }
@@ -677,7 +689,7 @@
       },
       "containers": {
         "title": "Containers",
-        "description": "Unused containers, volumes and images",
+        "description": "Unused containers, volumes, images and cache",
         "clear": {
           "success": "Containers data cleanup added to queue",
           "error": "Failed to clear containers data"

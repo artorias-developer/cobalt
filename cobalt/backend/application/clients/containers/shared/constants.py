@@ -7,7 +7,9 @@ class ContainersConstants:
     """
     Containers-related constants.
     """
-    GAME_CONTAINER_NAME_KEY: str = "cobalt_server_{server_id}"
+    SERVER_RUNTIME_KEY: str = "cobalt_server_{server_id}"
+    SERVER_INSTALLER_KEY: str = "{container_name}_installer"
+    SERVER_UPGRADER_KEY: str = "{container_name}_upgrader"
 
     MANAGED_BY: str = "cobalt"
 
