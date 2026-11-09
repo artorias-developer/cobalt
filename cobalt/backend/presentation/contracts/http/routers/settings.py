@@ -55,17 +55,3 @@ class AbstractHttpSettingsRouter(AbstractHttpRouter, ABC):
         - Any: Response object.
         """
         ...
-
-    @abstractmethod
-    async def reset_stuck_containers(self, *args: Any, **kwargs: Any) -> Any:
-        """
-        Moves servers stuck in an in-progress state to the matching failed state.
-
-        Parameters:
-        - *args: Positional arguments.
-        - **kwargs: Keyword arguments.
-
-        Returns:
-        - Any: Response object.
-        """
-        ...

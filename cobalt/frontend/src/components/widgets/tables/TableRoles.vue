@@ -346,8 +346,7 @@ const permissionGroups = computed((): PermissionGroup[] => [
     label: t("roles.list.permissions.groups.settings"),
     permissions: [
       { value: PermissionEnum.SETTINGS_CACHE_CLEAR, label: t("roles.list.permissions.settings.cache.clear") },
-      { value: PermissionEnum.SETTINGS_CONTAINERS_CLEAR, label: t("roles.list.permissions.settings.containers.clear") },
-      { value: PermissionEnum.SETTINGS_CONTAINERS_RESET_STUCK, label: t("roles.list.permissions.settings.containers.reset") }
+      { value: PermissionEnum.SETTINGS_CONTAINERS_CLEAR, label: t("roles.list.permissions.settings.containers.clear") }
     ]
   }
 ])

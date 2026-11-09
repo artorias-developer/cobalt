@@ -678,17 +678,11 @@
         }
       },
       "containers": {
+        "title": "Containers",
+        "description": "Unused containers, volumes, images and cache",
         "clear": {
-          "title": "Containers",
-          "description": "Unused containers, volumes and images",
           "success": "Containers data cleanup added to queue",
           "error": "Failed to clear containers data"
-        },
-        "reset": {
-          "title": "States",
-          "description": "Servers state in queue and during installation",
-          "success": "Servers state have been reset to error",
-          "error": "Failed to reset servers state"
         }
       }
     }

@@ -46,4 +46,3 @@ class PermissionEnum(StrEnum):
     GAMES_VIEW = "games_view"
     SETTINGS_CACHE_CLEAR = "settings_cache_clear"
     SETTINGS_CONTAINERS_CLEAR = "settings_containers_clear"
-    SETTINGS_CONTAINERS_RESET_STUCK = "settings_containers_reset_stuck"

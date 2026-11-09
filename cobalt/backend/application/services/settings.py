@@ -29,13 +29,10 @@ from application.contracts.services import (
 from application.contracts.mappers import AbstractSettingsServiceMapper
 from application.clients.caches.shared import CacheConstants
 from application.clients.containers.shared import ContainersConstants
-from application.managers.events.shared import ServerEventEnum
-from application.managers.connections.shared import RoomsConstants
 from application.dtos import (
     SettingsDto,
     SettingsUpdateDto,
-    ServersGetPageDto,
-    ServerUpdateDto
+    ServersGetPageDto
 )
 
 
@@ -43,12 +40,6 @@ class SettingsService(AbstractSettingsService):
     """
     Settings service.
     """
-    _STUCK_STATES_MAP = {
-        ServerStateEnum.PENDING: ServerStateEnum.FAILED,
-        ServerStateEnum.PROCESSING: ServerStateEnum.FAILED,
-        ServerStateEnum.UPGRADING: ServerStateEnum.UPGRADE_FAILED
-    }
-
     cache_client: AbstractCacheClient
     settings_repository: AbstractSettingsRepository
     settings_mapper: AbstractSettingsServiceMapper
@@ -415,45 +406,3 @@ class SettingsService(AbstractSettingsService):
             self._cleanup_containers,
             protected_names=server_container_names
         )
-
-    async def reset_stuck_containers(self) -> None:
-        """
-        Moves servers stuck in an in-progress state to the matching failed state:
-        PENDING and PROCESSING become FAILED, UPGRADING becomes UPGRADE_FAILED.
-
-        Parameters:
-        - None.
-
-        Returns:
-        - None.
-        """
-        servers = await self._get_all_servers()
-
-        for server in servers:
-            failed_state = self._STUCK_STATES_MAP.get(server.state)
-
-            if failed_state is None:
-                continue
-
-            try:
-                await self.servers_service.update_one(
-                    server_id=server.id,
-                    dto=ServerUpdateDto(
-                        state=failed_state,
-                        version=None
-                    )
-                )
-            except NotFoundError:
-                continue
-
-            await self.connections_manager.send_to_room(
-                room_name=RoomsConstants.SERVERS_STATES_KEY,
-                data={
-                    "type": "message",
-                    "event": ServerEventEnum.SERVER_STATE,
-                    "data": {
-                        "server_id": server.id,
-                        "state": failed_state
-                    }
-                }
-            )

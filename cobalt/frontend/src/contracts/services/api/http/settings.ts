@@ -45,15 +45,4 @@ export interface IHttpSettingsApiService {
    * - Promise<void>: Empty promise.
    */
   clearContainers(): Promise<void>
-
-  /**
-   * Moves servers stuck in an in-progress state to the matching failed state.
-   *
-   * Parameters:
-   * - null.
-   *
-   * Returns:
-   * - Promise<void>: Empty promise.
-   */
-  resetStuckContainers(): Promise<void>
 }
