@@ -33,13 +33,23 @@
         <template v-if="isTransientState(row.state)">
           <div class="status-icon">
             <Icon
-              :icon="isErrorState(row.state) ? errorIcon : clockIcon"
+              :icon="getStateIcon(row.state)"
               :base-color="isErrorState(row.state) ? 'red' : 'yellow'"
               :filled="true"
             />
             <span class="hint">{{ statusMessages[row.state as ServerStateEnum] }}</span>
           </div>
         </template>
+        <ButtonGhost
+          v-if="isCancelable(row.state) && hasServerCancelAccess"
+          :icon="stopIcon"
+          base-color="red"
+          hover-color="red"
+          :filled="true"
+          align="center"
+          name="server-cancel"
+          @click="handleCancelServer(row.id)"
+        />
         <ButtonGhost
           v-if="isServerAccessible(row.state) && hasServerUpdateAccess"
           :icon="editIcon"
@@ -315,6 +325,7 @@ import settingsIcon from "@/assets/images/svg/settings.svg?raw"
 import trashIcon from "@/assets/images/svg/trash.svg?raw"
 import errorIcon from "@/assets/images/svg/error.svg?raw"
 import clockIcon from "@/assets/images/svg/clock.svg?raw"
+import stopIcon from "@/assets/images/svg/stop.svg?raw"
 
 withDefaults(defineProps<{
   icon?: string
@@ -366,11 +377,13 @@ const confirmPopup = ref<InstanceType<typeof PopupConfirm> | null>(null)
 
 const statusMessages: Record<ServerStateEnum, string> = {
   [ServerStateEnum.PENDING]: t("servers.list.state.pending"),
-  [ServerStateEnum.PROCESSING]: t("servers.list.state.processing"),
-  [ServerStateEnum.UPGRADING]: t("servers.list.state.upgrading"),
-  [ServerStateEnum.FAILED]: t("servers.list.state.failed"),
-  [ServerStateEnum.UPGRADE_FAILED]: t("servers.list.state.upgradeFailed"),
-  [ServerStateEnum.CREATED]: ""
+  [ServerStateEnum.INSTALLATION]: t("servers.list.state.installation.started"),
+  [ServerStateEnum.INSTALL_FAILED]: t("servers.list.state.installation.failed"),
+  [ServerStateEnum.INSTALL_CANCELED]: t("servers.list.state.installation.canceled"),
+  [ServerStateEnum.INSTALLED]: "",
+  [ServerStateEnum.UPGRADING]: t("servers.list.state.upgrading.started"),
+  [ServerStateEnum.UPGRADE_FAILED]: t("servers.list.state.upgrading.failed"),
+  [ServerStateEnum.UPGRADE_CANCELED]: t("servers.list.state.upgrading.canceled")
 }
 
 const columns: TableColumn[] = [
@@ -649,6 +662,32 @@ async function deleteSelected(): Promise<void> {
 }
 
 /**
+ * Cancels a running installation or upgrade of a server.
+ * The final state is delivered via WebSocket, so the table is not refetched here.
+ *
+ * Parameters:
+ * - serverId: ID of the server to cancel.
+ *
+ * Returns:
+ * - Promise<void>.
+ */
+async function handleCancelServer(serverId: number): Promise<void> {
+  try {
+    await httpServersApiService.cancelOne(serverId)
+
+    notify({
+      type: "success",
+      text: t("servers.list.cancel.success")
+    })
+  } catch (error: any) {
+    notify({
+      type: "error",
+      text: error?.response?.data?.message ?? t("servers.list.cancel.error")
+    })
+  }
+}
+
+/**
  * Resets the create server popup form state to its initial values.
  *
  * Parameters:
@@ -824,47 +863,66 @@ function handleStateUpdate(event: any): void {
 }
 
 /**
- * Checks whether the server state should show the transient state icon (spinner/error).
+ * Checks whether the server state should show the transient state icon (spinner/error/canceled).
  *
  * Parameters:
  * - state: ServerStateEnum value.
  *
  * Returns:
- * - boolean: `true` for any non-"created" state.
+ * - boolean: `true` for any non-"installed" state.
  */
 function isTransientState(state: ServerStateEnum): boolean {
-  return state !== ServerStateEnum.CREATED
+  return state !== ServerStateEnum.INSTALLED
+}
+
+/**
+ * Checks whether the given state represents an operation in progress (clock icon).
+ *
+ * Parameters:
+ * - state: ServerStateEnum value.
+ *
+ * Returns:
+ * - boolean: `true` for PENDING, PROCESSING, or UPGRADING.
+ */
+function isInProgressState(state: ServerStateEnum): boolean {
+  return (
+    state === ServerStateEnum.PENDING ||
+    state === ServerStateEnum.INSTALLATION ||
+    state === ServerStateEnum.UPGRADING
+  )
 }
 
 /**
  * Checks whether the given state represents an error state (red icon).
+ * Canceled states are not errors and use the yellow color.
  *
  * Parameters:
  * - state: ServerStateEnum value.
  *
  * Returns:
- * - boolean: `true` for FAILED or UPGRADE_FAILED.
+ * - boolean: `true` for INSTALL_FAILED or UPGRADE_FAILED.
  */
 function isErrorState(state: ServerStateEnum): boolean {
-  return state === ServerStateEnum.FAILED || state === ServerStateEnum.UPGRADE_FAILED
+  return state === ServerStateEnum.INSTALL_FAILED || state === ServerStateEnum.UPGRADE_FAILED
 }
 
 /**
  * Checks whether the server is in a usable state (settings/view accessible).
- * A server remains accessible during an upgrade and after a failed upgrade,
+ * A server remains accessible during an upgrade and after a failed or canceled upgrade,
  * since it still exists and runs on its previous working version.
  *
  * Parameters:
  * - state: ServerStateEnum value.
  *
  * Returns:
- * - boolean: `true` for CREATED, UPGRADING, or UPGRADE_FAILED.
+ * - boolean: `true` for INSTALLED, UPGRADING, UPGRADE_FAILED, or UPGRADE_CANCELED.
  */
 function isServerAccessible(state: ServerStateEnum): boolean {
   return (
-    state === ServerStateEnum.CREATED ||
+    state === ServerStateEnum.INSTALLED ||
     state === ServerStateEnum.UPGRADING ||
-    state === ServerStateEnum.UPGRADE_FAILED
+    state === ServerStateEnum.UPGRADE_FAILED ||
+    state === ServerStateEnum.UPGRADE_CANCELED
   )
 }
 
@@ -875,14 +933,59 @@ function isServerAccessible(state: ServerStateEnum): boolean {
  * - state: ServerStateEnum value.
  *
  * Returns:
- * - boolean: `true` for CREATED, FAILED, or UPGRADE_FAILED.
+ * - boolean: `true` for INSTALLED, INSTALL_FAILED, INSTALL_CANCELED, UPGRADE_FAILED, or UPGRADE_CANCELED.
  */
 function isDeletable(state: ServerStateEnum): boolean {
   return (
-    state === ServerStateEnum.CREATED ||
-    state === ServerStateEnum.FAILED ||
-    state === ServerStateEnum.UPGRADE_FAILED
+    state === ServerStateEnum.INSTALLED ||
+    state === ServerStateEnum.INSTALL_FAILED ||
+    state === ServerStateEnum.INSTALL_CANCELED ||
+    state === ServerStateEnum.UPGRADE_FAILED ||
+    state === ServerStateEnum.UPGRADE_CANCELED
   )
+}
+
+/**
+ * Checks whether the given state represents a canceled operation (cross icon).
+ *
+ * Parameters:
+ * - state: ServerStateEnum value.
+ *
+ * Returns:
+ * - boolean: `true` for INSTALL_CANCELED or UPGRADE_CANCELED.
+ */
+function isCanceledState(state: ServerStateEnum): boolean {
+  return state === ServerStateEnum.INSTALL_CANCELED || state === ServerStateEnum.UPGRADE_CANCELED
+}
+
+/**
+ * Returns the status icon for the given server state.
+ * In-progress states use the clock icon, canceled states use the cross icon,
+ * all remaining transient states (failed) use the error icon.
+ *
+ * Parameters:
+ * - state: ServerStateEnum value.
+ *
+ * Returns:
+ * - string: Raw SVG markup of the icon.
+ */
+function getStateIcon(state: ServerStateEnum): string {
+  if (isInProgressState(state)) return clockIcon
+  if (isCanceledState(state)) return errorIcon
+  return errorIcon
+}
+
+/**
+ * Checks whether a running installation or upgrade can be canceled in the given state.
+ *
+ * Parameters:
+ * - state: ServerStateEnum value.
+ *
+ * Returns:
+ * - boolean: `true` for PENDING, INSTALLATION, or UPGRADING.
+ */
+function isCancelable(state: ServerStateEnum): boolean {
+  return isInProgressState(state)
 }
 
 /**
@@ -1078,6 +1181,21 @@ const hasServerUpdateAccess = computed((): boolean =>
  */
 const hasServersDeleteAccess = computed((): boolean =>
   userStore.hasPermission(PermissionEnum.SERVERS_DELETE)
+)
+
+/**
+ * Checks whether the current user can cancel a running installation or upgrade.
+ * Mirrors the backend rule: SERVERS_CREATE or SERVER_SETTINGS_UPDATE.
+ *
+ * Parameters:
+ * - null.
+ *
+ * Returns:
+ * - boolean: `true` if the user has at least one of the required permissions, `false` otherwise.
+ */
+const hasServerCancelAccess = computed((): boolean =>
+  userStore.hasPermission(PermissionEnum.SERVERS_CREATE) ||
+  userStore.hasPermission(PermissionEnum.SERVER_SETTINGS_UPDATE)
 )
 
 /**

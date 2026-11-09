@@ -164,6 +164,21 @@ class HttpServersRouter(AbstractHttpServersRouter, HttpBaseRouter):
         )
 
         router.add_api_route(
+            path="/{server_id}/cancel",
+            endpoint=self.cancel_one,
+            methods=["POST"],
+            operation_id="servers_cancel_one",
+            dependencies=[
+                Depends(self.one_of_permissions_required(
+                    permissions=[
+                        PermissionEnum.SERVERS_CREATE,
+                        PermissionEnum.SERVER_SETTINGS_UPDATE
+                    ]
+                ))
+            ]
+        )
+
+        router.add_api_route(
             path="/{server_id}/start",
             endpoint=self.start,
             methods=["POST"],
@@ -398,6 +413,27 @@ class HttpServersRouter(AbstractHttpServersRouter, HttpBaseRouter):
         """
         await self.servers_service.delete_many(
             server_ids=schema.root
+        )
+
+        return Response(
+            status_code=status.HTTP_204_NO_CONTENT
+        )
+
+    async def cancel_one(
+        self,
+        server_id: int
+    ) -> Response:
+        """
+        Cancels a running installation or upgrade of an existing server.
+
+        Parameters:
+        - server_id: Server ID.
+
+        Returns:
+        - Response: Response object.
+        """
+        await self.servers_service.cancel_one(
+            server_id=server_id
         )
 
         return Response(

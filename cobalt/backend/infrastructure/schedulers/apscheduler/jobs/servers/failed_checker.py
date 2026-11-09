@@ -67,7 +67,7 @@ class FailedServersCheckerJob(BaseApschedulerJob):
         for server in all_servers:
             if server.state not in [
                 ServerStateEnum.PENDING,
-                ServerStateEnum.PROCESSING,
+                ServerStateEnum.INSTALLATION,
                 ServerStateEnum.UPGRADING
             ]:
                 continue
@@ -78,7 +78,7 @@ class FailedServersCheckerJob(BaseApschedulerJob):
             if server.state == ServerStateEnum.UPGRADING:
                 target_state = ServerStateEnum.UPGRADE_FAILED
             else:
-                target_state = ServerStateEnum.FAILED
+                target_state = ServerStateEnum.INSTALL_FAILED
 
             update_dto = ServerUpdateDto(
                 state=target_state

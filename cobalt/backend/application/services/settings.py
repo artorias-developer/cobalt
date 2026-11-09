@@ -380,7 +380,7 @@ class SettingsService(AbstractSettingsService):
         servers = await self._get_all_servers()
 
         installing = any(
-            server.state in (ServerStateEnum.PENDING, ServerStateEnum.PROCESSING)
+            server.state in (ServerStateEnum.PENDING, ServerStateEnum.INSTALLATION)
             for server in servers
         )
 

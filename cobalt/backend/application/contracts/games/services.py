@@ -245,6 +245,57 @@ class AbstractServersService(ABC):
             }
         )
 
+    async def _is_canceled(
+        self,
+        server_id: int
+    ) -> bool:
+        """
+        Checks whether the current install/upgrade of the server was canceled.
+
+        Parameters:
+        - server_id: Server ID.
+
+        Returns:
+        - bool: True if the server is in a canceled state.
+        """
+        try:
+            server = await self.core_servers_service.get_one_by_id(
+                server_id=server_id
+            )
+        except NotFoundError:
+            return False
+
+        return server.state in (
+            ServerStateEnum.INSTALL_CANCELED,
+            ServerStateEnum.UPGRADE_CANCELED
+        )
+
+    async def _mark_server_failed(
+        self,
+        server_id: int,
+        state: ServerStateEnum
+    ) -> None:
+        """
+        Sets a failed state unless the operation was canceled.
+
+        Parameters:
+        - server_id: Server ID.
+        - state: ServerStateEnum value.
+
+        Returns:
+        - None.
+        """
+        if await self._is_canceled(server_id=server_id):
+            return
+
+        try:
+            await self._update_server_state(
+                server_id=server_id,
+                state=state
+            )
+        except NotFoundError:
+            pass
+
     @staticmethod
     def _is_port_free(
         port: int
@@ -521,7 +572,7 @@ class AbstractServersService(ABC):
         try:
             await self._update_server_state(
                 server_id=server_id,
-                state=ServerStateEnum.PROCESSING
+                state=ServerStateEnum.INSTALLATION
             )
 
             await self._create_container_dir(
@@ -576,13 +627,10 @@ class AbstractServersService(ABC):
                 container_name=container_name
             )
 
-            try:
-                await self._update_server_state(
-                    server_id=server_id,
-                    state=ServerStateEnum.FAILED
-                )
-            except NotFoundError:
-                pass
+            await self._mark_server_failed(
+                server_id=server_id,
+                state=ServerStateEnum.INSTALL_FAILED
+            )
 
             raise
         finally:
@@ -752,18 +800,15 @@ class AbstractServersService(ABC):
 
             await self._update_server_state(
                 server_id=server_id,
-                state=ServerStateEnum.CREATED,
+                state=ServerStateEnum.INSTALLED,
                 version=installed_version,
                 with_container_status=True
             )
         except Exception:
-            try:
-                await self._update_server_state(
-                    server_id=server_id,
-                    state=ServerStateEnum.UPGRADE_FAILED
-                )
-            except NotFoundError:
-                pass
+            await self._mark_server_failed(
+                server_id=server_id,
+                state=ServerStateEnum.UPGRADE_FAILED
+            )
 
             raise
         finally:
@@ -886,7 +931,7 @@ class AbstractServersService(ABC):
 
             await self._update_server_state(
                 server_id=server_id,
-                state=ServerStateEnum.CREATED
+                state=ServerStateEnum.INSTALLED
             )
         except Exception:
             await self._cleanup_container_resources(
@@ -897,13 +942,10 @@ class AbstractServersService(ABC):
                 container_name=container_name
             )
 
-            try:
-                await self._update_server_state(
-                    server_id=server_id,
-                    state=ServerStateEnum.FAILED
-                )
-            except NotFoundError:
-                pass
+            await self._mark_server_failed(
+                server_id=server_id,
+                state=ServerStateEnum.INSTALL_FAILED
+            )
 
             raise
 
@@ -1046,3 +1088,46 @@ class AbstractServersService(ABC):
         await self._remove_container_dir(
             container_name=container_name
         )
+
+    async def cancel(
+        self,
+        server_id: int,
+        container_name: str,
+        state: ServerStateEnum
+    ) -> None:
+        """
+        Cancels a running install or upgrade.
+        The canceled state is written first, so the running job sees it and
+        does not mark the server as failed.
+        Install: everything is removed (containers, images, files).
+        Upgrade: only the upgrader is removed, server files are kept and the server stays stopped.
+
+        Parameters:
+        - server_id: Server ID.
+        - container_name: Container name.
+        - state: INSTALL_CANCELED or UPGRADE_CANCELED.
+
+        Returns:
+        - None.
+        """
+        if state == ServerStateEnum.INSTALL_CANCELED:
+            await self._update_server_state(
+                server_id=server_id,
+                state=state
+            )
+
+            await self.delete(
+                container_name=container_name
+            )
+        elif state == ServerStateEnum.UPGRADE_CANCELED:
+            await self._update_server_state(
+                server_id=server_id,
+                state=state,
+                with_container_status=True
+            )
+
+            await self._cleanup_container_resources(
+                container_name=self._get_upgrader_name(container_name)
+            )
+        else:
+            raise ValueError(f'Unsupported cancel state "{state}"')

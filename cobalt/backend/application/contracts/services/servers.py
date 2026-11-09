@@ -140,6 +140,22 @@ class AbstractServersService(ABC):
         ...
 
     @abstractmethod
+    async def cancel_one(
+        self,
+        server_id: int
+    ) -> None:
+        """
+        Cancels a running installation or upgrade of an existing server.
+
+        Parameters:
+        - server_id: Server ID.
+
+        Returns:
+        - None.
+        """
+        ...
+
+    @abstractmethod
     async def start(
         self,
         server_id: int

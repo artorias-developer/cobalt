@@ -192,12 +192,22 @@
         "success": "Server updated successfully",
         "error": "Failed to update server"
       },
+      "cancel": {
+        "success": "Server operation canceled successfully",
+        "error": "Failed to cancel server operation"
+      },
       "state": {
         "pending": "Server is in queue",
-        "processing": "Server is being created",
-        "upgrading": "Server is being upgraded",
-        "failed": "Error while creating server",
-        "upgradeFailed": "Error while upgrading server"
+        "installation": {
+          "started": "Server is being created",
+          "failed": "Failed to create server",
+          "canceled": "Server creation canceled"
+        },
+        "upgrading": {
+          "started": "Server is being upgraded",
+          "failed": "Failed to upgrade server",
+          "canceled": "Server update canceled"
+        }
       },
       "columns": {
         "game": "Game",
