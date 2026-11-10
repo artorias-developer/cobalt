@@ -19,7 +19,7 @@ from domain.enums import (
     ServerStateEnum,
     EnvironmentEnum
 )
-from domain.exceptions import NotFoundError
+from domain.exceptions import NotFoundError, ConflictError
 from application.contracts.managers import AbstractConnectionsManager
 from application.contracts.clients import AbstractContainersClient
 from application.contracts.services import AbstractServersService as CoreServersService
@@ -193,13 +193,24 @@ class AbstractServersService(ABC):
     ) -> None:
         """
         Updates server and sends new data to all subscribers.
+        If the install/upgrade was canceled, only a canceled state can be written,
+        so a running job can never overwrite the cancel.
 
         Parameters:
         - server_id: Server ID.
         - state: Server state.
         - version: Server version.
         - with_container_status: Whether to include the container running status.
+
+        Raises:
+        - ConflictError: If the install/upgrade was canceled.
         """
+        if state not in (
+            ServerStateEnum.INSTALL_CANCELED,
+            ServerStateEnum.UPGRADE_CANCELED
+        ) and await self._is_server_canceled(server_id=server_id):
+            raise ConflictError("Server {server_id} was canceled", server_id=server_id)
+
         request_dto = ServerUpdateDto(
             state=state,
             version=version
@@ -245,7 +256,7 @@ class AbstractServersService(ABC):
             }
         )
 
-    async def _is_canceled(
+    async def _is_server_canceled(
         self,
         server_id: int
     ) -> bool:
@@ -285,7 +296,7 @@ class AbstractServersService(ABC):
         Returns:
         - bool: `False` if the operation was canceled (the state is left untouched), `True` otherwise.
         """
-        if await self._is_canceled(server_id=server_id):
+        if await self._is_server_canceled(server_id=server_id):
             return False
 
         try:
@@ -590,6 +601,9 @@ class AbstractServersService(ABC):
                 **prepared_image_kwargs
             )
 
+            if await self._is_server_canceled(server_id=server_id):
+                raise ConflictError("Server {server_id} was canceled", server_id=server_id)
+
             await self.containers_client.container_create(
                 image=installer_name,
                 name=installer_name,
@@ -606,6 +620,9 @@ class AbstractServersService(ABC):
             await self.containers_client.container_wait(
                 container_name=installer_name
             )
+
+            if await self._is_server_canceled(server_id=server_id):
+                raise ConflictError("Server {server_id} was canceled", server_id=server_id)
 
             await self._verify_installation(
                 container_name=container_name,
@@ -766,6 +783,9 @@ class AbstractServersService(ABC):
                 **prepared_image_kwargs
             )
 
+            if await self._is_server_canceled(server_id=server_id):
+                raise ConflictError("Server {server_id} was canceled", server_id=server_id)
+
             await self.containers_client.container_create(
                 image=upgrader_name,
                 name=upgrader_name,
@@ -782,6 +802,9 @@ class AbstractServersService(ABC):
             wait_result = await self.containers_client.container_wait(
                 container_name=upgrader_name
             )
+
+            if await self._is_server_canceled(server_id=server_id):
+                raise ConflictError("Server {server_id} was canceled", server_id=server_id)
 
             self._verify_exit_code(
                 container_name=upgrader_name,
@@ -901,6 +924,9 @@ class AbstractServersService(ABC):
             **({"security_opt": ["seccomp=unconfined"]} if is_steam_server else {}),
             **(container_kwargs or {})
         }
+
+        if await self._is_server_canceled(server_id=server_id):
+            return
 
         await self._cleanup_container_resources(
             container_name=container_name
