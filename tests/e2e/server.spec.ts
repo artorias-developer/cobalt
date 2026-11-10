@@ -5,9 +5,11 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-import { test, expect, type Page, type Response } from "@playwright/test"
-import { gotoWithRetry, waitForApi, clickAndWaitForApi } from "./helpers/api.js"
+import type { Page, Response } from "@playwright/test"
+import { test, expect, uniqueFileName, type ServerData } from "./helpers/fixtures.js"
+import { gotoWithRetry, waitForApi, clickAndWaitForApi, createZip } from "./helpers/api.js"
 
+const FILES_API = /\/files(\/|$|\?)/
 
 /**
  * Creates a file or directory through the file-create popup.
@@ -39,7 +41,7 @@ async function createFile(
   return clickAndWaitForApi(
     page,
     'button[name="file-create"]',
-    /\/files(\/|$|\?)/,
+    FILES_API,
     "POST",
   )
 }
@@ -91,24 +93,17 @@ async function selectFile(page: Page, name: string) {
 }
 
 /**
- * Navigates to a server's settings page.
+ * Opens the server page directly by its URL.
  *
  * Parameters:
  * - page: Playwright page instance.
- * - serverName: Name of the server to open.
+ * - server: Server to open.
  *
  * Returns:
  * - Promise<void>.
  */
-async function openServerSettings(page: Page, serverName: string) {
-  await gotoWithRetry(page, "/servers")
-
-  const row = page.locator("tr").filter({
-    has: page.locator("td", { hasText: serverName }),
-  })
-  await row.waitFor({ state: "visible" })
-
-  await row.locator('a[aria-label="server-settings"]').click()
+async function openServerPage(page: Page, server: ServerData): Promise<void> {
+  await gotoWithRetry(page, `/servers/${server.gameName}/${server.id}`)
 
   const tabsNav = page.locator(".tabs .nav").filter({
     has: page.locator('button[name="files"]'),
@@ -117,17 +112,17 @@ async function openServerSettings(page: Page, serverName: string) {
 }
 
 /**
- * Navigates to a server's settings page and opens the files tab.
+ * Opens the server page and switches to the files tab.
  *
  * Parameters:
  * - page: Playwright page instance.
- * - serverName: Name of the server to open.
+ * - server: Server to open.
  *
  * Returns:
  * - Promise<void>.
  */
-async function openFilesTab(page: Page, serverName: string) {
-  await openServerSettings(page, serverName)
+async function openFilesTab(page: Page, server: ServerData): Promise<void> {
+  await openServerPage(page, server)
 
   const tabsNav = page.locator(".tabs .nav").filter({
     has: page.locator('button[name="files"]'),
@@ -136,291 +131,424 @@ async function openFilesTab(page: Page, serverName: string) {
   await page.locator("table tbody").waitFor({ state: "visible" })
 }
 
-test.describe.configure({ mode: "serial" })
+/**
+ * Opens a directory by clicking its row.
+ *
+ * Parameters:
+ * - page: Playwright page instance.
+ * - name: Directory name.
+ *
+ * Returns:
+ * - Promise<void>.
+ */
+async function openDirectory(page: Page, name: string): Promise<void> {
+  const row = await getFileRow(page, name)
+  await row.locator("td").nth(1).click()
+}
 
-test.describe("Server files", () => {
-  test.beforeEach(async ({ page }) => {
-    await openFilesTab(page, "e2e_test_server")
-  })
+/**
+ * Fills the move popup destination and submits it.
+ *
+ * Parameters:
+ * - page: Playwright page instance.
+ * - destination: Destination directory path.
+ *
+ * Returns:
+ * - Promise<Response>: the API response for the move request.
+ */
+async function submitMove(page: Page, destination: string): Promise<Response> {
+  await page.locator('input[name="file-move-destination"]').fill(destination)
+  return clickAndWaitForApi(page, 'button[name="file-move"]', FILES_API, "POST")
+}
 
-  test("Should show warning on empty name at file create", async ({ page }) => {
+/**
+ * Sends a server command through the console input.
+ *
+ * Parameters:
+ * - page: Playwright page instance.
+ * - command: Command to send.
+ *
+ * Returns:
+ * - Promise<Response>: the API response for the execute request.
+ */
+async function sendServerCommand(page: Page, command: string): Promise<Response> {
+  const consoleInput = page.locator('input[name="server-console"]')
+  await consoleInput.waitFor({ state: "visible" })
+  await expect(consoleInput).toBeEnabled()
+
+  const responsePromise = waitForApi(page, /\/servers\/\d+\/execute(\?|$)/, "POST")
+  await consoleInput.fill(command)
+  await consoleInput.press("Enter")
+  return responsePromise
+}
+
+test.describe("Server page files tab", () => {
+  test("Should show validation warning on file create with empty name", async ({ page, server }) => {
+    await openFilesTab(page, server)
+
     await page.locator('button[name="file-create-popup"]').click()
     await page.locator('button[name="file-create"]').click()
 
     await expect(page.locator(".vue-notification.warn")).toBeVisible()
   })
 
-  test("Should return 204 on files and directory create", async ({ page }) => {
-    const response1 = await createFile(page, "e2e_test_file.txt")
-    expect(response1.status()).toBe(204)
+  test("Should return 204 on file create", async ({ page, server }) => {
+    const file = uniqueFileName("file.txt")
 
-    const response2 = await createFile(page, "e2e_test_file2.txt")
-    expect(response2.status()).toBe(204)
+    await openFilesTab(page, server)
 
-    const response3 = await createFile(page, "e2e_test_dir", "directory")
-    expect(response3.status()).toBe(204)
+    const response = await createFile(page, file)
+    expect(response.status()).toBe(204)
   })
 
-  test("Should return 409 on file create with existing name", async ({ page }) => {
-    const response = await createFile(page, "e2e_test_file.txt")
+  test("Should return 204 on directory create", async ({ page, server }) => {
+    const dir = uniqueFileName("dir")
+
+    await openFilesTab(page, server)
+
+    const response = await createFile(page, dir, "directory")
+    expect(response.status()).toBe(204)
+  })
+
+  test("Should return 409 on file create with existing name", async ({ page, api, server }) => {
+    const file = uniqueFileName("file.txt")
+
+    await api.createFile(server.id, `/${file}`)
+    await openFilesTab(page, server)
+
+    const response = await createFile(page, file)
     expect(response.status()).toBe(409)
   })
 
-  test("Should return 200 on files reload", async ({ page }) => {
+  test("Should return 204 on file upload", async ({ page, server }) => {
+    const upload = uniqueFileName("upload.txt")
+
+    await openFilesTab(page, server)
+
+    await page.locator('button[name="file-upload-popup"]').click()
+    await page.locator('.upload-file-popup input[type="file"]').setInputFiles({
+      name: upload,
+      mimeType: "text/plain",
+      buffer: Buffer.from("e2e"),
+    })
+
     const response = await clickAndWaitForApi(
       page,
-      'button[name="file-reload-popup"]',
-      /\/files(\/|$|\?)/,
-      "GET",
+      '.upload-file-popup button[type="submit"]',
+      FILES_API,
+      "POST",
     )
+    expect(response.status()).toBe(204)
+  })
+
+  test("Should return 200 on files reload", async ({ page, server }) => {
+    await openFilesTab(page, server)
+
+    const response = await clickAndWaitForApi(page, 'button[name="file-reload-popup"]', FILES_API, "GET")
     expect(response.status()).toBe(200)
   })
 
-  test("Should return 204 on file open and save", async ({ page }) => {
-    await openFileActions(page, "e2e_test_file.txt")
+  test("Should show directory content on directory open", async ({ page, api, server }) => {
+    const nested = uniqueFileName("nested.txt")
+    const dir = uniqueFileName("dir")
+
+    await api.createFile(server.id, `/${dir}`, "directory")
+    await api.createFile(server.id, `/${dir}/${nested}`)
+    await openFilesTab(page, server)
+
+    await openDirectory(page, dir)
+
+    await expect(await getFileRow(page, nested)).toBeVisible()
+  })
+
+  test("Should return 204 on file save", async ({ page, api, server }) => {
+    const file = uniqueFileName("file.txt")
+
+    await api.createFile(server.id, `/${file}`)
+    await openFilesTab(page, server)
+
+    await openFileActions(page, file)
     await page.locator('button[name="file-open"]').click()
 
-    const response = await clickAndWaitForApi(
-      page,
-      'button[name="file-save"]',
-      /\/files(\/|$|\?)/,
-      "PUT",
-    )
+    const response = await clickAndWaitForApi(page, 'button[name="file-save"]', FILES_API, "PUT")
     expect(response.status()).toBe(204)
   })
 
-  test("Should return 204 on file rename", async ({ page }) => {
-    await openFileActions(page, "e2e_test_file.txt")
-    await page.locator('button[name="file-rename-popup"]').click()
-    await page.locator('input[name="file-name"]').fill("e2e_test_file_renamed.txt")
+  test("Should show files table on file editor close", async ({ page, api, server }) => {
+    const file = uniqueFileName("file.txt")
 
-    const response = await clickAndWaitForApi(
-      page,
-      'button[name="file-rename"]',
-      /\/files(\/|$|\?)/,
-      "POST",
-    )
+    await api.createFile(server.id, `/${file}`)
+    await openFilesTab(page, server)
+
+    await openFileActions(page, file)
+    await page.locator('button[name="file-open"]').click()
+    await expect(page.locator(".editor")).toBeVisible()
+
+    await page.locator('button[name="file-close"]').click()
+
+    await expect(page.locator(".editor")).not.toBeVisible()
+    await expect(await getFileRow(page, file)).toBeVisible()
+  })
+
+  test("Should return 204 on file rename", async ({ page, api, server }) => {
+    const file = uniqueFileName("file.txt")
+    const renamed = uniqueFileName("file_renamed.txt")
+
+    await api.createFile(server.id, `/${file}`)
+    await openFilesTab(page, server)
+
+    await openFileActions(page, file)
+    await page.locator('button[name="file-rename-popup"]').click()
+    await page.locator('input[name="file-name"]').fill(renamed)
+
+    const response = await clickAndWaitForApi(page, 'button[name="file-rename"]', FILES_API, "POST")
     expect(response.status()).toBe(204)
   })
 
-  test("Should return 409 on file rename to existing name", async ({ page }) => {
-    await openFileActions(page, "e2e_test_file_renamed.txt")
-    await page.locator('button[name="file-rename-popup"]').click()
-    await page.locator('input[name="file-name"]').fill("e2e_test_file2.txt")
+  test("Should return 409 on file rename with existing name", async ({ page, api, server }) => {
+    const file = uniqueFileName("file.txt")
+    const otherFile = uniqueFileName("file2.txt")
 
-    const response = await clickAndWaitForApi(
-      page,
-      'button[name="file-rename"]',
-      /\/files(\/|$|\?)/,
-      "POST",
-    )
+    await api.createFile(server.id, `/${file}`)
+    await api.createFile(server.id, `/${otherFile}`)
+    await openFilesTab(page, server)
+
+    await openFileActions(page, file)
+    await page.locator('button[name="file-rename-popup"]').click()
+    await page.locator('input[name="file-name"]').fill(otherFile)
+
+    const response = await clickAndWaitForApi(page, 'button[name="file-rename"]', FILES_API, "POST")
     expect(response.status()).toBe(409)
   })
 
-  test("Should return 200 on file download via actions menu", async ({ page }) => {
-    await openFileActions(page, "e2e_test_file_renamed.txt")
+  test("Should return 200 on file download via actions menu", async ({ page, api, server }) => {
+    const file = uniqueFileName("file.txt")
 
-    const response = await clickAndWaitForApi(
-      page,
-      'button[name="file-download"]',
-      /\/files(\/|$|\?)/,
-      "POST",
-    )
+    await api.createFile(server.id, `/${file}`)
+    await openFilesTab(page, server)
+
+    await openFileActions(page, file)
+
+    const response = await clickAndWaitForApi(page, 'button[name="file-download"]', FILES_API, "POST")
     expect(response.status()).toBe(200)
   })
 
-  test("Should return 200 on file download via footer", async ({ page }) => {
-    await selectFile(page, "e2e_test_file_renamed.txt")
+  test("Should return 200 on file download via footer", async ({ page, api, server }) => {
+    const file = uniqueFileName("file.txt")
 
-    const response = await clickAndWaitForApi(
-      page,
-      'button[name="files-download"]',
-      /\/files(\/|$|\?)/,
-      "POST",
-    )
+    await api.createFile(server.id, `/${file}`)
+    await openFilesTab(page, server)
+
+    await selectFile(page, file)
+
+    const response = await clickAndWaitForApi(page, 'button[name="files-download"]', FILES_API, "POST")
     expect(response.status()).toBe(200)
   })
 
-  test("Should return 204 on file duplicate via actions menu", async ({ page }) => {
-    await openFileActions(page, "e2e_test_file_renamed.txt")
+  test("Should return 204 on file duplicate via actions menu", async ({ page, api, server }) => {
+    const file = uniqueFileName("file.txt")
 
-    const response = await clickAndWaitForApi(
-      page,
-      'button[name="file-duplicate"]',
-      /\/files(\/|$|\?)/,
-      "POST",
-    )
+    await api.createFile(server.id, `/${file}`)
+    await openFilesTab(page, server)
+
+    await openFileActions(page, file)
+
+    const response = await clickAndWaitForApi(page, 'button[name="file-duplicate"]', FILES_API, "POST")
     expect(response.status()).toBe(204)
   })
 
-  test("Should return 204 on file duplicate via footer", async ({ page }) => {
-    await selectFile(page, "e2e_test_file_renamed.txt")
+  test("Should return 204 on file duplicate via footer", async ({ page, api, server }) => {
+    const file = uniqueFileName("file.txt")
 
-    const response = await clickAndWaitForApi(
-      page,
-      'button[name="files-duplicate"]',
-      /\/files(\/|$|\?)/,
-      "POST",
-    )
+    await api.createFile(server.id, `/${file}`)
+    await openFilesTab(page, server)
+
+    await selectFile(page, file)
+
+    const response = await clickAndWaitForApi(page, 'button[name="files-duplicate"]', FILES_API, "POST")
     expect(response.status()).toBe(204)
   })
 
-  test("Should show warning on empty destination at file move via actions menu", async ({ page }) => {
-    await openFileActions(page, "e2e_test_file_renamed.txt")
+  test("Should return 204 on archive extract", async ({ page, api, server }) => {
+    const archive = uniqueFileName("archive.zip")
+    const extracted = uniqueFileName("extracted.txt")
+
+    await api.uploadFile(server.id, "/", archive, createZip({ [extracted]: "e2e" }))
+    await openFilesTab(page, server)
+
+    await openFileActions(page, archive)
+
+    const response = await clickAndWaitForApi(page, 'button[name="file-extract"]', FILES_API, "POST")
+    expect(response.status()).toBe(204)
+  })
+
+  test("Should show validation warning on file move with empty destination via actions menu", async ({ page, api, server }) => {
+    const file = uniqueFileName("file.txt")
+
+    await api.createFile(server.id, `/${file}`)
+    await openFilesTab(page, server)
+
+    await openFileActions(page, file)
     await page.locator('button[name="file-move-popup"]').click()
     await page.locator('button[name="file-move"]').click()
 
     await expect(page.locator(".vue-notification.warn")).toBeVisible()
   })
 
-  test("Should show warning on empty destination at file move via footer", async ({ page }) => {
-    await selectFile(page, "e2e_test_file_renamed.txt")
+  test("Should show validation warning on file move with empty destination via footer", async ({ page, api, server }) => {
+    const file = uniqueFileName("file.txt")
+
+    await api.createFile(server.id, `/${file}`)
+    await openFilesTab(page, server)
+
+    await selectFile(page, file)
     await page.locator('button[name="files-move-popup"]').click()
     await page.locator('button[name="file-move"]').click()
 
     await expect(page.locator(".vue-notification.warn")).toBeVisible()
   })
 
-  test("Should return 204 on file move via actions menu", async ({ page }) => {
-    await openFileActions(page, "e2e_test_file_renamed.txt")
-    await page.locator('button[name="file-move-popup"]').click()
-    await page.locator('input[name="file-move-destination"]').fill("/e2e_test_dir")
+  test("Should return 204 on file move via actions menu", async ({ page, api, server }) => {
+    const file = uniqueFileName("file.txt")
+    const dir = uniqueFileName("dir")
 
-    const response = await clickAndWaitForApi(
-      page,
-      'button[name="file-move"]',
-      /\/files(\/|$|\?)/,
-      "POST",
-    )
+    await api.createFile(server.id, `/${file}`)
+    await api.createFile(server.id, `/${dir}`, "directory")
+    await openFilesTab(page, server)
+
+    await openFileActions(page, file)
+    await page.locator('button[name="file-move-popup"]').click()
+
+    const response = await submitMove(page, `/${dir}`)
     expect(response.status()).toBe(204)
   })
 
-  test("Should return 204 on file move via footer", async ({ page }) => {
-    const dirRow = await getFileRow(page, "e2e_test_dir")
-    await dirRow.locator("td").nth(1).click()
+  test("Should return 204 on file move via footer", async ({ page, api, server }) => {
+    const file = uniqueFileName("file.txt")
+    const dir = uniqueFileName("dir")
 
-    await selectFile(page, "e2e_test_file_renamed.txt")
+    await api.createFile(server.id, `/${dir}`, "directory")
+    await api.createFile(server.id, `/${dir}/${file}`)
+    await openFilesTab(page, server)
+
+    await openDirectory(page, dir)
+    await selectFile(page, file)
     await page.locator('button[name="files-move-popup"]').click()
-    await page.locator('input[name="file-move-destination"]').fill("/")
 
-    const response = await clickAndWaitForApi(
-      page,
-      'button[name="file-move"]',
-      /\/files(\/|$|\?)/,
-      "POST",
-    )
+    const response = await submitMove(page, "/")
     expect(response.status()).toBe(204)
   })
 
-  test("Should return 404 on file move to non-existing directory via actions menu", async ({ page }) => {
-    await openFileActions(page, "e2e_test_file_renamed.txt")
+  test("Should return 404 on file move with non-existing destination via actions menu", async ({ page, api, server }) => {
+    const file = uniqueFileName("file.txt")
+
+    await api.createFile(server.id, `/${file}`)
+    await openFilesTab(page, server)
+
+    await openFileActions(page, file)
     await page.locator('button[name="file-move-popup"]').click()
-    await page.locator('input[name="file-move-destination"]').fill("/fictional_dir")
 
-    const response = await clickAndWaitForApi(
-      page,
-      'button[name="file-move"]',
-      /\/files(\/|$|\?)/,
-      "POST",
-    )
+    const response = await submitMove(page, "/fictional_dir")
     expect(response.status()).toBe(404)
   })
 
-  test("Should return 404 on file move to non-existing directory via footer", async ({ page }) => {
-    await selectFile(page, "e2e_test_file_renamed.txt")
+  test("Should return 404 on file move with non-existing destination via footer", async ({ page, api, server }) => {
+    const file = uniqueFileName("file.txt")
+
+    await api.createFile(server.id, `/${file}`)
+    await openFilesTab(page, server)
+
+    await selectFile(page, file)
     await page.locator('button[name="files-move-popup"]').click()
-    await page.locator('input[name="file-move-destination"]').fill("/fictional_dir")
 
-    const response = await clickAndWaitForApi(
-      page,
-      'button[name="file-move"]',
-      /\/files(\/|$|\?)/,
-      "POST",
-    )
+    const response = await submitMove(page, "/fictional_dir")
     expect(response.status()).toBe(404)
   })
 
-  test("Should show one row on file search", async ({ page }) => {
-    await page.locator('input[name="search-input"]').fill("e2e_test_file_renamed.txt")
+  test("Should show one row on file search", async ({ page, api, server }) => {
+    const file = uniqueFileName("file.txt")
+
+    await api.createFile(server.id, `/${file}`)
+    await openFilesTab(page, server)
+
+    await page.locator('input[name="search-input"]').fill(file)
     await page.locator('button[name="search-submit"]').click()
 
     const rows = page.locator("tbody tr")
     await expect(rows).toHaveCount(1)
-    await expect(rows.first().locator("td", { hasText: "e2e_test_file_renamed.txt" })).toBeVisible()
+    await expect(rows.first().locator("td", { hasText: file })).toBeVisible()
   })
 
-  test("Should show empty table on fictional file search", async ({ page }) => {
+  test("Should show empty table on file search with fictional name", async ({ page, server }) => {
+    await openFilesTab(page, server)
+
     await page.locator('input[name="search-input"]').fill("fictional_file")
     await page.locator('button[name="search-submit"]').click()
 
-    const rows = page.locator("tbody tr")
-    await expect(rows).toHaveCount(0)
+    await expect(page.locator("tbody tr")).toHaveCount(0)
   })
 
-  test("Should return 204 on file delete via actions menu", async ({ page }) => {
-    await openFileActions(page, "e2e_test_file_renamed.txt")
+  test("Should return 204 on file delete via actions menu", async ({ page, api, server }) => {
+    const file = uniqueFileName("file.txt")
+
+    await api.createFile(server.id, `/${file}`)
+    await openFilesTab(page, server)
+
+    await openFileActions(page, file)
     await page.locator('button[name="file-delete-popup"]').click()
 
-    const response = await clickAndWaitForApi(
-      page,
-      'button[name="confirm"]',
-      /\/files(\/|$|\?)/,
-      "DELETE",
-    )
+    const response = await clickAndWaitForApi(page, 'button[name="confirm"]', FILES_API, "DELETE")
     expect(response.status()).toBe(204)
   })
 
-  test("Should return 204 on file delete via footer", async ({ page }) => {
-    await selectFile(page, "e2e_test_file2.txt")
+  test("Should return 204 on file delete via footer", async ({ page, api, server }) => {
+    const file = uniqueFileName("file.txt")
+
+    await api.createFile(server.id, `/${file}`)
+    await openFilesTab(page, server)
+
+    await selectFile(page, file)
     await page.locator('button[name="files-delete-popup"]').click()
 
-    const response = await clickAndWaitForApi(
-      page,
-      'button[name="confirm"]',
-      /\/files(\/|$|\?)/,
-      "DELETE",
-    )
+    const response = await clickAndWaitForApi(page, 'button[name="confirm"]', FILES_API, "DELETE")
     expect(response.status()).toBe(204)
   })
 
-  test("Should return 204 on directory delete", async ({ page }) => {
-    await openFileActions(page, "e2e_test_dir")
+  test("Should return 204 on directory delete", async ({ page, api, server }) => {
+    const dir = uniqueFileName("dir")
+
+    await api.createFile(server.id, `/${dir}`, "directory")
+    await openFilesTab(page, server)
+
+    await openFileActions(page, dir)
     await page.locator('button[name="file-delete-popup"]').click()
 
-    const response = await clickAndWaitForApi(
-      page,
-      'button[name="confirm"]',
-      /\/files(\/|$|\?)/,
-      "DELETE",
-    )
+    const response = await clickAndWaitForApi(page, 'button[name="confirm"]', FILES_API, "DELETE")
     expect(response.status()).toBe(204)
   })
 })
 
-test.describe("Server overview", () => {
-  test.beforeEach(async ({ page }) => {
-    await openServerSettings(page, "e2e_test_server")
-  })
+test.describe("Server page overview tab", () => {
+  test("Should return 204 on server command", async ({ page, api, server }) => {
+    await api.startServer(server.id)
+    await openServerPage(page, server)
 
-  test("Should return 204 on console command", async ({ page }) => {
-    const consoleInput = page.locator('input[name="server-console"]')
-    await consoleInput.waitFor({ state: "visible" })
-    await expect(consoleInput).toBeEnabled()
-
-    const responsePromise = waitForApi(
-        page,
-        /\/servers\/\d+\/execute(\?|$)/,
-        "POST"
-    )
-
-    await consoleInput.fill("/help")
-    await consoleInput.press("Enter")
-
-    const response = await responsePromise
+    const response = await sendServerCommand(page, "/help")
     expect(response.status()).toBe(204)
   })
 
-  test("Should return 204 on server stop", async ({ page }) => {
+  test("Should return 500 on server command with stopped server", async ({ page, api, server }) => {
+    await api.stopServer(server.id)
+    await openServerPage(page, server)
+
+    const response = await sendServerCommand(page, "/help")
+    expect(response.status()).toBe(500)
+  })
+
+  test("Should return 204 on server stop", async ({ page, api, server }) => {
+    await api.startServer(server.id)
+    await openServerPage(page, server)
+
     const response = await clickAndWaitForApi(
       page,
       'button[name="server-stop"]',
@@ -430,25 +558,25 @@ test.describe("Server overview", () => {
     expect(response.status()).toBe(204)
   })
 
-  test("Should return 500 on console command when server is stopped", async ({ page }) => {
-    const consoleInput = page.locator('input[name="server-console"]')
-    await consoleInput.waitFor({ state: "visible" })
-    await expect(consoleInput).toBeEnabled()
+  test("Should show server start button on server stop", async ({ page, api, server }) => {
+    await api.startServer(server.id)
+    await openServerPage(page, server)
 
-    const responsePromise = waitForApi(
-        page,
-        /\/servers\/\d+\/execute(\?|$)/,
-        "POST"
+    await clickAndWaitForApi(
+      page,
+      'button[name="server-stop"]',
+      /\/servers\/\d+\/stop(\?|$)/,
+      "POST",
     )
 
-    await consoleInput.fill("/help")
-    await consoleInput.press("Enter")
-
-    const response = await responsePromise
-    expect(response.status()).toBe(500)
+    await expect(page.locator('button[name="server-start"]')).toBeVisible()
+    await expect(page.locator('button[name="server-stop"]')).toHaveCount(0)
   })
 
-  test("Should return 204 on server start", async ({ page }) => {
+  test("Should return 204 on server start", async ({ page, api, server }) => {
+    await api.stopServer(server.id)
+    await openServerPage(page, server)
+
     const response = await clickAndWaitForApi(
       page,
       'button[name="server-start"]',
@@ -458,34 +586,15 @@ test.describe("Server overview", () => {
     expect(response.status()).toBe(204)
   })
 
-  test("Should return 204 on server restart", async ({ page }) => {
+  test("Should return 204 on server restart", async ({ page, api, server }) => {
+    await api.startServer(server.id)
+    await openServerPage(page, server)
+
     const response = await clickAndWaitForApi(
       page,
       'button[name="server-restart"]',
       /\/servers\/\d+\/restart(\?|$)/,
       "POST",
-    )
-    expect(response.status()).toBe(204)
-  })
-})
-
-test.describe("Servers page", () => {
-  test.beforeEach(async ({ page }) => {
-    await gotoWithRetry(page, "/servers")
-    await page.locator("table tbody").waitFor({ state: "visible" })
-  })
-
-  test("Should return 204 on server delete", async ({ page }) => {
-    const row = page.locator("tr").filter({
-      has: page.locator("td", { hasText: "e2e_test_server" }),
-    })
-    await row.locator('button[name="server-delete-popup"]').click()
-
-    const response = await clickAndWaitForApi(
-      page,
-      'button[name="confirm"]',
-      /\/servers\/\d+(\?|$)/,
-      "DELETE",
     )
     expect(response.status()).toBe(204)
   })
