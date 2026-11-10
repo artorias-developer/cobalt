@@ -16,3 +16,11 @@ class RoomsConstants:
     SERVER_LOGS_KEY: str = "logs:server:{server_id}"
 
     SERVERS_STATES_KEY: str = "servers:states"
+
+
+class ConnectionConstants:
+    """
+    Connection-related constants.
+    """
+    RECONNECT_CLOSE_CODE: int = 4000
+    RECONNECT_CLOSE_REASON: str = "reconnect"

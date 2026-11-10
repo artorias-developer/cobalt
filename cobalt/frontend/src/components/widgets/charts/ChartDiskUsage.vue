@@ -70,7 +70,7 @@
 
 <script setup lang="ts">
 import { useI18n } from "vue-i18n"
-import { ref, computed, onMounted, inject } from "vue"
+import { ref, computed, watch, inject } from "vue"
 import { useNotification } from "@kyvg/vue3-notification"
 
 import { useUserStore } from "@/stores"
@@ -250,11 +250,13 @@ const hasViewAccess = computed((): boolean =>
   userStore.hasPermission(PermissionEnum.DASHBOARD_DISK_VIEW)
 )
 
-onMounted(() => {
-  if (hasViewAccess.value) {
-    fetchDiskMetrics()
-  }
-})
+watch(
+  hasViewAccess,
+  (canView) => {
+    if (canView) fetchDiskMetrics()
+  },
+  { immediate: true }
+)
 </script>
 
 <style scoped lang="scss">

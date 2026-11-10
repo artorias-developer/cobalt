@@ -241,7 +241,7 @@ class RolesService(AbstractRolesService):
                 }
             )
 
-            await self.connections_manager.disconnect(
+            await self.connections_manager.reconnect(
                 connection_id=connection_id
             )
 

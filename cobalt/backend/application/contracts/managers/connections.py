@@ -67,6 +67,23 @@ class AbstractConnectionsManager(ABC):
         ...
 
     @abstractmethod
+    async def reconnect(
+        self,
+        connection_id: int
+    ) -> None:
+        """
+        Closes and unregisters a connection with a close code
+        that tells the client to reconnect immediately.
+
+        Parameters:
+        - connection_id: Connection ID.
+
+        Returns:
+        - None.
+        """
+        ...
+
+    @abstractmethod
     async def get_connections(self) -> Dict[int, Any]:
         """
         Gets all connections.

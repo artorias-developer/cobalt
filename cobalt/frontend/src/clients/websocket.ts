@@ -8,6 +8,18 @@
 import type { IWsClient, MessageHandler } from "@/contracts"
 
 /**
+ * Close code sent by the server when the client must reconnect immediately
+ * (e.g. after the user's role has changed).
+ */
+const RECONNECT_CLOSE_CODE = 4000
+
+/**
+ * Close codes after which the client must not try to reconnect
+ * (e.g. the session is no longer valid).
+ */
+const NO_RECONNECT_CLOSE_CODES = new Set([4401, 4403])
+
+/**
  * WebSocket client implementation using native WebSocket API.
  * Provides:
  * - Automatic reconnection
@@ -23,6 +35,44 @@ export class WebSocketClient implements IWsClient {
   private pendingMessages: Array<{ event: string, data?: Record<string, unknown> }> = []
   private url: string = ""
   private subscriptions: Map<string, Record<string, unknown>> = new Map()
+  private shouldReconnect: boolean = false
+
+  /**
+   * Clears the pending reconnect timer, if any.
+   *
+   * Parameters:
+   * - null.
+   *
+   * Returns:
+   * - void.
+   */
+  private clearReconnectTimer(): void {
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer)
+      this.reconnectTimer = null
+    }
+  }
+
+  /**
+   * Detaches handlers from the current socket and closes it,
+   * so its close event does not schedule a reconnect.
+   *
+   * Parameters:
+   * - null.
+   *
+   * Returns:
+   * - void.
+   */
+  private closeSocket(): void {
+    if (!this.ws) return
+
+    this.ws.onopen = null
+    this.ws.onmessage = null
+    this.ws.onerror = null
+    this.ws.onclose = null
+    this.ws.close()
+    this.ws = null
+  }
 
   /**
    * Connects to a WebSocket server at the given URL.
@@ -34,7 +84,11 @@ export class WebSocketClient implements IWsClient {
    * - void.
    */
   connect(url: string): void {
+    this.clearReconnectTimer()
+    this.closeSocket()
+
     this.url = url
+    this.shouldReconnect = true
     this.ws = new WebSocket(url)
 
     this.ws.onopen = () => {
@@ -70,7 +124,18 @@ export class WebSocketClient implements IWsClient {
 
     this.ws.onclose = (event) => {
       console.log(`WebSocket closed [${event.code}]: ${event.reason}`)
-      this.reconnectTimer = setTimeout(() => this.connect(this.url), this.reconnectTimeout)
+      this.ws = null
+
+      if (!this.shouldReconnect || NO_RECONNECT_CLOSE_CODES.has(event.code)) {
+        this.shouldReconnect = false
+        return
+      }
+
+      const timeout = event.code === RECONNECT_CLOSE_CODE ? 0 : this.reconnectTimeout
+      this.reconnectTimer = setTimeout(() => {
+        this.reconnectTimer = null
+        this.connect(this.url)
+      }, timeout)
     }
   }
 
@@ -110,7 +175,7 @@ export class WebSocketClient implements IWsClient {
 
     if (this.ws?.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(message))
-    } else {
+    } else if (this.shouldReconnect) {
       this.pendingMessages.push({event, data})
     }
   }
@@ -180,27 +245,7 @@ export class WebSocketClient implements IWsClient {
   }
 
   /**
-   * Reconnects to the WebSocket server.
-   * Clears any pending reconnect timer, closes the existing connection,
-   * and immediately initiates a new connection to the same URL.
-   *
-   * Parameters:
-   * - null.
-   *
-   * Returns:
-   * - void.
-   */
-  reconnect(): void {
-    if (this.reconnectTimer) {
-      clearTimeout(this.reconnectTimer)
-      this.reconnectTimer = null
-    }
-    this.ws?.close()
-    this.connect(this.url)
-  }
-
-  /**
-   * Disconnects from the WebSocket server.
+   * Disconnects from the WebSocket server and disables automatic reconnection.
    *
    * Parameters:
    * - null.
@@ -209,10 +254,9 @@ export class WebSocketClient implements IWsClient {
    * - void.
    */
   disconnect(): void {
-    if (this.reconnectTimer) {
-      clearTimeout(this.reconnectTimer)
-      this.reconnectTimer = null
-    }
-    this.ws?.close()
+    this.shouldReconnect = false
+    this.clearReconnectTimer()
+    this.closeSocket()
+    this.pendingMessages = []
   }
 }
