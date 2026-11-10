@@ -47,7 +47,7 @@
           hover-color="red"
           :filled="true"
           align="center"
-          name="server-cancel"
+          name="server-cancel-popup"
           @click="handleCancelServer(row.id)"
         />
         <ButtonGhost
@@ -274,7 +274,12 @@
       </div>
     </template>
   </Popup>
-  <PopupConfirm ref="confirmPopup"/>
+  <PopupConfirm ref="deleteConfirmPopup"/>
+  <PopupConfirm
+    ref="cancelConfirmPopup"
+    :title="$t('servers.list.popups.cancel.title')"
+    :message="$t('servers.list.popups.cancel.message')"
+  />
 </template>
 
 <script setup lang="ts">
@@ -373,7 +378,8 @@ const editServerId = ref<number | null>(null)
 const editServerName = ref<string>("")
 const isServerEditing = ref<boolean>(false)
 
-const confirmPopup = ref<InstanceType<typeof PopupConfirm> | null>(null)
+const deleteConfirmPopup = ref<InstanceType<typeof PopupConfirm> | null>(null)
+const cancelConfirmPopup = ref<InstanceType<typeof PopupConfirm> | null>(null)
 
 const statusMessages: Record<ServerStateEnum, string> = {
   [ServerStateEnum.PENDING]: t("servers.list.state.pending"),
@@ -584,7 +590,7 @@ function handleSearchChange(): void {
  * - void.
  */
 function handleDeleteServer(serverId: number): void {
-  confirmPopup.value?.open(async () => await deleteServer(serverId))
+  deleteConfirmPopup.value?.open(async () => await deleteServer(serverId))
 }
 
 /**
@@ -626,7 +632,7 @@ async function deleteServer(serverId: number): Promise<void> {
  * - void.
  */
 function handleDeleteSelected(): void {
-  confirmPopup.value?.open(async () => await deleteSelected())
+  deleteConfirmPopup.value?.open(async () => await deleteSelected())
 }
 
 /**
@@ -662,6 +668,19 @@ async function deleteSelected(): Promise<void> {
 }
 
 /**
+ * Opens the confirm popup before canceling a running installation or upgrade.
+ *
+ * Parameters:
+ * - serverId: ID of the server to cancel.
+ *
+ * Returns:
+ * - void.
+ */
+function handleCancelServer(serverId: number): void {
+  cancelConfirmPopup.value?.open(async () => await cancelServer(serverId))
+}
+
+/**
  * Cancels a running installation or upgrade of a server.
  * The final state is delivered via WebSocket, so the table is not refetched here.
  *
@@ -671,7 +690,7 @@ async function deleteSelected(): Promise<void> {
  * Returns:
  * - Promise<void>.
  */
-async function handleCancelServer(serverId: number): Promise<void> {
+async function cancelServer(serverId: number): Promise<void> {
   try {
     await httpServersApiService.cancelOne(serverId)
 

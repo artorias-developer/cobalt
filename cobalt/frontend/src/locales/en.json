@@ -245,6 +245,10 @@
         "edit": {
           "title": "Server",
           "description": "Edit server"
+        },
+        "cancel": {
+          "title": "Cancel operation?",
+          "message": "Are you sure you want to cancel the installation or upgrade of this server? The current progress will be lost."
         }
       }
     },
