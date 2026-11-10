@@ -29,7 +29,7 @@ from application.contracts.games import (
     AbstractLoader
 )
 from application.clients.caches.shared import CacheConstants
-from application.clients.containers.shared import ContainersConstants
+from application.clients.containers.shared import ContainerConstants
 from application.managers.connections.shared import RoomsConstants
 from application.dtos import (
     ServerDto,
@@ -627,7 +627,7 @@ class ServersService(AbstractServersService):
             server_id=server_id
         )
 
-        container = ContainersConstants.SERVER_RUNTIME_KEY.format(
+        container = ContainerConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 
@@ -652,7 +652,7 @@ class ServersService(AbstractServersService):
             server_id=server_id
         )
 
-        container = ContainersConstants.SERVER_RUNTIME_KEY.format(
+        container = ContainerConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 
@@ -677,7 +677,7 @@ class ServersService(AbstractServersService):
             server_id=server_id
         )
 
-        container = ContainersConstants.SERVER_RUNTIME_KEY.format(
+        container = ContainerConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 
@@ -704,11 +704,11 @@ class ServersService(AbstractServersService):
             server_id=server_id
         )
 
-        container = ContainersConstants.SERVER_RUNTIME_KEY.format(
+        container = ContainerConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 
-        command = ServerCommand(["sh", "-c", f"echo \"{dto.command}\" > {ContainersConstants.SERVER_FIFO}"])
+        command = ServerCommand(["sh", "-c", f"echo \"{dto.command}\" > {ContainerConstants.SERVER_FIFO}"])
 
         await game_module.container.clients.containers.container_execute(
             container_name=container,
@@ -732,7 +732,7 @@ class ServersService(AbstractServersService):
             server_id=server_id
         )
 
-        container = ContainersConstants.SERVER_RUNTIME_KEY.format(
+        container = ContainerConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 

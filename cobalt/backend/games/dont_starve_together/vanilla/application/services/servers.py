@@ -6,7 +6,7 @@
 from typing import Optional
 
 from application.contracts.games import AbstractServersService
-from application.clients.containers.shared import ContainersConstants
+from application.clients.containers.shared import ContainerConstants
 
 
 class VanillaServersService(AbstractServersService):
@@ -37,7 +37,7 @@ class VanillaServersService(AbstractServersService):
         try:
             port = self.get_available_port()
 
-            container_name = ContainersConstants.SERVER_RUNTIME_KEY.format(
+            container_name = ContainerConstants.SERVER_RUNTIME_KEY.format(
                 server_id=server_id
             )
 

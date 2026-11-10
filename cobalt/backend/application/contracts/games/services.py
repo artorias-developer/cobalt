@@ -24,7 +24,7 @@ from application.contracts.managers import AbstractConnectionsManager
 from application.contracts.clients import AbstractContainersClient
 from application.contracts.services import AbstractServersService as CoreServersService
 from application.contracts.loggers import AbstractLogger
-from application.clients.containers.shared import ContainersConstants
+from application.clients.containers.shared import ContainerConstants
 from application.managers.events.shared import ServerEventEnum
 from application.managers.connections.shared import RoomsConstants
 from application.dtos import ServerUpdateDto
@@ -184,7 +184,7 @@ class AbstractServersService(ABC):
             server_data["version"] = version
 
         if with_container_status:
-            container_name = ContainersConstants.SERVER_RUNTIME_KEY.format(
+            container_name = ContainerConstants.SERVER_RUNTIME_KEY.format(
                 server_id=server_id
             )
 
@@ -477,25 +477,25 @@ class AbstractServersService(ABC):
         if is_steam_server and steam_app_id is None:
             raise ValueError('The "steam_app_id" parameter is required if the value of "is_steam_server" is "True"')
 
-        container_name = ContainersConstants.SERVER_RUNTIME_KEY.format(
+        container_name = ContainerConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 
-        installer_name = ContainersConstants.SERVER_INSTALLER_KEY.format(
-            container_name=container_name
+        installer_name = ContainerConstants.SERVER_INSTALLER_KEY.format(
+            server_id=server_id
         )
 
         host_container_dir = path.join(self.host_containers_dir, container_name)
 
         prepared_image_build_args = {
-            "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
-            "INSTALLATION_DIR": ContainersConstants.SERVER_INSTALLATION_DIR,
+            "SERVER_ROOT": ContainerConstants.SERVER_ROOT,
+            "INSTALLATION_DIR": ContainerConstants.SERVER_INSTALLATION_DIR,
             **({"APP_ID": str(steam_app_id)} if is_steam_server else {}),
             **(image_build_args or {})
         }
 
         prepared_image_labels = {
-            "managed_by": ContainersConstants.MANAGED_BY,
+            "managed_by": ContainerConstants.MANAGED_BY,
             **(image_labels or {})
         }
 
@@ -505,7 +505,7 @@ class AbstractServersService(ABC):
 
         prepared_volumes = {
             host_container_dir: {
-                "bind": ContainersConstants.SERVER_ROOT,
+                "bind": ContainerConstants.SERVER_ROOT,
                 "mode": "rw"
             },
             **(volumes or {})
@@ -517,15 +517,15 @@ class AbstractServersService(ABC):
             prepared_container_file = self._CONTAINER_INSTALLER_FILE
 
         prepared_container_environment = {
-            "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
-            "INSTALLATION_DIR": ContainersConstants.SERVER_INSTALLATION_DIR,
+            "SERVER_ROOT": ContainerConstants.SERVER_ROOT,
+            "INSTALLATION_DIR": ContainerConstants.SERVER_INSTALLATION_DIR,
             **({"APP_ID": str(steam_app_id)} if is_steam_server else {}),
             **(container_environment or {})
         }
 
         prepared_container_labels = {
             "cobalt_server": "true",
-            "managed_by": ContainersConstants.MANAGED_BY,
+            "managed_by": ContainerConstants.MANAGED_BY,
             **(container_labels or {})
         }
 
@@ -654,25 +654,25 @@ class AbstractServersService(ABC):
         if is_steam_server and steam_app_id is None:
             raise ValueError('The "steam_app_id" parameter is required if the value of "is_steam_server" is "True"')
 
-        container_name = ContainersConstants.SERVER_RUNTIME_KEY.format(
+        container_name = ContainerConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 
-        upgrader_name = ContainersConstants.SERVER_UPGRADER_KEY.format(
-            container_name=container_name
+        upgrader_name = ContainerConstants.SERVER_UPGRADER_KEY.format(
+            server_id=server_id
         )
 
         host_container_dir = path.join(self.host_containers_dir, container_name)
 
         prepared_image_build_args = {
-            "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
-            "INSTALLATION_DIR": ContainersConstants.SERVER_INSTALLATION_DIR,
+            "SERVER_ROOT": ContainerConstants.SERVER_ROOT,
+            "INSTALLATION_DIR": ContainerConstants.SERVER_INSTALLATION_DIR,
             **({"APP_ID": str(steam_app_id)} if is_steam_server else {}),
             **(image_build_args or {})
         }
 
         prepared_image_labels = {
-            "managed_by": ContainersConstants.MANAGED_BY,
+            "managed_by": ContainerConstants.MANAGED_BY,
             **(image_labels or {})
         }
 
@@ -682,7 +682,7 @@ class AbstractServersService(ABC):
 
         prepared_volumes = {
             host_container_dir: {
-                "bind": ContainersConstants.SERVER_ROOT,
+                "bind": ContainerConstants.SERVER_ROOT,
                 "mode": "rw"
             },
             **(volumes or {})
@@ -694,15 +694,15 @@ class AbstractServersService(ABC):
             prepared_container_file = self._CONTAINER_UPGRADER_FILE
 
         prepared_container_environment = {
-            "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
-            "INSTALLATION_DIR": ContainersConstants.SERVER_INSTALLATION_DIR,
+            "SERVER_ROOT": ContainerConstants.SERVER_ROOT,
+            "INSTALLATION_DIR": ContainerConstants.SERVER_INSTALLATION_DIR,
             **({"APP_ID": str(steam_app_id)} if is_steam_server else {}),
             **(container_environment or {})
         }
 
         prepared_container_labels = {
             "cobalt_server": "true",
-            "managed_by": ContainersConstants.MANAGED_BY,
+            "managed_by": ContainerConstants.MANAGED_BY,
             **(container_labels or {})
         }
 
@@ -836,19 +836,19 @@ class AbstractServersService(ABC):
         Returns:
         - None.
         """
-        container_name = ContainersConstants.SERVER_RUNTIME_KEY.format(
+        container_name = ContainerConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 
         host_container_dir = path.join(self.host_containers_dir, container_name)
 
         prepared_image_build_args = {
-            "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
+            "SERVER_ROOT": ContainerConstants.SERVER_ROOT,
             **(image_build_args or {})
         }
 
         prepared_image_labels = {
-            "managed_by": ContainersConstants.MANAGED_BY,
+            "managed_by": ContainerConstants.MANAGED_BY,
             **(image_labels or {})
         }
 
@@ -858,7 +858,7 @@ class AbstractServersService(ABC):
 
         prepared_volumes = {
             host_container_dir: {
-                "bind": ContainersConstants.SERVER_ROOT,
+                "bind": ContainerConstants.SERVER_ROOT,
                 "mode": "rw"
             },
             **(volumes or {})
@@ -870,19 +870,19 @@ class AbstractServersService(ABC):
             prepared_container_file = self._CONTAINER_RUNTIME_FILE
 
         prepared_container_environment = {
-            "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
-            "SERVER_FIFO": ContainersConstants.SERVER_FIFO,
+            "SERVER_ROOT": ContainerConstants.SERVER_ROOT,
+            "SERVER_FIFO": ContainerConstants.SERVER_FIFO,
             **(container_environment or {})
         }
 
         prepared_container_labels = {
             "cobalt_server": "true",
-            "managed_by": ContainersConstants.MANAGED_BY,
+            "managed_by": ContainerConstants.MANAGED_BY,
             **(container_labels or {})
         }
 
         prepared_container_kwargs = {
-            "network_mode": ContainersConstants.NETWORK_MODE.format(environment=self.app_environment),
+            "network_mode": ContainerConstants.NETWORK_MODE.format(environment=self.app_environment),
             **({"security_opt": ["seccomp=unconfined"]} if is_steam_server else {}),
             **(container_kwargs or {})
         }
@@ -1065,16 +1065,16 @@ class AbstractServersService(ABC):
         Returns:
         - None.
         """
-        container_name = ContainersConstants.SERVER_RUNTIME_KEY.format(
+        container_name = ContainerConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 
-        installer_name = ContainersConstants.SERVER_INSTALLER_KEY.format(
-            container_name=container_name
+        installer_name = ContainerConstants.SERVER_INSTALLER_KEY.format(
+            server_id=server_id
         )
 
-        upgrader_name = ContainersConstants.SERVER_UPGRADER_KEY.format(
-            container_name=container_name
+        upgrader_name = ContainerConstants.SERVER_UPGRADER_KEY.format(
+            server_id=server_id
         )
 
         for name in (
@@ -1125,12 +1125,8 @@ class AbstractServersService(ABC):
                 with_container_status=True
             )
 
-            container_name = ContainersConstants.SERVER_RUNTIME_KEY.format(
+            upgrader_name = ContainerConstants.SERVER_UPGRADER_KEY.format(
                 server_id=server_id
-            )
-
-            upgrader_name = ContainersConstants.SERVER_UPGRADER_KEY.format(
-                container_name=container_name
             )
 
             await self._cleanup_container_resources(
