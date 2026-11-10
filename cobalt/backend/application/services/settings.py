@@ -347,7 +347,7 @@ class SettingsService(AbstractSettingsService):
         )
 
         if previous_user.settings.language.value != updated_entity.language.value:
-            await self.connections_manager.disconnect(
+            await self.connections_manager.reconnect(
                 connection_id=previous_user.id
             )
 

@@ -20,8 +20,13 @@ import PageRoles from "@/pages/PageRoles.vue"
 import PageSettings from "@/pages/PageSettings.vue"
 import PageNotFound from "@/pages/PageNotFound.vue"
 
-import type { createHttpUsersApiService } from "@/boostrap/factories"
+import type { createHttpUsersApiService, createWebSocketClient } from "@/boostrap/factories"
 import type { setupI18n } from "@/boostrap"
+
+/**
+ * WebSocket server URL.
+ */
+const WS_URL = `wss://${window.location.host}/api/v1/ws`
 
 /**
  * Defines the application's route table, mapping URL paths
@@ -90,10 +95,13 @@ export function setupRouterInstance() {
 /**
  * Sets up the router navigation guard that fetches the current user
  * before each route and redirects to login if the session is invalid.
+ * Also manages the WebSocket connection: it is opened only for an
+ * authenticated user outside the login page and closed on the login page.
  *
  * Parameters:
  * - router: Router instance to attach the guard to.
  * - httpUsersApiService: HTTP Users API service instance.
+ * - wsClient: WebSocket client instance.
  * - i18n: The vue-i18n instance, used for error message translation.
  *
  * Returns:
@@ -102,6 +110,7 @@ export function setupRouterInstance() {
 export function setupRouterGuard(
   router: ReturnType<typeof setupRouterInstance>,
   httpUsersApiService: ReturnType<typeof createHttpUsersApiService>,
+  wsClient: ReturnType<typeof createWebSocketClient>,
   i18n: ReturnType<typeof setupI18n>
 ): void {
   router.beforeEach(async (to, from, next) => {
@@ -118,6 +127,12 @@ export function setupRouterGuard(
           text: error?.response?.data?.message ?? i18n.global.t("auth.user.fetch.error")
         })
       }
+    }
+
+    if (to.name === RouteEnum.LOGIN) {
+      wsClient.disconnect()
+    } else if (userStore.user && !wsClient.isConnected()) {
+      wsClient.connect(WS_URL)
     }
 
     next()
