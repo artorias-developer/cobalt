@@ -289,14 +289,9 @@ class ServersService(AbstractServersService):
             ]
         )
 
-        container_name = ContainersConstants.SERVER_RUNTIME_KEY.format(
-            server_id=created_entity.id
-        )
-
         await self.queue.enqueue(
             loader.servers_service.create,
             server_id=created_entity.id,
-            container_name=container_name,
             version=created_entity.version.value,
             download_link=download_link
         )
@@ -392,14 +387,9 @@ class ServersService(AbstractServersService):
             ]
         )
 
-        container_name = ContainersConstants.SERVER_RUNTIME_KEY.format(
-            server_id=updated_entity.id
-        )
-
         await self.queue.enqueue(
             loader.servers_service.upgrade,
             server_id=updated_entity.id,
-            container_name=container_name,
             version=updated_entity.version.value,
             download_link=download_link
         )
@@ -497,13 +487,9 @@ class ServersService(AbstractServersService):
             server=received_entity
         )
 
-        container_name = ContainersConstants.SERVER_RUNTIME_KEY.format(
-            server_id=received_entity.id
-        )
-
         await self.queue.enqueue(
             loader.servers_service.delete,
-            container_name=container_name
+            server_id=received_entity.id
         )
 
     async def delete_many(
@@ -583,13 +569,9 @@ class ServersService(AbstractServersService):
                 self.logger.warning(f'Loader "{loader_name}" not found')
                 continue
 
-            container_name = ContainersConstants.SERVER_RUNTIME_KEY.format(
-                server_id=entity.id
-            )
-
             await self.queue.enqueue(
                 loader.servers_service.delete,
-                container_name=container_name
+                server_id=entity.id
             )
 
     async def cancel_one(
@@ -623,13 +605,8 @@ class ServersService(AbstractServersService):
             server=received_entity
         )
 
-        container_name = ContainersConstants.SERVER_RUNTIME_KEY.format(
-            server_id=received_entity.id
-        )
-
         await loader.servers_service.cancel(
             server_id=server_id,
-            container_name=container_name,
             state=canceled_state
         )
 
