@@ -5,6 +5,8 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
+import type { ServerStateEntity, WsMessageEntity } from "@/types"
+
 /**
  * Interface for logs WebSocket service operations.
  * Defines contract for managing live log subscriptions.
@@ -20,7 +22,7 @@ export interface IWsServersApiService {
    * Returns:
    * - void.
    */
-  subscribeStates(handler: (states: any) => void): void
+  subscribeStates(handler: (states: WsMessageEntity<ServerStateEntity>) => void): void
 
   /**
    * Unsubscribes from servers states and removes the handler.
@@ -31,5 +33,5 @@ export interface IWsServersApiService {
    * Returns:
    * - void.
    */
-  unsubscribeStates(handler: (states: any) => void): void
+  unsubscribeStates(handler: (states: WsMessageEntity<ServerStateEntity>) => void): void
 }

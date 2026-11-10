@@ -64,7 +64,7 @@ import {
   WS_LOGS_API_SERVICE_KEY
 } from "@/constants"
 import { PermissionEnum } from "@/types"
-import type { BlockMode, ParsedLog } from "@/types"
+import type { BlockMode, ParsedLog, LogEntity, WsMessageEntity } from "@/types"
 
 import Block from "@/components/ui/Block.vue"
 import Header from "@/components/ui/Header.vue"
@@ -262,7 +262,7 @@ function mergeIntoLast(target: ParsedLog[], text: string): void {
  * Returns:
  * - void.
  */
-function appendLogs(target: ParsedLog[], rawLogs: Array<{ message: string }>): void {
+function appendLogs(target: ParsedLog[], rawLogs: LogEntity[]): void {
   for (const log of rawLogs) {
     const parsed = parseLog(log.message, LOG_REGEX)
 
@@ -316,7 +316,7 @@ async function fetchInitialData(): Promise<void> {
  * Returns:
  * - void.
  */
-function handleLogUpdate(message: any): void {
+function handleLogUpdate(message: WsMessageEntity<LogEntity[]>): void {
   appendLogs(parsedLogs.value, message.data)
 
   if (parsedLogs.value.length > props.maxLogs) {

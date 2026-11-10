@@ -304,7 +304,9 @@ import type {
   TableColumn,
   ServersPageRequest,
   RadioOption,
-  SelectOption
+  SelectOption,
+  ServerStateEntity,
+  WsMessageEntity
 } from "@/types"
 
 import Block from "@/components/ui/Block.vue"
@@ -865,7 +867,7 @@ async function openEditServer(serverId: number): Promise<void> {
  * Returns:
  * - void.
  */
-function handleStateUpdate(event: any): void {
+function handleStateUpdate(event: WsMessageEntity<ServerStateEntity>): void {
   if (!pageData.value) return
 
   const server = pageData.value.servers.find(server => server.id === event.data.server_id)

@@ -7,6 +7,7 @@
 
 import type { IWsClient, IWsLogsApiService } from "@/contracts"
 import { LogEventEnum } from "@/types"
+import type { LogEntity, WsMessageEntity, WsServerMessageEntity } from "@/types"
 
 /**
  * WebSocket service for logs events.
@@ -27,7 +28,7 @@ export class WsLogsApiService implements IWsLogsApiService {
    * Returns:
    * - void.
    */
-  subscribeHost(handler: (message: any) => void): void {
+  subscribeHost(handler: (message: WsMessageEntity<LogEntity[]>) => void): void {
     this.client.listen(LogEventEnum.HOST_LOG, handler)
     this.client.subscribe(LogEventEnum.SUBSCRIBE_HOST)
   }
@@ -41,7 +42,7 @@ export class WsLogsApiService implements IWsLogsApiService {
    * Returns:
    * - void.
    */
-  unsubscribeHost(handler: (message: any) => void): void {
+  unsubscribeHost(handler: (message: WsMessageEntity<LogEntity[]>) => void): void {
     this.client.unlisten(LogEventEnum.HOST_LOG, handler)
     this.client.unsubscribe(LogEventEnum.UNSUBSCRIBE_HOST)
   }
@@ -56,7 +57,7 @@ export class WsLogsApiService implements IWsLogsApiService {
    * Returns:
    * - void.
    */
-  subscribeServer(serverId: number, handler: (message: any) => void): void {
+  subscribeServer(serverId: number, handler: (message: WsServerMessageEntity<LogEntity[]>) => void): void {
     this.client.listen(LogEventEnum.SERVER_LOG, handler)
     this.client.subscribe(LogEventEnum.SUBSCRIBE_SERVER, {
       server_id: serverId
@@ -73,7 +74,7 @@ export class WsLogsApiService implements IWsLogsApiService {
    * Returns:
    * - void.
    */
-  unsubscribeServer(serverId: number, handler: (message: any) => void): void {
+  unsubscribeServer(serverId: number, handler: (message: WsServerMessageEntity<LogEntity[]>) => void): void {
     this.client.unlisten(LogEventEnum.SERVER_LOG, handler)
     this.client.unsubscribe(LogEventEnum.UNSUBSCRIBE_SERVER, {
       server_id: serverId
