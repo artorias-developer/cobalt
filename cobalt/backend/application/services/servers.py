@@ -41,7 +41,7 @@ from application.dtos import (
     ServerExecuteDto,
     ServerStatusDto
 )
-from domain.value_objects import ServerCommand
+from domain.value_objects import ServerCommand, Batch
 
 
 class ServersService(AbstractServersService):
@@ -505,8 +505,10 @@ class ServersService(AbstractServersService):
         Returns:
         - None.
         """
+        server_ids_batch = Batch(server_ids)
+
         received_entities = await self.servers_repository.get_many_by_ids(
-            server_ids=server_ids
+            server_ids=server_ids_batch
         )
 
         if not received_entities:
@@ -529,7 +531,7 @@ class ServersService(AbstractServersService):
             raise ConflictError("Some servers are still being upgraded")
 
         await self.servers_repository.delete_many(
-            server_ids=server_ids
+            server_ids=server_ids_batch
         )
 
         patterns_to_delete = [

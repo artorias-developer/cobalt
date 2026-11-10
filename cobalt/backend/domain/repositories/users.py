@@ -6,6 +6,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List, Any
 
+from domain.value_objects import Batch
 from domain.entities import (
     UserEntity,
     UsersPageEntity,
@@ -131,14 +132,14 @@ class AbstractUsersRepository(ABC):
     @abstractmethod
     async def delete_many(
         self,
-        user_ids: List[int],
+        user_ids: Batch[int],
         session: Optional[Any] = None
     ) -> List[UserEntity]:
         """
         Deletes multiple existing users.
 
         Parameters:
-        - user_ids: List of user IDs.
+        - user_ids: Batch of user IDs.
         - session: Session object.
 
         Returns:

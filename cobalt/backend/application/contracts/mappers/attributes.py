@@ -6,6 +6,7 @@
 from abc import ABC, abstractmethod
 from typing import List
 
+from domain.value_objects import Batch
 from domain.entities import (
     AttributeEntity,
     AttributesPageEntity,
@@ -111,7 +112,7 @@ class AbstractAttributesServiceMapper(ABC):
     def create_dtos_to_entities(
         self,
         dtos: List[AttributeCreateDto]
-    ) -> List[AttributeCreateEntity]:
+    ) -> Batch[AttributeCreateEntity]:
         """
         Converts AttributeCreateDto objects to AttributeCreateEntity objects.
 
@@ -119,7 +120,7 @@ class AbstractAttributesServiceMapper(ABC):
         - dtos: List of AttributeCreateDto objects.
 
         Returns:
-        - List: List of AttributeCreateEntity objects.
+        - Batch: Batch of AttributeCreateEntity objects.
         """
         ...
 
@@ -143,7 +144,7 @@ class AbstractAttributesServiceMapper(ABC):
     def update_dtos_to_entities(
         self,
         dtos: List[AttributeUpdateDto]
-    ) -> List[AttributeUpdateEntity]:
+    ) -> Batch[AttributeUpdateEntity]:
         """
         Converts AttributeUpdateDto objects to AttributeUpdateEntity objects.
 
@@ -151,6 +152,6 @@ class AbstractAttributesServiceMapper(ABC):
         - dtos: List of AttributeUpdateDto objects.
 
         Returns:
-        - List: List of AttributeUpdateEntity objects.
+        - Batch: Batch of AttributeUpdateEntity objects.
         """
         ...

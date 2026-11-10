@@ -13,6 +13,7 @@ from domain.exceptions import (
     UnexpectedError,
     ConflictError
 )
+from domain.value_objects import Batch
 from domain.entities import (
     RoleEntity,
     RolesPageEntity,
@@ -316,14 +317,14 @@ class RolesRepository(AbstractRolesRepository, BaseRepository):
 
     async def delete_many(
         self,
-        role_ids: List[int],
+        role_ids: Batch[int],
         session: Optional[AsyncSession] = None
     ) -> List[RoleEntity]:
         """
         Deletes multiple existing roles.
 
         Parameters:
-        - role_ids: List of role IDs.
+        - role_ids: Batch of role IDs.
         - session: AsyncSession object.
 
         Returns:
@@ -335,7 +336,7 @@ class RolesRepository(AbstractRolesRepository, BaseRepository):
             stmt = delete(
                 RoleModel
             ).where(
-                RoleModel.id.in_(role_ids)
+                RoleModel.id.in_(role_ids.value)
             ).returning(
                 RoleModel
             )

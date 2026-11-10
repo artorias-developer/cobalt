@@ -8,7 +8,8 @@ from typing import List
 from domain.value_objects import (
     AttributeKey,
     Search,
-    PageLimit
+    PageLimit,
+    Batch
 )
 from domain.entities import (
     AttributeEntity,
@@ -136,7 +137,7 @@ class AttributesServiceMapper(AbstractAttributesServiceMapper):
     def create_dtos_to_entities(
         self,
         dtos: List[AttributeCreateDto]
-    ) -> List[AttributeCreateEntity]:
+    ) -> Batch[AttributeCreateEntity]:
         """
         Converts AttributeCreateDto objects to AttributeCreateEntity objects.
 
@@ -144,12 +145,12 @@ class AttributesServiceMapper(AbstractAttributesServiceMapper):
         - dtos: List of AttributeCreateDto objects.
 
         Returns:
-        - List: List of AttributeCreateEntity objects.
+        - Batch: Batch of AttributeCreateEntity objects.
         """
-        return [
+        return Batch([
             self.create_dto_to_entity(dto)
             for dto in dtos
-        ]
+        ])
 
     def update_dto_to_entity(
         self,
@@ -173,7 +174,7 @@ class AttributesServiceMapper(AbstractAttributesServiceMapper):
     def update_dtos_to_entities(
         self,
         dtos: List[AttributeUpdateDto]
-    ) -> List[AttributeUpdateEntity]:
+    ) -> Batch[AttributeUpdateEntity]:
         """
         Converts AttributeUpdateDto objects to AttributeUpdateEntity objects.
 
@@ -181,9 +182,9 @@ class AttributesServiceMapper(AbstractAttributesServiceMapper):
         - dtos: List of AttributeUpdateDto objects.
 
         Returns:
-        - List: List of AttributeUpdateEntity objects.
+        - Batch: Batch of AttributeUpdateEntity objects.
         """
-        return [
+        return Batch([
             self.update_dto_to_entity(dto)
             for dto in dtos
-        ]
+        ])
