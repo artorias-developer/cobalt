@@ -82,6 +82,7 @@ import {
   WS_LOGS_API_SERVICE_KEY
 } from "@/constants"
 import { PermissionEnum } from "@/types"
+import type { LogEntity, WsServerMessageEntity } from "@/types"
 
 import Block from "@/components/ui/Block.vue"
 import Header from "@/components/ui/Header.vue"
@@ -245,7 +246,7 @@ function mergeIntoLast(target: ServerLog[], text: string): void {
  * Returns:
  * - void.
  */
-function appendLogs(target: ServerLog[], rawLogs: Array<{ message: string }>): void {
+function appendLogs(target: ServerLog[], rawLogs: LogEntity[]): void {
   for (const log of rawLogs) {
     const parsed = parseLog(log.message)
 
@@ -300,7 +301,7 @@ async function fetchInitialData(): Promise<void> {
  * Returns:
  * - void.
  */
-function handleLogUpdate(message: any): void {
+function handleLogUpdate(message: WsServerMessageEntity<LogEntity[]>): void {
   if (message.server_id !== props.serverId) return
 
   appendLogs(parsedLogs.value, message.data)

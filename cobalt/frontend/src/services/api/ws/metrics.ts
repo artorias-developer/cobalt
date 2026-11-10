@@ -7,6 +7,7 @@
 
 import type { IWsClient, IWsMetricsApiService } from "@/contracts"
 import { MetricEventEnum } from "@/types"
+import type { MetricEntity, WsMessageEntity, WsServerMessageEntity } from "@/types"
 
 /**
  * WebSocket service for metrics events.
@@ -27,7 +28,7 @@ export class WsMetricsApiService implements IWsMetricsApiService {
    * Returns:
    * - void.
    */
-  subscribeHostCpu(handler: (message: any) => void): void {
+  subscribeHostCpu(handler: (message: WsMessageEntity<MetricEntity>) => void): void {
     this.client.listen(MetricEventEnum.HOST_CPU_METRIC, handler)
     this.client.subscribe(MetricEventEnum.SUBSCRIBE_HOST_CPU)
   }
@@ -41,7 +42,7 @@ export class WsMetricsApiService implements IWsMetricsApiService {
    * Returns:
    * - void.
    */
-  unsubscribeHostCpu(handler: (message: any) => void): void {
+  unsubscribeHostCpu(handler: (message: WsMessageEntity<MetricEntity>) => void): void {
     this.client.unlisten(MetricEventEnum.HOST_CPU_METRIC, handler)
     this.client.unsubscribe(MetricEventEnum.UNSUBSCRIBE_HOST_CPU)
   }
@@ -55,7 +56,7 @@ export class WsMetricsApiService implements IWsMetricsApiService {
    * Returns:
    * - void.
    */
-  subscribeHostRam(handler: (message: any) => void): void {
+  subscribeHostRam(handler: (message: WsMessageEntity<MetricEntity>) => void): void {
     this.client.listen(MetricEventEnum.HOST_RAM_METRIC, handler)
     this.client.subscribe(MetricEventEnum.SUBSCRIBE_HOST_RAM)
   }
@@ -69,7 +70,7 @@ export class WsMetricsApiService implements IWsMetricsApiService {
    * Returns:
    * - void.
    */
-  unsubscribeHostRam(handler: (message: any) => void): void {
+  unsubscribeHostRam(handler: (message: WsMessageEntity<MetricEntity>) => void): void {
     this.client.unlisten(MetricEventEnum.HOST_RAM_METRIC, handler)
     this.client.unsubscribe(MetricEventEnum.UNSUBSCRIBE_HOST_RAM)
   }
@@ -84,7 +85,7 @@ export class WsMetricsApiService implements IWsMetricsApiService {
    * Returns:
    * - void.
    */
-  subscribeServerCpu(serverId: number, handler: (message: any) => void): void {
+  subscribeServerCpu(serverId: number, handler: (message: WsServerMessageEntity<MetricEntity>) => void): void {
     this.client.listen(MetricEventEnum.SERVER_CPU_METRIC, handler)
     this.client.subscribe(MetricEventEnum.SUBSCRIBE_SERVER_CPU, {
       server_id: serverId
@@ -101,7 +102,7 @@ export class WsMetricsApiService implements IWsMetricsApiService {
    * Returns:
    * - void.
    */
-  unsubscribeServerCpu(serverId: number, handler: (message: any) => void): void {
+  unsubscribeServerCpu(serverId: number, handler: (message: WsServerMessageEntity<MetricEntity>) => void): void {
     this.client.unlisten(MetricEventEnum.SERVER_CPU_METRIC, handler)
     this.client.unsubscribe(MetricEventEnum.UNSUBSCRIBE_SERVER_CPU, {
       server_id: serverId
@@ -118,7 +119,7 @@ export class WsMetricsApiService implements IWsMetricsApiService {
    * Returns:
    * - void.
    */
-  subscribeServerRam(serverId: number, handler: (message: any) => void): void {
+  subscribeServerRam(serverId: number, handler: (message: WsServerMessageEntity<MetricEntity>) => void): void {
     this.client.listen(MetricEventEnum.SERVER_RAM_METRIC, handler)
     this.client.subscribe(MetricEventEnum.SUBSCRIBE_SERVER_RAM, {
       server_id: serverId
@@ -135,7 +136,7 @@ export class WsMetricsApiService implements IWsMetricsApiService {
    * Returns:
    * - void.
    */
-  unsubscribeServerRam(serverId: number, handler: (message: any) => void): void {
+  unsubscribeServerRam(serverId: number, handler: (message: WsServerMessageEntity<MetricEntity>) => void): void {
     this.client.unlisten(MetricEventEnum.SERVER_RAM_METRIC, handler)
     this.client.unsubscribe(MetricEventEnum.UNSUBSCRIBE_SERVER_RAM, {
       server_id: serverId

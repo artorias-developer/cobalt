@@ -20,9 +20,9 @@ export class WebSocketClient implements IWsClient {
   private handlers: Map<string, Set<MessageHandler>> = new Map()
   private reconnectTimeout: number = 3000
   private reconnectTimer: any = null
-  private pendingMessages: Array<{ event: string, data?: any }> = []
+  private pendingMessages: Array<{ event: string, data?: Record<string, unknown> }> = []
   private url: string = ""
-  private subscriptions: Map<string, any> = new Map()
+  private subscriptions: Map<string, Record<string, unknown>> = new Map()
 
   /**
    * Connects to a WebSocket server at the given URL.
@@ -101,7 +101,7 @@ export class WebSocketClient implements IWsClient {
    * Returns:
    * - void.
    */
-  send(event: string, data?: any): void {
+  send(event: string, data?: Record<string, unknown>): void {
     const message = {
       type: "action",
       event: event,
@@ -125,7 +125,7 @@ export class WebSocketClient implements IWsClient {
    * Returns:
    * - void.
    */
-  subscribe(event: string, data?: any): void {
+  subscribe(event: string, data?: Record<string, unknown>): void {
     this.subscriptions.set(event, data || {})
     this.send(event, data)
   }
@@ -140,7 +140,7 @@ export class WebSocketClient implements IWsClient {
    * Returns:
    * - void.
    */
-  unsubscribe(event: string, data?: any): void {
+  unsubscribe(event: string, data?: Record<string, unknown>): void {
     this.subscriptions.delete(event)
     this.send(event, data)
   }
@@ -155,7 +155,7 @@ export class WebSocketClient implements IWsClient {
    * Returns:
    * - void.
    */
-  listen(event: string, handler: MessageHandler): void {
+  listen<T>(event: string, handler: MessageHandler<T>): void {
     if (!this.handlers.has(event)) {
       this.handlers.set(event, new Set())
     }
@@ -172,7 +172,7 @@ export class WebSocketClient implements IWsClient {
    * Returns:
    * - void.
    */
-  unlisten(event: string, handler: MessageHandler): void {
+  unlisten<T>(event: string, handler: MessageHandler<T>): void {
     const handlers = this.handlers.get(event)
     if (handlers) {
       handlers.delete(handler)

@@ -43,7 +43,14 @@ import { useNotification } from "@kyvg/vue3-notification"
 import { useUserStore } from "@/stores"
 import { LOCALE_HELPER_KEY, WS_METRICS_API_SERVICE_KEY, HTTP_METRICS_API_SERVICE_KEY } from "@/constants"
 import { PermissionEnum } from "@/types"
-import type { UniversalBlockMode, Color, BlockHeaderSize } from "@/types"
+import type {
+  UniversalBlockMode,
+  Color,
+  BlockHeaderSize,
+  MetricEntity,
+  WsMessageEntity,
+  WsServerMessageEntity
+} from "@/types"
 
 import Block from "@/components/ui/Block.vue"
 import Header from "@/components/ui/Header.vue"
@@ -127,8 +134,8 @@ async function fetchInitialData(): Promise<void> {
  * Returns:
  * - void.
  */
-function handleMetricUpdate(metric: any): void {
-  if (props.mode === "server" && metric.server_id !== props.serverId) return
+function handleMetricUpdate(metric: WsMessageEntity<MetricEntity> | WsServerMessageEntity<MetricEntity>): void {
+  if (props.mode === "server" && "server_id" in metric && metric.server_id !== props.serverId) return
 
   const formattedDate = localeHelper.formatTime(metric.data.date)
   chartRef.value?.addPoint(formattedDate, metric.data.value)

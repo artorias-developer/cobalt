@@ -44,3 +44,13 @@ export interface ServerStatusEntity {
   running: boolean
   port: number | null
 }
+
+/**
+ * Represents a server state update object.
+ */
+export interface ServerStateEntity {
+  server_id: number
+  state?: ServerStateEnum
+  version?: string
+  running?: boolean
+}

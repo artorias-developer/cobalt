@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-type MessageHandler = (data: any) => void
+type MessageHandler<T = any> = (message: T) => void
 
 /**
  * Interface for WebSocket client operations.
@@ -45,7 +45,7 @@ export interface IWsClient {
    * Returns:
    * - void.
    */
-  send(event: string, data?: any): void
+  send(event: string, data?: Record<string, unknown>): void
 
   /**
    * Subscribes to a server-side event and sends initial data if provided.
@@ -57,7 +57,7 @@ export interface IWsClient {
    * Returns:
    * - void.
    */
-  subscribe(event: string, data?: any): void
+  subscribe(event: string, data?: Record<string, unknown>): void
 
   /**
    * Unsubscribes from a server-side event.
@@ -69,7 +69,7 @@ export interface IWsClient {
    * Returns:
    * - void.
    */
-  unsubscribe(event: string, data?: any): void
+  unsubscribe(event: string, data?: Record<string, unknown>): void
 
   /**
    * Registers a handler function for a specific event.
@@ -81,7 +81,7 @@ export interface IWsClient {
    * Returns:
    * - void.
    */
-  listen(event: string, handler: MessageHandler): void
+  listen<T>(event: string, handler: MessageHandler<T>): void
 
   /**
    * Removes a previously registered handler for a specific event.
@@ -93,7 +93,7 @@ export interface IWsClient {
    * Returns:
    * - void.
    */
-  unlisten(event: string, handler: MessageHandler): void
+  unlisten<T>(event: string, handler: MessageHandler<T>): void
 
   /**
    * Disconnects from the WebSocket server.
