@@ -340,6 +340,9 @@ class UsersRepository(AbstractUsersRepository, BaseRepository):
                     operation=RepositoryOperationsEnum.UPDATE
                 )
 
+            if entity.role_id is not None:
+                await session.refresh(record, attribute_names=["role"])
+
             return self.users_mapper.model_to_entity(
                 model=record
             )

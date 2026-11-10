@@ -11,3 +11,4 @@ class RoleEventEnum(StrEnum):
     WebSocket roles events enum.
     """
     ROLE_UPDATE = "role_update"
+    USER_ROLE_UPDATE = "user_role_update"
