@@ -37,7 +37,7 @@
 
 <script setup lang="ts">
 import { useI18n } from "vue-i18n"
-import { ref, computed, onMounted, onUnmounted, inject } from "vue"
+import { ref, computed, watch, onMounted, onUnmounted, inject } from "vue"
 import { useNotification } from "@kyvg/vue3-notification"
 
 import { useUserStore } from "@/stores"
@@ -156,25 +156,74 @@ const hasCpuViewAccess = computed((): boolean =>
     : userStore.hasPermission(PermissionEnum.DASHBOARD_CPU_VIEW)
 )
 
-onMounted(() => {
-  if (props.mode !== "empty" && hasCpuViewAccess.value) {
-    fetchInitialData()
+let isSubscribed = false
 
-    if (props.mode === "server") {
-      wsMetricsApiService.subscribeServerCpu(props.serverId!, handleMetricUpdate)
-    } else {
-      wsMetricsApiService.subscribeHostCpu(handleMetricUpdate)
-    }
+/**
+ * Loads initial CPU data and subscribes to live updates.
+ *
+ * Parameters:
+ * - null.
+ *
+ * Returns:
+ * - void.
+ */
+function show(): void {
+  if (isSubscribed) return
+  isSubscribed = true
+
+  fetchInitialData()
+
+  if (props.mode === "server") {
+    wsMetricsApiService.subscribeServerCpu(props.serverId!, handleMetricUpdate)
+  } else {
+    wsMetricsApiService.subscribeHostCpu(handleMetricUpdate)
   }
-})
+}
 
-onUnmounted(() => {
+/**
+ * Unsubscribes from live CPU updates.
+ *
+ * Parameters:
+ * - null.
+ *
+ * Returns:
+ * - void.
+ */
+function hide(): void {
+  if (!isSubscribed) return
+  isSubscribed = false
+
   if (props.mode === "server") {
     wsMetricsApiService.unsubscribeServerCpu(props.serverId!, handleMetricUpdate)
   } else {
     wsMetricsApiService.unsubscribeHostCpu(handleMetricUpdate)
   }
+}
+
+/**
+ * Checks whether the chart should load data and receive live updates.
+ *
+ * Parameters:
+ * - null.
+ *
+ * Returns:
+ * - boolean: `true` if the chart is active and the user has access, `false` otherwise.
+ */
+const canView = computed((): boolean =>
+  props.mode !== "empty" && hasCpuViewAccess.value
+)
+
+watch(
+  canView,
+  (value) => value ? show() : hide(),
+  { flush: "post" }
+)
+
+onMounted(() => {
+  if (canView.value) show()
 })
+
+onUnmounted(hide)
 </script>
 
 <style scoped lang="scss">
