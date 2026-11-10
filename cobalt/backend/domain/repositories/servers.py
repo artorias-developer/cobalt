@@ -6,6 +6,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List, Any
 
+from domain.value_objects import Batch
 from domain.entities import (
     ServerEntity,
     ServersPageEntity,
@@ -59,14 +60,14 @@ class AbstractServersRepository(ABC):
     @abstractmethod
     async def get_many_by_ids(
         self,
-        server_ids: List[int],
+        server_ids: Batch[int],
         session: Optional[Any] = None
     ) -> List[ServerEntity]:
         """
         Gets multiple existing servers by IDs.
 
         Parameters:
-        - server_ids: List of server IDs.
+        - server_ids: Batch of server IDs.
         - session: Session object.
 
         Returns:
@@ -131,14 +132,14 @@ class AbstractServersRepository(ABC):
     @abstractmethod
     async def delete_many(
         self,
-        server_ids: List[int],
+        server_ids: Batch[int],
         session: Optional[Any] = None
     ) -> List[ServerEntity]:
         """
         Deletes multiple existing servers.
 
         Parameters:
-        - server_ids: List of server IDs.
+        - server_ids: Batch of server IDs.
         - session: Session object.
 
         Returns:

@@ -29,7 +29,7 @@ from application.contracts.games import (
     AbstractLoader
 )
 from application.clients.caches.shared import CacheConstants
-from application.clients.containers.shared import ContainersConstants
+from application.clients.containers.shared import ContainerConstants
 from application.managers.connections.shared import RoomsConstants
 from application.dtos import (
     ServerDto,
@@ -41,7 +41,7 @@ from application.dtos import (
     ServerExecuteDto,
     ServerStatusDto
 )
-from domain.value_objects import ServerCommand
+from domain.value_objects import ServerCommand, Batch
 
 
 class ServersService(AbstractServersService):
@@ -289,14 +289,9 @@ class ServersService(AbstractServersService):
             ]
         )
 
-        container_name = ContainersConstants.SERVER_RUNTIME_KEY.format(
-            server_id=created_entity.id
-        )
-
         await self.queue.enqueue(
             loader.servers_service.create,
             server_id=created_entity.id,
-            container_name=container_name,
             version=created_entity.version.value,
             download_link=download_link
         )
@@ -392,14 +387,9 @@ class ServersService(AbstractServersService):
             ]
         )
 
-        container_name = ContainersConstants.SERVER_RUNTIME_KEY.format(
-            server_id=updated_entity.id
-        )
-
         await self.queue.enqueue(
             loader.servers_service.upgrade,
             server_id=updated_entity.id,
-            container_name=container_name,
             version=updated_entity.version.value,
             download_link=download_link
         )
@@ -497,13 +487,9 @@ class ServersService(AbstractServersService):
             server=received_entity
         )
 
-        container_name = ContainersConstants.SERVER_RUNTIME_KEY.format(
-            server_id=received_entity.id
-        )
-
         await self.queue.enqueue(
             loader.servers_service.delete,
-            container_name=container_name
+            server_id=received_entity.id
         )
 
     async def delete_many(
@@ -519,8 +505,10 @@ class ServersService(AbstractServersService):
         Returns:
         - None.
         """
+        server_ids_batch = Batch(server_ids)
+
         received_entities = await self.servers_repository.get_many_by_ids(
-            server_ids=server_ids
+            server_ids=server_ids_batch
         )
 
         if not received_entities:
@@ -543,7 +531,7 @@ class ServersService(AbstractServersService):
             raise ConflictError("Some servers are still being upgraded")
 
         await self.servers_repository.delete_many(
-            server_ids=server_ids
+            server_ids=server_ids_batch
         )
 
         patterns_to_delete = [
@@ -583,13 +571,9 @@ class ServersService(AbstractServersService):
                 self.logger.warning(f'Loader "{loader_name}" not found')
                 continue
 
-            container_name = ContainersConstants.SERVER_RUNTIME_KEY.format(
-                server_id=entity.id
-            )
-
             await self.queue.enqueue(
                 loader.servers_service.delete,
-                container_name=container_name
+                server_id=entity.id
             )
 
     async def cancel_one(
@@ -623,13 +607,8 @@ class ServersService(AbstractServersService):
             server=received_entity
         )
 
-        container_name = ContainersConstants.SERVER_RUNTIME_KEY.format(
-            server_id=received_entity.id
-        )
-
         await loader.servers_service.cancel(
             server_id=server_id,
-            container_name=container_name,
             state=canceled_state
         )
 
@@ -650,7 +629,7 @@ class ServersService(AbstractServersService):
             server_id=server_id
         )
 
-        container = ContainersConstants.SERVER_RUNTIME_KEY.format(
+        container = ContainerConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 
@@ -675,7 +654,7 @@ class ServersService(AbstractServersService):
             server_id=server_id
         )
 
-        container = ContainersConstants.SERVER_RUNTIME_KEY.format(
+        container = ContainerConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 
@@ -700,7 +679,7 @@ class ServersService(AbstractServersService):
             server_id=server_id
         )
 
-        container = ContainersConstants.SERVER_RUNTIME_KEY.format(
+        container = ContainerConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 
@@ -727,11 +706,11 @@ class ServersService(AbstractServersService):
             server_id=server_id
         )
 
-        container = ContainersConstants.SERVER_RUNTIME_KEY.format(
+        container = ContainerConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 
-        command = ServerCommand(["sh", "-c", f"echo \"{dto.command}\" > {ContainersConstants.SERVER_FIFO}"])
+        command = ServerCommand(["sh", "-c", f"echo \"{dto.command}\" > {ContainerConstants.SERVER_FIFO}"])
 
         await game_module.container.clients.containers.container_execute(
             container_name=container,
@@ -755,7 +734,7 @@ class ServersService(AbstractServersService):
             server_id=server_id
         )
 
-        container = ContainersConstants.SERVER_RUNTIME_KEY.format(
+        container = ContainerConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 

@@ -28,7 +28,7 @@ from application.contracts.services import (
 )
 from application.contracts.mappers import AbstractSettingsServiceMapper
 from application.clients.caches.shared import CacheConstants
-from application.clients.containers.shared import ContainersConstants
+from application.clients.containers.shared import ContainerConstants
 from application.dtos import (
     SettingsDto,
     SettingsUpdateDto,
@@ -189,7 +189,7 @@ class SettingsService(AbstractSettingsService):
             all_containers=True,
             filters={
                 "label": [
-                    f"managed_by={ContainersConstants.MANAGED_BY}",
+                    f"managed_by={ContainerConstants.MANAGED_BY}",
                     "cobalt_server=true"
                 ]
             }
@@ -264,7 +264,7 @@ class SettingsService(AbstractSettingsService):
             step=self.containers_client.image_prune(
                 filters={
                     "label": [
-                        f"managed_by={ContainersConstants.MANAGED_BY}"
+                        f"managed_by={ContainerConstants.MANAGED_BY}"
                     ],
                     "dangling": [
                         "false"
@@ -278,7 +278,7 @@ class SettingsService(AbstractSettingsService):
             step=self.containers_client.volume_prune(
                 filters={
                     "label": [
-                        f"managed_by={ContainersConstants.MANAGED_BY}"
+                        f"managed_by={ContainerConstants.MANAGED_BY}"
                     ],
                     "all": [
                         "true"
@@ -396,7 +396,7 @@ class SettingsService(AbstractSettingsService):
             raise ConflictError("Cannot clear containers while servers are being upgraded")
 
         server_container_names = [
-            ContainersConstants.SERVER_RUNTIME_KEY.format(
+            ContainerConstants.SERVER_RUNTIME_KEY.format(
                 server_id=server.id
             )
             for server in servers

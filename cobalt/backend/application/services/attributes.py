@@ -11,6 +11,7 @@ from domain.exceptions import (
     NotFoundError,
     ValidationError
 )
+from domain.value_objects import Batch
 from domain.repositories import AbstractAttributesRepository
 from application.contracts.clients import AbstractCacheClient
 from application.contracts.services import AbstractAttributesService
@@ -419,7 +420,7 @@ class AttributesService(AbstractAttributesService):
         """
         deleted_entities = await self.attributes_repository.delete_many(
             server_id=server_id,
-            attribute_ids=attribute_ids
+            attribute_ids=Batch(attribute_ids)
         )
 
         if not deleted_entities:

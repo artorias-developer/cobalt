@@ -17,7 +17,7 @@ from application.contracts.games import AbstractGameModule
 from application.contracts.mappers import AbstractLogsServiceMapper
 from application.contracts.clients import AbstractContainersClient
 from application.contracts.managers import AbstractConnectionsManager
-from application.clients.containers.shared import ContainersConstants
+from application.clients.containers.shared import ContainerConstants
 from application.managers.connections.shared import RoomsConstants
 from application.managers.events.shared import LogEventEnum
 from application.dtos import (
@@ -365,7 +365,7 @@ class LogsService(AbstractLogsService):
         if not server:
             raise NotFoundError("Server with ID {server_id} not found", server_id=server_id)
 
-        container_name = ContainersConstants.SERVER_RUNTIME_KEY.format(
+        container_name = ContainerConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 
@@ -440,7 +440,7 @@ class LogsService(AbstractLogsService):
             server_id=dto.server_id
         )
 
-        container_name = ContainersConstants.SERVER_RUNTIME_KEY.format(
+        container_name = ContainerConstants.SERVER_RUNTIME_KEY.format(
             server_id=dto.server_id
         )
 

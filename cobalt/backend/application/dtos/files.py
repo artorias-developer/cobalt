@@ -45,6 +45,7 @@ class FilesMoveDto(BaseDto):
 class FileRenameDto(BaseDto):
     path: str
     name: str
+    overwrite: bool = False
 
 class FilesDuplicateDto(BaseDto):
     paths: List[str]

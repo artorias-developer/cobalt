@@ -19,7 +19,7 @@ from domain.exceptions import (
 )
 from application.contracts.managers import AbstractArchivesManager
 from application.contracts.services import AbstractFilesService
-from application.clients.containers.shared import ContainersConstants
+from application.clients.containers.shared import ContainerConstants
 from application.dtos import (
     FileDto,
     FilesListDto,
@@ -68,7 +68,7 @@ class FilesService(AbstractFilesService):
         Returns:
         - Path: Resolved absolute root path.
         """
-        container_name = ContainersConstants.SERVER_RUNTIME_KEY.format(
+        container_name = ContainerConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 

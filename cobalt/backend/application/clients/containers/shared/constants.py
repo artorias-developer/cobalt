@@ -3,13 +3,13 @@
 #  Repository: https://github.com/artorias-developer/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-class ContainersConstants:
+class ContainerConstants:
     """
-    Containers-related constants.
+    Container-related constants.
     """
     SERVER_RUNTIME_KEY: str = "cobalt_server_{server_id}"
-    SERVER_INSTALLER_KEY: str = "{container_name}_installer"
-    SERVER_UPGRADER_KEY: str = "{container_name}_upgrader"
+    SERVER_INSTALLER_KEY: str = "cobalt_server_{server_id}_installer"
+    SERVER_UPGRADER_KEY: str = "cobalt_server_{server_id}_upgrader"
 
     MANAGED_BY: str = "cobalt"
 

@@ -11,7 +11,7 @@ from domain.exceptions import (
     NotFoundError,
     AuthenticationError
 )
-from domain.value_objects import Password
+from domain.value_objects import Password, Batch
 from domain.repositories import AbstractUsersRepository
 from application.contracts.clients import AbstractCacheClient
 from application.contracts.services import (
@@ -375,7 +375,7 @@ class UsersService(AbstractUsersService):
         - None.
         """
         deleted_entities = await self.users_repository.delete_many(
-            user_ids=user_ids
+            user_ids=Batch(user_ids)
         )
 
         if not deleted_entities:

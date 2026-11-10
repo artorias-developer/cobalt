@@ -13,7 +13,8 @@ from .loaders import (
 from .network import IpAddress
 from .pagination import (
     Search,
-    PageLimit
+    PageLimit,
+    Batch
 )
 from .roles import RoleName
 from .security import (
@@ -30,6 +31,7 @@ from .servers import (
 __all__ = [
     "AbstractValueObject",
     "AttributeKey",
+    "Batch",
     "GameName",
     "LoaderName",
     "LoaderVersion",

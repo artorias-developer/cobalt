@@ -10,6 +10,7 @@ from sqlalchemy.orm import joinedload, selectinload
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
 
+from domain.value_objects import Batch
 from domain.entities import (
     ServerEntity,
     ServersPageEntity,
@@ -199,14 +200,14 @@ class ServersRepository(AbstractServersRepository, BaseRepository):
 
     async def get_many_by_ids(
         self,
-        server_ids: List[int],
+        server_ids: Batch[int],
         session: Optional[AsyncSession] = None
     ) -> List[ServerEntity]:
         """
         Gets multiple existing servers by IDs.
 
         Parameters:
-        - server_ids: List of server IDs.
+        - server_ids: Batch of server IDs.
         - session: AsyncSession object.
 
         Returns:
@@ -220,7 +221,7 @@ class ServersRepository(AbstractServersRepository, BaseRepository):
                 joinedload(ServerModel.loader),
                 selectinload(ServerModel.attributes)
             ).where(
-                ServerModel.id.in_(server_ids)
+                ServerModel.id.in_(server_ids.value)
             )
 
             result = await session.execute(stmt)
@@ -396,14 +397,14 @@ class ServersRepository(AbstractServersRepository, BaseRepository):
 
     async def delete_many(
         self,
-        server_ids: List[int],
+        server_ids: Batch[int],
         session: Optional[AsyncSession] = None
     ) -> List[ServerEntity]:
         """
         Deletes multiple existing servers.
 
         Parameters:
-        - server_ids: List of server IDs.
+        - server_ids: Batch of server IDs.
         - session: AsyncSession object.
 
         Returns:
@@ -419,7 +420,7 @@ class ServersRepository(AbstractServersRepository, BaseRepository):
                 joinedload(ServerModel.loader),
                 selectinload(ServerModel.attributes)
             ).where(
-                ServerModel.id.in_(server_ids)
+                ServerModel.id.in_(server_ids.value)
             )
 
             result = await session.execute(stmt)
@@ -432,7 +433,7 @@ class ServersRepository(AbstractServersRepository, BaseRepository):
             stmt = delete(
                 ServerModel
             ).where(
-                ServerModel.id.in_(server_ids)
+                ServerModel.id.in_(server_ids.value)
             )
 
             await session.execute(stmt)

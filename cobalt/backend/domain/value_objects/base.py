@@ -6,7 +6,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from re import Pattern
-from typing import Optional, TypeVar
+from typing import Optional, TypeVar, Sized
 
 from domain.exceptions import ValidationError
 
@@ -51,6 +51,35 @@ class AbstractValueObject(ABC):
                 '"{value}" must be at most {max_length} characters',
                 value=value,
                 max_length=max_length
+            )
+
+    @staticmethod
+    def _validate_size(
+        value: Sized,
+        min_size: Optional[int] = None,
+        max_size: Optional[int] = None
+    ) -> None:
+        """
+        Validates the number of items in the value.
+
+        Parameters:
+        - value: Value to validate.
+        - min_size: Minimum number of items.
+        - max_size: Maximum number of items.
+
+        Returns:
+        - None.
+        """
+        if min_size is not None and len(value) < min_size:
+            raise ValidationError(
+                "Must contain at least {min_size} items",
+                min_size=min_size
+            )
+
+        if max_size is not None and len(value) > max_size:
+            raise ValidationError(
+                "Must contain at most {max_size} items",
+                max_size=max_size
             )
 
     @staticmethod

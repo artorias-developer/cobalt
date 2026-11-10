@@ -14,6 +14,7 @@ from domain.exceptions import (
     ConflictError,
     UnexpectedError
 )
+from domain.value_objects import Batch
 from domain.entities import (
     AttributeEntity,
     AttributesPageEntity,
@@ -234,7 +235,7 @@ class AttributesRepository(AbstractAttributesRepository, BaseRepository):
     async def create_many(
         self,
         server_id: int,
-        entities: List[AttributeCreateEntity],
+        entities: Batch[AttributeCreateEntity],
         session: Optional[AsyncSession] = None
     ) -> List[AttributeEntity]:
         """
@@ -242,7 +243,7 @@ class AttributesRepository(AbstractAttributesRepository, BaseRepository):
 
         Parameters:
         - server_id: Server ID.
-        - entities: List of AttributeCreateEntity objects.
+        - entities: Batch of AttributeCreateEntity objects.
         - session: AsyncSession object.
 
         Returns:
@@ -253,7 +254,7 @@ class AttributesRepository(AbstractAttributesRepository, BaseRepository):
         async with self._get_session(session) as session:
             records = self.attributes_mapper.create_entities_to_models(
                 server_id=server_id,
-                entities=entities
+                entities=entities.value
             )
 
             try:
@@ -337,7 +338,7 @@ class AttributesRepository(AbstractAttributesRepository, BaseRepository):
     async def update_many(
         self,
         server_id: int,
-        entities: List[AttributeUpdateEntity],
+        entities: Batch[AttributeUpdateEntity],
         session: Optional[AsyncSession] = None
     ) -> List[AttributeEntity]:
         """
@@ -345,7 +346,7 @@ class AttributesRepository(AbstractAttributesRepository, BaseRepository):
 
         Parameters:
         - server_id: Server ID.
-        - entities: List of AttributeUpdateEntity objects.
+        - entities: Batch of AttributeUpdateEntity objects.
         - session: AsyncSession object.
 
         Returns:
@@ -356,7 +357,7 @@ class AttributesRepository(AbstractAttributesRepository, BaseRepository):
         async with self._get_session(session) as session:
             attribute_ids = [
                 attr.id
-                for attr in entities
+                for attr in entities.value
             ]
 
             stmt = select(
@@ -373,7 +374,7 @@ class AttributesRepository(AbstractAttributesRepository, BaseRepository):
 
                 records = self.attributes_mapper.update_entities_to_models(
                     models=records,
-                    entities=entities
+                    entities=entities.value
                 )
 
                 if session_provided:
@@ -439,7 +440,7 @@ class AttributesRepository(AbstractAttributesRepository, BaseRepository):
     async def delete_many(
         self,
         server_id: int,
-        attribute_ids: List[int],
+        attribute_ids: Batch[int],
         session: Optional[AsyncSession] = None
     ) -> List[AttributeEntity]:
         """
@@ -447,7 +448,7 @@ class AttributesRepository(AbstractAttributesRepository, BaseRepository):
 
         Parameters:
         - server_id: Server ID.
-        - attribute_ids: List of attribute IDs.
+        - attribute_ids: Batch of attribute IDs.
         - session: AsyncSession object.
 
         Returns:
@@ -459,7 +460,7 @@ class AttributesRepository(AbstractAttributesRepository, BaseRepository):
             stmt = delete(
                 AttributeModel
             ).where(
-                AttributeModel.id.in_(attribute_ids),
+                AttributeModel.id.in_(attribute_ids.value),
                 AttributeModel.server_id == server_id
             ).returning(
                 AttributeModel

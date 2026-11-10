@@ -19,12 +19,12 @@ from domain.enums import (
     ServerStateEnum,
     EnvironmentEnum
 )
-from domain.exceptions import NotFoundError
+from domain.exceptions import NotFoundError, ConflictError
 from application.contracts.managers import AbstractConnectionsManager
 from application.contracts.clients import AbstractContainersClient
 from application.contracts.services import AbstractServersService as CoreServersService
 from application.contracts.loggers import AbstractLogger
-from application.clients.containers.shared import ContainersConstants
+from application.clients.containers.shared import ContainerConstants
 from application.managers.events.shared import ServerEventEnum
 from application.managers.connections.shared import RoomsConstants
 from application.dtos import ServerUpdateDto
@@ -41,6 +41,7 @@ class AbstractServersService(ABC):
 
     build_dir: Path
     app_containers_dir: Path
+    host_containers_dir: Path
     core_servers_service: CoreServersService
     containers_client: AbstractContainersClient
     connections_manager: AbstractConnectionsManager
@@ -51,6 +52,7 @@ class AbstractServersService(ABC):
         self,
         build_dir: Path,
         app_containers_dir: Path,
+        host_containers_dir: Path,
         core_servers_service: CoreServersService,
         containers_client: AbstractContainersClient,
         connections_manager: AbstractConnectionsManager,
@@ -59,62 +61,12 @@ class AbstractServersService(ABC):
     ):
         self.build_dir = build_dir
         self.app_containers_dir = app_containers_dir
+        self.host_containers_dir = host_containers_dir
         self.core_servers_service = core_servers_service
         self.containers_client = containers_client
         self.connections_manager = connections_manager
         self.logger = logger
         self.app_environment = app_environment
-
-    @staticmethod
-    def _get_container_name(
-        server_id: int
-    ) -> str:
-        """
-        Returns the game container (and image) name.
-
-        Parameters:
-        - server_id: Server ID.
-
-        Returns:
-        - str: Game container name.
-        """
-        return ContainersConstants.SERVER_RUNTIME_KEY.format(
-            server_id=server_id
-        )
-
-    @staticmethod
-    def _get_installer_name(
-        container_name: str
-    ) -> str:
-        """
-        Returns the installer container (and image) name.
-
-        Parameters:
-        - container_name: Container name.
-
-        Returns:
-        - str: Installer container name.
-        """
-        return ContainersConstants.SERVER_INSTALLER_KEY.format(
-            container_name=container_name
-        )
-
-    @staticmethod
-    def _get_upgrader_name(
-        container_name: str
-    ) -> str:
-        """
-        Returns the upgrader container (and image) name.
-
-        Parameters:
-        - container_name: Container name.
-
-        Returns:
-        - str: Upgrader container name.
-        """
-        return ContainersConstants.SERVER_UPGRADER_KEY.format(
-            container_name=container_name
-        )
 
     async def _remove_container(
         self,
@@ -193,13 +145,24 @@ class AbstractServersService(ABC):
     ) -> None:
         """
         Updates server and sends new data to all subscribers.
+        If the install/upgrade was canceled, only a canceled state can be written,
+        so a running job can never overwrite the cancel.
 
         Parameters:
         - server_id: Server ID.
         - state: Server state.
         - version: Server version.
         - with_container_status: Whether to include the container running status.
+
+        Raises:
+        - ConflictError: If the install/upgrade was canceled.
         """
+        if state not in (
+            ServerStateEnum.INSTALL_CANCELED,
+            ServerStateEnum.UPGRADE_CANCELED
+        ) and await self._is_server_canceled(server_id=server_id):
+            raise ConflictError("Server {server_id} was canceled", server_id=server_id)
+
         request_dto = ServerUpdateDto(
             state=state,
             version=version
@@ -221,7 +184,7 @@ class AbstractServersService(ABC):
             server_data["version"] = version
 
         if with_container_status:
-            container_name = self._get_container_name(
+            container_name = ContainerConstants.SERVER_RUNTIME_KEY.format(
                 server_id=server_id
             )
 
@@ -245,7 +208,7 @@ class AbstractServersService(ABC):
             }
         )
 
-    async def _is_canceled(
+    async def _is_server_canceled(
         self,
         server_id: int
     ) -> bool:
@@ -285,7 +248,7 @@ class AbstractServersService(ABC):
         Returns:
         - bool: `False` if the operation was canceled (the state is left untouched), `True` otherwise.
         """
-        if await self._is_canceled(server_id=server_id):
+        if await self._is_server_canceled(server_id=server_id):
             return False
 
         try:
@@ -479,8 +442,6 @@ class AbstractServersService(ABC):
     async def _create_installer_container(
         self,
         server_id: int,
-        container_name: str,
-        installation_dir: str,
         installation_marker: str,
         is_steam_server: bool = False,
         steam_app_id: Optional[int] = None,
@@ -498,8 +459,6 @@ class AbstractServersService(ABC):
 
         Parameters:
         - server_id: Server ID.
-        - container_name: Container name (used as image name).
-        - installation_dir: Host path to install server files into.
         - installation_marker: File or directory that indicates a successful installation.
         - is_steam_server: Whether the server is installed via Steam.
         - steam_app_id: Steam app ID, required if is_steam_server is True.
@@ -518,17 +477,25 @@ class AbstractServersService(ABC):
         if is_steam_server and steam_app_id is None:
             raise ValueError('The "steam_app_id" parameter is required if the value of "is_steam_server" is "True"')
 
-        installer_name = self._get_installer_name(container_name)
+        container_name = ContainerConstants.SERVER_RUNTIME_KEY.format(
+            server_id=server_id
+        )
+
+        installer_name = ContainerConstants.SERVER_INSTALLER_KEY.format(
+            server_id=server_id
+        )
+
+        host_container_dir = path.join(self.host_containers_dir, container_name)
 
         prepared_image_build_args = {
-            "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
-            "INSTALLATION_DIR": ContainersConstants.SERVER_INSTALLATION_DIR,
+            "SERVER_ROOT": ContainerConstants.SERVER_ROOT,
+            "INSTALLATION_DIR": ContainerConstants.SERVER_INSTALLATION_DIR,
             **({"APP_ID": str(steam_app_id)} if is_steam_server else {}),
             **(image_build_args or {})
         }
 
         prepared_image_labels = {
-            "managed_by": ContainersConstants.MANAGED_BY,
+            "managed_by": ContainerConstants.MANAGED_BY,
             **(image_labels or {})
         }
 
@@ -537,8 +504,8 @@ class AbstractServersService(ABC):
         }
 
         prepared_volumes = {
-            installation_dir: {
-                "bind": ContainersConstants.SERVER_ROOT,
+            host_container_dir: {
+                "bind": ContainerConstants.SERVER_ROOT,
                 "mode": "rw"
             },
             **(volumes or {})
@@ -550,15 +517,15 @@ class AbstractServersService(ABC):
             prepared_container_file = self._CONTAINER_INSTALLER_FILE
 
         prepared_container_environment = {
-            "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
-            "INSTALLATION_DIR": ContainersConstants.SERVER_INSTALLATION_DIR,
+            "SERVER_ROOT": ContainerConstants.SERVER_ROOT,
+            "INSTALLATION_DIR": ContainerConstants.SERVER_INSTALLATION_DIR,
             **({"APP_ID": str(steam_app_id)} if is_steam_server else {}),
             **(container_environment or {})
         }
 
         prepared_container_labels = {
             "cobalt_server": "true",
-            "managed_by": ContainersConstants.MANAGED_BY,
+            "managed_by": ContainerConstants.MANAGED_BY,
             **(container_labels or {})
         }
 
@@ -590,6 +557,9 @@ class AbstractServersService(ABC):
                 **prepared_image_kwargs
             )
 
+            if await self._is_server_canceled(server_id=server_id):
+                raise ConflictError("Server {server_id} was canceled", server_id=server_id)
+
             await self.containers_client.container_create(
                 image=installer_name,
                 name=installer_name,
@@ -606,6 +576,9 @@ class AbstractServersService(ABC):
             await self.containers_client.container_wait(
                 container_name=installer_name
             )
+
+            if await self._is_server_canceled(server_id=server_id):
+                raise ConflictError("Server {server_id} was canceled", server_id=server_id)
 
             await self._verify_installation(
                 container_name=container_name,
@@ -645,8 +618,6 @@ class AbstractServersService(ABC):
         self,
         server_id: int,
         version: str,
-        container_name: str,
-        installation_dir: str,
         is_steam_server: bool = False,
         steam_app_id: Optional[int] = None,
         volumes: Optional[Dict[str, Dict[str, str]]] = None,
@@ -666,8 +637,6 @@ class AbstractServersService(ABC):
         Parameters:
         - server_id: Server ID.
         - version: Server version.
-        - container_name: Container name (used as image name).
-        - installation_dir: Host path with existing server files.
         - is_steam_server: Whether the server is installed via Steam.
         - steam_app_id: Steam app ID, required if is_steam_server is True.
         - volumes: Additional volume mappings {host_path: {'bind': container_path, 'mode': 'rw'}}.
@@ -685,17 +654,25 @@ class AbstractServersService(ABC):
         if is_steam_server and steam_app_id is None:
             raise ValueError('The "steam_app_id" parameter is required if the value of "is_steam_server" is "True"')
 
-        upgrader_name = self._get_upgrader_name(container_name)
+        container_name = ContainerConstants.SERVER_RUNTIME_KEY.format(
+            server_id=server_id
+        )
+
+        upgrader_name = ContainerConstants.SERVER_UPGRADER_KEY.format(
+            server_id=server_id
+        )
+
+        host_container_dir = path.join(self.host_containers_dir, container_name)
 
         prepared_image_build_args = {
-            "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
-            "INSTALLATION_DIR": ContainersConstants.SERVER_INSTALLATION_DIR,
+            "SERVER_ROOT": ContainerConstants.SERVER_ROOT,
+            "INSTALLATION_DIR": ContainerConstants.SERVER_INSTALLATION_DIR,
             **({"APP_ID": str(steam_app_id)} if is_steam_server else {}),
             **(image_build_args or {})
         }
 
         prepared_image_labels = {
-            "managed_by": ContainersConstants.MANAGED_BY,
+            "managed_by": ContainerConstants.MANAGED_BY,
             **(image_labels or {})
         }
 
@@ -704,8 +681,8 @@ class AbstractServersService(ABC):
         }
 
         prepared_volumes = {
-            installation_dir: {
-                "bind": ContainersConstants.SERVER_ROOT,
+            host_container_dir: {
+                "bind": ContainerConstants.SERVER_ROOT,
                 "mode": "rw"
             },
             **(volumes or {})
@@ -717,15 +694,15 @@ class AbstractServersService(ABC):
             prepared_container_file = self._CONTAINER_UPGRADER_FILE
 
         prepared_container_environment = {
-            "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
-            "INSTALLATION_DIR": ContainersConstants.SERVER_INSTALLATION_DIR,
+            "SERVER_ROOT": ContainerConstants.SERVER_ROOT,
+            "INSTALLATION_DIR": ContainerConstants.SERVER_INSTALLATION_DIR,
             **({"APP_ID": str(steam_app_id)} if is_steam_server else {}),
             **(container_environment or {})
         }
 
         prepared_container_labels = {
             "cobalt_server": "true",
-            "managed_by": ContainersConstants.MANAGED_BY,
+            "managed_by": ContainerConstants.MANAGED_BY,
             **(container_labels or {})
         }
 
@@ -766,6 +743,9 @@ class AbstractServersService(ABC):
                 **prepared_image_kwargs
             )
 
+            if await self._is_server_canceled(server_id=server_id):
+                raise ConflictError("Server {server_id} was canceled", server_id=server_id)
+
             await self.containers_client.container_create(
                 image=upgrader_name,
                 name=upgrader_name,
@@ -782,6 +762,9 @@ class AbstractServersService(ABC):
             wait_result = await self.containers_client.container_wait(
                 container_name=upgrader_name
             )
+
+            if await self._is_server_canceled(server_id=server_id):
+                raise ConflictError("Server {server_id} was canceled", server_id=server_id)
 
             self._verify_exit_code(
                 container_name=upgrader_name,
@@ -823,8 +806,6 @@ class AbstractServersService(ABC):
     async def _create_runtime_container(
         self,
         server_id: int,
-        container_name: str,
-        installation_dir: str,
         ports: Dict[Union[int, str], Union[int, str]],
         is_steam_server: bool = False,
         volumes: Optional[Dict[str, Dict[str, str]]] = None,
@@ -841,8 +822,6 @@ class AbstractServersService(ABC):
 
         Parameters:
         - server_id: Server ID.
-        - container_name: Container name.
-        - installation_dir: Host path with existing server files.
         - ports: Container ports.
         - is_steam_server: Whether the server is installed via Steam.
         - volumes: Additional volume mappings {host_path: {'bind': container_path, 'mode': 'rw'}}.
@@ -857,13 +836,19 @@ class AbstractServersService(ABC):
         Returns:
         - None.
         """
+        container_name = ContainerConstants.SERVER_RUNTIME_KEY.format(
+            server_id=server_id
+        )
+
+        host_container_dir = path.join(self.host_containers_dir, container_name)
+
         prepared_image_build_args = {
-            "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
+            "SERVER_ROOT": ContainerConstants.SERVER_ROOT,
             **(image_build_args or {})
         }
 
         prepared_image_labels = {
-            "managed_by": ContainersConstants.MANAGED_BY,
+            "managed_by": ContainerConstants.MANAGED_BY,
             **(image_labels or {})
         }
 
@@ -872,8 +857,8 @@ class AbstractServersService(ABC):
         }
 
         prepared_volumes = {
-            installation_dir: {
-                "bind": ContainersConstants.SERVER_ROOT,
+            host_container_dir: {
+                "bind": ContainerConstants.SERVER_ROOT,
                 "mode": "rw"
             },
             **(volumes or {})
@@ -885,22 +870,25 @@ class AbstractServersService(ABC):
             prepared_container_file = self._CONTAINER_RUNTIME_FILE
 
         prepared_container_environment = {
-            "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
-            "SERVER_FIFO": ContainersConstants.SERVER_FIFO,
+            "SERVER_ROOT": ContainerConstants.SERVER_ROOT,
+            "SERVER_FIFO": ContainerConstants.SERVER_FIFO,
             **(container_environment or {})
         }
 
         prepared_container_labels = {
             "cobalt_server": "true",
-            "managed_by": ContainersConstants.MANAGED_BY,
+            "managed_by": ContainerConstants.MANAGED_BY,
             **(container_labels or {})
         }
 
         prepared_container_kwargs = {
-            "network_mode": ContainersConstants.NETWORK_MODE.format(environment=self.app_environment),
+            "network_mode": ContainerConstants.NETWORK_MODE.format(environment=self.app_environment),
             **({"security_opt": ["seccomp=unconfined"]} if is_steam_server else {}),
             **(container_kwargs or {})
         }
+
+        if await self._is_server_canceled(server_id=server_id):
+            return
 
         await self._cleanup_container_resources(
             container_name=container_name
@@ -1027,7 +1015,6 @@ class AbstractServersService(ABC):
     async def create(
         self,
         server_id: int,
-        container_name: str,
         version: str,
         download_link: Optional[str]
     ) -> None:
@@ -1036,7 +1023,6 @@ class AbstractServersService(ABC):
 
         Parameters:
         - server_id: Server ID.
-        - container_name: Container name.
         - version: Game version.
         - download_link: Download link.
 
@@ -1049,7 +1035,6 @@ class AbstractServersService(ABC):
     async def upgrade(
         self,
         server_id: int,
-        container_name: str,
         version: str,
         download_link: Optional[str]
     ) -> None:
@@ -1058,7 +1043,6 @@ class AbstractServersService(ABC):
 
         Parameters:
         - server_id: Server ID.
-        - container_name: Container name.
         - version: Game version.
         - download_link: Download link.
 
@@ -1069,21 +1053,33 @@ class AbstractServersService(ABC):
 
     async def delete(
         self,
-        container_name: str
+        server_id: int
     ) -> None:
         """
         Deletes an existing server container together with its installer and upgrader
         containers, images and files.
 
         Parameters:
-        - container_name: Container name.
+        - server_id: Server ID.
 
         Returns:
         - None.
         """
+        container_name = ContainerConstants.SERVER_RUNTIME_KEY.format(
+            server_id=server_id
+        )
+
+        installer_name = ContainerConstants.SERVER_INSTALLER_KEY.format(
+            server_id=server_id
+        )
+
+        upgrader_name = ContainerConstants.SERVER_UPGRADER_KEY.format(
+            server_id=server_id
+        )
+
         for name in (
-            self._get_installer_name(container_name),
-            self._get_upgrader_name(container_name),
+            installer_name,
+            upgrader_name,
             container_name
         ):
             await self._cleanup_container_resources(
@@ -1097,7 +1093,6 @@ class AbstractServersService(ABC):
     async def cancel(
         self,
         server_id: int,
-        container_name: str,
         state: ServerStateEnum
     ) -> None:
         """
@@ -1109,7 +1104,6 @@ class AbstractServersService(ABC):
 
         Parameters:
         - server_id: Server ID.
-        - container_name: Container name.
         - state: INSTALL_CANCELED or UPGRADE_CANCELED.
 
         Returns:
@@ -1122,7 +1116,7 @@ class AbstractServersService(ABC):
             )
 
             await self.delete(
-                container_name=container_name
+                server_id=server_id
             )
         elif state == ServerStateEnum.UPGRADE_CANCELED:
             await self._update_server_state(
@@ -1131,8 +1125,12 @@ class AbstractServersService(ABC):
                 with_container_status=True
             )
 
+            upgrader_name = ContainerConstants.SERVER_UPGRADER_KEY.format(
+                server_id=server_id
+            )
+
             await self._cleanup_container_resources(
-                container_name=self._get_upgrader_name(container_name)
+                container_name=upgrader_name
             )
         else:
             raise ValueError(f'Unsupported cancel state "{state}"')
