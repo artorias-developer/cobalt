@@ -65,57 +65,6 @@ class AbstractServersService(ABC):
         self.logger = logger
         self.app_environment = app_environment
 
-    @staticmethod
-    def _get_container_name(
-        server_id: int
-    ) -> str:
-        """
-        Returns the game container (and image) name.
-
-        Parameters:
-        - server_id: Server ID.
-
-        Returns:
-        - str: Game container name.
-        """
-        return ContainersConstants.SERVER_RUNTIME_KEY.format(
-            server_id=server_id
-        )
-
-    @staticmethod
-    def _get_installer_name(
-        container_name: str
-    ) -> str:
-        """
-        Returns the installer container (and image) name.
-
-        Parameters:
-        - container_name: Container name.
-
-        Returns:
-        - str: Installer container name.
-        """
-        return ContainersConstants.SERVER_INSTALLER_KEY.format(
-            container_name=container_name
-        )
-
-    @staticmethod
-    def _get_upgrader_name(
-        container_name: str
-    ) -> str:
-        """
-        Returns the upgrader container (and image) name.
-
-        Parameters:
-        - container_name: Container name.
-
-        Returns:
-        - str: Upgrader container name.
-        """
-        return ContainersConstants.SERVER_UPGRADER_KEY.format(
-            container_name=container_name
-        )
-
     async def _remove_container(
         self,
         container_name: str
@@ -232,7 +181,7 @@ class AbstractServersService(ABC):
             server_data["version"] = version
 
         if with_container_status:
-            container_name = self._get_container_name(
+            container_name = ContainersConstants.SERVER_RUNTIME_KEY.format(
                 server_id=server_id
             )
 
@@ -529,7 +478,9 @@ class AbstractServersService(ABC):
         if is_steam_server and steam_app_id is None:
             raise ValueError('The "steam_app_id" parameter is required if the value of "is_steam_server" is "True"')
 
-        installer_name = self._get_installer_name(container_name)
+        installer_name = ContainersConstants.SERVER_INSTALLER_KEY.format(
+            container_name=container_name
+        )
 
         prepared_image_build_args = {
             "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
@@ -702,7 +653,9 @@ class AbstractServersService(ABC):
         if is_steam_server and steam_app_id is None:
             raise ValueError('The "steam_app_id" parameter is required if the value of "is_steam_server" is "True"')
 
-        upgrader_name = self._get_upgrader_name(container_name)
+        upgrader_name = ContainersConstants.SERVER_UPGRADER_KEY.format(
+            container_name=container_name
+        )
 
         prepared_image_build_args = {
             "SERVER_ROOT": ContainersConstants.SERVER_ROOT,
@@ -1107,9 +1060,17 @@ class AbstractServersService(ABC):
         Returns:
         - None.
         """
+        installer_name = ContainersConstants.SERVER_INSTALLER_KEY.format(
+            container_name=container_name
+        )
+
+        upgrader_name = ContainersConstants.SERVER_UPGRADER_KEY.format(
+            container_name=container_name
+        )
+
         for name in (
-            self._get_installer_name(container_name),
-            self._get_upgrader_name(container_name),
+            installer_name,
+            upgrader_name,
             container_name
         ):
             await self._cleanup_container_resources(
@@ -1157,8 +1118,12 @@ class AbstractServersService(ABC):
                 with_container_status=True
             )
 
+            upgrader_name = ContainersConstants.SERVER_UPGRADER_KEY.format(
+                container_name=container_name
+            )
+
             await self._cleanup_container_resources(
-                container_name=self._get_upgrader_name(container_name)
+                container_name=upgrader_name
             )
         else:
             raise ValueError(f'Unsupported cancel state "{state}"')
