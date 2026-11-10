@@ -11,7 +11,8 @@ from domain.entities import ServerEntity
 from domain.enums import ServerStateEnum
 from domain.exceptions import (
     NotFoundError,
-    ConflictError
+    ConflictError,
+    ValidationError
 )
 from domain.repositories import AbstractServersRepository
 from application.contracts.loggers import AbstractLogger
@@ -701,7 +702,13 @@ class ServersService(AbstractServersService):
 
         Returns:
         - None.
+
+        Raises:
+        - ValidationError: If the command contains control characters (e.g. newlines).
         """
+        if any(ord(char) < 32 or ord(char) == 127 for char in dto.command):
+            raise ValidationError("Command contains invalid characters")
+
         game_module = await self._get_server_module(
             server_id=server_id
         )
@@ -710,7 +717,13 @@ class ServersService(AbstractServersService):
             server_id=server_id
         )
 
-        command = ServerCommand(["sh", "-c", f"echo \"{dto.command}\" > {ContainerConstants.SERVER_FIFO}"])
+        command = ServerCommand([
+            "sh",
+            "-c",
+            f'printf "%s\\n" "$1" > {ContainerConstants.SERVER_FIFO}',
+            "cobalt_execute",
+            dto.command
+        ])
 
         await game_module.container.clients.containers.container_execute(
             container_name=container,

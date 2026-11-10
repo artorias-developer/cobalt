@@ -6,8 +6,6 @@
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import Field
-
 from application.dtos.base import BaseDto
 
 
@@ -26,4 +24,4 @@ class LoaderCreateDto(BaseDto):
 class LoaderUpdateDto(BaseDto):
     id: int
     name: Optional[str] = None
-    versions: List[str] = Field(default_factory=list)
+    versions: Optional[List[str]] = None

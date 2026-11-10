@@ -5,7 +5,7 @@
 
 from datetime import datetime
 from typing import Optional, List
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from domain.value_objects import (
     LoaderName,
@@ -31,4 +31,4 @@ class LoaderCreateEntity:
 class LoaderUpdateEntity:
     id: int
     name: Optional[LoaderName] = None
-    versions: List[LoaderVersion] = field(default_factory=list)
+    versions: Optional[List[LoaderVersion]] = None

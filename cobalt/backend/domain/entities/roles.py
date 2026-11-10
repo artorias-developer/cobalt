@@ -5,7 +5,7 @@
 
 from datetime import datetime
 from typing import List, Optional
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from domain.enums import (
     PermissionEnum,
@@ -51,4 +51,4 @@ class RoleCreateEntity:
 class RoleUpdateEntity:
     id: int
     name: Optional[RoleName] = None
-    permissions: List[PermissionEnum] = field(default_factory=list)
+    permissions: Optional[List[PermissionEnum]] = None
