@@ -11,7 +11,7 @@ from fastapi import WebSocket, WebSocketDisconnect
 
 from application.contracts.managers import AbstractConnectionsManager
 from application.contracts.loggers import AbstractLogger
-from application.managers.connections.shared import Room
+from application.managers.connections.shared import Room, ConnectionConstants
 
 
 class ConnectionsManager(AbstractConnectionsManager):
@@ -110,6 +110,37 @@ class ConnectionsManager(AbstractConnectionsManager):
         async with self._lock:
             self._unregister(connection_id)
 
+    async def _close(
+        self,
+        connection_id: int,
+        code: int = 1000,
+        reason: Optional[str] = None
+    ) -> None:
+        """
+        Internal method to close and unregister a connection.
+
+        Parameters:
+        - connection_id: Connection ID.
+        - code: WebSocket close code.
+        - reason: Optional close reason.
+
+        Returns:
+        - None.
+        """
+        async with self._lock:
+            connection = self._connections.get(connection_id)
+
+        if not connection:
+            return
+
+        try:
+            await connection.close(code=code, reason=reason)
+        except Exception:
+            self.logger.exception(f"Error while closing connection {connection_id}:")
+        finally:
+            async with self._lock:
+                self._unregister(connection_id)
+
     async def disconnect(
         self,
         connection_id: int
@@ -123,19 +154,27 @@ class ConnectionsManager(AbstractConnectionsManager):
         Returns:
         - None.
         """
-        async with self._lock:
-            connection = self._connections.get(connection_id)
+        await self._close(connection_id)
 
-        if not connection:
-            return
+    async def reconnect(
+        self,
+        connection_id: int
+    ) -> None:
+        """
+        Closes and unregisters a connection with a close code
+        that tells the client to reconnect immediately.
 
-        try:
-            await connection.close()
-        except Exception:
-            self.logger.exception(f"Error while closing connection {connection_id}:")
-        finally:
-            async with self._lock:
-                self._unregister(connection_id)
+        Parameters:
+        - connection_id: Connection ID.
+
+        Returns:
+        - None.
+        """
+        await self._close(
+            connection_id,
+            code=ConnectionConstants.RECONNECT_CLOSE_CODE,
+            reason=ConnectionConstants.RECONNECT_CLOSE_REASON
+        )
 
     async def get_connections(self) -> Dict[int, WebSocket]:
         """

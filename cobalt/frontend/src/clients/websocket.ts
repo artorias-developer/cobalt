@@ -8,6 +8,12 @@
 import type { IWsClient, MessageHandler } from "@/contracts"
 
 /**
+ * Close code sent by the server when the client must reconnect immediately
+ * (e.g. after the user's role has changed).
+ */
+const RECONNECT_CLOSE_CODE = 4000
+
+/**
  * WebSocket client implementation using native WebSocket API.
  * Provides:
  * - Automatic reconnection
@@ -70,7 +76,8 @@ export class WebSocketClient implements IWsClient {
 
     this.ws.onclose = (event) => {
       console.log(`WebSocket closed [${event.code}]: ${event.reason}`)
-      this.reconnectTimer = setTimeout(() => this.connect(this.url), this.reconnectTimeout)
+      const timeout = event.code === RECONNECT_CLOSE_CODE ? 0 : this.reconnectTimeout
+      this.reconnectTimer = setTimeout(() => this.connect(this.url), timeout)
     }
   }
 
