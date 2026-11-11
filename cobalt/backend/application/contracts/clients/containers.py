@@ -304,7 +304,7 @@ class AbstractContainersClient(ABC):
         ...
 
     @abstractmethod
-    async def used_ports_by_label(
+    async def containers_get_used_ports(
         self,
         ports_label: str
     ) -> Set[int]:

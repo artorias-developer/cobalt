@@ -62,7 +62,7 @@ class TestContainersHostPorts:
             _container("created", ports_label="40010")
         ])
 
-        await client.used_ports_by_label(ports_label=PORTS_LABEL)
+        await client.containers_get_used_ports(ports_label=PORTS_LABEL)
 
         socket_client.request.assert_awaited_once()
         assert socket_client.request.await_args.kwargs["path"] == "/containers/json"
@@ -74,7 +74,7 @@ class TestContainersHostPorts:
             _container("running", public_ports=[7777])
         ])
 
-        assert await client.used_ports_by_label(ports_label=PORTS_LABEL) == {25565, 7777}
+        assert await client.containers_get_used_ports(ports_label=PORTS_LABEL) == {25565, 7777}
 
     async def test_stopped_ports_are_taken_from_label(self, docker):
         client, _ = docker([
@@ -82,7 +82,7 @@ class TestContainersHostPorts:
             _container("created", ports_label="40010,40011,40012")
         ])
 
-        assert await client.used_ports_by_label(ports_label=PORTS_LABEL) == {40000, 40010, 40011, 40012}
+        assert await client.containers_get_used_ports(ports_label=PORTS_LABEL) == {40000, 40010, 40011, 40012}
 
     async def test_published_and_label_ports_are_merged(self, docker):
         client, _ = docker([
@@ -91,7 +91,7 @@ class TestContainersHostPorts:
             _container("running", public_ports=[443])
         ])
 
-        assert await client.used_ports_by_label(ports_label=PORTS_LABEL) == {40000, 40001, 40010, 443}
+        assert await client.containers_get_used_ports(ports_label=PORTS_LABEL) == {40000, 40001, 40010, 443}
 
     async def test_stopped_without_label_is_ignored(self, docker):
         client, _ = docker([
@@ -99,7 +99,7 @@ class TestContainersHostPorts:
             {"Id": "bare", "State": "exited"}
         ])
 
-        assert await client.used_ports_by_label(ports_label=PORTS_LABEL) == set()
+        assert await client.containers_get_used_ports(ports_label=PORTS_LABEL) == set()
 
     @pytest.mark.parametrize(
         ("value", "expected"),
@@ -113,10 +113,10 @@ class TestContainersHostPorts:
     async def test_malformed_label_values_are_skipped(self, docker, value, expected):
         client, _ = docker([_container("exited", ports_label=value)])
 
-        assert await client.used_ports_by_label(ports_label=PORTS_LABEL) == expected
+        assert await client.containers_get_used_ports(ports_label=PORTS_LABEL) == expected
 
     async def test_list_failure_is_raised(self, docker):
         client, _ = docker([], status=500)
 
         with pytest.raises(UnexpectedError):
-            await client.used_ports_by_label(ports_label=PORTS_LABEL)
+            await client.containers_get_used_ports(ports_label=PORTS_LABEL)

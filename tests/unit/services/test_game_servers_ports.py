@@ -146,14 +146,14 @@ class TestReservePorts:
             await service.reserve_ports(server_id=1, count=count)
 
         assert service._reserved_ports == {}
-        containers_client.used_ports_by_label.assert_not_called()
+        containers_client.containers_get_used_ports.assert_not_called()
 
     async def test_reads_ports_label(self, service, candidates, containers_client):
         candidates([40000])
 
         await service.reserve_ports(server_id=1, count=1)
 
-        containers_client.used_ports_by_label.assert_awaited_once_with(
+        containers_client.containers_get_used_ports.assert_awaited_once_with(
             ports_label=ContainerConstants.PORTS_LABEL
         )
 

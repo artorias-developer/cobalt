@@ -969,7 +969,7 @@ class AbstractServersService(ABC):
         Returns:
         - Set: Used port numbers.
         """
-        published_ports = await self.containers_client.used_ports_by_label(
+        published_ports = await self.containers_client.containers_get_used_ports(
             ports_label=ContainerConstants.PORTS_LABEL
         )
 
