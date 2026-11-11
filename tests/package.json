@@ -1,7 +1,7 @@
 {
   "name": "cobalt_e2e_tests",
   "version": "1.11.0",
-  "description": "Tests for Cobalt",
+  "description": "Cobalt E2E tests",
   "scripts": {
     "test:e2e": "playwright test",
     "test:ui": "playwright test --ui",
