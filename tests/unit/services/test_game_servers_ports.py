@@ -89,22 +89,22 @@ def busy_ports(monkeypatch):
 
 
 @pytest.fixture
-def published_ports(containers_client) -> Set[int]:
+def used_ports(containers_client) -> Set[int]:
     """
-    Ports Docker reports as published by containers.
+    Ports used by containers: published by running ones and listed in the ports label.
     """
     ports: Set[int] = set()
 
-    async def container_used_ports(ports_label: str) -> Set[int]:
+    async def containers_get_used_ports(ports_label: str) -> Set[int]:
         await sleep(0)
         return set(ports)
 
-    containers_client.container_used_ports.side_effect = container_used_ports
+    containers_client.containers_get_used_ports.side_effect = containers_get_used_ports
     return ports
 
 
 @pytest.fixture
-def service(containers_client, connections_manager, logger, busy_ports, published_ports) -> _ServersService:
+def service(containers_client, connections_manager, logger, busy_ports, used_ports) -> _ServersService:
     core_servers_service = MagicMock()
     core_servers_service.get_one_by_id = AsyncMock(
         return_value=SimpleNamespace(state=ServerStateEnum.INSTALLATION)
@@ -157,8 +157,8 @@ class TestReservePorts:
             ports_label=ContainerConstants.PORTS_LABEL
         )
 
-    async def test_skips_port_published_by_container(self, service, candidates, published_ports):
-        published_ports.add(40000)
+    async def test_skips_port_used_by_container(self, service, candidates, used_ports):
+        used_ports.add(40000)
         candidates([40000, 40001])
 
         assert await service.reserve_ports(server_id=1, count=1) == 40001
@@ -178,8 +178,8 @@ class TestReservePorts:
         assert (first, second) == (40000, 40001)
         assert service._reserved_ports == {1: {40000}, 2: {40001}}
 
-    async def test_skips_range_with_any_used_port(self, service, candidates, published_ports, busy_ports):
-        published_ports.add(40002)
+    async def test_skips_range_with_any_used_port(self, service, candidates, used_ports, busy_ports):
+        used_ports.add(40002)
         busy_ports.add(40011)
         candidates([40000, 40010, 40020])
 
@@ -190,8 +190,8 @@ class TestReservePorts:
 
         assert await service.reserve_ports(server_id=1, count=2) == [40000, 40001]
 
-    async def test_gives_up_after_max_attempts(self, service, candidates, published_ports):
-        published_ports.update({40000, 40001})
+    async def test_gives_up_after_max_attempts(self, service, candidates, used_ports):
+        used_ports.update({40000, 40001})
         candidates([40000, 40001, 40002])
 
         with pytest.raises(RuntimeError):

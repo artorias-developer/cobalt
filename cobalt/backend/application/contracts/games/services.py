@@ -302,8 +302,8 @@ class AbstractServersService(ABC):
 
         return ports
 
+    @staticmethod
     def _is_port_range_free(
-        self,
         start_port: int,
         count: int,
         used_ports: Set[int]
