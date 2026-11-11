@@ -4,6 +4,7 @@ updates:
   # Backend (Python, uv)
   - package-ecosystem: "uv"
     directory: "/cobalt/backend"
+    target-branch: "dev"
     schedule:
       interval: "weekly"
     cooldown:
@@ -23,6 +24,7 @@ updates:
       - "/tests"
       - "/docs/github-pages"
       - "/build/scripts/installer"
+    target-branch: "dev"
     schedule:
       interval: "weekly"
     cooldown:
@@ -42,6 +44,7 @@ updates:
       - "/build/prod/backend"
       - "/build/dev/frontend"
       - "/build/dev/backend"
+    target-branch: "dev"
     schedule:
       interval: "weekly"
     cooldown:
@@ -52,6 +55,7 @@ updates:
     directories:
       - "/build/prod"
       - "/build/dev"
+    target-branch: "dev"
     schedule:
       interval: "weekly"
     cooldown:
@@ -60,6 +64,7 @@ updates:
   # GitHub Actions in workflows
   - package-ecosystem: "github-actions"
     directory: "/"
+    target-branch: "dev"
     schedule:
       interval: "weekly"
     cooldown:
