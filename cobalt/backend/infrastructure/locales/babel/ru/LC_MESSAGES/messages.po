@@ -871,3 +871,7 @@ msgstr "Недостаточно прав"
 msgid "Unknown event \"{event}\""
 msgstr "Неизвестное событие \"{event}\""
 
+
+#: cobalt/backend/application/services/servers.py:711
+msgid "Command contains invalid characters"
+msgstr "Команда содержит недопустимые символы"

@@ -870,3 +870,7 @@ msgstr ""
 msgid "Unknown event \"{event}\""
 msgstr ""
 
+
+#: cobalt/backend/application/services/servers.py:711
+msgid "Command contains invalid characters"
+msgstr ""

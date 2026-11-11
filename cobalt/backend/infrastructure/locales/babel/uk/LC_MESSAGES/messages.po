@@ -871,3 +871,7 @@ msgstr "Недостатньо прав для доступу"
 msgid "Unknown event \"{event}\""
 msgstr "Невідома подія \"{event}\""
 
+
+#: cobalt/backend/application/services/servers.py:711
+msgid "Command contains invalid characters"
+msgstr "Команда містить неприпустимі символи"

@@ -29,7 +29,9 @@ LOCAL_VERSION      := local
 	locales-init l\:i \
 	locales-extract l\:e \
 	locales-update l\:u \
-	locales-compile l\:c
+	locales-compile l\:c \
+	tests-unit t\:u \
+	tests-e2e t\:e
 
 docker-build-dev:
 	docker compose --all-resources -f $(COMPOSE_DEV) up -d
@@ -113,3 +115,11 @@ l\:u: locales-update
 locales-compile:
 	pybabel compile -d $(LOCALES_DIR)
 l\:c: locales-compile
+
+tests-unit:
+	cd tests && python -m pytest
+t\:u: tests-unit
+
+tests-e2e:
+	cd tests && npm run test:e2e
+t\:e: tests-e2e
