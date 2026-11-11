@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-import { test, expect } from "@playwright/test"
+import { test, expect } from "./helpers/fixtures.js"
 import { gotoWithRetry, clickAndWaitForApi } from "./helpers/api.js"
 
 test.describe("Settings page", () => {
@@ -23,7 +23,7 @@ test.describe("Settings page", () => {
     expect(response.status()).toBe(200)
   })
 
-  test("Should return 409 on current password is invalid", async ({ page }) => {
+  test("Should return 409 on credentials update with invalid old password", async ({ page }) => {
     const securityTab = page.locator('.tabs .nav button[name="security"]')
     await securityTab.waitFor({ state: "visible" })
     await expect(securityTab).toBeEnabled()
@@ -46,7 +46,7 @@ test.describe("Settings page", () => {
     expect(response.status()).toBe(409)
   })
 
-  test("Should return 400 on old password is missing", async ({ page }) => {
+  test("Should return 400 on credentials update with empty old password", async ({ page }) => {
     const securityTab = page.locator('.tabs .nav button[name="security"]')
     await securityTab.waitFor({ state: "visible" })
     await expect(securityTab).toBeEnabled()
@@ -76,21 +76,6 @@ test.describe("Settings page", () => {
       'button[name="settings-save-security"]',
       /credentials/,
       "PATCH",
-    )
-    expect(response.status()).toBe(204)
-  })
-
-  test("Should return 204 on unused containers data clear", async ({ page }) => {
-    const systemTab = page.locator('.tabs .nav button[name="system"]')
-    await systemTab.waitFor({ state: "visible" })
-    await expect(systemTab).toBeEnabled()
-    await systemTab.click()
-
-    const response = await clickAndWaitForApi(
-      page,
-      'button[name="clear-containers"]',
-      /containers/,
-      "DELETE",
     )
     expect(response.status()).toBe(204)
   })

@@ -68,8 +68,6 @@ function setupProviders(app: App, router: ReturnType<typeof setupRouterInstance>
   const httpClient = createHttpAxiosClient(router, t)
   const wsClient = createWebSocketClient()
 
-  wsClient.connect(`wss://${window.location.host}/api/v1/ws`)
-
   const documentHelper = createDocumentHelper()
   const localeHelper = createLocaleHelper()
 
@@ -126,7 +124,7 @@ export function bootstrap(app: App): void {
   app.use(createPinia())
   app.use(Notifications)
   app.use(i18n)
-  setupRouterGuard(router, httpUsersApiService, i18n)
+  setupRouterGuard(router, httpUsersApiService, wsClient, i18n)
   app.use(router)
   setupThemeWatch()
   setupLanguageWatch(i18n)

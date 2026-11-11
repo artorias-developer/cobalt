@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile_inline: |
-        FROM nginx:1.29.6-alpine-slim
+        FROM nginx:1.31.8-alpine-slim
         LABEL managed_by=cobalt
     container_name: prod_cobalt_nginx
     restart: unless-stopped
@@ -80,7 +80,7 @@ services:
     build:
       context: .
       dockerfile_inline: |
-        FROM postgres:18.3-alpine
+        FROM postgres:18.6-alpine
         LABEL managed_by=cobalt
     container_name: prod_cobalt_postgres
     restart: unless-stopped
@@ -101,7 +101,7 @@ services:
     build:
       context: .
       dockerfile_inline: |
-        FROM redis:8.6.1-alpine
+        FROM redis:8.10.3-alpine
         LABEL managed_by=cobalt
     container_name: prod_cobalt_redis
     restart: unless-stopped
@@ -123,7 +123,7 @@ services:
     build:
       context: .
       dockerfile_inline: |
-        FROM prom/prometheus:v3.10.0
+        FROM prom/prometheus:v3.16.0
         LABEL managed_by=cobalt
     container_name: prod_cobalt_prometheus
     restart: unless-stopped
@@ -154,7 +154,7 @@ services:
     build:
       context: .
       dockerfile_inline: |
-        FROM prom/node-exporter:v1.10.2
+        FROM prom/node-exporter:v1.12.1
         LABEL managed_by=cobalt
     container_name: prod_cobalt_node_exporter
     restart: unless-stopped
@@ -181,7 +181,7 @@ services:
     build:
       context: .
       dockerfile_inline: |
-        FROM ghcr.io/google/cadvisor:0.56.2
+        FROM ghcr.io/google/cadvisor:0.60.6
         LABEL managed_by=cobalt
     container_name: prod_cobalt_cadvisor
     restart: unless-stopped

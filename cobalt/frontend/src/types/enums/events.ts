@@ -36,5 +36,6 @@ export enum ServerEventEnum {
 }
 
 export enum RoleEventEnum {
-  ROLE_UPDATE = "role_update"
+  ROLE_UPDATE = "role_update",
+  USER_ROLE_UPDATE = "user_role_update"
 }

@@ -146,6 +146,22 @@ export const useTableStore = defineStore("table", () => {
   }
 
   /**
+   * Removes the provided rows from the selection of a table.
+   *
+   * Parameters:
+   * - tableId: string - unique identifier of the table.
+   * - ids: Array<string | number> - list of row identifiers to deselect.
+   *
+   * Returns:
+   * - void.
+   */
+  function removeSelected(tableId: string, ids: Array<string | number>): void {
+    const state = ensure(tableId)
+    ids.forEach(id => state.selected.delete(id))
+    state.selectionVersion++
+  }
+
+  /**
    * Returns current sort state for a table.
    *
    * Parameters:
@@ -262,6 +278,7 @@ export const useTableStore = defineStore("table", () => {
     toggleItemSelection,
     toggleAllSelection,
     clearSelected,
+    removeSelected,
     getSort,
     toggleSort,
     getPage,

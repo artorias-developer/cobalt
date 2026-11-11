@@ -5,7 +5,8 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-import { test, expect, type Page, type Response } from "@playwright/test"
+import type { Page, Response } from "@playwright/test"
+import { test, expect, uniqueName } from "./helpers/fixtures.js"
 import { gotoWithRetry, clickAndWaitForApi } from "./helpers/api.js"
 
 /**
@@ -115,50 +116,98 @@ async function searchUser(page: Page, login: string): Promise<Response> {
   )
 }
 
-test.describe.configure({ mode: "serial" })
+/**
+ * Opens a user row action popup after narrowing the table down by search,
+ * so the row is found regardless of pagination.
+ *
+ * Parameters:
+ * - page: Playwright page instance.
+ * - login: User login.
+ * - action: Row action button name (e.g. "user-edit-popup").
+ *
+ * Returns:
+ * - Promise<void>.
+ */
+async function openUserAction(page: Page, login: string, action: string): Promise<void> {
+  await searchUser(page, login)
+
+  const row = page.locator("tr").filter({
+    has: page.locator("td:nth-child(2)", { hasText: login }),
+  })
+  const button = row.locator(`button[name="${action}"]`)
+  await button.waitFor({ state: "visible" })
+  await expect(button).toBeEnabled()
+  await button.click()
+}
+
+/**
+ * Changes the login in the opened user-edit popup and submits it.
+ *
+ * Parameters:
+ * - page: Playwright page instance.
+ * - login: New login.
+ *
+ * Returns:
+ * - Promise<Response>: the API response for the update request.
+ */
+async function updateUserLogin(page: Page, login: string): Promise<Response> {
+  const loginInput = page.locator('input[name="user-login"]')
+  await loginInput.waitFor({ state: "visible" })
+  await loginInput.fill(login)
+
+  return clickAndWaitForApi(
+    page,
+    'button[name="user-update"]',
+    /users/,
+    "PATCH",
+  )
+}
 
 test.describe("Users page", () => {
   test.beforeEach(async ({ page }) => {
     await gotoWithRetry(page, "/users")
   })
 
-  test("Should show validation warning on empty login at user create", async ({ page }) => {
+  test("Should show validation warning on user create with empty login", async ({ page }) => {
     await createUser(page, "", "password")
     await expect(page.locator(".vue-notification.warn")).toBeVisible()
   })
 
-  test("Should show validation warning on empty password at user create", async ({ page }) => {
-    await createUser(page, "e2e_test_user_invalid", "")
+  test("Should show validation warning on user create with empty password", async ({ page }) => {
+    await createUser(page, uniqueName("user"), "")
     await expect(page.locator(".vue-notification.warn")).toBeVisible()
   })
 
-  test("Should show validation warning on unselected role at user create", async ({ page }) => {
-    await createUser(page, "e2e_test_user_invalid", "password", false)
+  test("Should show validation warning on user create with unselected role", async ({ page }) => {
+    await createUser(page, uniqueName("user"), "password", false)
     await expect(page.locator(".vue-notification.warn")).toBeVisible()
   })
 
-  test("Should return 200 on user create", async ({ page }) => {
-    const response = await createUser(page, "e2e_test_user", "password")
+  test("Should return 200 on user create", async ({ page, api }) => {
+    const login = uniqueName("user")
+    api.track("users", login)
+
+    const response = await createUser(page, login, "password")
     expect(response!.status()).toBe(200)
   })
 
-  test("Should return 409 on user create with existing login", async ({ page }) => {
-    const response = await createUser(page, "e2e_test_user", "password")
+  test("Should return 409 on user create with existing login", async ({ page, user }) => {
+    const response = await createUser(page, user.login, "password")
     expect(response!.status()).toBe(409)
   })
 
-  test("Should return 200 on user search", async ({ page }) => {
-    const response = await searchUser(page, "e2e_test_user")
+  test("Should return 200 on user search", async ({ page, user }) => {
+    const response = await searchUser(page, user.login)
     expect(response.status()).toBe(200)
   })
 
-  test("Should return 404 on fictional user search", async ({ page }) => {
+  test("Should return 404 on user search with fictional login", async ({ page }) => {
     const response = await searchUser(page, "fictional_user")
     expect(response.status()).toBe(404)
   })
 
-  test("Should return 200 on search reset", async ({ page }) => {
-    await searchUser(page, "e2e_test_user")
+  test("Should return 200 on user search reset", async ({ page, user }) => {
+    await searchUser(page, user.login)
 
     const response = await clickAndWaitForApi(
       page,
@@ -169,36 +218,23 @@ test.describe("Users page", () => {
     expect(response.status()).toBe(200)
   })
 
-  test("Should return 200 on user update", async ({ page }) => {
-    const row = page.locator("tr").filter({
-      has: page.locator("td:nth-child(2)", { hasText: "e2e_test_user" }),
-    })
-    const editButton = row.locator('button[name="user-edit-popup"]')
-    await editButton.waitFor({ state: "visible" })
-    await expect(editButton).toBeEnabled()
-    await editButton.click()
+  test("Should return 200 on user update", async ({ page, user }) => {
+    await openUserAction(page, user.login, "user-edit-popup")
 
-    const loginInput = page.locator('input[name="user-login"]')
-    await loginInput.waitFor({ state: "visible" })
-    await loginInput.fill("e2e_test_user_updated")
-
-    const response = await clickAndWaitForApi(
-      page,
-      'button[name="user-update"]',
-      /users/,
-      "PATCH",
-    )
+    const response = await updateUserLogin(page, `${user.login}_updated`)
     expect(response.status()).toBe(200)
   })
 
-  test("Should return 204 on user delete", async ({ page }) => {
-    const row = page.locator("tr").filter({
-      has: page.locator("td:nth-child(2)", { hasText: "e2e_test_user_updated" }),
-    })
-    const deleteButton = row.locator('button[name="user-delete-popup"]')
-    await deleteButton.waitFor({ state: "visible" })
-    await expect(deleteButton).toBeEnabled()
-    await deleteButton.click()
+  test("Should return 409 on user update with existing login", async ({ page, api, user }) => {
+    const other = await api.createUser()
+    await openUserAction(page, user.login, "user-edit-popup")
+
+    const response = await updateUserLogin(page, other.login)
+    expect(response.status()).toBe(409)
+  })
+
+  test("Should return 204 on user delete", async ({ page, user }) => {
+    await openUserAction(page, user.login, "user-delete-popup")
 
     const response = await clickAndWaitForApi(
       page,

@@ -4,10 +4,12 @@
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
 from dataclasses import dataclass
-from typing import ClassVar
+from typing import ClassVar, TypeVar, List, Generic
 
 from domain.value_objects import AbstractValueObject
 
+
+T = TypeVar("T")
 
 @dataclass(frozen=True, slots=True)
 class Search(AbstractValueObject):
@@ -59,4 +61,30 @@ class PageLimit(AbstractValueObject):
             value=self.value,
             min_value=self._MIN_VALUE,
             max_value=self._MAX_VALUE
+        )
+
+@dataclass(frozen=True, slots=True)
+class Batch(AbstractValueObject, Generic[T]):
+    """
+    Batch of items value object.
+    """
+    value: List[T]
+
+    _MIN_SIZE: ClassVar[int] = 1
+    _MAX_SIZE: ClassVar[int] = 100
+
+    def _validate(self) -> None:
+        """
+        Validates the batch size.
+
+        Parameters:
+        - value: Value to validate.
+
+        Returns:
+        - None.
+        """
+        self._validate_size(
+            value=self.value,
+            min_size=self._MIN_SIZE,
+            max_size=self._MAX_SIZE
         )

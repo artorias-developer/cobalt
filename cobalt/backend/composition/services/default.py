@@ -147,7 +147,8 @@ def create_users_service(
     users_repository: AbstractUsersRepository,
     users_mapper: AbstractUsersServiceMapper,
     hasher: AbstractHasher,
-    roles_service: AbstractRolesService
+    roles_service: AbstractRolesService,
+    connections_manager: AbstractConnectionsManager
 ) -> AbstractUsersService:
     """
     Creates the users service.
@@ -158,6 +159,7 @@ def create_users_service(
     - users_mapper: AbstractUsersServiceMapper object.
     - hasher: AbstractHasher object.
     - roles_service: AbstractRolesService object.
+    - connections_manager: AbstractConnectionsManager object.
 
     Returns:
     - AbstractUsersService: AbstractUsersService object.
@@ -167,7 +169,8 @@ def create_users_service(
         users_repository=users_repository,
         users_mapper=users_mapper,
         hasher=hasher,
-        roles_service=roles_service
+        roles_service=roles_service,
+        connections_manager=connections_manager
     )
 
 def create_auth_service(
@@ -430,7 +433,8 @@ def create_services_container(
         users_repository=database.repositories.users,
         users_mapper=mappers.services.users,
         hasher=hasher,
-        roles_service=roles_service
+        roles_service=roles_service,
+        connections_manager=managers.connections
     )
 
     settings_service = create_settings_service(

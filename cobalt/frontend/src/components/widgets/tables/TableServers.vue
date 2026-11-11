@@ -33,13 +33,33 @@
         <template v-if="isTransientState(row.state)">
           <div class="status-icon">
             <Icon
-              :icon="isErrorState(row.state) ? errorIcon : clockIcon"
+              :icon="getStateIcon(row.state)"
               :base-color="isErrorState(row.state) ? 'red' : 'yellow'"
               :filled="true"
             />
             <span class="hint">{{ statusMessages[row.state as ServerStateEnum] }}</span>
           </div>
         </template>
+        <ButtonGhost
+          v-if="isCancelable(row.state) && hasServerCancelAccess"
+          :icon="stopIcon"
+          base-color="red"
+          hover-color="red"
+          :filled="true"
+          align="center"
+          name="server-cancel-popup"
+          @click="handleCancelServer(row.id)"
+        />
+        <ButtonGhost
+          v-if="isServerAccessible(row.state) && hasServerUpdateAccess"
+          :icon="editIcon"
+          base-color="gray"
+          hover-color="gray"
+          :filled="true"
+          align="center"
+          name="server-edit-popup"
+          @click="openEditServer(row.id)"
+        />
         <RouteGhost
           v-if="isServerAccessible(row.state) && hasServerViewAccess"
           :icon="settingsIcon"
@@ -108,7 +128,7 @@
           :on-submit="() => step1Form?.validate() && (createServerStep = 2)"
         >
           <FormRadioList
-            v-model="selectedGame"
+            v-model="createSelectedGame"
             :options="gameOptions"
             :searchable="true"
             :required="true"
@@ -157,7 +177,7 @@
             </div>
           </div>
           <FormInput
-            v-model="serverName"
+            v-model="createServerName"
             :validationName="$t('servers.list.popups.create.step2.name.label')"
             :label="$t('servers.list.popups.create.step2.name.label')"
             :placeholder="$t('servers.list.popups.create.step2.name.placeholder')"
@@ -165,23 +185,23 @@
             :required="true"
           />
           <FormSelect
-            v-model="selectedLoader"
+            v-model="createSelectedLoader"
             :options="loaderOptions"
             :validationName="$t('servers.list.popups.create.step2.loader.label')"
             :label="$t('servers.list.popups.create.step2.loader.label')"
             :placeholder="$t('servers.list.popups.create.step2.loader.placeholder')"
             :required="true"
             name="server-loader"
-            @update:model-value="selectedVersion = undefined"
+            @update:model-value="createSelectedVersion = undefined"
           />
           <FormSelect
-            v-model="selectedVersion"
+            v-model="createSelectedVersion"
             :options="versionOptions"
             :validationName="$t('servers.list.popups.create.step2.version.label')"
             :label="$t('servers.list.popups.create.step2.version.label')"
             :placeholder="$t('servers.list.popups.create.step2.version.placeholder')"
             :required="true"
-            :disabled="!selectedLoader"
+            :disabled="!createSelectedLoader"
             name="server-version"
           />
         </Form>
@@ -212,7 +232,54 @@
       </template>
     </template>
   </Popup>
-  <PopupConfirm ref="confirmPopup"/>
+  <Popup ref="editServerPopup" class="edit-server-popup">
+    <template #content="{ close }">
+      <Header
+        :icon="serversIcon"
+        icon-color="blue"
+        :title="$t('servers.list.popups.edit.title')"
+        :description="$t('servers.list.popups.edit.description')"
+        size="large"
+        :icon-filled="true"
+      />
+      <Form
+        id="edit-server-form"
+        ref="editServerForm"
+        class="form"
+        :on-submit="() => editServerForm?.validate() && handleEditServer(close)"
+      >
+        <FormInput
+          v-model="editServerName"
+          :validationName="$t('servers.list.popups.create.step2.name.label')"
+          :label="$t('servers.list.popups.create.step2.name.label')"
+          :placeholder="$t('servers.list.popups.create.step2.name.placeholder')"
+          name="server-name"
+          :required="true"
+        />
+      </Form>
+      <div class="actions">
+        <ButtonSolid
+          :text="$t('common.close')"
+          color="gray"
+          @click="close"
+        />
+        <ButtonSolid
+          submit
+          form="edit-server-form"
+          :text="$t('common.save')"
+          color="blue"
+          name="server-update"
+          :is-loading="isServerEditing"
+        />
+      </div>
+    </template>
+  </Popup>
+  <PopupConfirm ref="deleteConfirmPopup"/>
+  <PopupConfirm
+    ref="cancelConfirmPopup"
+    :title="$t('servers.list.popups.cancel.title')"
+    :message="$t('servers.list.popups.cancel.message')"
+  />
 </template>
 
 <script setup lang="ts">
@@ -237,7 +304,9 @@ import type {
   TableColumn,
   ServersPageRequest,
   RadioOption,
-  SelectOption
+  SelectOption,
+  ServerStateEntity,
+  WsMessageEntity
 } from "@/types"
 
 import Block from "@/components/ui/Block.vue"
@@ -258,10 +327,12 @@ import Form from "@/components/ui/forms/Form.vue"
 import PopupConfirm from "@/components/widgets/popups/PopupConfirm.vue"
 
 import serversIcon from "@/assets/images/svg/servers.svg?raw"
-import trashIcon from "@/assets/images/svg/trash.svg?raw"
+import editIcon from "@/assets/images/svg/edit.svg?raw"
 import settingsIcon from "@/assets/images/svg/settings.svg?raw"
+import trashIcon from "@/assets/images/svg/trash.svg?raw"
 import errorIcon from "@/assets/images/svg/error.svg?raw"
 import clockIcon from "@/assets/images/svg/clock.svg?raw"
+import stopIcon from "@/assets/images/svg/stop.svg?raw"
 
 withDefaults(defineProps<{
   icon?: string
@@ -297,21 +368,30 @@ const step2Form = ref<InstanceType<typeof Form> | null>(null)
 const createServerPopup = ref<InstanceType<typeof Popup> | null>(null)
 const createServerStep = ref(1)
 
-const selectedGame = ref<number | undefined>(undefined)
-const selectedLoader = ref<number | undefined>(undefined)
-const selectedVersion = ref<string | undefined>(undefined)
-const serverName = ref<string>("")
+const createSelectedGame = ref<number | undefined>(undefined)
+const createSelectedLoader = ref<number | undefined>(undefined)
+const createSelectedVersion = ref<string | undefined>(undefined)
+const createServerName = ref<string>("")
 const isServerCreating = ref<boolean>(false)
 
-const confirmPopup = ref<InstanceType<typeof PopupConfirm> | null>(null)
+const editServerForm = ref<InstanceType<typeof Form> | null>(null)
+const editServerPopup = ref<InstanceType<typeof Popup> | null>(null)
+const editServerId = ref<number | null>(null)
+const editServerName = ref<string>("")
+const isServerEditing = ref<boolean>(false)
+
+const deleteConfirmPopup = ref<InstanceType<typeof PopupConfirm> | null>(null)
+const cancelConfirmPopup = ref<InstanceType<typeof PopupConfirm> | null>(null)
 
 const statusMessages: Record<ServerStateEnum, string> = {
   [ServerStateEnum.PENDING]: t("servers.list.state.pending"),
-  [ServerStateEnum.PROCESSING]: t("servers.list.state.processing"),
-  [ServerStateEnum.UPGRADING]: t("servers.list.state.upgrading"),
-  [ServerStateEnum.FAILED]: t("servers.list.state.failed"),
-  [ServerStateEnum.UPGRADE_FAILED]: t("servers.list.state.upgradeFailed"),
-  [ServerStateEnum.CREATED]: ""
+  [ServerStateEnum.INSTALLATION]: t("servers.list.state.installation.started"),
+  [ServerStateEnum.INSTALL_FAILED]: t("servers.list.state.installation.failed"),
+  [ServerStateEnum.INSTALL_CANCELED]: t("servers.list.state.installation.canceled"),
+  [ServerStateEnum.INSTALLED]: "",
+  [ServerStateEnum.UPGRADING]: t("servers.list.state.upgrading.started"),
+  [ServerStateEnum.UPGRADE_FAILED]: t("servers.list.state.upgrading.failed"),
+  [ServerStateEnum.UPGRADE_CANCELED]: t("servers.list.state.upgrading.canceled")
 }
 
 const columns: TableColumn[] = [
@@ -512,7 +592,7 @@ function handleSearchChange(): void {
  * - void.
  */
 function handleDeleteServer(serverId: number): void {
-  confirmPopup.value?.open(async () => await deleteServer(serverId))
+  deleteConfirmPopup.value?.open(async () => await deleteServer(serverId))
 }
 
 /**
@@ -528,13 +608,13 @@ async function deleteServer(serverId: number): Promise<void> {
   try {
     await httpServersApiService.deleteOne(serverId)
 
-    serverConsoleStore.clear(serverId)
-
     notify({
       type: "success",
       text: t("servers.list.delete.success")
     })
 
+    serverConsoleStore.clear(serverId)
+    tableStore.removeSelected(tableStoreId, [serverId])
     fetchServers()
   } catch (error: any) {
     notify({
@@ -554,7 +634,7 @@ async function deleteServer(serverId: number): Promise<void> {
  * - void.
  */
 function handleDeleteSelected(): void {
-  confirmPopup.value?.open(async () => await deleteSelected())
+  deleteConfirmPopup.value?.open(async () => await deleteSelected())
 }
 
 /**
@@ -590,6 +670,45 @@ async function deleteSelected(): Promise<void> {
 }
 
 /**
+ * Opens the confirm popup before canceling a running installation or upgrade.
+ *
+ * Parameters:
+ * - serverId: ID of the server to cancel.
+ *
+ * Returns:
+ * - void.
+ */
+function handleCancelServer(serverId: number): void {
+  cancelConfirmPopup.value?.open(async () => await cancelServer(serverId))
+}
+
+/**
+ * Cancels a running installation or upgrade of a server.
+ * The final state is delivered via WebSocket, so the table is not refetched here.
+ *
+ * Parameters:
+ * - serverId: ID of the server to cancel.
+ *
+ * Returns:
+ * - Promise<void>.
+ */
+async function cancelServer(serverId: number): Promise<void> {
+  try {
+    await httpServersApiService.cancelOne(serverId)
+
+    notify({
+      type: "success",
+      text: t("servers.list.cancel.success")
+    })
+  } catch (error: any) {
+    notify({
+      type: "error",
+      text: error?.response?.data?.message ?? t("servers.list.cancel.error")
+    })
+  }
+}
+
+/**
  * Resets the create server popup form state to its initial values.
  *
  * Parameters:
@@ -600,10 +719,24 @@ async function deleteSelected(): Promise<void> {
  */
 function resetCreateServerForm(): void {
   createServerStep.value = 1
-  selectedGame.value = undefined
-  selectedLoader.value = undefined
-  selectedVersion.value = undefined
-  serverName.value = ""
+  createSelectedGame.value = undefined
+  createSelectedLoader.value = undefined
+  createSelectedVersion.value = undefined
+  createServerName.value = ""
+}
+
+/**
+ * Resets the edit server popup form state to its initial values.
+ *
+ * Parameters:
+ * - null.
+ *
+ * Returns:
+ * - void.
+ */
+function resetEditServerForm(): void {
+  editServerId.value = null
+  editServerName.value = ""
 }
 
 /**
@@ -623,10 +756,10 @@ async function handleCreateServer(close: () => void): Promise<void> {
 
   try {
     await httpServersApiService.createOne({
-      name: serverName.value,
-      game_id: selectedGame.value as number,
-      loader_id: selectedLoader.value as number,
-      version: selectedVersion.value!
+      name: createServerName.value,
+      game_id: createSelectedGame.value as number,
+      loader_id: createSelectedLoader.value as number,
+      version: createSelectedVersion.value!
     })
 
     notify({
@@ -648,6 +781,44 @@ async function handleCreateServer(close: () => void): Promise<void> {
 }
 
 /**
+ * Updates an existing server from the edit popup form data.
+ * On success resets the form state, closes the popup, and refreshes the table.
+ *
+ * Parameters:
+ * - close: Popup close callback.
+ *
+ * Returns:
+ * - Promise<void>.
+ */
+async function handleEditServer(close: () => void): Promise<void> {
+  if (isServerEditing.value || !editServerId.value) return
+
+  isServerEditing.value = true
+
+  try {
+    await httpServersApiService.updateOne(editServerId.value, {
+      name: editServerName.value
+    })
+
+    notify({
+      type: "success",
+      text: t("servers.list.update.success")
+    })
+
+    close()
+    resetEditServerForm()
+    fetchServers()
+  } catch (error: any) {
+    notify({
+      type: "error",
+      text: error?.response?.data?.message ?? t("servers.list.update.error")
+    })
+  } finally {
+    isServerEditing.value = false
+  }
+}
+
+/**
  * Opens the create server popup and resets the step to 1.
  *
  * Parameters:
@@ -662,6 +833,32 @@ function openCreateServer(): void {
 }
 
 /**
+ * Opens the edit server popup and fetches current server data from the API.
+ *
+ * Parameters:
+ * - serverId: ID of the server to edit.
+ *
+ * Returns:
+ * - Promise<void>.
+ */
+async function openEditServer(serverId: number): Promise<void> {
+  try {
+    const server = await httpServersApiService.getOne(serverId)
+
+    editServerId.value = server.id
+    editServerName.value = server.name
+
+    editServerPopup.value?.open()
+  } catch (error: any) {
+    notify({
+      type: "error",
+      text: error?.response?.data?.message ?? t("servers.list.server.fetch.error")
+    })
+  }
+}
+
+
+/**
  * Handles servers state updates received from WebSocket.
  *
  * Parameters:
@@ -670,7 +867,7 @@ function openCreateServer(): void {
  * Returns:
  * - void.
  */
-function handleStateUpdate(event: any): void {
+function handleStateUpdate(event: WsMessageEntity<ServerStateEntity>): void {
   if (!pageData.value) return
 
   const server = pageData.value.servers.find(server => server.id === event.data.server_id)
@@ -687,47 +884,66 @@ function handleStateUpdate(event: any): void {
 }
 
 /**
- * Checks whether the server state should show the transient state icon (spinner/error).
+ * Checks whether the server state should show the transient state icon (spinner/error/canceled).
  *
  * Parameters:
  * - state: ServerStateEnum value.
  *
  * Returns:
- * - boolean: `true` for any non-"created" state.
+ * - boolean: `true` for any non-"installed" state.
  */
 function isTransientState(state: ServerStateEnum): boolean {
-  return state !== ServerStateEnum.CREATED
+  return state !== ServerStateEnum.INSTALLED
+}
+
+/**
+ * Checks whether the given state represents an operation in progress (clock icon).
+ *
+ * Parameters:
+ * - state: ServerStateEnum value.
+ *
+ * Returns:
+ * - boolean: `true` for PENDING, PROCESSING, or UPGRADING.
+ */
+function isInProgressState(state: ServerStateEnum): boolean {
+  return (
+    state === ServerStateEnum.PENDING ||
+    state === ServerStateEnum.INSTALLATION ||
+    state === ServerStateEnum.UPGRADING
+  )
 }
 
 /**
  * Checks whether the given state represents an error state (red icon).
+ * Canceled states are not errors and use the yellow color.
  *
  * Parameters:
  * - state: ServerStateEnum value.
  *
  * Returns:
- * - boolean: `true` for FAILED or UPGRADE_FAILED.
+ * - boolean: `true` for INSTALL_FAILED or UPGRADE_FAILED.
  */
 function isErrorState(state: ServerStateEnum): boolean {
-  return state === ServerStateEnum.FAILED || state === ServerStateEnum.UPGRADE_FAILED
+  return state === ServerStateEnum.INSTALL_FAILED || state === ServerStateEnum.UPGRADE_FAILED
 }
 
 /**
  * Checks whether the server is in a usable state (settings/view accessible).
- * A server remains accessible during an upgrade and after a failed upgrade,
+ * A server remains accessible during an upgrade and after a failed or canceled upgrade,
  * since it still exists and runs on its previous working version.
  *
  * Parameters:
  * - state: ServerStateEnum value.
  *
  * Returns:
- * - boolean: `true` for CREATED, UPGRADING, or UPGRADE_FAILED.
+ * - boolean: `true` for INSTALLED, UPGRADING, UPGRADE_FAILED, or UPGRADE_CANCELED.
  */
 function isServerAccessible(state: ServerStateEnum): boolean {
   return (
-    state === ServerStateEnum.CREATED ||
+    state === ServerStateEnum.INSTALLED ||
     state === ServerStateEnum.UPGRADING ||
-    state === ServerStateEnum.UPGRADE_FAILED
+    state === ServerStateEnum.UPGRADE_FAILED ||
+    state === ServerStateEnum.UPGRADE_CANCELED
   )
 }
 
@@ -738,14 +954,59 @@ function isServerAccessible(state: ServerStateEnum): boolean {
  * - state: ServerStateEnum value.
  *
  * Returns:
- * - boolean: `true` for CREATED, FAILED, or UPGRADE_FAILED.
+ * - boolean: `true` for INSTALLED, INSTALL_FAILED, INSTALL_CANCELED, UPGRADE_FAILED, or UPGRADE_CANCELED.
  */
 function isDeletable(state: ServerStateEnum): boolean {
   return (
-    state === ServerStateEnum.CREATED ||
-    state === ServerStateEnum.FAILED ||
-    state === ServerStateEnum.UPGRADE_FAILED
+    state === ServerStateEnum.INSTALLED ||
+    state === ServerStateEnum.INSTALL_FAILED ||
+    state === ServerStateEnum.INSTALL_CANCELED ||
+    state === ServerStateEnum.UPGRADE_FAILED ||
+    state === ServerStateEnum.UPGRADE_CANCELED
   )
+}
+
+/**
+ * Checks whether the given state represents a canceled operation (cross icon).
+ *
+ * Parameters:
+ * - state: ServerStateEnum value.
+ *
+ * Returns:
+ * - boolean: `true` for INSTALL_CANCELED or UPGRADE_CANCELED.
+ */
+function isCanceledState(state: ServerStateEnum): boolean {
+  return state === ServerStateEnum.INSTALL_CANCELED || state === ServerStateEnum.UPGRADE_CANCELED
+}
+
+/**
+ * Returns the status icon for the given server state.
+ * In-progress states use the clock icon, canceled states use the cross icon,
+ * all remaining transient states (failed) use the error icon.
+ *
+ * Parameters:
+ * - state: ServerStateEnum value.
+ *
+ * Returns:
+ * - string: Raw SVG markup of the icon.
+ */
+function getStateIcon(state: ServerStateEnum): string {
+  if (isInProgressState(state)) return clockIcon
+  if (isCanceledState(state)) return errorIcon
+  return errorIcon
+}
+
+/**
+ * Checks whether a running installation or upgrade can be canceled in the given state.
+ *
+ * Parameters:
+ * - state: ServerStateEnum value.
+ *
+ * Returns:
+ * - boolean: `true` for PENDING, INSTALLATION, or UPGRADING.
+ */
+function isCancelable(state: ServerStateEnum): boolean {
+  return isInProgressState(state)
 }
 
 /**
@@ -802,7 +1063,7 @@ const hasSelected = computed((): boolean => {
  * - GameEntity | undefined: The matched game entity, or undefined if no game is selected.
  */
 const selectedGameEntity = computed((): GameEntity | undefined =>
-  games.value.find(game => game.id === selectedGame.value)
+  games.value.find(game => game.id === createSelectedGame.value)
 )
 
 /**
@@ -884,7 +1145,7 @@ const loaderOptions = computed((): SelectOption[] => {
  * - SelectOption[]: List of select options derived from the selected loader's versions, or empty array if no loader is selected.
  */
 const versionOptions = computed((): SelectOption[] => {
-  const loader = selectedGameEntity.value?.loaders.find(loader => loader.id === selectedLoader.value)
+  const loader = selectedGameEntity.value?.loaders.find(loader => loader.id === createSelectedLoader.value)
   return loader?.versions.map(version => ({
     value: version,
     label: version
@@ -918,6 +1179,19 @@ const hasServersCreateAccess = computed((): boolean =>
 )
 
 /**
+ * Checks whether the current user has access to update server.
+ *
+ * Parameters:
+ * - null.
+ *
+ * Returns:
+ * - boolean: `true` if the user has the required permission, `false` otherwise.
+ */
+const hasServerUpdateAccess = computed((): boolean =>
+  userStore.hasPermission(PermissionEnum.SERVER_UPDATE)
+)
+
+/**
  * Checks whether the current user has access to delete servers.
  *
  * Parameters:
@@ -928,6 +1202,21 @@ const hasServersCreateAccess = computed((): boolean =>
  */
 const hasServersDeleteAccess = computed((): boolean =>
   userStore.hasPermission(PermissionEnum.SERVERS_DELETE)
+)
+
+/**
+ * Checks whether the current user can cancel a running installation or upgrade.
+ * Mirrors the backend rule: SERVERS_CREATE or SERVER_SETTINGS_UPDATE.
+ *
+ * Parameters:
+ * - null.
+ *
+ * Returns:
+ * - boolean: `true` if the user has at least one of the required permissions, `false` otherwise.
+ */
+const hasServerCancelAccess = computed((): boolean =>
+  userStore.hasPermission(PermissionEnum.SERVERS_CREATE) ||
+  userStore.hasPermission(PermissionEnum.SERVER_SETTINGS_UPDATE)
 )
 
 /**
@@ -1057,6 +1346,20 @@ onUnmounted(() => {
   }
 }
 
+.edit-server-popup {
+  .form {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .actions {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    gap: $space-xl;
+  }
+}
+
 @media (max-width: 768px) {
   .create-server-popup {
     .selected-game {
@@ -1064,6 +1367,12 @@ onUnmounted(() => {
       padding: $space-lg;
     }
 
+    .actions {
+      gap: $space-md;
+    }
+  }
+
+  .edit-server-popup {
     .actions {
       gap: $space-md;
     }

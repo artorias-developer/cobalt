@@ -6,6 +6,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List, Any
 
+from domain.value_objects import Batch
 from domain.entities import (
     RoleEntity,
     RolesPageEntity,
@@ -113,14 +114,14 @@ class AbstractRolesRepository(ABC):
     @abstractmethod
     async def delete_many(
         self,
-        role_ids: List[int],
+        role_ids: Batch[int],
         session: Optional[Any] = None
     ) -> List[RoleEntity]:
         """
         Deletes multiple existing roles.
 
         Parameters:
-        - role_ids: List of role IDs.
+        - role_ids: Batch of role IDs.
         - session: Session object.
 
         Returns:

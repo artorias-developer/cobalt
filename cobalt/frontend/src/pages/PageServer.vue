@@ -51,7 +51,7 @@ import {
   WS_SERVERS_API_SERVICE_KEY
 } from "@/constants"
 import { PermissionEnum, ServerStateEnum } from "@/types"
-import type { Tag, ServerEntity, ServerStatusEntity } from "@/types"
+import type { Tag, ServerEntity, ServerStatusEntity, ServerStateEntity, WsMessageEntity } from "@/types"
 
 import NotFound from "@/components/widgets/NotFound.vue"
 
@@ -163,7 +163,7 @@ async function fetchLoaderVersions(): Promise<void> {
  * Returns:
  * - Promise<void>.
  */
-async function handleStateUpdate(event: any): Promise<void> {
+async function handleStateUpdate(event: WsMessageEntity<ServerStateEntity>): Promise<void> {
   const currentServer = server.value
 
   if (!currentServer) return
@@ -373,6 +373,7 @@ onUnmounted(() => {
   .page {
     .heading {
       gap: $space-md;
+      margin-top: $space-md;
 
       .info {
         gap: $space-md;

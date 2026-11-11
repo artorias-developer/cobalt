@@ -3,14 +3,14 @@
 #  Repository: https://github.com/artorias-developer/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-from .constants import ContainersConstants
+from .constants import ContainerConstants
 from .dataclasses import (
     ContainerLog,
     ContainerStatus
 )
 
 __all__ = [
-    "ContainersConstants",
+    "ContainerConstants",
     "ContainerLog",
     "ContainerStatus"
 ]

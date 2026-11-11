@@ -235,12 +235,19 @@ class FileRenameSchema(BaseModel):
         description="New name"
     )
 
+    overwrite: bool = Field(
+        False,
+        title="Overwrite",
+        description="Replace an existing file with the new name (directories are never overwritten)"
+    )
+
     model_config = ConfigDict(
         extra="ignore",
         json_schema_extra={
             "example": {
                 "path": "/server.properties",
-                "name": "server_old.properties"
+                "name": "server_old.properties",
+                "overwrite": False
             }
         }
     )

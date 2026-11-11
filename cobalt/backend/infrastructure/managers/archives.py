@@ -12,7 +12,10 @@ from aiofiles import os, open
 from stream_unzip import UnzipError, async_stream_unzip
 from stream_zip import async_stream_zip, AsyncMemberFile, NO_COMPRESSION_64, Method
 
-from domain.exceptions import ConflictError
+from domain.exceptions import (
+    ConflictError,
+    PermissionsError
+)
 from application.contracts.managers import AbstractArchivesManager
 
 
@@ -46,6 +49,24 @@ class ArchivesManager(AbstractArchivesManager):
 
                 yield chunk
 
+    @staticmethod
+    def _decode_name(
+        raw_name: bytes
+    ) -> str:
+        """
+        Decodes a ZIP entry name. Falls back to CP437 (the ZIP default) for non-UTF-8 names.
+
+        Parameters:
+        - raw_name: Raw entry name.
+
+        Returns:
+        - str: Decoded entry name.
+        """
+        try:
+            return raw_name.decode("utf-8")
+        except UnicodeDecodeError:
+            return raw_name.decode("cp437")
+
     async def _walk_dir(
         self,
         base: Path,
@@ -55,6 +76,9 @@ class ArchivesManager(AbstractArchivesManager):
     ) -> AsyncGenerator[AsyncMemberFile, None]:
         """
         Recursively walks a directory and yields async_stream_zip member tuples.
+        Symlinks and special files (sockets, FIFOs, devices) are skipped, so the archive
+        can never include anything from outside the walked directory and cannot loop.
+        Entries that disappear during the walk are skipped.
 
         Parameters:
         - base: Absolute path to the root directory being archived (used for arc name).
@@ -65,7 +89,10 @@ class ArchivesManager(AbstractArchivesManager):
         Yields:
         - AsyncMemberFile: Member tuple for async_stream_zip.
         """
-        entries = await os.scandir(current)
+        try:
+            entries = await os.scandir(current)
+        except (FileNotFoundError, NotADirectoryError):
+            return
 
         directories = []
         files = []
@@ -73,13 +100,23 @@ class ArchivesManager(AbstractArchivesManager):
         for entry in entries:
             entry_path = Path(entry.path)
 
-            if await os.path.isdir(entry_path):
-                directories.append(entry_path)
-            else:
-                files.append(entry_path)
+            try:
+                if entry.is_symlink():
+                    continue
+
+                if entry.is_dir(follow_symlinks=False):
+                    directories.append(entry_path)
+                elif entry.is_file(follow_symlinks=False):
+                    files.append(entry_path)
+            except OSError:
+                continue
 
         for file_path in sorted(files, key=lambda p: p.name):
-            stat = await os.stat(file_path)
+            try:
+                stat = await os.stat(file_path)
+            except FileNotFoundError:
+                continue
+
             modified_at = datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc)
             arc_name = str(Path(base.name) / file_path.relative_to(base))
 
@@ -117,7 +154,11 @@ class ArchivesManager(AbstractArchivesManager):
                 async for member in self._walk_dir(target, target, chunk_size, compression):
                     yield member
             else:
-                stat = await os.stat(target)
+                try:
+                    stat = await os.stat(target)
+                except FileNotFoundError:
+                    continue
+
                 modified_at = datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc)
 
                 yield (
@@ -207,6 +248,8 @@ class ArchivesManager(AbstractArchivesManager):
     ) -> None:
         """
         Extracts a ZIP archive to the destination path.
+        Every entry is validated to stay inside the destination directory (zip-slip protection),
+        including entries that pass through already existing symlinks.
 
         Parameters:
         - source: Absolute path to the ZIP archive.
@@ -214,28 +257,46 @@ class ArchivesManager(AbstractArchivesManager):
 
         Returns:
         - None.
+
+        Raises:
+        - PermissionsError: If an entry points outside the destination directory.
+        - ConflictError: If the archive is invalid or an entry conflicts with an existing path.
         """
+        root = destination.resolve()
+
         try:
-            async for file_name, _, unzipped_chunks in async_stream_unzip(
+            async for raw_name, _, unzipped_chunks in async_stream_unzip(
                 self._read_file_chunks(source, self._STREAMING_CHUNK_SIZE)
             ):
-                decoded = file_name.decode()
-                file_path = destination / decoded
+                decoded = self._decode_name(raw_name)
+                is_directory = decoded.endswith("/")
+                file_path = (root / decoded).resolve()
 
-                if decoded.endswith("/"):
-                    if await os.path.isfile(file_path):
-                        raise ConflictError(f'Path "{decoded.rstrip("/")}" already exists')
+                if not file_path.is_relative_to(root):
+                    raise PermissionsError('Archive entry "{name}" points outside the destination', name=decoded)
 
-                    await os.makedirs(file_path, exist_ok=True)
+                if file_path == root:
+                    if not is_directory:
+                        raise PermissionsError('Archive entry "{name}" is not a valid file name', name=decoded)
 
                     async for _ in unzipped_chunks:
                         pass
                     continue
 
-                await os.makedirs(file_path.parent, exist_ok=True)
+                try:
+                    if is_directory:
+                        await os.makedirs(file_path, exist_ok=True)
 
-                async with open(file_path, mode="wb") as f:
-                    async for chunk in unzipped_chunks:
-                        await f.write(chunk)
+                        async for _ in unzipped_chunks:
+                            pass
+                        continue
+
+                    await os.makedirs(file_path.parent, exist_ok=True)
+
+                    async with open(file_path, mode="wb") as f:
+                        async for chunk in unzipped_chunks:
+                            await f.write(chunk)
+                except (FileExistsError, NotADirectoryError, IsADirectoryError):
+                    raise ConflictError('Path "{path}" already exists', path=decoded.rstrip("/"))
         except UnzipError:
-            raise ConflictError(f'File "{source.name}" is not a valid ZIP archive')
+            raise ConflictError('File "{name}" is not a valid ZIP archive', name=source.name)

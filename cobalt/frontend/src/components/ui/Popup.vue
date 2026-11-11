@@ -32,6 +32,10 @@ withDefaults(defineProps<{
   adaptive: false
 })
 
+const emit = defineEmits<{
+  (e: "before-close"): void
+}>()
+
 defineExpose({
   open,
   close
@@ -55,7 +59,7 @@ function open(animated: boolean = true): void {
 }
 
 /**
- * Closes the popup.
+ * Closes the popup. Emits `before-close` first, only if the popup is open.
  *
  * Parameters:
  * - animated: boolean - whether to animate the closing. Defaults to true.
@@ -64,6 +68,9 @@ function open(animated: boolean = true): void {
  * - void.
  */
 function close(animated: boolean = true): void {
+  if (!isOpen.value) return
+
+  emit("before-close")
   isAnimated.value = animated
   isOpen.value = false
 }

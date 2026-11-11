@@ -37,13 +37,20 @@
 
 <script setup lang="ts">
 import { useI18n } from "vue-i18n"
-import { ref, computed, onMounted, onUnmounted, inject } from "vue"
+import { ref, computed, watch, onMounted, onUnmounted, inject } from "vue"
 import { useNotification } from "@kyvg/vue3-notification"
 
 import { useUserStore } from "@/stores"
 import { LOCALE_HELPER_KEY, WS_METRICS_API_SERVICE_KEY, HTTP_METRICS_API_SERVICE_KEY } from "@/constants"
 import { PermissionEnum } from "@/types"
-import type { UniversalBlockMode, Color, BlockHeaderSize } from "@/types"
+import type {
+  UniversalBlockMode,
+  Color,
+  BlockHeaderSize,
+  MetricEntity,
+  WsMessageEntity,
+  WsServerMessageEntity
+} from "@/types"
 
 import Block from "@/components/ui/Block.vue"
 import Header from "@/components/ui/Header.vue"
@@ -127,8 +134,8 @@ async function fetchInitialData(): Promise<void> {
  * Returns:
  * - void.
  */
-function handleMetricUpdate(metric: any): void {
-  if (props.mode === "server" && metric.server_id !== props.serverId) return
+function handleMetricUpdate(metric: WsMessageEntity<MetricEntity> | WsServerMessageEntity<MetricEntity>): void {
+  if (props.mode === "server" && "server_id" in metric && metric.server_id !== props.serverId) return
 
   const formattedDate = localeHelper.formatTime(metric.data.date)
   chartRef.value?.addPoint(formattedDate, metric.data.value)
@@ -149,25 +156,74 @@ const hasCpuViewAccess = computed((): boolean =>
     : userStore.hasPermission(PermissionEnum.DASHBOARD_CPU_VIEW)
 )
 
-onMounted(() => {
-  if (props.mode !== "empty" && hasCpuViewAccess.value) {
-    fetchInitialData()
+let isSubscribed = false
 
-    if (props.mode === "server") {
-      wsMetricsApiService.subscribeServerCpu(props.serverId!, handleMetricUpdate)
-    } else {
-      wsMetricsApiService.subscribeHostCpu(handleMetricUpdate)
-    }
+/**
+ * Loads initial CPU data and subscribes to live updates.
+ *
+ * Parameters:
+ * - null.
+ *
+ * Returns:
+ * - void.
+ */
+function show(): void {
+  if (isSubscribed) return
+  isSubscribed = true
+
+  fetchInitialData()
+
+  if (props.mode === "server") {
+    wsMetricsApiService.subscribeServerCpu(props.serverId!, handleMetricUpdate)
+  } else {
+    wsMetricsApiService.subscribeHostCpu(handleMetricUpdate)
   }
-})
+}
 
-onUnmounted(() => {
+/**
+ * Unsubscribes from live CPU updates.
+ *
+ * Parameters:
+ * - null.
+ *
+ * Returns:
+ * - void.
+ */
+function hide(): void {
+  if (!isSubscribed) return
+  isSubscribed = false
+
   if (props.mode === "server") {
     wsMetricsApiService.unsubscribeServerCpu(props.serverId!, handleMetricUpdate)
   } else {
     wsMetricsApiService.unsubscribeHostCpu(handleMetricUpdate)
   }
+}
+
+/**
+ * Checks whether the chart should load data and receive live updates.
+ *
+ * Parameters:
+ * - null.
+ *
+ * Returns:
+ * - boolean: `true` if the chart is active and the user has access, `false` otherwise.
+ */
+const canView = computed((): boolean =>
+  props.mode !== "empty" && hasCpuViewAccess.value
+)
+
+watch(
+  canView,
+  (value) => value ? show() : hide(),
+  { flush: "post" }
+)
+
+onMounted(() => {
+  if (canView.value) show()
 })
+
+onUnmounted(hide)
 </script>
 
 <style scoped lang="scss">

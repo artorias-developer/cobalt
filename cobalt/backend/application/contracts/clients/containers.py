@@ -233,7 +233,7 @@ class AbstractContainersClient(ABC):
     async def container_wait(
         self,
         container_name: str
-    ) -> None:
+    ) -> Dict[str, Any]:
         """
         Waits for the container to stop.
 
@@ -241,7 +241,7 @@ class AbstractContainersClient(ABC):
         - container_name: Container name.
 
         Returns:
-        - None.
+        - Dict: Wait result.
         """
         ...
 
@@ -270,7 +270,8 @@ class AbstractContainersClient(ABC):
         self,
         container_name: str,
         tail: int = 0,
-        timestamps: bool = False
+        timestamps: bool = False,
+        since_nanoseconds: Optional[int] = None
     ) -> AsyncGenerator[ContainerLog, Any]:
         """
         Streams the container logs in real-time.
@@ -279,6 +280,7 @@ class AbstractContainersClient(ABC):
         - container_name: Container name.
         - tail: Number of lines from end to start with.
         - timestamps: Show timestamps.
+        - since_nanoseconds: Only logs since this time (nanoseconds since epoch).
 
         Returns:
         - AsyncGenerator: ContainerLog object.

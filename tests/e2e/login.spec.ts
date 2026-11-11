@@ -5,28 +5,23 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-import { test, expect } from "@playwright/test"
+import { test, expect, TEST_USER } from "./helpers/fixtures.js"
 import { gotoWithRetry, clickAndWaitForApi } from "./helpers/api.js"
 
 test.use({ storageState: { cookies: [], origins: [] } })
-
-const TEST_USER = {
-  login: process.env.COBALT_LOGIN ?? "admin",
-  password: process.env.COBALT_PASSWORD ?? "admin",
-}
 
 test.describe("Login page", () => {
   test.beforeEach(async ({ page }) => {
     await gotoWithRetry(page, "/login")
   })
 
-  test("Should load login page", async ({ page }) => {
+  test("Should show login form on login page open", async ({ page }) => {
     const app = page.locator("#app .page")
     await app.waitFor({ state: "visible" })
     await expect(app).toBeVisible()
   })
 
-  test("Should show validation warning on empty form", async ({ page }) => {
+  test("Should show validation warning on sign in with empty form", async ({ page }) => {
     const signInButton = page.locator('button[name="sign-in"]')
     await signInButton.waitFor({ state: "visible" })
     await expect(signInButton).toBeEnabled()
@@ -35,7 +30,7 @@ test.describe("Login page", () => {
     await expect(page.locator(".vue-notification.warn")).toBeVisible()
   })
 
-  test("Should show validation warning on empty login", async ({ page }) => {
+  test("Should show validation warning on sign in with empty login", async ({ page }) => {
     const passwordInput = page.locator('input[name="password"]')
     await passwordInput.waitFor({ state: "visible" })
     await passwordInput.fill(TEST_USER.password)
@@ -48,7 +43,7 @@ test.describe("Login page", () => {
     await expect(page.locator(".vue-notification.warn")).toBeVisible()
   })
 
-  test("Should show validation warning on empty password", async ({ page }) => {
+  test("Should show validation warning on sign in with empty password", async ({ page }) => {
     const loginInput = page.locator('input[name="login"]')
     await loginInput.waitFor({ state: "visible" })
     await loginInput.fill(TEST_USER.login)
@@ -61,7 +56,7 @@ test.describe("Login page", () => {
     await expect(page.locator(".vue-notification.warn")).toBeVisible()
   })
 
-  test("Should return 401 on invalid credentials", async ({ page }) => {
+  test("Should return 401 on sign in with invalid credentials", async ({ page }) => {
     const loginInput = page.locator('input[name="login"]')
     await loginInput.waitFor({ state: "visible" })
     await loginInput.fill("wrong")
@@ -79,7 +74,7 @@ test.describe("Login page", () => {
     expect(response.status()).toBe(401)
   })
 
-  test("Should sign in successfully", async ({ page }) => {
+  test("Should open Dashboard page on sign in with valid credentials", async ({ page }) => {
     await expect(page.locator("div.block.login")).toBeVisible()
 
     const loginInput = page.locator('input[name="login"]')
@@ -96,5 +91,10 @@ test.describe("Login page", () => {
     await signInButton.click()
 
     await expect(page).toHaveURL(/\/$/)
+  })
+
+  test("Should open Login page on dashboard page open without session", async ({ page }) => {
+    await gotoWithRetry(page, "/")
+    await expect(page).toHaveURL(/\/login/)
   })
 })

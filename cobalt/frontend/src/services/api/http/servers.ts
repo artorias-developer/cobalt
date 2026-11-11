@@ -122,6 +122,19 @@ export class HttpServersApiService implements IHttpServersApiService {
   }
 
   /**
+   * Cancels a running installation or upgrade of an existing server.
+   *
+   * Parameters:
+   * - serverId: Server ID.
+   *
+   * Returns:
+   * - Promise<void>.
+   */
+  cancelOne(serverId: number): Promise<void> {
+    return this.client.post<void>(`${this.prefix}/${serverId}/cancel`)
+  }
+
+  /**
    * Starts an existing server.
    *
    * Parameters:

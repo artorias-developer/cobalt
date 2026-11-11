@@ -11,7 +11,8 @@ from domain.entities import ServerEntity
 from domain.enums import ServerStateEnum
 from domain.exceptions import (
     NotFoundError,
-    ConflictError
+    ConflictError,
+    ValidationError
 )
 from domain.repositories import AbstractServersRepository
 from application.contracts.loggers import AbstractLogger
@@ -29,7 +30,7 @@ from application.contracts.games import (
     AbstractLoader
 )
 from application.clients.caches.shared import CacheConstants
-from application.clients.containers.shared import ContainersConstants
+from application.clients.containers.shared import ContainerConstants
 from application.managers.connections.shared import RoomsConstants
 from application.dtos import (
     ServerDto,
@@ -41,7 +42,7 @@ from application.dtos import (
     ServerExecuteDto,
     ServerStatusDto
 )
-from domain.value_objects import ServerCommand
+from domain.value_objects import ServerCommand, Batch
 
 
 class ServersService(AbstractServersService):
@@ -289,14 +290,9 @@ class ServersService(AbstractServersService):
             ]
         )
 
-        container_name = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
-            server_id=created_entity.id
-        )
-
         await self.queue.enqueue(
             loader.servers_service.create,
             server_id=created_entity.id,
-            container_name=container_name,
             version=created_entity.version.value,
             download_link=download_link
         )
@@ -324,7 +320,7 @@ class ServersService(AbstractServersService):
             server_id=server_id
         )
 
-        if received_entity.state in (ServerStateEnum.PENDING, ServerStateEnum.PROCESSING):
+        if received_entity.state in (ServerStateEnum.PENDING, ServerStateEnum.INSTALLATION):
             raise ConflictError("Server {server_id} is still being installed", server_id=server_id)
 
         if received_entity.state == ServerStateEnum.UPGRADING:
@@ -392,14 +388,9 @@ class ServersService(AbstractServersService):
             ]
         )
 
-        container_name = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
-            server_id=updated_entity.id
-        )
-
         await self.queue.enqueue(
             loader.servers_service.upgrade,
             server_id=updated_entity.id,
-            container_name=container_name,
             version=updated_entity.version.value,
             download_link=download_link
         )
@@ -467,7 +458,7 @@ class ServersService(AbstractServersService):
         if not received_entity:
             raise NotFoundError("Server {server_id} not found", server_id=server_id)
 
-        if received_entity.state in (ServerStateEnum.PENDING, ServerStateEnum.PROCESSING):
+        if received_entity.state in (ServerStateEnum.PENDING, ServerStateEnum.INSTALLATION):
             raise ConflictError("Server {server_id} is still being installed", server_id=server_id)
 
         if received_entity.state == ServerStateEnum.UPGRADING:
@@ -497,13 +488,9 @@ class ServersService(AbstractServersService):
             server=received_entity
         )
 
-        container_name = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
-            server_id=received_entity.id
-        )
-
         await self.queue.enqueue(
             loader.servers_service.delete,
-            container_name=container_name
+            server_id=received_entity.id
         )
 
     async def delete_many(
@@ -519,8 +506,10 @@ class ServersService(AbstractServersService):
         Returns:
         - None.
         """
+        server_ids_batch = Batch(server_ids)
+
         received_entities = await self.servers_repository.get_many_by_ids(
-            server_ids=server_ids
+            server_ids=server_ids_batch
         )
 
         if not received_entities:
@@ -528,7 +517,7 @@ class ServersService(AbstractServersService):
 
         installing = [
             server for server in received_entities
-            if server.state in (ServerStateEnum.PENDING, ServerStateEnum.PROCESSING)
+            if server.state in (ServerStateEnum.PENDING, ServerStateEnum.INSTALLATION)
         ]
 
         if installing:
@@ -543,7 +532,7 @@ class ServersService(AbstractServersService):
             raise ConflictError("Some servers are still being upgraded")
 
         await self.servers_repository.delete_many(
-            server_ids=server_ids
+            server_ids=server_ids_batch
         )
 
         patterns_to_delete = [
@@ -583,14 +572,46 @@ class ServersService(AbstractServersService):
                 self.logger.warning(f'Loader "{loader_name}" not found')
                 continue
 
-            container_name = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
+            await self.queue.enqueue(
+                loader.servers_service.delete,
                 server_id=entity.id
             )
 
-            await self.queue.enqueue(
-                loader.servers_service.delete,
-                container_name=container_name
-            )
+    async def cancel_one(
+        self,
+        server_id: int
+    ) -> None:
+        """
+        Cancels a running installation or upgrade of an existing server.
+
+        Parameters:
+        - server_id: Server ID.
+
+        Returns:
+        - None.
+        """
+        received_entity = await self.servers_repository.get_one_by_id(
+            server_id=server_id
+        )
+
+        if not received_entity:
+            raise NotFoundError("Server {server_id} not found", server_id=server_id)
+
+        if received_entity.state in (ServerStateEnum.PENDING, ServerStateEnum.INSTALLATION):
+            canceled_state = ServerStateEnum.INSTALL_CANCELED
+        elif received_entity.state == ServerStateEnum.UPGRADING:
+            canceled_state = ServerStateEnum.UPGRADE_CANCELED
+        else:
+            raise ConflictError("Server {server_id} has nothing to cancel", server_id=server_id)
+
+        game_module, loader = await self._get_server_data(
+            server=received_entity
+        )
+
+        await loader.servers_service.cancel(
+            server_id=server_id,
+            state=canceled_state
+        )
 
     async def start(
         self,
@@ -609,7 +630,7 @@ class ServersService(AbstractServersService):
             server_id=server_id
         )
 
-        container = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
+        container = ContainerConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 
@@ -634,7 +655,7 @@ class ServersService(AbstractServersService):
             server_id=server_id
         )
 
-        container = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
+        container = ContainerConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 
@@ -659,7 +680,7 @@ class ServersService(AbstractServersService):
             server_id=server_id
         )
 
-        container = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
+        container = ContainerConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 
@@ -681,16 +702,28 @@ class ServersService(AbstractServersService):
 
         Returns:
         - None.
+
+        Raises:
+        - ValidationError: If the command contains control characters (e.g. newlines).
         """
+        if any(ord(char) < 32 or ord(char) == 127 for char in dto.command):
+            raise ValidationError("Command contains invalid characters")
+
         game_module = await self._get_server_module(
             server_id=server_id
         )
 
-        container = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
+        container = ContainerConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 
-        command = ServerCommand(["sh", "-c", f"echo \"{dto.command}\" > {ContainersConstants.SERVER_FIFO}"])
+        command = ServerCommand([
+            "sh",
+            "-c",
+            f'printf "%s\\n" "$1" > {ContainerConstants.SERVER_FIFO}',
+            "cobalt_execute",
+            dto.command
+        ])
 
         await game_module.container.clients.containers.container_execute(
             container_name=container,
@@ -714,7 +747,7 @@ class ServersService(AbstractServersService):
             server_id=server_id
         )
 
-        container = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
+        container = ContainerConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 

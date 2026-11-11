@@ -8,6 +8,7 @@ from typing import List
 from orjson import loads
 
 from domain.exceptions import NotFoundError
+from domain.value_objects import Batch
 from domain.repositories import AbstractRolesRepository
 from application.contracts.managers import AbstractConnectionsManager
 from application.contracts.clients import AbstractCacheClient
@@ -240,7 +241,7 @@ class RolesService(AbstractRolesService):
                 }
             )
 
-            await self.connections_manager.disconnect(
+            await self.connections_manager.reconnect(
                 connection_id=connection_id
             )
 
@@ -299,7 +300,7 @@ class RolesService(AbstractRolesService):
         - None.
         """
         deleted_entities = await self.roles_repository.delete_many(
-            role_ids=role_ids
+            role_ids=Batch(role_ids)
         )
 
         if not deleted_entities:

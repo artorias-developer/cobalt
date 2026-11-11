@@ -10,7 +10,7 @@ import type { Composer } from "vue-i18n"
 
 import { useUserStore } from "@/stores"
 import { CookieEnum, LanguageEnum, RoleEventEnum } from "@/types"
-import type { RoleEntity } from "@/types"
+import type { RoleEntity, WsMessageEntity } from "@/types"
 
 import type { createWebSocketClient, createLocaleHelper } from "@/boostrap/factories"
 import type { setupI18n } from "@/boostrap"
@@ -90,8 +90,8 @@ export function setupTimezoneWatch(localeHelper: ReturnType<typeof createLocaleH
 
 /**
  * Watches for WebSocket role update events.
- * When a role update is received, checks if the current user's role
- * matches the updated role and applies the changes to the store.
+ * The backend sends them only to connections of affected users,
+ * so the received role is applied to the store as is.
  *
  * Parameters:
  * - wsClient: WebSocket client instance.
@@ -102,9 +102,8 @@ export function setupTimezoneWatch(localeHelper: ReturnType<typeof createLocaleH
 export function setupRoleUpdateWatch(wsClient: ReturnType<typeof createWebSocketClient>): void {
   const userStore = useUserStore()
 
-  wsClient.listen(RoleEventEnum.ROLE_UPDATE, (event: any) => {
-    const role: RoleEntity = event.data
-    if (userStore.user?.role?.id !== role.id) return
-    userStore.setUserRole(role)
-  })
+  const onRoleUpdate = (event: WsMessageEntity<RoleEntity>) => userStore.setUserRole(event.data)
+
+  wsClient.listen(RoleEventEnum.ROLE_UPDATE, onRoleUpdate)
+  wsClient.listen(RoleEventEnum.USER_ROLE_UPDATE, onRoleUpdate)
 }

@@ -7,6 +7,7 @@
 
 import type { IWsClient, IWsServersApiService } from "@/contracts"
 import { ServerEventEnum } from "@/types"
+import type { ServerStateEntity, WsMessageEntity } from "@/types"
 
 /**
  * WebSocket service for servers events.
@@ -27,7 +28,7 @@ export class WsServersApiService implements IWsServersApiService {
    * Returns:
    * - void.
    */
-  subscribeStates(handler: (states: any) => void): void {
+  subscribeStates(handler: (states: WsMessageEntity<ServerStateEntity>) => void): void {
     this.client.listen(ServerEventEnum.SERVER_STATE, handler)
     this.client.subscribe(ServerEventEnum.SUBSCRIBE_STATES)
   }
@@ -41,7 +42,7 @@ export class WsServersApiService implements IWsServersApiService {
    * Returns:
    * - void.
    */
-  unsubscribeStates(handler: (states: any) => void): void {
+  unsubscribeStates(handler: (states: WsMessageEntity<ServerStateEntity>) => void): void {
     this.client.unlisten(ServerEventEnum.SERVER_STATE, handler)
     this.client.unsubscribe(ServerEventEnum.UNSUBSCRIBE_STATES)
   }

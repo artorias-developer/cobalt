@@ -102,5 +102,5 @@ class LoadersServiceMapper(AbstractLoadersServiceMapper):
         return LoaderUpdateEntity(
             id=dto.id,
             name=LoaderName(dto.name) if dto.name is not None else None,
-            versions=[LoaderVersion(version) for version in dto.versions]
+            versions=[LoaderVersion(version) for version in dto.versions] if dto.versions is not None else None
         )

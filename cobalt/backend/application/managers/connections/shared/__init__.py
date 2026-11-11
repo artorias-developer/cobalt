@@ -3,10 +3,11 @@
 #  Repository: https://github.com/artorias-developer/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-from .constants import RoomsConstants
+from .constants import RoomsConstants, ConnectionConstants
 from .dataclasses import Room
 
 __all__ = [
     "RoomsConstants",
+    "ConnectionConstants",
     "Room"
 ]

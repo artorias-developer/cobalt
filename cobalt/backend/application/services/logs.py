@@ -3,11 +3,12 @@
 #  Repository: https://github.com/artorias-developer/cobalt
 #  SPDX-License-Identifier: AGPL-3.0-or-later
 
-from asyncio import Task, Event, Lock, create_task, sleep
-from typing import List, Dict, Optional
+from asyncio import Task, Event, Lock, create_task, sleep, current_task
+from time import time_ns
+from typing import List, Dict, Optional, Tuple
 
 from domain.enums import EnvironmentEnum
-from domain.exceptions import NotFoundError
+from domain.exceptions import NotFoundError, UnexpectedError
 from application.contracts.services import (
     AbstractLogsService,
     AbstractServersService
@@ -16,7 +17,7 @@ from application.contracts.games import AbstractGameModule
 from application.contracts.mappers import AbstractLogsServiceMapper
 from application.contracts.clients import AbstractContainersClient
 from application.contracts.managers import AbstractConnectionsManager
-from application.clients.containers.shared import ContainersConstants
+from application.clients.containers.shared import ContainerConstants
 from application.managers.connections.shared import RoomsConstants
 from application.managers.events.shared import LogEventEnum
 from application.dtos import (
@@ -32,6 +33,7 @@ class LogsService(AbstractLogsService):
     """
     _HOST_CONTAINER: str
     _streaming_tasks: Dict[str, Task]
+    _cursors: Dict[str, Tuple[int, int]]
 
     logs_mapper: AbstractLogsServiceMapper
     containers_client: AbstractContainersClient
@@ -55,7 +57,84 @@ class LogsService(AbstractLogsService):
         self.game_modules = game_modules
 
         self._streaming_tasks = {}
+        self._cursors = {}
         self._HOST_CONTAINER = f"{app_environment}_cobalt_backend"
+
+    def _advance_cursor(
+        self,
+        room_name: str,
+        timestamps_nanoseconds: List[Optional[int]]
+    ) -> None:
+        """
+        Moves room cursor forward after a batch was sent.
+
+        The cursor is a pair of the latest sent timestamp and the number of sent
+        lines with exactly this timestamp. The count is needed to skip duplicates,
+        because Docker's since filter is inclusive.
+
+        Parameters:
+        - room_name: Room name.
+        - timestamps_nanoseconds: Docker timestamps (nanoseconds) of sent logs, in order.
+
+        Returns:
+        - None.
+        """
+        cursor = self._cursors.get(room_name)
+
+        for timestamp_nanoseconds in timestamps_nanoseconds:
+            if timestamp_nanoseconds is None:
+                continue
+
+            if cursor and timestamp_nanoseconds < cursor[0]:
+                continue
+
+            if cursor and timestamp_nanoseconds == cursor[0]:
+                cursor = (timestamp_nanoseconds, cursor[1] + 1)
+            else:
+                cursor = (timestamp_nanoseconds, 1)
+
+        if cursor:
+            self._cursors[room_name] = cursor
+
+    async def _flush(
+        self,
+        room_name: str,
+        batch: List,
+        event: str,
+        server_id: Optional[int] = None
+    ) -> None:
+        """
+        Sends batch to room and advances room cursor.
+
+        Must be called while holding the batch lock.
+
+        Parameters:
+        - room_name: Room name.
+        - batch: List of (log data, timestamp in nanoseconds) tuples.
+        - event: Event name.
+        - server_id: Server ID (only for server logs).
+
+        Returns:
+        - None.
+        """
+        if not batch:
+            return
+
+        items = batch.copy()
+
+        await self._send_batch(
+            room_name,
+            [log_data for log_data, _ in items],
+            event,
+            server_id
+        )
+
+        self._advance_cursor(
+            room_name,
+            [timestamp_nanoseconds for _, timestamp_nanoseconds in items]
+        )
+
+        batch.clear()
 
     async def _has_active_room(
         self,
@@ -97,7 +176,7 @@ class LogsService(AbstractLogsService):
         )
 
         if room:
-            data = {
+            data: Dict = {
                 "type": "message",
                 "event": event,
                 "data": batch_data
@@ -114,7 +193,7 @@ class LogsService(AbstractLogsService):
     async def _periodic_flush(
         self,
         room_name: str,
-        batch: list,
+        batch: List,
         batch_lock: Lock,
         stop_flusher: Event,
         event: str,
@@ -138,9 +217,7 @@ class LogsService(AbstractLogsService):
             await sleep(0.3)
 
             async with batch_lock:
-                if batch:
-                    await self._send_batch(room_name, batch.copy(), event, server_id)
-                    batch.clear()
+                await self._flush(room_name, batch, event, server_id)
 
     async def _stream_logs_to_room(
         self,
@@ -152,6 +229,9 @@ class LogsService(AbstractLogsService):
     ) -> None:
         """
         Background task for streaming logs to a room.
+
+        After a container restart the stream is reconnected from the room cursor,
+        so logs printed while the stream was down are not lost.
 
         Parameters:
         - room_name: Room name to stream logs to.
@@ -167,6 +247,8 @@ class LogsService(AbstractLogsService):
         batch_lock = Lock()
         stop_flusher = Event()
 
+        self._cursors.setdefault(room_name, (time_ns(), 0))
+
         flusher_task = create_task(
             self._periodic_flush(
                 room_name=room_name,
@@ -180,27 +262,40 @@ class LogsService(AbstractLogsService):
 
         try:
             while await self._has_active_room(room_name):
+                since_nanoseconds, lines_to_skip = self._cursors[room_name]
+
                 try:
                     logs = self.containers_client.container_stream_logs(
                         container_name=container_name,
-                        timestamps=timestamps
+                        timestamps=timestamps,
+                        since_nanoseconds=since_nanoseconds
                     )
 
                     async for log in logs:
                         if not await self._has_active_room(room_name):
                             break
 
+                        if lines_to_skip > 0 and log.timestamp_nanoseconds == since_nanoseconds:
+                            lines_to_skip -= 1
+                            continue
+
                         log_dto = self.logs_mapper.dataclass_to_dto(
                             dataclass=log
                         )
 
                         async with batch_lock:
-                            batch.append(log_dto.model_dump(mode="json"))
+                            batch.append(
+                                (log_dto.model_dump(mode="json"), log.timestamp_nanoseconds)
+                            )
 
                             if len(batch) >= 100:
-                                await self._send_batch(room_name, batch.copy(), event, server_id)
-                                batch.clear()
+                                await self._flush(room_name, batch, event, server_id)
+                except (NotFoundError, UnexpectedError):
+                    pass
                 finally:
+                    async with batch_lock:
+                        await self._flush(room_name, batch, event, server_id)
+
                     await sleep(1)
 
         finally:
@@ -208,11 +303,11 @@ class LogsService(AbstractLogsService):
             await flusher_task
 
             async with batch_lock:
-                if batch:
-                    await self._send_batch(room_name, batch, event, server_id)
+                await self._flush(room_name, batch, event, server_id)
 
-            if room_name in self._streaming_tasks:
-                del self._streaming_tasks[room_name]
+            if self._streaming_tasks.get(room_name) is current_task():
+                self._streaming_tasks.pop(room_name, None)
+                self._cursors.pop(room_name, None)
 
     def _requires_container_timestamps(
         self,
@@ -268,9 +363,9 @@ class LogsService(AbstractLogsService):
         )
 
         if not server:
-            raise NotFoundError("Server with ID {server_id} not found", server_id=server_id)
+            raise NotFoundError("Server {server_id} not found", server_id=server_id)
 
-        container_name = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
+        container_name = ContainerConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 
@@ -345,7 +440,7 @@ class LogsService(AbstractLogsService):
             server_id=dto.server_id
         )
 
-        container_name = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
+        container_name = ContainerConstants.SERVER_RUNTIME_KEY.format(
             server_id=dto.server_id
         )
 

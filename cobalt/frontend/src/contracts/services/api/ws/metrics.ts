@@ -5,6 +5,8 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
+import type { MetricEntity, WsMessageEntity, WsServerMessageEntity } from "@/types"
+
 /**
  * Interface for metrics WebSocket service operations.
  * Defines contract for managing live metrics subscriptions.
@@ -20,7 +22,7 @@ export interface IWsMetricsApiService {
    * Returns:
    * - void.
    */
-  subscribeHostCpu(handler: (metric: any) => void): void
+  subscribeHostCpu(handler: (metric: WsMessageEntity<MetricEntity>) => void): void
 
   /**
    * Unsubscribes from host CPU live metrics and removes the handler.
@@ -31,7 +33,7 @@ export interface IWsMetricsApiService {
    * Returns:
    * - void.
    */
-  unsubscribeHostCpu(handler: (metric: any) => void): void
+  unsubscribeHostCpu(handler: (metric: WsMessageEntity<MetricEntity>) => void): void
 
   /**
    * Subscribes to host RAM live metrics and registers a handler.
@@ -42,7 +44,7 @@ export interface IWsMetricsApiService {
    * Returns:
    * - void.
    */
-  subscribeHostRam(handler: (metric: any) => void): void
+  subscribeHostRam(handler: (metric: WsMessageEntity<MetricEntity>) => void): void
 
   /**
    * Unsubscribes from host RAM live metrics and removes the handler.
@@ -53,7 +55,7 @@ export interface IWsMetricsApiService {
    * Returns:
    * - void.
    */
-  unsubscribeHostRam(handler: (metric: any) => void): void
+  unsubscribeHostRam(handler: (metric: WsMessageEntity<MetricEntity>) => void): void
 
   /**
    * Subscribes to server CPU live metrics and registers a handler.
@@ -65,7 +67,7 @@ export interface IWsMetricsApiService {
    * Returns:
    * - void.
    */
-  subscribeServerCpu(serverId: number, handler: (metric: any) => void): void
+  subscribeServerCpu(serverId: number, handler: (metric: WsServerMessageEntity<MetricEntity>) => void): void
 
   /**
    * Unsubscribes from server CPU live metrics and removes the handler.
@@ -77,7 +79,7 @@ export interface IWsMetricsApiService {
    * Returns:
    * - void.
    */
-  unsubscribeServerCpu(serverId: number, handler: (metric: any) => void): void
+  unsubscribeServerCpu(serverId: number, handler: (metric: WsServerMessageEntity<MetricEntity>) => void): void
 
   /**
    * Subscribes to server RAM live metrics and registers a handler.
@@ -89,7 +91,7 @@ export interface IWsMetricsApiService {
    * Returns:
    * - void.
    */
-  subscribeServerRam(serverId: number, handler: (metric: any) => void): void
+  subscribeServerRam(serverId: number, handler: (metric: WsServerMessageEntity<MetricEntity>) => void): void
 
   /**
    * Unsubscribes from server RAM live metrics and removes the handler.
@@ -101,5 +103,5 @@ export interface IWsMetricsApiService {
    * Returns:
    * - void.
    */
-  unsubscribeServerRam(serverId: number, handler: (metric: any) => void): void
+  unsubscribeServerRam(serverId: number, handler: (metric: WsServerMessageEntity<MetricEntity>) => void): void
 }

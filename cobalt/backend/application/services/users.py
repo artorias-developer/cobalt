@@ -11,9 +11,10 @@ from domain.exceptions import (
     NotFoundError,
     AuthenticationError
 )
-from domain.value_objects import Password
+from domain.value_objects import Password, Batch
 from domain.repositories import AbstractUsersRepository
 from application.contracts.clients import AbstractCacheClient
+from application.contracts.managers import AbstractConnectionsManager
 from application.contracts.services import (
     AbstractUsersService,
     AbstractRolesService
@@ -21,6 +22,7 @@ from application.contracts.services import (
 from application.contracts.hashers import AbstractHasher
 from application.contracts.mappers import AbstractUsersServiceMapper
 from application.clients.caches.shared import CacheConstants
+from application.managers.events.shared import RoleEventEnum
 from application.dtos import (
     UserDto,
     UsersGetPageDto,
@@ -39,6 +41,7 @@ class UsersService(AbstractUsersService):
     users_mapper: AbstractUsersServiceMapper
     hasher: AbstractHasher
     roles_service: AbstractRolesService
+    connections_manager: AbstractConnectionsManager
 
     def __init__(
         self,
@@ -46,13 +49,15 @@ class UsersService(AbstractUsersService):
         users_repository: AbstractUsersRepository,
         users_mapper: AbstractUsersServiceMapper,
         hasher: AbstractHasher,
-        roles_service: AbstractRolesService
+        roles_service: AbstractRolesService,
+        connections_manager: AbstractConnectionsManager
     ):
         self.cache_client = cache_client
         self.users_repository = users_repository
         self.users_mapper = users_mapper
         self.hasher = hasher
         self.roles_service = roles_service
+        self.connections_manager = connections_manager
 
     def _hash_password(
         self,
@@ -325,9 +330,37 @@ class UsersService(AbstractUsersService):
             ]
         )
 
-        return self.users_mapper.entity_to_dto(
+        mapped_dto = self.users_mapper.entity_to_dto(
             entity=updated_entity
         )
+
+        if dto.role_id is not None:
+            connections = await self.connections_manager.get_connections()
+            data_dict = mapped_dto.role.model_dump(mode="json")
+
+            for connection_id, connection in connections.items():
+                connection_user = connection.state.user
+
+                if connection_user.id != user_id:
+                    continue
+
+                if connection_user.role.id == mapped_dto.role.id:
+                    continue
+
+                await self.connections_manager.send_to_connection(
+                    connection_id=connection_id,
+                    data={
+                        "type": "message",
+                        "event": RoleEventEnum.USER_ROLE_UPDATE,
+                        "data": data_dict
+                    }
+                )
+
+                await self.connections_manager.reconnect(
+                    connection_id=connection_id
+                )
+
+        return mapped_dto
 
     async def delete_one(
         self,
@@ -375,7 +408,7 @@ class UsersService(AbstractUsersService):
         - None.
         """
         deleted_entities = await self.users_repository.delete_many(
-            user_ids=user_ids
+            user_ids=Batch(user_ids)
         )
 
         if not deleted_entities:

@@ -15,7 +15,7 @@ from application.contracts.services import AbstractMetricsService
 from application.contracts.mappers import AbstractMetricsServiceMapper
 from application.contracts.clients import AbstractMetricsClient
 from application.contracts.managers import AbstractConnectionsManager
-from application.clients.containers.shared import ContainersConstants
+from application.clients.containers.shared import ContainerConstants
 from application.managers.connections.shared import RoomsConstants
 from application.clients.caches.shared import CacheConstants
 from application.dtos import (
@@ -61,7 +61,7 @@ class MetricsService(AbstractMetricsService):
         - List: List of container names.
         """
         return [
-            ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
+            ContainerConstants.SERVER_RUNTIME_KEY.format(
                 server_id=server_id
             )
             for server_id in server_ids
@@ -196,7 +196,7 @@ class MetricsService(AbstractMetricsService):
         Returns:
         - MetricDto: MetricDto object.
         """
-        container_name = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
+        container_name = ContainerConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 
@@ -224,7 +224,7 @@ class MetricsService(AbstractMetricsService):
         Returns:
         - MetricDto: MetricDto object.
         """
-        container_name = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
+        container_name = ContainerConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 
@@ -314,7 +314,7 @@ class MetricsService(AbstractMetricsService):
         Returns:
         - List: List of MetricDto objects.
         """
-        container_name = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
+        container_name = ContainerConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 
@@ -342,7 +342,7 @@ class MetricsService(AbstractMetricsService):
         Returns:
         - List: List of MetricDto objects.
         """
-        container_name = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
+        container_name = ContainerConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id
         )
 
@@ -456,7 +456,7 @@ class MetricsService(AbstractMetricsService):
             server_id=dto.server_id
         )
 
-        container_name = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
+        container_name = ContainerConstants.SERVER_RUNTIME_KEY.format(
             server_id=dto.server_id
         )
 
@@ -514,7 +514,7 @@ class MetricsService(AbstractMetricsService):
             server_id=dto.server_id
         )
 
-        container_name = ContainersConstants.GAME_CONTAINER_NAME_KEY.format(
+        container_name = ContainerConstants.SERVER_RUNTIME_KEY.format(
             server_id=dto.server_id
         )
 

@@ -60,7 +60,7 @@ import { useRouter } from "vue-router"
 import { useNotification } from "@kyvg/vue3-notification"
 
 import { useUserStore } from "@/stores"
-import { HTTP_AUTH_API_SERVICE_KEY, HTTP_USERS_API_SERVICE_KEY, WS_CLIENT_KEY } from "@/constants"
+import { HTTP_AUTH_API_SERVICE_KEY, HTTP_USERS_API_SERVICE_KEY } from "@/constants"
 import { RouteEnum } from "@/types"
 
 import Block from "@/components/ui/Block.vue"
@@ -72,7 +72,6 @@ import logoIcon from "@/assets/images/svg/logo-full.svg"
 
 const httpAuthApiService = inject(HTTP_AUTH_API_SERVICE_KEY)!
 const httpUsersApiService = inject(HTTP_USERS_API_SERVICE_KEY)!
-const wsClient = inject(WS_CLIENT_KEY)!
 const userStore = useUserStore()
 const router = useRouter()
 const { notify } = useNotification()
@@ -106,10 +105,6 @@ async function handleLogin(): Promise<void> {
 
     const user = await httpUsersApiService.getMe()
     userStore.setUser(user)
-
-    if (!wsClient.isConnected()) {
-      wsClient.connect(`wss://${window.location.host}/api/v1/ws`)
-    }
 
     await router.push({
       name: RouteEnum.DASHBOARD

@@ -6,6 +6,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List, Any
 
+from domain.value_objects import Batch
 from domain.entities import (
     AttributeEntity,
     AttributesPageEntity,
@@ -84,7 +85,7 @@ class AbstractAttributesRepository(ABC):
     async def create_many(
         self,
         server_id: int,
-        entities: List[AttributeCreateEntity],
+        entities: Batch[AttributeCreateEntity],
         session: Optional[Any] = None
     ) -> List[AttributeEntity]:
         """
@@ -92,7 +93,7 @@ class AbstractAttributesRepository(ABC):
 
         Parameters:
         - server_id: Server ID.
-        - entities: List of AttributeCreateEntity objects.
+        - entities: Batch of AttributeCreateEntity objects.
         - session: Session object.
 
         Returns:
@@ -124,7 +125,7 @@ class AbstractAttributesRepository(ABC):
     async def update_many(
         self,
         server_id: int,
-        entities: List[AttributeUpdateEntity],
+        entities: Batch[AttributeUpdateEntity],
         session: Optional[Any] = None
     ) -> List[AttributeEntity]:
         """
@@ -132,7 +133,7 @@ class AbstractAttributesRepository(ABC):
 
         Parameters:
         - server_id: Server ID.
-        - entities: List of AttributeUpdateEntity objects.
+        - entities: Batch of AttributeUpdateEntity objects.
         - session: Session object.
 
         Returns:
@@ -164,7 +165,7 @@ class AbstractAttributesRepository(ABC):
     async def delete_many(
         self,
         server_id: int,
-        attribute_ids: List[int],
+        attribute_ids: Batch[int],
         session: Optional[Any] = None
     ) -> List[AttributeEntity]:
         """
@@ -172,7 +173,7 @@ class AbstractAttributesRepository(ABC):
 
         Parameters:
         - server_id: Server ID.
-        - attribute_ids: List of attribute IDs.
+        - attribute_ids: Batch of attribute IDs.
         - session: Session object.
 
         Returns:

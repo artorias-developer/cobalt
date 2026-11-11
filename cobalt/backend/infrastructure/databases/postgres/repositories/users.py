@@ -15,6 +15,7 @@ from domain.exceptions import (
     ConflictError,
     UnexpectedError
 )
+from domain.value_objects import Batch
 from domain.entities import (
     UserEntity,
     UsersPageEntity,
@@ -339,6 +340,9 @@ class UsersRepository(AbstractUsersRepository, BaseRepository):
                     operation=RepositoryOperationsEnum.UPDATE
                 )
 
+            if entity.role_id is not None:
+                await session.refresh(record, attribute_names=["role"])
+
             return self.users_mapper.model_to_entity(
                 model=record
             )
@@ -395,14 +399,14 @@ class UsersRepository(AbstractUsersRepository, BaseRepository):
 
     async def delete_many(
         self,
-        user_ids: List[int],
+        user_ids: Batch[int],
         session: Optional[AsyncSession] = None
     ) -> List[UserEntity]:
         """
         Deletes multiple existing users.
 
         Parameters:
-        - user_ids: List of user IDs.
+        - user_ids: Batch of user IDs.
         - session: AsyncSession object.
 
         Returns:
@@ -417,7 +421,7 @@ class UsersRepository(AbstractUsersRepository, BaseRepository):
                 joinedload(UserModel.role),
                 joinedload(UserModel.settings)
             ).where(
-                UserModel.id.in_(user_ids)
+                UserModel.id.in_(user_ids.value)
             )
 
             result = await session.execute(stmt)
@@ -430,7 +434,7 @@ class UsersRepository(AbstractUsersRepository, BaseRepository):
             stmt = delete(
                 UserModel
             ).where(
-                UserModel.id.in_(user_ids)
+                UserModel.id.in_(user_ids.value)
             )
 
             await session.execute(stmt)

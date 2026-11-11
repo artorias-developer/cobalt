@@ -257,7 +257,8 @@ class FilesRouterMapper(AbstractFilesRouterMapper):
         """
         return FileRenameDto(
             path=schema.path,
-            name=schema.name
+            name=schema.name,
+            overwrite=schema.overwrite
         )
 
     def duplicate_schema_to_dto(

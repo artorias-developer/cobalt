@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY cobalt/frontend/package*.json ./
 RUN --mount=type=cache,target=/root/.npm \
-    npm install
+    npm ci
 
 COPY cobalt/frontend ./
 

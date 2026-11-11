@@ -51,34 +51,25 @@ export default defineConfig({
         storageState: ".auth/session.json",
       },
       dependencies: ["setup"],
-      testIgnore: ["**/logout.spec.ts", "**/servers.spec.ts", "**/server.spec.ts"]
+      testIgnore: "**/isolated.spec.ts",
     },
     {
-      name: "servers",
+      name: "cleanup",
+      testMatch: "**/cleanup.setup.ts",
       use: {
         ...devices["Desktop Firefox"],
         storageState: ".auth/session.json",
       },
       dependencies: ["main"],
-      testMatch: "**/servers.spec.ts"
     },
     {
-      name: "server",
+      name: "isolated",
       use: {
         ...devices["Desktop Firefox"],
         storageState: ".auth/session.json",
       },
-      dependencies: ["servers"],
-      testMatch: "**/server.spec.ts"
-    },
-    {
-      name: "logout",
-      use: {
-        ...devices["Desktop Firefox"],
-        storageState: ".auth/session.json",
-      },
-      dependencies: ["server"],
-      testMatch: "**/logout.spec.ts"
+      dependencies: ["cleanup"],
+      testMatch: "**/isolated.spec.ts",
     }
   ]
 })
