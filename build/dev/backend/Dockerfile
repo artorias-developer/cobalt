@@ -1,4 +1,4 @@
-FROM python:3.12.15-slim AS builder
+FROM python:3.15.0-slim AS builder
 
 COPY --from=ghcr.io/astral-sh/uv:0.13.7 /uv /bin/uv
 
@@ -21,7 +21,7 @@ COPY cobalt/backend/pyproject.toml cobalt/backend/uv.lock ./
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-install-project
 
-FROM python:3.12.15-slim
+FROM python:3.15.0-slim
 
 WORKDIR /app
 ENV PYTHONPATH=/app/cobalt/backend
