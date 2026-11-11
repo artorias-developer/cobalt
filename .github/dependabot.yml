@@ -1,0 +1,69 @@
+version: 2
+
+updates:
+  # Backend (Python, uv)
+  - package-ecosystem: "uv"
+    directory: "/cobalt/backend"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+      semver-major-days: 30
+      semver-minor-days: 7
+      semver-patch-days: 3
+    open-pull-requests-limit: 10
+    groups:
+      backend-minor-patch:
+        update-types: ["minor", "patch"]
+
+  # npm projects
+  - package-ecosystem: "npm"
+    directories:
+      - "/cobalt/frontend"
+      - "/tests"
+      - "/docs/github-pages"
+      - "/build/scripts/installer"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+      semver-major-days: 30
+      semver-minor-days: 7
+      semver-patch-days: 3
+    open-pull-requests-limit: 10
+    groups:
+      npm-minor-patch:
+        update-types: ["minor", "patch"]
+
+  # Docker base images
+  - package-ecosystem: "docker"
+    directories:
+      - "/build/prod/frontend"
+      - "/build/prod/backend"
+      - "/build/dev/frontend"
+      - "/build/dev/backend"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+
+  # Images in docker-compose files
+  - package-ecosystem: "docker-compose"
+    directories:
+      - "/build/prod"
+      - "/build/dev"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+
+  # GitHub Actions in workflows
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+    groups:
+      github-actions:
+        patterns: ["*"]
