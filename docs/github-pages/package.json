@@ -1,4 +1,7 @@
 {
+  "name": "cobalt_docs",
+  "version": "1.11.0",
+  "description": "Cobalt documentation",
   "scripts": {
     "docs:dev": "vitepress dev website",
     "docs:build": "vitepress build website",
