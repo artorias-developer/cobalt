@@ -9,8 +9,8 @@ set -e
 
 SCRIPT_DIRECTORY="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 INSTALLER_DIRECTORY="$SCRIPT_DIRECTORY/installer"
-MINIMUM_NODE_MAJOR_VERSION=18
-NVM_VERSION="v0.40.8"
+MINIMUM_NODE_MAJOR_VERSION=24
+NVM_VERSION="v0.41.0"
 NODE_INSTALL_VERSION=24
 
 if [[ ! -t 0 || ! -t 1 ]]; then
@@ -95,10 +95,8 @@ if ! is_node_available; then
   echo "Node: $(node -v), npm: $(npm -v)"
 fi
 
-if [[ ! -d "$INSTALLER_DIRECTORY/node_modules/@clack/prompts" ]]; then
-  echo "Installing installer dependencies..."
-  npm install --prefix "$INSTALLER_DIRECTORY" --no-audit --no-fund --loglevel=error
-fi
+echo "Installing installer dependencies..."
+npm ci --prefix "$INSTALLER_DIRECTORY" --no-audit --no-fund --loglevel=error
 
 export COBALT_INSTALL_DIR="$SCRIPT_DIRECTORY"
 exec node "$INSTALLER_DIRECTORY/cli.mjs"
