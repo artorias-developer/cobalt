@@ -5,12 +5,13 @@
 
 from os import path
 from re import compile as re_compile
+from asyncio import Lock
 from abc import ABC, abstractmethod
 from pathlib import Path
 from secrets import choice
 from string import ascii_letters, digits
-from socket import socket, AF_INET, SOCK_STREAM, SOCK_DGRAM
-from typing import Optional, Dict, Any, Union
+from socket import socket, AF_INET, SOCK_STREAM
+from typing import Optional, Dict, Any, Union, Set, ClassVar, List, Literal, overload
 
 from aiofiles import os, open
 from aioshutil import rmtree
@@ -38,6 +39,12 @@ class AbstractServersService(ABC):
     _CONTAINER_RUNTIME_FILE = "Container.runtime"
     _CONTAINER_UPGRADER_FILE = "Container.upgrader"
     _STEAM_BUILD_ID_PATTERN = re_compile(r'"buildid"\s+"(\d+)"')
+    _SERVER_LABELS: ClassVar[Dict[str, str]] = {
+        "cobalt_server": "true"
+    }
+
+    _reserved_ports: ClassVar[Dict[int, Set[int]]] = {}
+    _ports_lock: ClassVar[Lock] = Lock()
 
     build_dir: Path
     app_containers_dir: Path
@@ -262,50 +269,58 @@ class AbstractServersService(ABC):
         return True
 
     @staticmethod
-    def _is_port_free(
-        port: int
-    ) -> bool:
+    def _get_host_ports() -> Set[int]:
         """
-        Checks whether a single port is currently free for both TCP and UDP.
+        Gets ports bound by any TCP/UDP socket on the host machine (IPv4 and IPv6).
+        Reads the host network tables from "/proc" mounted into the backend container,
+        falls back to the local ones when the backend runs directly on the host.
 
         Parameters:
-        - port: Port number to check.
+        - None.
 
         Returns:
-        - bool: True if the port is free on both protocols, False otherwise.
+        - Set: Host port numbers.
         """
-        try:
-            with socket(AF_INET, SOCK_STREAM) as tcp_sock:
-                tcp_sock.bind(('', port))
-        except OSError:
-            return False
+        proc_net_dir = Path(ContainerConstants.HOST_PROC_NET_DIR)
 
-        try:
-            with socket(AF_INET, SOCK_DGRAM) as udp_sock:
-                udp_sock.bind(('', port))
-        except OSError:
-            return False
+        if not proc_net_dir.is_dir():
+            proc_net_dir = Path(ContainerConstants.LOCAL_PROC_NET_DIR)
 
-        return True
+        ports = set()
+
+        for file_name in ContainerConstants.PROC_NET_SOCKET_FILES:
+            try:
+                lines = (proc_net_dir / file_name).read_text().splitlines()[1:]
+            except FileNotFoundError:
+                continue
+
+            for line in lines:
+                fields = line.split()
+
+                if len(fields) > 1:
+                    ports.add(int(fields[1].rsplit(":", 1)[1], 16))
+
+        return ports
 
     def _is_port_range_free(
         self,
         start_port: int,
-        count: int
+        count: int,
+        used_ports: Set[int]
     ) -> bool:
         """
-        Checks whether every port in [start_port, start_port + count - 1]
-        is currently free for both TCP and UDP.
+        Checks whether every port in [start_port, start_port + count - 1] is not used.
 
         Parameters:
         - start_port: First port of the range to check.
         - count: Number of consecutive ports to check.
+        - used_ports: Ports bound on the host, published by containers or reserved for other servers.
 
         Returns:
         - bool: True if all ports in the range are free, False otherwise.
         """
         return all(
-            self._is_port_free(start_port + offset)
+            start_port + offset not in used_ports
             for offset in range(count)
         )
 
@@ -524,7 +539,7 @@ class AbstractServersService(ABC):
         }
 
         prepared_container_labels = {
-            "cobalt_server": "true",
+            **self._SERVER_LABELS,
             "managed_by": ContainerConstants.MANAGED_BY,
             **(container_labels or {})
         }
@@ -701,7 +716,7 @@ class AbstractServersService(ABC):
         }
 
         prepared_container_labels = {
-            "cobalt_server": "true",
+            **self._SERVER_LABELS,
             "managed_by": ContainerConstants.MANAGED_BY,
             **(container_labels or {})
         }
@@ -876,8 +891,9 @@ class AbstractServersService(ABC):
         }
 
         prepared_container_labels = {
-            "cobalt_server": "true",
+            **self._SERVER_LABELS,
             "managed_by": ContainerConstants.MANAGED_BY,
+            ContainerConstants.PORTS_LABEL: ",".join(str(port) for port in sorted({int(port) for port in ports.values()})),
             **(container_labels or {})
         }
 
@@ -942,56 +958,99 @@ class AbstractServersService(ABC):
 
             raise
 
-    def get_available_port(
-        self,
-        max_attempts: int = 1000
-    ) -> int:
+    async def _get_used_ports(self) -> Set[int]:
         """
-        Gets a random available port that is free on both TCP and UDP.
+        Gets ports that can not be handed out: bound on the host, published by containers or already reserved.
+        Must be called under "_ports_lock".
 
         Parameters:
-        - max_attempts: Maximum number of candidate ports to try before giving up.
+        - None.
 
         Returns:
-        - int: Available port number.
+        - Set: Used port numbers.
         """
-        for _ in range(max_attempts):
-            with socket(AF_INET, SOCK_STREAM) as sock:
-                sock.bind(('', 0))
-                sock.listen(1)
-                port: int = sock.getsockname()[1]
+        published_ports = await self.containers_client.used_ports_by_label(
+            ports_label=ContainerConstants.PORTS_LABEL
+        )
 
-            if self._is_port_free(port):
-                return port
+        return published_ports.union(self._get_host_ports(), *self._reserved_ports.values())
 
-        raise RuntimeError(f"Could not find an available port free on both TCP and UDP after {max_attempts} attempts")
-
-    def get_available_port_range(
+    async def release_ports(
         self,
-        count: int,
-        max_attempts: int = 1000
-    ) -> int:
+        server_id: int
+    ) -> None:
         """
-        Gets a starting port of a contiguous range of available ports.
+        Releases ports reserved for the server. Should be called by the game service once the runtime
+        container was created (its ports are then published by Docker) or the creation failed.
 
         Parameters:
+        - server_id: Server ID.
+
+        Returns:
+        - None.
+        """
+        async with self._ports_lock:
+            self._reserved_ports.pop(server_id, None)
+
+    @overload
+    async def reserve_ports(
+        self,
+        server_id: int,
+        count: Literal[1],
+        max_attempts: int = 1000
+    ) -> int:
+        ...
+
+    @overload
+    async def reserve_ports(
+        self,
+        server_id: int,
+        count: int,
+        max_attempts: int = 1000
+    ) -> List[int]:
+        ...
+
+    async def reserve_ports(
+        self,
+        server_id: int,
+        count: int,
+        max_attempts: int = 1000
+    ) -> Union[int, List[int]]:
+        """
+        Reserves a contiguous range of available ports that are free on both TCP and UDP for the server.
+        The reservation must be released with "release_ports".
+
+        Parameters:
+        - server_id: Server ID the ports are reserved for.
         - count: Number of consecutive ports required.
         - max_attempts: Maximum number of candidate ports to try before giving up.
 
         Returns:
-        - int: The first port of a free contiguous range of size `count`.
+        - int: Reserved port number if `count` is 1.
+        - List: Reserved port numbers in ascending order otherwise.
+
+        Raises:
+        - ValueError: If `count` is less than 1.
         """
-        for _ in range(max_attempts):
-            with socket(AF_INET, SOCK_STREAM) as sock:
-                sock.bind(('', 0))
-                sock.listen(1)
-                candidate: int = sock.getsockname()[1]
+        if count < 1:
+            raise ValueError(f'The "count" parameter must be at least 1, got {count}')
 
-            if candidate + count - 1 > 65535:
-                continue
+        async with self._ports_lock:
+            used_ports = await self._get_used_ports()
 
-            if self._is_port_range_free(candidate, count):
-                return candidate
+            for _ in range(max_attempts):
+                with socket(AF_INET, SOCK_STREAM) as sock:
+                    sock.bind(('', 0))
+                    candidate = int(sock.getsockname()[1])
+
+                if candidate + count - 1 > 65535:
+                    continue
+
+                if self._is_port_range_free(candidate, count, used_ports):
+                    ports = list(range(candidate, candidate + count))
+                    self._reserved_ports.setdefault(server_id, set()).update(ports)
+
+                    return ports[0] if count == 1 else ports
 
         raise RuntimeError(f"Could not find {count} consecutive available ports after {max_attempts} attempts")
 

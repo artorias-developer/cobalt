@@ -5,7 +5,7 @@ from asyncio import create_subprocess_exec
 from asyncio.subprocess import PIPE, STDOUT
 from codecs import getincrementaldecoder
 from tempfile import TemporaryDirectory
-from typing import Dict, Optional, Any, List, AsyncGenerator, Union, Tuple, Literal
+from typing import Dict, Optional, Any, List, AsyncGenerator, Union, Tuple, Literal, Set
 from urllib.parse import quote
 
 from orjson import dumps
@@ -915,6 +915,43 @@ class DockerClient(AbstractContainersClient):
             },
             error=error
         )
+
+    async def used_ports_by_label(
+        self,
+        ports_label: str
+    ) -> Set[int]:
+        """
+        Gets ports used by containers: published by running ones and listed in the ports label
+        (comma-separated port numbers), which also covers stopped ones.
+
+        Parameters:
+        - ports_label: Label with the container host ports.
+
+        Returns:
+        - Set: Host port numbers.
+        """
+        response = await self._call(
+            path="/containers/json",
+            params={
+                "all": True
+            },
+            error=UnexpectedError("Error while listing containers")
+        )
+
+        ports = set()
+
+        for item in response.json():
+            for port in item.get("Ports") or []:
+                if port.get("PublicPort"):
+                    ports.add(int(port["PublicPort"]))
+
+            labels = item.get("Labels") or {}
+
+            for port in (labels.get(ports_label) or "").split(","):
+                if port.strip().isdigit():
+                    ports.add(int(port))
+
+        return ports
 
     async def volume_prune(
         self,

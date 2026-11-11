@@ -33,7 +33,10 @@ class TModLoaderServersService(AbstractServersService):
         - None.
         """
         try:
-            port = self.get_available_port()
+            port = await self.reserve_ports(
+                server_id=server_id,
+                count=1
+            )
 
             await self._create_installer_container(
                 server_id=server_id,
@@ -51,6 +54,10 @@ class TModLoaderServersService(AbstractServersService):
             )
         except Exception:
             self.logger.exception(f'Error while creating server {server_id}:')
+        finally:
+            await self.release_ports(
+                server_id=server_id
+            )
 
     async def upgrade(
         self,
