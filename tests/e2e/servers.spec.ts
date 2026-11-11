@@ -5,7 +5,8 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-import { test, expect, type Page, type Response } from "@playwright/test"
+import type { Page, Response } from "@playwright/test"
+import { test, expect, uniqueName, newSignedInPage } from "./helpers/fixtures.js"
 import { gotoWithRetry, clickAndWaitForApi } from "./helpers/api.js"
 
 /**
@@ -127,73 +128,123 @@ async function searchServer(page: Page, name: string): Promise<Response> {
   )
 }
 
-test.describe.configure({ mode: "serial" })
+/**
+ * Opens a server row action after narrowing the table down by search,
+ * so the row is found regardless of pagination.
+ *
+ * Parameters:
+ * - page: Playwright page instance.
+ * - name: Server name.
+ * - action: Row action button name (e.g. "server-edit-popup").
+ *
+ * Returns:
+ * - Promise<void>.
+ */
+async function openServerAction(page: Page, name: string, action: string): Promise<void> {
+  await searchServer(page, name)
+
+  const row = page.locator("tr").filter({
+    has: page.locator("td", { hasText: name }),
+  })
+  const button = row.locator(`[name="${action}"]`)
+  await button.waitFor({ state: "visible" })
+  await expect(button).toBeEnabled()
+  await button.click()
+}
+
+/**
+ * Changes the name in the opened server-edit popup and submits it.
+ *
+ * Parameters:
+ * - page: Playwright page instance.
+ * - name: New server name.
+ *
+ * Returns:
+ * - Promise<Response>: the API response for the update request.
+ */
+async function updateServerName(page: Page, name: string): Promise<Response> {
+  const nameInput = page.locator('.edit-server-popup input[name="server-name"]')
+  await nameInput.waitFor({ state: "visible" })
+  await nameInput.fill(name)
+
+  return clickAndWaitForApi(
+    page,
+    'button[name="server-update"]',
+    /servers/,
+    "PATCH",
+  )
+}
 
 test.describe("Servers page", () => {
   test.beforeEach(async ({ page }) => {
     await gotoWithRetry(page, "/servers")
   })
 
-  test("Should show validation warning on unselected game", async ({ page }) => {
-    await createServer(page, "e2e_test_server", null)
+  test("Should show validation warning on server create with unselected game", async ({ page }) => {
+    await createServer(page, uniqueName("server"), null)
     await expect(page.locator(".vue-notification.warn")).toBeVisible()
   })
 
-  test("Should show validation warning on empty server name", async ({ page }) => {
+  test("Should show validation warning on server create with empty name", async ({ page }) => {
     await createServer(page, "")
     await expect(page.locator(".vue-notification.warn")).toBeVisible()
   })
 
-  test("Should show validation warning on unselected loader", async ({ page }) => {
-    await createServer(
-      page,
-      "e2e_test_server",
-      4,
-      false,
-    )
+  test("Should show validation warning on server create with unselected loader", async ({ page }) => {
+    await createServer(page, uniqueName("server"), 4, false)
     await expect(page.locator(".vue-notification.warn")).toBeVisible()
   })
 
-  test("Should show validation warning on unselected version", async ({ page }) => {
-    await createServer(
-      page,
-      "e2e_test_server",
-      4,
-      true,
-      false,
-    )
+  test("Should show validation warning on server create with unselected version", async ({ page }) => {
+    await createServer(page, uniqueName("server"), 4, true, false)
     await expect(page.locator(".vue-notification.warn")).toBeVisible()
   })
 
-  test("Should show server settings button on server create", async ({ page }) => {
-    test.setTimeout(185000)
-    const response = await createServer(page, "e2e_test_server")
+  test("Should show server settings button on server create", async ({ api, browser }) => {
+    test.setTimeout(100_000)
+
+    const role = await api.createRole(undefined, ["servers_view", "servers_create", "server_view", "games_view"])
+    const user = await api.createUser(undefined, role.id)
+
+    const page = await newSignedInPage(browser, user.login, user.password)
+    await gotoWithRetry(page, "/servers")
+
+    const name = uniqueName("server")
+    api.track("servers", name)
+
+    const response = await createServer(page, name)
     expect(response!.status()).toBe(200)
 
     const row = page.locator("tr").filter({
-      has: page.locator("td", { hasText: "e2e_test_server" }),
+      has: page.locator("td", { hasText: name }),
     })
 
     await expect(
       row.locator('a[aria-label="server-settings"], .status-icon .icon.red')
-    ).toBeVisible({ timeout: 180000 })
+    ).toBeVisible({ timeout: 90_000 })
 
     await expect(row.locator(".status-icon .icon.red")).not.toBeVisible()
     await expect(row.locator('a[aria-label="server-settings"]')).toBeVisible()
+    await page.context().close()
   })
 
-  test("Should return 200 on server search", async ({ page }) => {
-    const response = await searchServer(page, "e2e_test_server")
+  test("Should return 409 on server create with existing name", async ({ page, server }) => {
+    const response = await createServer(page, server.name)
+    expect(response!.status()).toBe(409)
+  })
+
+  test("Should return 200 on server search", async ({ page, server }) => {
+    const response = await searchServer(page, server.name)
     expect(response.status()).toBe(200)
   })
 
-  test("Should return 404 on fictional server search", async ({ page }) => {
+  test("Should return 404 on server search with fictional name", async ({ page }) => {
     const response = await searchServer(page, "fictional_server")
     expect(response.status()).toBe(404)
   })
 
-  test("Should return 200 on search reset", async ({ page }) => {
-    await searchServer(page, "e2e_test_server")
+  test("Should return 200 on server search reset", async ({ page, server }) => {
+    await searchServer(page, server.name)
 
     const response = await clickAndWaitForApi(
       page,
@@ -202,5 +253,34 @@ test.describe("Servers page", () => {
       "GET",
     )
     expect(response.status()).toBe(200)
+  })
+
+  test("Should return 200 on server update", async ({ page, api }) => {
+    const server = await api.createServer()
+    await openServerAction(page, server.name, "server-edit-popup")
+
+    const response = await updateServerName(page, `${server.name}_updated`)
+    expect(response.status()).toBe(200)
+  })
+
+  test("Should return 409 on server update with existing name", async ({ page, api, server }) => {
+    const own = await api.createServer()
+    await openServerAction(page, own.name, "server-edit-popup")
+
+    const response = await updateServerName(page, server.name)
+    expect(response.status()).toBe(409)
+  })
+
+  test("Should return 204 on server delete", async ({ page, api }) => {
+    const server = await api.createServer()
+    await openServerAction(page, server.name, "server-delete-popup")
+
+    const response = await clickAndWaitForApi(
+      page,
+      'button[name="confirm"]',
+      /\/servers\/\d+(\?|$)/,
+      "DELETE",
+    )
+    expect(response.status()).toBe(204)
   })
 })

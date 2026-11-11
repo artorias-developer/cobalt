@@ -1,6 +1,6 @@
 [project]
 name = "cobalt-backend"
-version = "1.10.1"
+version = "1.11.0"
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "aiofiles",
@@ -33,7 +33,9 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "pydevd-pycharm"
+    "pydevd-pycharm",
+    "pytest",
+    "pytest-asyncio",
 ]
 
 [tool.uv]

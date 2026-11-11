@@ -6,8 +6,6 @@
 from datetime import datetime
 from typing import Optional, List
 
-from pydantic import Field
-
 from domain.enums import (
     PermissionEnum,
     SortDirectionEnum,
@@ -42,4 +40,4 @@ class RoleCreateDto(BaseDto):
 
 class RoleUpdateDto(BaseDto):
     name: Optional[str] = None
-    permissions: List[PermissionEnum] = Field(default_factory=list)
+    permissions: Optional[List[PermissionEnum]] = None

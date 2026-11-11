@@ -1,5 +1,7 @@
 # Folders
 **/.venv/
+**/.auth/
+**/.pytest_cache/
 **/logs/
 **/generated/
 **/__pycache__/
@@ -9,14 +11,13 @@
 **/coverage/
 **/playwright-report/
 **/test-results/
-**/.auth/
 **/cache/
 
 # Configs
 **/*.env
-**/alembic.ini
 **/*.crt
 **/*.key
+**/alembic.ini
 
 # Logs
 **/npm-debug.log*
