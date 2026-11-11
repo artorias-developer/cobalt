@@ -60,6 +60,7 @@ services:
       - HOST_CONTAINERS_ROOT=${PWD}/generated/prod/backend/containers
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - /proc:/host/proc:ro
       - ../shared/backend/scripts/entrypoint.sh:/app/backend-entrypoint.sh:ro
       - ../../generated/prod/backend:/app/generated/backend
       - ../../cobalt/backend/alembic.ini:/app/cobalt/backend/alembic.ini:ro

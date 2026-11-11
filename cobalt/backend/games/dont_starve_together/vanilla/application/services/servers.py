@@ -35,7 +35,10 @@ class VanillaServersService(AbstractServersService):
         - None.
         """
         try:
-            port = self.get_available_port()
+            port = await self.reserve_ports(
+                server_id=server_id,
+                count=1
+            )
 
             container_name = ContainerConstants.SERVER_RUNTIME_KEY.format(
                 server_id=server_id
@@ -61,6 +64,10 @@ class VanillaServersService(AbstractServersService):
             )
         except Exception:
             self.logger.exception(f'Error while creating server {server_id}:')
+        finally:
+            await self.release_ports(
+                server_id=server_id
+            )
 
     async def upgrade(
         self,

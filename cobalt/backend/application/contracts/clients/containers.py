@@ -5,7 +5,7 @@
 
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Dict, List, Optional, Any, AsyncGenerator, Union
+from typing import Dict, List, Optional, Any, AsyncGenerator, Union, Set
 
 from application.clients.containers.shared import (
     ContainerLog,
@@ -300,6 +300,23 @@ class AbstractContainersClient(ABC):
 
         Returns:
         - ContainerStatus: ContainerStatus object.
+        """
+        ...
+
+    @abstractmethod
+    async def containers_get_used_ports(
+        self,
+        ports_label: str
+    ) -> Set[int]:
+        """
+        Gets ports used by containers: published by running ones and listed in the ports label
+        (comma-separated port numbers), which also covers stopped ones.
+
+        Parameters:
+        - ports_label: Label with the container host ports.
+
+        Returns:
+        - Set: Host port numbers.
         """
         ...
 

@@ -74,6 +74,7 @@ services:
       - HOST_CONTAINERS_ROOT=${PWD}/generated/dev/backend/containers
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - /proc:/host/proc:ro
       - ../shared/backend/scripts/entrypoint.sh:/app/backend-entrypoint.sh:ro
       - ../../Makefile:/app/Makefile:ro
       - ../../cobalt/backend:/app/cobalt/backend

@@ -34,8 +34,10 @@ class VanillaServersService(AbstractServersService):
         - None.
         """
         try:
-            port_1 = self.get_available_port_range(count=2)
-            port_2 = port_1 + 1
+            port_1, port_2 = await self.reserve_ports(
+                server_id=server_id,
+                count=2
+            )
 
             await self._create_installer_container(
                 server_id=server_id,
@@ -58,6 +60,10 @@ class VanillaServersService(AbstractServersService):
             )
         except Exception:
             self.logger.exception(f'Error while creating server {server_id}:')
+        finally:
+            await self.release_ports(
+                server_id=server_id
+            )
 
     async def upgrade(
         self,
