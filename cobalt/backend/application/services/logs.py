@@ -363,7 +363,7 @@ class LogsService(AbstractLogsService):
         )
 
         if not server:
-            raise NotFoundError("Server with ID {server_id} not found", server_id=server_id)
+            raise NotFoundError("Server {server_id} not found", server_id=server_id)
 
         container_name = ContainerConstants.SERVER_RUNTIME_KEY.format(
             server_id=server_id

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  1.1.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-09-25 16:44+0300\n"
+"POT-Creation-Date: 2026-11-11 10:12+0200\n"
 "PO-Revision-Date: 2026-06-17 11:40+0300\n"
 "Last-Translator: Artorias artorias.code@gmail.com\n"
 "Language: ru\n"
@@ -18,34 +18,43 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: cobalt/backend/application/contracts/games/services.py:376
-#: cobalt/backend/application/contracts/games/services.py:539
+#: cobalt/backend/application/contracts/games/services.py:164
+#: cobalt/backend/application/contracts/games/services.py:561
+#: cobalt/backend/application/contracts/games/services.py:581
+#: cobalt/backend/application/contracts/games/services.py:747
+#: cobalt/backend/application/contracts/games/services.py:767
+#, python-brace-format
+msgid "Server {server_id} was canceled"
+msgstr "Операция над сервером {server_id} была отменена"
+
+#: cobalt/backend/application/contracts/games/services.py:478
+#: cobalt/backend/application/contracts/games/services.py:655
 msgid "The \"steam_app_id\" parameter is required if the value of \"is_steam_server\" is \"True\""
 msgstr "Параметр \"steam_app_id\" обязателен, если значение \"is_steam_server\" равно \"True\""
 
-#: cobalt/backend/application/services/attributes.py:89
-#: cobalt/backend/application/services/attributes.py:330
-#: cobalt/backend/application/services/attributes.py:426
+#: cobalt/backend/application/services/attributes.py:90
+#: cobalt/backend/application/services/attributes.py:331
+#: cobalt/backend/application/services/attributes.py:427
 msgid "Server or attributes not found"
 msgstr "Сервер или атрибуты не найдены"
 
-#: cobalt/backend/application/services/attributes.py:138
+#: cobalt/backend/application/services/attributes.py:139
 #, python-brace-format
 msgid "Server {server_id} or attribute {attribute_id} not found"
 msgstr "Сервер {server_id} или атрибут {attribute_id} не найден"
 
-#: cobalt/backend/application/services/attributes.py:267
+#: cobalt/backend/application/services/attributes.py:268
 msgid "At least one field (key or value) must be provided"
 msgstr "Необходимо указать хотя бы одно поле (ключ или значение)"
 
-#: cobalt/backend/application/services/attributes.py:279
-#: cobalt/backend/application/services/attributes.py:383
+#: cobalt/backend/application/services/attributes.py:280
+#: cobalt/backend/application/services/attributes.py:384
 msgid "Server or attribute not found"
 msgstr "Сервер или атрибут не найден"
 
 #: cobalt/backend/application/services/auth.py:73
 #: cobalt/backend/application/services/auth.py:80
-#: cobalt/backend/application/services/users.py:217
+#: cobalt/backend/application/services/users.py:222
 msgid "Invalid login or password"
 msgstr "Неверный логин или пароль"
 
@@ -61,67 +70,90 @@ msgstr "Необходимо указать текущий пароль"
 msgid "Invalid current password"
 msgstr "Неверный текущий пароль"
 
-#: cobalt/backend/application/services/files.py:98
+#: cobalt/backend/application/services/files.py:101
 msgid "Access outside the server root is not allowed"
 msgstr "Доступ за пределы корневой директории сервера запрещён"
 
-#: cobalt/backend/application/services/files.py:171
-#: cobalt/backend/application/services/files.py:331
-#: cobalt/backend/application/services/files.py:415
-#, python-brace-format
-msgid "Path \"{path}\" not found"
-msgstr "Путь \"{path}\" не найден"
+#: cobalt/backend/application/services/files.py:104
+msgid "Operation on the server root is not allowed"
+msgstr "Операция над корневой директорией сервера запрещена"
 
-#: cobalt/backend/application/services/files.py:174
-#: cobalt/backend/application/services/files.py:334
-#, python-brace-format
-msgid "Path \"{path}\" is not a directory"
-msgstr "Путь \"{path}\" не является директорией"
+#: cobalt/backend/application/services/files.py:130
+msgid "Invalid file name"
+msgstr "Недопустимое имя файла"
 
-#: cobalt/backend/application/services/files.py:235
 #: cobalt/backend/application/services/files.py:275
-#: cobalt/backend/application/services/files.py:475
-#, python-brace-format
-msgid "File \"{path}\" not found"
-msgstr "Файл \"{path}\" не найден"
-
-#: cobalt/backend/application/services/files.py:238
-#: cobalt/backend/application/services/files.py:278
-#: cobalt/backend/application/services/files.py:478
+#: cobalt/backend/application/services/files.py:286
+#: cobalt/backend/application/services/files.py:322
+#: cobalt/backend/application/services/files.py:549
 #, python-brace-format
 msgid "Path \"{path}\" is not a file"
 msgstr "Путь \"{path}\" не является файлом"
 
-#: cobalt/backend/application/services/files.py:243
+#: cobalt/backend/application/services/files.py:278
 #, python-brace-format
 msgid "File \"{path}\" exceeds the read limit"
 msgstr "Файл \"{path}\" превышает допустимый размер для чтения"
 
-#: cobalt/backend/application/services/files.py:301
+#: cobalt/backend/application/services/files.py:207
+#: cobalt/backend/application/services/files.py:370
 #, python-brace-format
-msgid "Path \"{path}\" already exists"
-msgstr "Путь \"{path}\" уже существует"
+msgid "Path \"{path}\" is not a directory"
+msgstr "Путь \"{path}\" не является директорией"
 
-#: cobalt/backend/application/services/files.py:384
-#: cobalt/backend/application/services/files.py:487
+#: cobalt/backend/application/services/files.py:428
 #, python-brace-format
 msgid "Destination path \"{path}\" not found"
 msgstr "Путь назначения \"{path}\" не найден"
 
-#: cobalt/backend/application/services/files.py:387
+#: cobalt/backend/application/services/files.py:431
+#: cobalt/backend/application/services/files.py:558
 #, python-brace-format
 msgid "Destination path \"{path}\" is not a directory"
 msgstr "Путь назначения \"{path}\" не является директорией"
 
-#: cobalt/backend/application/services/files.py:420
+#: cobalt/backend/application/services/files.py:178
+#: cobalt/backend/application/services/files.py:205
+#: cobalt/backend/application/services/files.py:382
+#: cobalt/backend/application/services/files.py:447
+#: cobalt/backend/application/services/files.py:471
+#: cobalt/backend/application/services/files.py:488
+#: cobalt/backend/application/services/files.py:526
+#, python-brace-format
+msgid "Path \"{path}\" not found"
+msgstr "Путь \"{path}\" не найден"
+
+#: cobalt/backend/application/services/files.py:272
+#: cobalt/backend/application/services/files.py:284
+#: cobalt/backend/application/services/files.py:320
+#: cobalt/backend/application/services/files.py:546
+#: cobalt/backend/application/services/files.py:566
+#, python-brace-format
+msgid "File \"{path}\" not found"
+msgstr "Файл \"{path}\" не найден"
+
+#: cobalt/backend/application/services/files.py:350
+#: cobalt/backend/infrastructure/managers/archives.py:300
+#, python-brace-format
+msgid "Path \"{path}\" already exists"
+msgstr "Путь \"{path}\" уже существует"
+
+#: cobalt/backend/application/services/files.py:442
+#: cobalt/backend/application/services/files.py:484
+#: cobalt/backend/application/services/files.py:490
 #, python-brace-format
 msgid "Name \"{name}\" is already in use"
 msgstr "Имя \"{name}\" уже используется"
 
-#: cobalt/backend/application/services/files.py:146
+#: cobalt/backend/application/services/files.py:384
 #, python-brace-format
-msgid "Path \"{relative_path}\" not found"
-msgstr "Путь \"{relative_path}\" не найден"
+msgid "Path \"{name}\" is a directory"
+msgstr "Путь \"{name}\" является директорией"
+
+#: cobalt/backend/application/services/files.py:479
+#, python-brace-format
+msgid "Directory \"{name}\" cannot be overwritten"
+msgstr "Директорию \"{name}\" нельзя перезаписать"
 
 #: cobalt/backend/application/services/games.py:80
 msgid "Game not found"
@@ -135,8 +167,8 @@ msgid "Game {game_id} not found"
 msgstr "Игра {game_id} не найдена"
 
 #: cobalt/backend/application/services/games.py:176
-#: cobalt/backend/application/services/servers.py:99
-#: cobalt/backend/application/services/servers.py:131
+#: cobalt/backend/application/services/servers.py:100
+#: cobalt/backend/application/services/servers.py:132
 #, python-brace-format
 msgid "Game \"{name}\" not found"
 msgstr "Игра \"{name}\" не найдена"
@@ -157,16 +189,22 @@ msgstr "Загрузчик \"{name}\" для игры {game_id} не найде�
 msgid "Loader {loader_id} not found"
 msgstr "Загрузчик {loader_id} не найден"
 
-#: cobalt/backend/application/services/logs.py:247
+#: cobalt/backend/application/services/logs.py:342
 msgid "Logs for host not found"
 msgstr "Логи хоста не найдены"
 
-#: cobalt/backend/application/services/logs.py:271
+#: cobalt/backend/application/services/logs.py:366
+#: cobalt/backend/application/services/servers.py:127
+#: cobalt/backend/application/services/servers.py:220
+#: cobalt/backend/application/services/servers.py:423
+#: cobalt/backend/application/services/servers.py:459
+#: cobalt/backend/application/services/servers.py:598
+#: cobalt/backend/infrastructure/databases/postgres/repositories/attributes.py:76
 #, python-brace-format
-msgid "Server with ID {server_id} not found"
-msgstr "Сервер с ID {server_id} не найден"
+msgid "Server {server_id} not found"
+msgstr "Сервер {server_id} не найден"
 
-#: cobalt/backend/application/services/logs.py:287
+#: cobalt/backend/application/services/logs.py:382
 #, python-brace-format
 msgid "Logs for server with ID {server_id} not found"
 msgstr "Логи сервера с ID {server_id} не найдены"
@@ -201,100 +239,100 @@ msgstr "Метрики CPU серверов не найдены"
 msgid "Servers RAM metrics not found"
 msgstr "Метрики RAM серверов не найдены"
 
-#: cobalt/backend/application/services/roles.py:87
-#: cobalt/backend/application/services/roles.py:306
+#: cobalt/backend/application/services/roles.py:88
+#: cobalt/backend/application/services/roles.py:307
 msgid "Roles not found"
 msgstr "Роли не найдены"
 
-#: cobalt/backend/application/services/roles.py:132
-#: cobalt/backend/application/services/roles.py:202
-#: cobalt/backend/application/services/roles.py:267
-#: cobalt/backend/infrastructure/databases/postgres/repositories/users.py:83
+#: cobalt/backend/application/services/roles.py:133
+#: cobalt/backend/application/services/roles.py:203
+#: cobalt/backend/application/services/roles.py:268
+#: cobalt/backend/infrastructure/databases/postgres/repositories/users.py:84
 #, python-brace-format
 msgid "Role {role_id} not found"
 msgstr "Роль {role_id} не найдена"
 
-#: cobalt/backend/application/services/servers.py:104
+#: cobalt/backend/application/services/servers.py:105
 #, python-brace-format
 msgid "Loader \"{name}\" not found"
 msgstr "Загрузчик \"{name}\" не найден"
 
-#: cobalt/backend/application/services/servers.py:126
-#: cobalt/backend/application/services/servers.py:219
-#: cobalt/backend/application/services/servers.py:432
-#: cobalt/backend/application/services/servers.py:468
-#: cobalt/backend/infrastructure/databases/postgres/repositories/attributes.py:75
-#, python-brace-format
-msgid "Server {server_id} not found"
-msgstr "Сервер {server_id} не найден"
-
-#: cobalt/backend/application/services/servers.py:174
-#: cobalt/backend/application/services/servers.py:527
+#: cobalt/backend/application/services/servers.py:175
+#: cobalt/backend/application/services/servers.py:516
 msgid "Servers not found"
 msgstr "Серверы не найдены"
 
-#: cobalt/backend/application/services/servers.py:259
-#: cobalt/backend/application/services/servers.py:337
-#: cobalt/backend/application/services/servers.py:340
+#: cobalt/backend/application/services/servers.py:260
+#: cobalt/backend/application/services/servers.py:333
+#: cobalt/backend/application/services/servers.py:336
 #, python-brace-format
 msgid "Version \"{version}\" not found"
 msgstr "Версия \"{version}\" не найдена"
 
-#: cobalt/backend/application/services/servers.py:328
-#: cobalt/backend/application/services/servers.py:471
+#: cobalt/backend/application/services/servers.py:324
+#: cobalt/backend/application/services/servers.py:462
 #, python-brace-format
 msgid "Server {server_id} is still being installed"
 msgstr "Сервер {server_id} ещё устанавливается"
 
-#: cobalt/backend/application/services/servers.py:331
+#: cobalt/backend/application/services/servers.py:327
 #, python-brace-format
 msgid "Server {server_id} is already being upgraded"
 msgstr "Сервер {server_id} уже обновляется"
 
-#: cobalt/backend/application/services/servers.py:474
+#: cobalt/backend/application/services/servers.py:465
 #, python-brace-format
 msgid "Server {server_id} is still being upgraded"
 msgstr "Сервер {server_id} ещё обновляется"
 
-#: cobalt/backend/application/services/servers.py:535
+#: cobalt/backend/application/services/servers.py:524
 msgid "Some servers are still being installed"
 msgstr "Некоторые серверы ещё устанавливаются"
 
-#: cobalt/backend/application/services/servers.py:543
+#: cobalt/backend/application/services/servers.py:532
 msgid "Some servers are still being upgraded"
 msgstr "Некоторые серверы ещё обновляются"
 
-#: cobalt/backend/application/services/servers.py:343
+#: cobalt/backend/application/services/servers.py:710
+msgid "Command contains invalid characters"
+msgstr "Команда содержит недопустимые символы"
+
+#: cobalt/backend/application/services/servers.py:339
 #, python-brace-format
 msgid "Server is already on version \"{version}\""
 msgstr "Сервер уже работает на версии \"{version}\""
 
-#: cobalt/backend/application/services/servers.py:353
+#: cobalt/backend/application/services/servers.py:349
 #, python-brace-format
 msgid "Version \"{version}\" is not newer than the current version \"{current_version}\""
 msgstr "Версия \"{version}\" не новее текущей версии \"{current_version}\""
 
-#: cobalt/backend/application/services/settings.py:208
+#: cobalt/backend/application/services/servers.py:605
+#, python-brace-format
+msgid "Server {server_id} has nothing to cancel"
+msgstr "У сервера {server_id} нет операций для отмены"
+
+#: cobalt/backend/application/services/settings.py:331
 #, python-brace-format
 msgid "Settings for user with ID {user_id} not found"
 msgstr "Настройки пользователя с ID {user_id} не найдены"
 
-#: cobalt/backend/application/services/settings.py:289
+#: cobalt/backend/application/services/settings.py:388
 msgid "Cannot clear containers while servers are being created"
 msgstr "Невозможно очистить контейнеры во время создания серверов"
 
-#: cobalt/backend/application/services/settings.py:297
+#: cobalt/backend/application/services/settings.py:396
 msgid "Cannot clear containers while servers are being upgraded"
 msgstr "Невозможно очистить контейнеры во время обновления серверов"
 
-#: cobalt/backend/application/services/users.py:120
-#: cobalt/backend/application/services/users.py:382
+#: cobalt/backend/application/services/users.py:125
+#: cobalt/backend/application/services/users.py:415
 msgid "Users not found"
 msgstr "Пользователи не найдены"
 
-#: cobalt/backend/application/services/users.py:165
-#: cobalt/backend/application/services/users.py:314
-#: cobalt/backend/application/services/users.py:350
+#: cobalt/backend/application/services/users.py:170
+#: cobalt/backend/application/services/users.py:319
+#: cobalt/backend/application/services/users.py:383
 #, python-brace-format
 msgid "User {user_id} not found"
 msgstr "Пользователь {user_id} не найден"
@@ -309,37 +347,47 @@ msgstr "\"{value}\" должно состоять как минимум из {mi
 msgid "\"{value}\" must be at most {max_length} characters"
 msgstr "\"{value}\" должно содержать не более {max_length} символов"
 
-#: cobalt/backend/domain/value_objects/base.py:72
+#: cobalt/backend/domain/value_objects/base.py:74
+#, python-brace-format
+msgid "Must contain at least {min_size} items"
+msgstr "Должно содержать не менее {min_size} элементов"
+
+#: cobalt/backend/domain/value_objects/base.py:80
+#, python-brace-format
+msgid "Must contain at most {max_size} items"
+msgstr "Должно содержать не более {max_size} элементов"
+
+#: cobalt/backend/domain/value_objects/base.py:101
 #, python-brace-format
 msgid "\"{value}\" must match pattern {pattern}"
 msgstr "\"{value}\" должно соответствовать шаблону {pattern}"
 
-#: cobalt/backend/domain/value_objects/base.py:96
+#: cobalt/backend/domain/value_objects/base.py:125
 #, python-brace-format
 msgid "\"{value}\" must be at least {min_value}"
 msgstr "\"{value}\" must be at least {min_value}"
 
-#: cobalt/backend/domain/value_objects/base.py:103
+#: cobalt/backend/domain/value_objects/base.py:132
 #, python-brace-format
 msgid "\"{value}\" must be at most {max_value}"
 msgstr "\"{value}\" должно быть не меньше {min_value}"
 
-#: cobalt/backend/domain/value_objects/base.py:125
+#: cobalt/backend/domain/value_objects/base.py:154
 #, python-brace-format
 msgid "\"{value}\" must be greater than {threshold}"
 msgstr "\"{value}\" должно быть больше {threshold}"
 
-#: cobalt/backend/domain/value_objects/base.py:147
+#: cobalt/backend/domain/value_objects/base.py:176
 #, python-brace-format
 msgid "\"{value}\" must be greater than or equal to {threshold}"
 msgstr "\"{value}\" должно быть больше или равно {threshold}"
 
-#: cobalt/backend/domain/value_objects/base.py:169
+#: cobalt/backend/domain/value_objects/base.py:198
 #, python-brace-format
 msgid "\"{value}\" must be less than {threshold}"
 msgstr "\"{value}\" должно быть меньше {threshold}"
 
-#: cobalt/backend/domain/value_objects/base.py:191
+#: cobalt/backend/domain/value_objects/base.py:220
 #, python-brace-format
 msgid "\"{value}\" must be less than or equal to {threshold}"
 msgstr "\"{value}\" должно быть меньше или равно {threshold}"
@@ -362,133 +410,145 @@ msgstr "Не удалось получить версию Forge"
 msgid "Could not fetch stable Paper build for version {version}"
 msgstr "Не удалось загрузить стабильную сборку Paper для версии {version}"
 
-#: cobalt/backend/infrastructure/clients/caches/redis.py:83
+#: cobalt/backend/infrastructure/clients/caches/redis.py:126
 msgid "Error while getting value from cache"
 msgstr "Ошибка при получении значения из кэша"
 
-#: cobalt/backend/infrastructure/clients/caches/redis.py:116
+#: cobalt/backend/infrastructure/clients/caches/redis.py:159
 msgid "Error while writing value to cache"
 msgstr "Ошибка при записи значения в кэш"
 
-#: cobalt/backend/infrastructure/clients/caches/redis.py:142
+#: cobalt/backend/infrastructure/clients/caches/redis.py:185
 msgid "Error while setting expire in cache"
 msgstr "Ошибка при установке срока истечения в кэше"
 
-#: cobalt/backend/infrastructure/clients/caches/redis.py:191
+#: cobalt/backend/infrastructure/clients/caches/redis.py:234
 msgid "Error while deleting values from cache"
 msgstr "Ошибка при удалении значений из кэша"
 
-#: cobalt/backend/infrastructure/clients/caches/redis.py:212
+#: cobalt/backend/infrastructure/clients/caches/redis.py:255
 msgid "Error while clearing cache"
 msgstr "Ошибка при очистке кэша"
 
-#: cobalt/backend/infrastructure/clients/containers/docker.py:82
-#, python-brace-format
-msgid "Container \"{name}\" not found"
-msgstr "Контейнер \"{name}\" не найден"
-
-#: cobalt/backend/infrastructure/clients/containers/docker.py:80
-#, python-brace-format
-msgid "Error while getting container \"{name}\""
-msgstr "Ошибка при получении контейнера \"{name}\""
-
-#: cobalt/backend/infrastructure/clients/containers/docker.py:148
-#, python-brace-format
-msgid "Error while building image \"{tag}\""
-msgstr "Ошибка при сборке образа \"{tag}\""
-
-#: cobalt/backend/infrastructure/clients/containers/docker.py:174
-#, python-brace-format
-msgid "Error while removing image \"{image}\""
-msgstr "Ошибка при удалении образа \"{image}\""
-
-#: cobalt/backend/infrastructure/clients/containers/docker.py:194
-msgid "Error while pruning images"
-msgstr "Ошибка при очистке образов"
-
-#: cobalt/backend/infrastructure/clients/containers/docker.py:217
-msgid "Error while listing containers"
-msgstr "Ошибка при получении списка контейнеров"
-
-#: cobalt/backend/infrastructure/clients/containers/docker.py:318
-#, python-brace-format
-msgid "Error while creating container \"{name}\""
-msgstr "Ошибка при создании контейнера \"{name}\""
-
-#: cobalt/backend/infrastructure/clients/containers/docker.py:339
-#, python-brace-format
-msgid "Error while starting container \"{name}\""
-msgstr "Ошибка при запуске контейнера \"{name}\""
-
-#: cobalt/backend/infrastructure/clients/containers/docker.py:362
-#, python-brace-format
-msgid "Error while stopping container \"{name}\""
-msgstr "Ошибка при остановке контейнера \"{name}\""
-
-#: cobalt/backend/infrastructure/clients/containers/docker.py:387
-#, python-brace-format
-msgid "Error while removing container \"{name}\""
-msgstr "Ошибка при удалении контейнера \"{name}\""
-
-#: cobalt/backend/infrastructure/clients/containers/docker.py:410
-#, python-brace-format
-msgid "Error while restarting container \"{name}\""
-msgstr "Ошибка при перезапуске контейнера \"{name}\""
-
-#: cobalt/backend/infrastructure/clients/containers/docker.py:431
-#, python-brace-format
-msgid "Error while waiting for container \"{name}\""
-msgstr "Ошибка при ожидании контейнера \"{name}\""
-
-#: cobalt/backend/infrastructure/clients/containers/docker.py:468
+#: cobalt/backend/infrastructure/clients/containers/docker.py:778
 #, python-brace-format
 msgid "Error while getting logs for container \"{name}\""
 msgstr "Ошибка при получении логов контейнера \"{name}\""
 
-#: cobalt/backend/infrastructure/clients/containers/docker.py:503
-#, python-brace-format
-msgid "Error while streaming logs for container \"{name}\""
-msgstr "Ошибка при потоковой передаче логов контейнера \"{name}\""
-
-#: cobalt/backend/infrastructure/clients/containers/docker.py:539
-#, python-brace-format
-msgid "Error while getting status for container \"{name}\""
-msgstr "Ошибка при получении статуса контейнера \"{name}\""
-
-#: cobalt/backend/infrastructure/clients/containers/docker.py:571
+#: cobalt/backend/infrastructure/clients/containers/docker.py:894
 #, python-brace-format
 msgid "Error while executing command in container \"{name}\""
 msgstr "Ошибка при выполнении команды в контейнере \"{name}\""
 
-#: cobalt/backend/infrastructure/clients/containers/docker.py:591
-msgid "Error while pruning volumes"
-msgstr "Ошибка при очистке томов"
+#: cobalt/backend/infrastructure/clients/containers/docker.py:392
+#, python-brace-format
+msgid ""
+"Error while building image \"{tag}\":\n"
+"{output}"
+msgstr ""
+"Ошибка при сборке образа \"{tag}\":\n"
+"{output}"
 
-#: cobalt/backend/infrastructure/clients/containers/docker.py:638
-msgid "Error while pruning builder cache"
-msgstr "Ошибка при очистке кэша сборщика"
+#: cobalt/backend/infrastructure/clients/containers/docker.py:844
+#, python-brace-format
+msgid "Error while streaming logs for container \"{name}\""
+msgstr "Ошибка при потоковой передаче логов контейнера \"{name}\""
 
-#: cobalt/backend/infrastructure/clients/containers/docker.py:172
+#: cobalt/backend/infrastructure/clients/containers/docker.py:198
+#, python-brace-format
+msgid "Error while inspecting container \"{name}\""
+msgstr "Ошибка при получении информации о контейнере \"{name}\""
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:199
+#: cobalt/backend/infrastructure/clients/containers/docker.py:604
+#: cobalt/backend/infrastructure/clients/containers/docker.py:630
+#: cobalt/backend/infrastructure/clients/containers/docker.py:659
+#: cobalt/backend/infrastructure/clients/containers/docker.py:685
+#: cobalt/backend/infrastructure/clients/containers/docker.py:705
+#: cobalt/backend/infrastructure/clients/containers/docker.py:800
+#: cobalt/backend/infrastructure/clients/containers/docker.py:842
+#: cobalt/backend/infrastructure/clients/containers/docker.py:906
+#, python-brace-format
+msgid "Container \"{name}\" not found"
+msgstr "Контейнер \"{name}\" не найден"
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:383
+#, python-brace-format
+msgid "Error while building image \"{tag}\": cannot run \"{cli}\""
+msgstr "Ошибка при сборке образа \"{tag}\": не удалось запустить \"{cli}\""
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:423
+#, python-brace-format
+msgid "Error while removing image \"{image}\""
+msgstr "Ошибка при удалении образа \"{image}\""
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:424
 #, python-brace-format
 msgid "Image \"{image}\" not found"
 msgstr "Образ \"{image}\" не найден"
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:446
+msgid "Error while pruning images"
+msgstr "Ошибка при очистке образов"
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:470
+msgid "Error while listing containers"
+msgstr "Ошибка при получении списка контейнеров"
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:583
+#, python-brace-format
+msgid "Error while creating container \"{name}\""
+msgstr "Ошибка при создании контейнера \"{name}\""
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:603
+#, python-brace-format
+msgid "Error while starting container \"{name}\""
+msgstr "Ошибка при запуске контейнера \"{name}\""
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:629
+#, python-brace-format
+msgid "Error while stopping container \"{name}\""
+msgstr "Ошибка при остановке контейнера \"{name}\""
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:658
+#, python-brace-format
+msgid "Error while removing container \"{name}\""
+msgstr "Ошибка при удалении контейнера \"{name}\""
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:684
+#, python-brace-format
+msgid "Error while restarting container \"{name}\""
+msgstr "Ошибка при перезапуске контейнера \"{name}\""
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:704
+#, python-brace-format
+msgid "Error while waiting for container \"{name}\""
+msgstr "Ошибка при ожидании контейнера \"{name}\""
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:938
+msgid "Error while pruning volumes"
+msgstr "Ошибка при очистке томов"
+
+#: cobalt/backend/infrastructure/clients/containers/docker.py:972
+msgid "Error while pruning builder cache"
+msgstr "Ошибка при очистке кэша сборщика"
 
 #: cobalt/backend/infrastructure/databases/postgres/models/settings.py:34
 msgid "Settings can only be deleted via user deletion (CASCADE)"
 msgstr "Настройки можно удалить только вместе с удалением пользователя (CASCADE)"
 
-#: cobalt/backend/infrastructure/databases/postgres/repositories/attributes.py:92
+#: cobalt/backend/infrastructure/databases/postgres/repositories/attributes.py:93
 #: cobalt/backend/infrastructure/databases/postgres/repositories/games.py:84
 #: cobalt/backend/infrastructure/databases/postgres/repositories/loaders.py:78
-#: cobalt/backend/infrastructure/databases/postgres/repositories/roles.py:86
-#: cobalt/backend/infrastructure/databases/postgres/repositories/servers.py:97
-#: cobalt/backend/infrastructure/databases/postgres/repositories/users.py:95
+#: cobalt/backend/infrastructure/databases/postgres/repositories/roles.py:87
+#: cobalt/backend/infrastructure/databases/postgres/repositories/servers.py:98
+#: cobalt/backend/infrastructure/databases/postgres/repositories/users.py:96
 #: cobalt/backend/presentation/http/fastapi/v1/middlewares/errors.py:72
 #: cobalt/backend/presentation/ws/fastapi/v1/interceptors/errors.py:76
 msgid "Internal server error"
 msgstr "Внутренняя ошибка сервера"
 
-#: cobalt/backend/infrastructure/databases/postgres/repositories/attributes.py:85
+#: cobalt/backend/infrastructure/databases/postgres/repositories/attributes.py:86
 #, python-brace-format
 msgid "Attribute \"{key}\" already exists for server {server_id}"
 msgstr "Атрибут \"{key}\" уже существует для сервера {server_id}"
@@ -503,27 +563,27 @@ msgstr "Игра \"{name}\" уже существует"
 msgid "Loader \"{name}\" already exists"
 msgstr "Загрузчик \"{name}\" уже существует"
 
-#: cobalt/backend/infrastructure/databases/postgres/repositories/roles.py:77
+#: cobalt/backend/infrastructure/databases/postgres/repositories/roles.py:78
 #, python-brace-format
 msgid "Role \"{role_name}\" already exists"
 msgstr "Роль \"{role_name}\" уже существует"
 
-#: cobalt/backend/infrastructure/databases/postgres/repositories/roles.py:83
+#: cobalt/backend/infrastructure/databases/postgres/repositories/roles.py:84
 #, python-brace-format
 msgid "Role {role_id} is still assigned to users"
 msgstr "Роль {role_id} всё ещё назначена пользователям"
 
-#: cobalt/backend/infrastructure/databases/postgres/repositories/servers.py:83
+#: cobalt/backend/infrastructure/databases/postgres/repositories/servers.py:84
 #, python-brace-format
 msgid "Server \"{name}\" already exists"
 msgstr "Сервер \"{name}\" уже существует"
 
-#: cobalt/backend/infrastructure/databases/postgres/repositories/servers.py:90
+#: cobalt/backend/infrastructure/databases/postgres/repositories/servers.py:91
 #, python-brace-format
 msgid "Game {game_id} or loader {loader_id} not found"
 msgstr "Игра {game_id} или загрузчик {loader_id} не найден"
 
-#: cobalt/backend/infrastructure/databases/postgres/repositories/users.py:92
+#: cobalt/backend/infrastructure/databases/postgres/repositories/users.py:93
 #, python-brace-format
 msgid "User \"{user_login}\" already exists"
 msgstr "Пользователь \"{user_login}\" уже существует"
@@ -758,6 +818,21 @@ msgstr "Пользователи"
 msgid "User ids"
 msgstr "Идентификаторы пользователей"
 
+#: cobalt/backend/infrastructure/managers/archives.py:302
+#, python-brace-format
+msgid "File \"{name}\" is not a valid ZIP archive"
+msgstr "Файл \"{name}\" не является корректным ZIP-архивом"
+
+#: cobalt/backend/infrastructure/managers/archives.py:276
+#, python-brace-format
+msgid "Archive entry \"{name}\" points outside the destination"
+msgstr "Элемент архива \"{name}\" указывает за пределы папки назначения"
+
+#: cobalt/backend/infrastructure/managers/archives.py:280
+#, python-brace-format
+msgid "Archive entry \"{name}\" is not a valid file name"
+msgstr "Элемент архива \"{name}\" имеет недопустимое имя файла"
+
 #: cobalt/backend/infrastructure/schedulers/apscheduler/scheduler.py:52
 msgid "Failed to start Apscheduler"
 msgstr "Не удалось запустить Apscheduler"
@@ -871,7 +946,3 @@ msgstr "Недостаточно прав"
 msgid "Unknown event \"{event}\""
 msgstr "Неизвестное событие \"{event}\""
 
-
-#: cobalt/backend/application/services/servers.py:711
-msgid "Command contains invalid characters"
-msgstr "Команда содержит недопустимые символы"

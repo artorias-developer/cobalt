@@ -175,7 +175,7 @@ class FilesService(AbstractFilesService):
             target = self._resolve_path(server_id, relative_path, allow_root=False)
 
             if not await os.path.exists(target):
-                raise NotFoundError('Path "{relative_path}" not found', relative_path=relative_path)
+                raise NotFoundError('Path "{path}" not found', path=relative_path)
 
             paths.append(target)
 
