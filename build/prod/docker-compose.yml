@@ -182,7 +182,7 @@ services:
     build:
       context: .
       dockerfile_inline: |
-        FROM ghcr.io/google/cadvisor:0.60.6
+        FROM ghcr.io/google/cadvisor:v0.61.0
         LABEL managed_by=cobalt
     container_name: prod_cobalt_cadvisor
     restart: unless-stopped
